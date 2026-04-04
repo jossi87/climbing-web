@@ -6,6 +6,7 @@ import { calculateDistanceBetweenCoordinates, parsers } from '../../shared/compo
 import { captureMessage } from '@sentry/react';
 import { X, Upload, FileCode, Database, List } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { designContract } from '../../design/contract';
 
 type Props = {
   coordinates: components['schemas']['Coordinates'][];
@@ -135,9 +136,7 @@ export const PolylineEditor = ({ coordinates, parking, onChange, upload }: Props
 
         {activeTab === 'DATA' && (
           <div className='space-y-2'>
-            <label className='ml-1 text-[10px] font-black tracking-widest text-slate-500 uppercase'>
-              Coordinate String
-            </label>
+            <label className={cn('ml-1', designContract.typography.label, 'text-slate-500')}>Coordinate String</label>
             <input
               type='text'
               className='bg-surface-nav border-surface-border focus:border-brand type-small w-full rounded-lg border px-3 py-2 transition-colors placeholder:text-slate-600 focus:outline-none'
@@ -168,7 +167,7 @@ export const PolylineEditor = ({ coordinates, parking, onChange, upload }: Props
                   Drag-and-drop a <code className='text-brand'>.gpx</code> or <code className='text-brand'>.tcx</code>{' '}
                   file
                 </p>
-                <p className='mx-auto max-w-xs text-[10px] text-slate-500'>
+                <p className={cn('mx-auto max-w-xs text-slate-500', designContract.typography.micro)}>
                   Import paths from GPS watches, Strava, or Fitbit to generate the approach path automatically.
                 </p>
               </div>

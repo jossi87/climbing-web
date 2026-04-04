@@ -22,6 +22,9 @@ import { useMeta } from '../Meta/context';
 
 type Repeat = { date?: string; comment?: string };
 
+/** Slightly brighter than default `type-label` (slate-400) so form rails stay readable on `surface-card`. */
+const fieldLabelClass = cn(designContract.typography.label, 'text-slate-300');
+
 type TickModalProps = {
   open: boolean;
   onClose: () => void;
@@ -89,8 +92,9 @@ const TickModal = ({
     [],
   );
 
-  const handleDeleteRepeat = useCallback((repeatToDelete: Repeat) => {
-    setRepeats((currentRepeats) => currentRepeats.filter((r) => r !== repeatToDelete));
+  const handleDeleteRepeatAt = useCallback((index: number) => {
+    if (!confirm('Remove this repeat ascent from the list?')) return;
+    setRepeats((current) => current.filter((_, i) => i !== index));
   }, []);
 
   const handleAddRepeat = useCallback(() => {
@@ -103,12 +107,13 @@ const TickModal = ({
 
   const saveTick = useCallback(
     (isDelete: boolean) => {
-      if (stars === null || !validDate || isSaving) return;
+      if (isSaving) return;
+      if (!isDelete && (stars === null || !validDate)) return;
 
       setApiError(null);
       setIsSaving(true);
 
-      postTicks(accessToken, isDelete, idTick, idProblem, comment, date, stars, grade, repeats)
+      postTicks(accessToken, isDelete, idTick, idProblem, comment, date, stars ?? -1, grade, repeats)
         .then(() => {
           onClose();
         })
@@ -125,46 +130,57 @@ const TickModal = ({
 
   if (!open) return null;
 
+  /** Mobile: panel is flex-1 inside min-h-dvh overlay (no max-h cap — avoids a strip under the sheet). Desktop: capped card, body scrolls inside. */
+  const modalPanelClass =
+    'bg-surface-card border-surface-border flex min-h-0 w-full min-w-0 flex-col overflow-hidden shadow-2xl max-sm:flex-1 max-sm:rounded-none max-sm:border-0 sm:max-h-[min(94dvh,56rem)] sm:max-w-2xl sm:rounded-2xl sm:border';
+  const modalBodyClass =
+    'min-h-0 space-y-4 overflow-y-auto overscroll-contain px-4 py-3.5 text-left max-sm:flex-1 sm:max-h-[calc(min(94dvh,56rem)-10.5rem)] sm:flex-none sm:space-y-5 sm:px-6 sm:py-4';
+
   return (
-    <div className='animate-in fade-in fixed inset-0 z-200 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm duration-200'>
-      <div className='bg-surface-card border-surface-border flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border shadow-2xl'>
-        <div className='border-surface-border bg-surface-nav/30 flex items-center justify-between border-b px-6 py-4'>
-          <h3 className='type-label flex items-center gap-2 text-slate-200'>
-            <Check size={18} className='text-emerald-400' />
-            {isClimbing ? 'Tick route' : 'Tick problem'}
+    <div
+      className='animate-in fade-in fixed inset-0 z-200 flex h-dvh min-h-dvh w-full bg-black/80 backdrop-blur-sm duration-200 max-sm:flex-col max-sm:p-0 sm:items-center sm:justify-center sm:p-4'
+      role='dialog'
+      aria-modal='true'
+      aria-labelledby='tick-modal-title'
+    >
+      <div className={modalPanelClass}>
+        <div className='border-surface-border bg-surface-nav/30 flex shrink-0 items-center justify-between border-b px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-6 sm:py-4 sm:pt-4'>
+          <h3 id='tick-modal-title' className='type-label flex min-w-0 items-center gap-2 text-slate-200'>
+            <Check size={18} className='shrink-0 text-emerald-400' />
+            <span className='truncate'>{isClimbing ? 'Tick route' : 'Tick problem'}</span>
           </h3>
-          <button type='button' onClick={onClose} className='opacity-70 transition-colors hover:opacity-100'>
+          <button
+            type='button'
+            onClick={onClose}
+            className='-mr-1 shrink-0 rounded-lg p-1.5 opacity-70 transition-colors hover:bg-white/5 hover:opacity-100'
+            aria-label='Close'
+          >
             <X size={20} />
           </button>
         </div>
 
-        <div className='space-y-6 overflow-y-auto p-6 text-left'>
+        <div className={modalBodyClass}>
           {apiError && (
             <div className='flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/10 p-4'>
               <AlertCircle className='shrink-0 text-red-500' size={18} />
-              <div className='text-xs font-bold tracking-tight text-red-500 uppercase'>
+              <div className={cn(designContract.typography.label, 'text-red-500')}>
                 <span className='opacity-70'>Error:</span> {apiError}
               </div>
             </div>
           )}
 
-          <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
-            <div className='space-y-2'>
-              <label
-                className={cn(
-                  'ml-1 text-[10px] font-black tracking-widest uppercase',
-                  !validDate ? 'text-red-500' : 'text-slate-500',
-                )}
-              >
+          <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5'>
+            <div className='space-y-1.5'>
+              <label className={cn('ml-1', fieldLabelClass, !validDate && 'text-red-500')}>
                 Date {!validDate && '(cannot be in the future)'}
               </label>
               <div className='relative'>
                 <Calendar
-                  className='pointer-events-none absolute top-1/2 left-3 z-10 -translate-y-1/2 text-slate-500'
+                  className='pointer-events-none absolute top-1/2 left-3 z-10 -translate-y-1/2 text-slate-400'
                   size={16}
                 />
                 <DatePicker
-                  placeholderText='Click to select a date'
+                  placeholderText='Date'
                   dateFormat='dd-MM-yyyy'
                   isClearable
                   showMonthDropdown
@@ -180,8 +196,8 @@ const TickModal = ({
               </div>
             </div>
 
-            <div className='space-y-2'>
-              <label className={cn('ml-1', designContract.typography.label)}>Grade</label>
+            <div className='space-y-1.5'>
+              <label className={cn('ml-1', fieldLabelClass)}>Grade</label>
               <div className='relative'>
                 <select
                   value={grade}
@@ -197,32 +213,38 @@ const TickModal = ({
                 </select>
                 <ChevronDown
                   size={14}
-                  className='pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-slate-500'
+                  className='pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-slate-400'
                 />
-                <div className='mt-1.5 px-1 text-[10px] text-slate-500 italic'>
+                <div className={cn('mt-1.5 px-1 text-slate-400 italic', designContract.typography.micro)}>
                   FA: {gradeFa} | Consensus: {gradeConsensus}
                 </div>
               </div>
             </div>
           </div>
 
-          <div className='space-y-2'>
-            <label className={cn('ml-1 text-[10px] font-black tracking-widest text-slate-500 uppercase')}>
+          <div className='space-y-1.5'>
+            <label id='tick-rating-label' className={cn('ml-1', fieldLabelClass)}>
               Rating{' '}
               <span className='text-red-500' aria-hidden>
                 *
               </span>
               <span className='sr-only'> (required)</span>
             </label>
-            <div className='grid grid-cols-2 gap-2 sm:grid-cols-5'>
+            <div
+              className='border-surface-border bg-surface-nav/80 flex min-h-[3rem] w-full min-w-0 flex-nowrap divide-x divide-white/12 overflow-hidden rounded-xl border shadow-sm'
+              role='radiogroup'
+              aria-labelledby='tick-rating-label'
+            >
               <button
                 type='button'
+                role='radio'
+                aria-checked={stars === -1}
                 onClick={() => setStars(-1)}
                 className={cn(
-                  'rounded-xl border px-3 py-2 text-[10px] font-bold uppercase transition-all',
+                  'flex min-w-0 flex-1 items-center justify-center px-1 py-2.5 text-center text-[10px] leading-tight font-semibold tracking-wide uppercase transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-emerald-400/50 focus-visible:ring-offset-0 focus-visible:outline-none sm:px-2 sm:text-xs',
                   stars === -1
-                    ? 'border-emerald-500/45 bg-emerald-600/25 text-slate-100 ring-1 ring-emerald-500/25'
-                    : 'border-surface-border bg-surface-nav text-slate-500 hover:border-white/15 hover:text-slate-300',
+                    ? 'bg-emerald-500/35 text-slate-50 shadow-[inset_0_0_0_1px_rgba(52,211,153,0.55)]'
+                    : 'text-slate-400 hover:bg-white/[0.07] hover:text-slate-200',
                 )}
               >
                 No rating
@@ -231,35 +253,51 @@ const TickModal = ({
                 <button
                   type='button'
                   key={s}
+                  role='radio'
+                  aria-checked={stars === s}
+                  aria-label={s === 0 ? '0 stars' : `${s} star${s === 1 ? '' : 's'}`}
                   onClick={() => setStars(s)}
                   className={cn(
-                    'flex items-center justify-center gap-1 rounded-xl border px-3 py-2 transition-all',
+                    'flex min-w-0 flex-1 items-center justify-center px-1 py-2.5 transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-amber-400/55 focus-visible:ring-offset-0 focus-visible:outline-none sm:px-2',
                     stars === s
-                      ? 'border-emerald-500/45 bg-emerald-600/20 text-amber-300 ring-1 ring-emerald-500/25'
-                      : 'border-surface-border bg-surface-nav text-slate-500 hover:border-white/15',
+                      ? 'bg-amber-400/20 text-amber-50 shadow-[inset_0_0_0_1px_rgba(251,191,36,0.55)]'
+                      : 'text-slate-500 hover:bg-white/[0.07]',
                   )}
                 >
-                  <div className='flex'>
-                    {[1, 2, 3].map((i) => (
-                      <Star
-                        key={i}
-                        size={12}
-                        className={cn(i <= s ? 'fill-amber-400 text-amber-400' : 'text-slate-600 opacity-40')}
-                      />
-                    ))}
-                  </div>
+                  <span className='inline-flex items-center justify-center gap-px'>
+                    {[1, 2, 3].map((i) => {
+                      const filled = i <= s;
+                      const activeCell = stars === s;
+                      return (
+                        <Star
+                          key={i}
+                          size={12}
+                          strokeWidth={filled ? 2 : 2.45}
+                          className={cn(
+                            filled
+                              ? activeCell
+                                ? 'fill-amber-300 text-amber-100 drop-shadow-[0_0_8px_rgba(253,230,138,0.45)]'
+                                : 'fill-amber-500/45 text-amber-400/85'
+                              : activeCell
+                                ? 'fill-none text-slate-200/95'
+                                : 'fill-none text-slate-500/85',
+                          )}
+                        />
+                      );
+                    })}
+                  </span>
                 </button>
               ))}
             </div>
           </div>
 
-          <div className='space-y-2'>
-            <label className={cn('ml-1', designContract.typography.label)}>Comment</label>
+          <div className='space-y-1.5'>
+            <label className={cn('ml-1', fieldLabelClass)}>Comment</label>
             <div className='relative'>
-              <MessageSquare className='pointer-events-none absolute top-4 left-3 text-slate-500' size={16} />
+              <MessageSquare className='pointer-events-none absolute top-3.5 left-3 text-slate-400' size={16} />
               <textarea
                 placeholder='Optional comment'
-                className='bg-surface-nav border-surface-border type-body min-h-25 w-full resize-none rounded-xl border py-3 pr-4 pl-10 transition-colors focus:border-white/20 focus:outline-none'
+                className='bg-surface-nav border-surface-border type-body min-h-24 w-full resize-y rounded-xl border py-3 pr-4 pl-10 transition-colors focus:border-white/20 focus:outline-none max-sm:min-h-[min(10rem,30dvh)] sm:min-h-28'
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
               />
@@ -267,64 +305,98 @@ const TickModal = ({
           </div>
 
           {enableTickRepeats && (
-            <div className='border-surface-border/50 space-y-4 border-t pt-4'>
-              <label className={cn('ml-1 block', designContract.typography.label)}>Repeats (Additional Ascents)</label>
-              <div className='space-y-3'>
-                {repeats.map((r, index) => (
-                  <div key={index} className='animate-in slide-in-from-left-2 flex items-start gap-2 duration-200'>
-                    <div className='w-40 shrink-0'>
-                      <DatePicker
-                        dateFormat='dd-MM-yyyy'
-                        selected={r.date ? convertFromStringToDate(r.date) : undefined}
-                        onChange={(date: Date | null) => handleUpdateRepeat(index, 'date', date)}
-                        className='bg-surface-nav border-surface-border type-small w-full rounded-lg border px-3 py-2 focus:border-white/20 focus:outline-none'
-                      />
-                    </div>
-                    <input
-                      placeholder='Repeat comment'
-                      className='bg-surface-nav border-surface-border type-small flex-1 rounded-lg border px-3 py-2 focus:border-white/20 focus:outline-none'
-                      value={r.comment ?? ''}
-                      onChange={(e) => handleUpdateRepeat(index, 'comment', e.target.value)}
-                    />
-                    <button
-                      type='button'
-                      onClick={() => handleDeleteRepeat(r)}
-                      className='bg-surface-nav border-surface-border rounded-lg border p-2 text-slate-500 transition-colors hover:text-red-500'
-                    >
-                      <Minus size={14} />
-                    </button>
-                  </div>
-                ))}
-                <button
-                  type='button'
-                  onClick={handleAddRepeat}
-                  className='bg-surface-nav border-surface-border type-label inline-flex items-center gap-2 rounded-xl border px-4 py-2 opacity-80 transition-all hover:border-white/15 hover:opacity-100'
-                >
-                  <Plus size={14} /> Add Repeat Ascent
-                </button>
+            <div className='border-surface-border/50 space-y-2 border-t pt-3'>
+              <label className={cn('ml-1 block', fieldLabelClass)}>Repeats</label>
+              <div className='border-surface-border/60 bg-surface-nav/25 overflow-hidden rounded-xl border shadow-sm'>
+                {repeats.length > 0 ? (
+                  <ol className='m-0 list-none divide-y divide-white/[0.08] p-0'>
+                    {repeats.map((r, index) => (
+                      <li
+                        key={index}
+                        className='animate-in slide-in-from-left-2 flex gap-2 p-2.5 duration-150 sm:gap-3 sm:p-3'
+                      >
+                        <div
+                          className='bg-surface-nav/80 border-surface-border/80 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-[10px] font-semibold text-slate-400 tabular-nums sm:h-8 sm:w-8 sm:text-[11px]'
+                          aria-hidden
+                        >
+                          {index + 1}
+                        </div>
+                        <div className='min-w-0 flex-1 space-y-2'>
+                          <div className='flex items-center gap-2'>
+                            <DatePicker
+                              placeholderText='dd-mm-yyyy'
+                              dateFormat='dd-MM-yyyy'
+                              selected={r.date ? convertFromStringToDate(r.date) : undefined}
+                              onChange={(date: Date | null) => handleUpdateRepeat(index, 'date', date)}
+                              className='bg-surface-dark/80 border-surface-border type-small min-w-0 flex-1 rounded-lg border px-2.5 py-1.5 focus:border-white/20 focus:outline-none sm:max-w-[10.5rem] sm:py-2'
+                            />
+                            <button
+                              type='button'
+                              onClick={() => handleDeleteRepeatAt(index)}
+                              className='shrink-0 rounded-lg border border-red-400/45 bg-red-500/15 p-2 text-red-300 shadow-sm transition-colors hover:border-red-400/65 hover:bg-red-500/25 hover:text-red-200 focus-visible:ring-2 focus-visible:ring-red-400/45 focus-visible:ring-offset-0 focus-visible:outline-none active:scale-[0.98] sm:p-2'
+                              aria-label={`Remove repeat ${index + 1}`}
+                            >
+                              <Minus size={15} strokeWidth={2.35} />
+                            </button>
+                          </div>
+                          <textarea
+                            placeholder='Optional — conditions, partners, how it felt…'
+                            rows={3}
+                            className='bg-surface-dark/80 border-surface-border type-small max-h-40 min-h-[4.25rem] w-full resize-y rounded-lg border px-2.5 py-2 leading-snug focus:border-white/20 focus:outline-none sm:min-h-[4.5rem]'
+                            value={r.comment ?? ''}
+                            onChange={(e) => handleUpdateRepeat(index, 'comment', e.target.value)}
+                          />
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
+                ) : null}
+                <div className={cn('bg-surface-nav/35', repeats.length > 0 ? 'border-surface-border/50 border-t' : '')}>
+                  <button
+                    type='button'
+                    onClick={handleAddRepeat}
+                    className='type-label flex w-full items-center justify-center gap-2 px-3 py-2.5 text-slate-200 transition-colors hover:bg-white/4 sm:px-4 sm:py-2.5'
+                  >
+                    <Plus size={14} className='text-emerald-400/90' /> Add repeat ascent
+                  </button>
+                </div>
               </div>
             </div>
           )}
         </div>
 
-        <div className='bg-surface-nav/30 border-surface-border flex items-center justify-between border-t p-4'>
-          <div>
-            {idTick > 1 && (
-              <button
-                type='button'
-                disabled={isSaving}
-                onClick={() => saveTick(true)}
-                className='flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold text-red-500 transition-all hover:bg-red-500/10 disabled:opacity-50'
-              >
-                <Trash2 size={16} /> Delete Tick
-              </button>
-            )}
-          </div>
-          <div className='flex gap-3'>
+        <div
+          className={cn(
+            'bg-surface-nav/30 border-surface-border flex shrink-0 flex-nowrap items-center gap-2 border-t px-3 py-2.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:gap-3 sm:px-4 sm:py-4 sm:pb-4',
+            idTick > 1 ? 'justify-between' : 'justify-end',
+          )}
+        >
+          {idTick > 1 ? (
+            <button
+              type='button'
+              disabled={isSaving}
+              onClick={() => {
+                if (!confirm('Delete this tick permanently? You can add a new tick later if this was a mistake.'))
+                  return;
+                saveTick(true);
+              }}
+              className={cn(
+                designContract.typography.uiCompact,
+                'inline-flex min-w-0 shrink-0 items-center gap-1 rounded-lg px-2 py-1.5 text-red-500 uppercase transition-all hover:bg-red-500/10 disabled:opacity-50 sm:gap-2 sm:rounded-xl sm:px-3 sm:py-2',
+              )}
+            >
+              <Trash2 size={14} className='shrink-0 sm:h-4 sm:w-4' />
+              <span className='min-w-0 truncate sm:whitespace-normal'>
+                <span className='sm:hidden'>Delete</span>
+                <span className='hidden sm:inline'>Delete Tick</span>
+              </span>
+            </button>
+          ) : null}
+          <div className='flex min-w-0 shrink-0 items-center gap-1.5 sm:gap-3'>
             <button
               type='button'
               onClick={onClose}
-              className='type-label px-4 py-2 opacity-75 transition-colors hover:opacity-100'
+              className='type-label shrink-0 px-2 py-1.5 opacity-75 transition-colors hover:opacity-100 sm:px-4 sm:py-2'
             >
               Cancel
             </button>
@@ -334,7 +406,7 @@ const TickModal = ({
               disabled={stars === null || !validDate || isSaving}
               className={cn(
                 designContract.controls.savePrimaryModal,
-                'shadow-sm disabled:bg-slate-700/80 disabled:opacity-50',
+                'shadow-sm disabled:bg-slate-700/80 disabled:opacity-50 max-sm:px-3 max-sm:py-2 max-sm:text-[9px] max-sm:tracking-wide',
               )}
             >
               {isSaving ? <RefreshCw size={14} className='animate-spin' /> : <Check size={14} />}

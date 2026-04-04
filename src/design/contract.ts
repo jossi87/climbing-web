@@ -1,3 +1,9 @@
+/**
+ * Rail kicker: “Latest activity”, breadcrumb crumbs (matches `SectionLabel`).
+ * Form field captions use `typography.label` (`type-label`, 11px).
+ */
+export const SECTION_EYEBROW = 'text-[10px] font-semibold tracking-[0.16em] text-slate-500 uppercase';
+
 export const designContract = {
   typography: {
     /** Page / card titles */
@@ -28,6 +34,8 @@ export const designContract = {
     listEmphasis: 'font-semibold text-slate-100',
     /** Grade tokens (no brackets): mono + muted */
     grade: 'type-small font-mono tabular-nums text-slate-400',
+    /** Same type rhythm as `SectionLabel` / breadcrumbs — use for explicit overlines in TSX. */
+    sectionEyebrow: SECTION_EYEBROW,
   },
   layout: {
     pageSection: 'w-full pb-0',
@@ -45,8 +53,7 @@ export const designContract = {
     pageShell: 'max-w-container mx-auto space-y-6 px-4 py-6 text-left',
     pageHeaderRow:
       'border-surface-border flex flex-col justify-between gap-4 border-b pb-4 lg:flex-row lg:items-center',
-    breadcrumb:
-      'flex flex-wrap items-center gap-2 text-[10px] font-semibold tracking-[0.16em] text-slate-500 uppercase',
+    breadcrumb: `flex flex-wrap items-center gap-2 ${SECTION_EYEBROW}`,
     /**
      * Profile captured/media + area/sector/problem Media when `compactTiles` is set:
      * 3 columns on small screens, stepping up to 6 on `lg` (matches profile gallery).

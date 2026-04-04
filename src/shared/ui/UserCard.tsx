@@ -39,8 +39,8 @@ export const UserCard = ({ user, variant = 'default', metaAction }: UserCardProp
       <div
         className={cn(
           'mt-0.5 flex items-center gap-1.5',
-          designContract.typography.label,
-          'text-[10px] tracking-tight normal-case',
+          designContract.typography.micro,
+          'normal-case',
           variant === 'minimal' ? 'text-slate-400 opacity-95' : 'text-slate-500 opacity-70',
         )}
       >
@@ -53,7 +53,9 @@ export const UserCard = ({ user, variant = 'default', metaAction }: UserCardProp
           href={`mailto:${user.emails[0]}`}
           className={cn(
             'hover:text-brand mt-1 flex min-w-0 items-center gap-2 transition-colors',
-            variant === 'minimal' ? 'text-[10px] text-slate-300 hover:text-slate-100' : 'text-[11px] text-slate-400',
+            designContract.typography.micro,
+            'normal-case',
+            variant === 'minimal' ? 'text-slate-300 hover:text-slate-100' : 'text-slate-400 hover:text-slate-100',
           )}
         >
           <Mail size={12} className={cn('shrink-0', variant === 'minimal' ? 'text-slate-400' : 'text-slate-600')} />

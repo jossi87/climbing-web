@@ -1,4 +1,5 @@
 export * from './Avatar/Avatar';
+export * from './Avatar/avatarFallback';
 export * from './Avatar/AvatarModal';
 export * from './Badge';
 export * from './Card';

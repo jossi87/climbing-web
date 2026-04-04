@@ -4,7 +4,7 @@ import { ExternalLink, Map, MapPin, MapPinned, Search as SearchIcon, User, type 
 import { getMediaFileUrl, useSearch } from '../../../api';
 import { LockSymbol } from '../../ui/Indicators';
 import { cn } from '../../../lib/utils';
-import { SearchInput, Card } from '../../ui';
+import { SearchInput, Card, avatarFallbackColors, avatarInitialsFromName } from '../../ui';
 import { designContract } from '../../../design/contract';
 
 type SearchResult = {
@@ -45,7 +45,7 @@ function getSearchEntityKind(result: SearchResult): SearchEntityKind {
   return 'unknown';
 }
 
-/** Thumbnail fallbacks: area → Map, sector → MapPinned, problem → MapPin. */
+/** Icons for non-user hits without a photo (users get colorful initials instead). */
 function getSearchFallbackMeta(kind: SearchEntityKind): { Icon: LucideIcon; label: string } {
   switch (kind) {
     case 'area':
@@ -60,6 +60,8 @@ function getSearchFallbackMeta(kind: SearchEntityKind): { Icon: LucideIcon; labe
       return { Icon: SearchIcon, label: 'Result' };
   }
 }
+
+const SEARCH_THUMB_PX = 44;
 
 const FALLBACK_THUMB_CLASS = 'border-white/5 bg-surface-nav group-hover:border-brand/30 transition-colors';
 const FALLBACK_ICON_CLASS = 'shrink-0 text-slate-500 group-hover:text-slate-400';
@@ -184,12 +186,13 @@ const SearchBox = () => {
               const versionStamp = result?.mediaVersionStamp || 0;
               const imageSrc = mediaId > 0 ? getMediaFileUrl(mediaId, versionStamp, false, { minDimension: 48 }) : null;
               const entityKind = getSearchEntityKind(result);
-              const fallback = getSearchFallbackMeta(entityKind);
-              const FallbackIcon = fallback.Icon;
               const problemTitle =
                 entityKind === 'problem' && !result.externalUrl
                   ? splitSearchProblemTitle(result.title ?? '')
                   : { name: result.title ?? '', grade: null as string | null };
+              const fallbackMeta = getSearchFallbackMeta(entityKind);
+              const FallbackIcon = fallbackMeta.Icon;
+              const userInitialsFallback = entityKind === 'user' && !result.externalUrl && !imageSrc;
 
               return (
                 <button
@@ -201,16 +204,36 @@ const SearchBox = () => {
                   )}
                 >
                   <div
-                    title={result.externalUrl ? 'External link' : imageSrc ? undefined : `${fallback.label} (no photo)`}
+                    title={
+                      result.externalUrl
+                        ? 'External link'
+                        : imageSrc
+                          ? undefined
+                          : userInitialsFallback
+                            ? `${result.title ?? 'User'} (no photo)`
+                            : `${fallbackMeta.label} (no photo)`
+                    }
                     className={cn(
-                      'flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg border',
-                      FALLBACK_THUMB_CLASS,
+                      'flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg border transition-colors',
+                      result.externalUrl || imageSrc
+                        ? FALLBACK_THUMB_CLASS
+                        : userInitialsFallback
+                          ? 'group-hover:border-brand/30 border-white/12'
+                          : FALLBACK_THUMB_CLASS,
                     )}
+                    style={userInitialsFallback ? avatarFallbackColors(result.title) : undefined}
                   >
                     {result.externalUrl ? (
                       <ExternalLink size={18} className='group-hover:text-brand text-slate-500' />
                     ) : imageSrc ? (
                       <img src={imageSrc} className='h-full w-full object-cover' alt='' />
+                    ) : userInitialsFallback ? (
+                      <span
+                        className='pointer-events-none flex h-full w-full items-center justify-center leading-none font-light tracking-wide uppercase antialiased'
+                        style={{ fontSize: SEARCH_THUMB_PX * 0.33 }}
+                      >
+                        {avatarInitialsFromName(result.title)}
+                      </span>
                     ) : (
                       <FallbackIcon size={20} strokeWidth={2} className={FALLBACK_ICON_CLASS} />
                     )}

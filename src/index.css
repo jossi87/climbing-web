@@ -75,7 +75,8 @@
    * - type-h1 / type-h2: page & section titles
    * - type-body: primary list copy, paragraphs (Activity feed, problem rows, Todo)
    * - type-small: secondary (#, grades, de-emphasized UI)
-   * - type-label: uppercase section labels
+   * - type-label: form / modal field labels (11px caps)
+   * - typography.sectionEyebrow: rail kickers & breadcrumbs (10px caps, see contract.ts)
    * - type-micro: captions & tight UI
    */
   .type-h1 {

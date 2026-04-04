@@ -9,13 +9,7 @@ import { Avatar, AvatarGroup, Card, SectionLabel } from '../../ui';
 import { Stars } from '../../ui/Indicators';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
-import {
-  profileRowRootClass,
-  tickCommentSmall,
-  tickCrag,
-  tickFlags,
-  tickProblemLink,
-} from '../Profile/profileRowTypography';
+import { tickCrag, tickFlags, tickProblemLink } from '../Profile/profileRowTypography';
 import { ProblemLink } from './components/ProblemLink';
 import { LazyMedia } from './components/LazyMedia';
 import type { components } from '../../../@types/buldreinfo/swagger';
@@ -131,12 +125,7 @@ const Activity = ({
               type='button'
             >
               <Filter size={12} className='shrink-0 text-slate-100' strokeWidth={2} />
-              <span
-                className={cn(
-                  designContract.typography.uiCompact,
-                  'min-w-0 truncate text-slate-100 max-sm:text-[10px]',
-                )}
-              >
+              <span className={cn(designContract.typography.uiCompact, 'min-w-0 truncate text-slate-100')}>
                 {normalizedLowerGradeText === 'n/a' ? 'All' : normalizedLowerGradeText}
               </span>
               <ChevronDown
@@ -257,22 +246,30 @@ type FilterButtonProps = {
 };
 
 /** Roomier pills on `sm+`; keep phones compact so one row still fits. */
-const activityChipBase =
-  'inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full border px-2.5 text-[10px] font-semibold leading-none transition-[color,transform,border-color] duration-200 active:scale-95 sm:h-8 sm:gap-2 sm:px-4 sm:text-[11px]';
+const activityChipBase = cn(
+  'inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full border px-2.5 leading-none transition-[color,transform,border-color] duration-200 active:scale-95 sm:h-8 sm:gap-2 sm:px-4',
+  designContract.typography.uiCompact,
+);
 const activityChipIdle =
   'border-white/10 bg-surface-nav/50 text-slate-400 hover:border-brand/45 hover:bg-surface-nav hover:text-slate-200';
 const activityChipActive = 'border-transparent bg-white/[0.12] text-slate-100 shadow-sm hover:border-brand/50';
+
+/** Slightly larger + relaxed than profile todo/ascent rows so the feed reads cleanly on phones. */
+const activityRowRootClass =
+  'm-0 text-[12px] font-normal leading-[1.45] tracking-normal sm:text-[13px] sm:leading-snug';
 
 /** Brighter than {@link tickFlags} for verbs (ticked, on, in, …) so they read with primary copy. */
 const activityActionClass = 'font-normal text-slate-200 antialiased';
 
 const activityCommentBlock = cn(
-  tickCommentSmall,
-  'mt-1 leading-relaxed text-pretty break-words text-slate-50 not-italic',
+  'mt-1 text-pretty break-words antialiased not-italic',
+  'text-[11px] leading-relaxed text-slate-200 sm:text-[12px] sm:leading-relaxed',
 );
-/** Home: story line distinct from who/what/where. */
-const activityCommentFrontpage =
-  'mt-1.5 text-pretty break-words text-[10px] leading-relaxed italic text-slate-400 antialiased sm:text-[11px]';
+/** Home: secondary story line; still legible next to compact hero layout. */
+const activityCommentFrontpage = cn(
+  'mt-1.5 text-pretty break-words antialiased italic',
+  'text-[11px] leading-relaxed text-slate-400 sm:text-[12px] sm:leading-relaxed',
+);
 
 const FilterButton = ({ active, onClick, icon: Icon, label }: FilterButtonProps) => (
   <button
@@ -349,7 +346,7 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
         </div>
 
         <div className='min-w-0 flex-1'>
-          <div className={cn(profileRowRootClass, 'min-w-0 text-pretty [overflow-wrap:anywhere]')}>
+          <div className={cn(activityRowRootClass, 'min-w-0 text-pretty [overflow-wrap:anywhere]')}>
             {a.users && a.users.length > 0 && !a.repeat ? (
               <>
                 <span className={cragLeadClass}>New {isBouldering ? 'boulder' : 'route'}</span>{' '}
@@ -410,7 +407,7 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
           )}
 
           {a.users && a.users.length > 0 && (
-            <div className={cn(profileRowRootClass, 'flex flex-wrap gap-x-2 gap-y-1', faRowMt)}>
+            <div className={cn(activityRowRootClass, 'flex flex-wrap gap-x-2 gap-y-1', faRowMt)}>
               {a.users.map((u) => (
                 <Link
                   key={u.id}

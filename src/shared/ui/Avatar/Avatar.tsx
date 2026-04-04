@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import { createPortal } from 'react-dom';
 import { getMediaFileUrl } from '../../../api/utils';
 import { cn } from '../../../lib/utils';
+import { avatarFallbackColors, avatarInitialsFromName } from './avatarFallback';
 
 const AvatarModal = lazy(() => import('./AvatarModal'));
 
@@ -31,28 +32,24 @@ const SIZE_MAP: Record<AvatarSize, number> = {
 export function Avatar({ name, mediaId, mediaVersionStamp, size = 'mini', className, onClick }: AvatarProps) {
   const pixelSize = SIZE_MAP[size] || 24;
   const mid = mediaId ?? 0;
-  const initials =
-    name
-      ?.split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2) || '?';
+  const initials = avatarInitialsFromName(name);
+  const fallbackStyle = mid === 0 ? avatarFallbackColors(name) : undefined;
 
   return (
     <div
       className={cn(
-        'border-surface-border bg-surface-hover flex shrink-0 items-center justify-center overflow-hidden rounded-full border transition-all select-none',
+        'border-surface-border flex shrink-0 items-center justify-center overflow-hidden rounded-full border transition-all select-none',
+        mid === 0 ? 'border-white/12' : 'bg-surface-hover',
         onClick && 'hover:border-brand/50 cursor-pointer',
         className,
       )}
-      style={{ width: pixelSize, height: pixelSize }}
+      style={{ width: pixelSize, height: pixelSize, ...fallbackStyle }}
       onClick={onClick}
     >
       {mid === 0 ? (
         <span
-          className='pointer-events-none flex h-full w-full items-center justify-center leading-none font-bold tracking-tighter text-slate-500 uppercase'
-          style={{ fontSize: pixelSize * 0.4 }}
+          className='pointer-events-none flex h-full w-full items-center justify-center leading-none font-light tracking-wide uppercase antialiased'
+          style={{ fontSize: pixelSize * 0.33 }}
         >
           {initials}
         </span>
@@ -94,7 +91,7 @@ export function AvatarGroup({
         ))}
         {items.length > max && (
           <div
-            className='bg-surface-nav ring-surface-hover flex items-center justify-center rounded-full text-[8px] font-bold text-slate-500 ring-2'
+            className='flex items-center justify-center rounded-full border border-white/10 bg-slate-700/85 text-[8px] font-bold text-slate-200 ring-2 ring-slate-800/80'
             style={{ width: SIZE_MAP[size], height: SIZE_MAP[size] }}
           >
             +{items.length - max}

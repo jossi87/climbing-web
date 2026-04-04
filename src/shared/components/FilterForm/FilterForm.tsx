@@ -188,7 +188,11 @@ export const FilterForm = () => {
             <button
               type='button'
               onClick={() => dispatch({ action: 'reset', section: 'all' })}
-              className='bg-surface-nav border-surface-border flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase opacity-80 transition-colors hover:opacity-100'
+              className={cn(
+                'bg-surface-nav border-surface-border flex items-center gap-1.5 rounded-md border px-3 py-1.5 opacity-80 transition-colors hover:opacity-100',
+                designContract.typography.uiCompact,
+                'uppercase',
+              )}
             >
               <Trash2 size={12} /> Clear filter
             </button>
@@ -196,7 +200,11 @@ export const FilterForm = () => {
           <button
             type='button'
             onClick={() => dispatch({ action: 'close-filter' })}
-            className='bg-surface-nav border-surface-border flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase opacity-80 transition-colors hover:opacity-100'
+            className={cn(
+              'bg-surface-nav border-surface-border flex items-center gap-1.5 rounded-md border px-3 py-1.5 opacity-80 transition-colors hover:opacity-100',
+              designContract.typography.uiCompact,
+              'uppercase',
+            )}
           >
             <X size={12} /> Close
           </button>
