@@ -12,9 +12,9 @@ import {
   Star,
   Calendar,
   MessageSquare,
-  Award,
   AlertCircle,
   RefreshCw,
+  ChevronDown,
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
@@ -183,14 +183,10 @@ const TickModal = ({
             <div className='space-y-2'>
               <label className={cn('ml-1', designContract.typography.label)}>Grade</label>
               <div className='relative'>
-                <Award
-                  className='pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-500'
-                  size={16}
-                />
                 <select
                   value={grade}
                   onChange={(e) => setGrade(e.target.value)}
-                  className='bg-surface-nav border-surface-border type-body w-full cursor-pointer appearance-none rounded-xl border py-2.5 pr-4 pl-10 transition-colors focus:border-white/20 focus:outline-none'
+                  className='bg-surface-nav border-surface-border type-body w-full cursor-pointer appearance-none rounded-xl border px-3 py-2.5 pr-9 transition-colors focus:border-white/20 focus:outline-none'
                 >
                   <option value='No personal grade'>I don't want to grade</option>
                   {grades.map((g, i) => (
@@ -199,6 +195,10 @@ const TickModal = ({
                     </option>
                   ))}
                 </select>
+                <ChevronDown
+                  size={14}
+                  className='pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-slate-500'
+                />
                 <div className='mt-1.5 px-1 text-[10px] text-slate-500 italic'>
                   FA: {gradeFa} | Consensus: {gradeConsensus}
                 </div>
@@ -207,13 +207,12 @@ const TickModal = ({
           </div>
 
           <div className='space-y-2'>
-            <label
-              className={cn(
-                'ml-1 text-[10px] font-black tracking-widest uppercase',
-                stars === null ? 'text-red-500' : 'text-slate-500',
-              )}
-            >
-              Rating {stars === null && '(required)'}
+            <label className={cn('ml-1 text-[10px] font-black tracking-widest text-slate-500 uppercase')}>
+              Rating{' '}
+              <span className='text-red-500' aria-hidden>
+                *
+              </span>
+              <span className='sr-only'> (required)</span>
             </label>
             <div className='grid grid-cols-2 gap-2 sm:grid-cols-5'>
               <button
@@ -259,7 +258,7 @@ const TickModal = ({
             <div className='relative'>
               <MessageSquare className='pointer-events-none absolute top-4 left-3 text-slate-500' size={16} />
               <textarea
-                placeholder='How did it feel?'
+                placeholder='Optional comment'
                 className='bg-surface-nav border-surface-border type-body min-h-25 w-full resize-none rounded-xl border py-3 pr-4 pl-10 transition-colors focus:border-white/20 focus:outline-none'
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}

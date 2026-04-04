@@ -306,7 +306,7 @@ export const Problem = () => {
           gradeFa={data.originalGrade}
           gradeConsensus={data.grade}
           grades={meta.grades}
-          stars={userTick?.stars ?? 0}
+          stars={userTick != null ? (userTick.stars ?? -1) : undefined}
           repeats={userTick?.repeats}
           open={true}
           onClose={() => setShowTickModal(false)}
