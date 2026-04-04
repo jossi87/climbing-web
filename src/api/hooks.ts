@@ -1,5 +1,6 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import {
+  type QueryClient,
   type UseMutationOptions,
   type MutationFunction,
   useMutation,
@@ -30,6 +31,19 @@ function useKey(customKey: readonly unknown[] | undefined, urlSuffix: string): r
     };
   }
   return key;
+}
+
+/** Call after tick/comment POSTs so `useProblem` refetches (cache is not updated automatically). */
+export function invalidateProblemQueries(client: QueryClient, problemId: number) {
+  return client.invalidateQueries({
+    predicate: (q) => {
+      const key = q.queryKey;
+      if (!Array.isArray(key) || key[0] !== '/problem') return false;
+      const meta = key[1];
+      if (meta == null || typeof meta !== 'object') return false;
+      return 'id' in meta && (meta as { id: number }).id === problemId;
+    },
+  });
 }
 
 export function usePostData<TVariables, TData = Response>(

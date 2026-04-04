@@ -1,5 +1,12 @@
 import { useState, useCallback } from 'react';
-import { convertFromDateToString, convertFromStringToDate, postTicks, useAccessToken } from '../../../api';
+import { useQueryClient } from '@tanstack/react-query';
+import {
+  convertFromDateToString,
+  convertFromStringToDate,
+  invalidateProblemQueries,
+  postTicks,
+  useAccessToken,
+} from '../../../api';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import type { components } from '../../../@types/buldreinfo/swagger';
@@ -57,6 +64,7 @@ const TickModal = ({
   enableTickRepeats,
 }: TickModalProps) => {
   const { isClimbing } = useMeta();
+  const queryClient = useQueryClient();
   const accessToken = useAccessToken();
   const [comment, setComment] = useState(initialComment ?? '');
   const [grade, setGrade] = useState(initialGrade);
@@ -115,6 +123,7 @@ const TickModal = ({
 
       postTicks(accessToken, isDelete, idTick, idProblem, comment, date, stars ?? -1, grade, repeats)
         .then(() => {
+          void invalidateProblemQueries(queryClient, idProblem);
           onClose();
         })
         .catch((error) => {
@@ -125,7 +134,7 @@ const TickModal = ({
           setIsSaving(false);
         });
     },
-    [accessToken, idTick, idProblem, comment, date, stars, grade, repeats, onClose, validDate, isSaving],
+    [accessToken, queryClient, idTick, idProblem, comment, date, stars, grade, repeats, onClose, validDate, isSaving],
   );
 
   if (!open) return null;

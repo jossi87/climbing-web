@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { postComment, useAccessToken } from '../../../api';
+import { useQueryClient } from '@tanstack/react-query';
+import { invalidateProblemQueries, postComment, useAccessToken } from '../../../api';
 import MediaUpload, { type UploadedMedia } from '../MediaUpload/MediaUpload';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { X, Check, AlertTriangle, ShieldCheck, ShieldAlert, MessageSquare } from 'lucide-react';
@@ -22,6 +23,7 @@ const CommentModal = ({
   idProblem?: number;
   comment?: components['schemas']['ProblemComment'];
 }) => {
+  const queryClient = useQueryClient();
   const accessToken = useAccessToken();
   const [message, setMessage] = useState(comment?.message ?? '');
   const [danger, setDanger] = useState(comment?.danger);
@@ -34,6 +36,7 @@ const CommentModal = ({
     setSaving(true);
     postComment(accessToken, id, idProblem, message, danger ?? false, resolved ?? false, false, media)
       .then(() => {
+        void invalidateProblemQueries(queryClient, idProblem);
         onClose();
       })
       .catch((error) => {

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { useAccessToken, useProblem, postComment } from '../../../api';
+import { useQueryClient } from '@tanstack/react-query';
+import { useAccessToken, useProblem, postComment, invalidateProblemQueries } from '../../../api';
 import Media from '../../../shared/components/Media/Media';
 import { ClickableAvatar } from '../../../shared/ui/Avatar/Avatar';
 import { useMeta } from '../../../shared/components/Meta/context';
@@ -34,6 +35,7 @@ export const ProblemComments = ({
   carouselMedia: components['schemas']['Media'][];
   onShowCommentModal: (comment: components['schemas']['ProblemComment']) => void;
 }) => {
+  const queryClient = useQueryClient();
   const accessToken = useAccessToken();
   const meta = useMeta();
   const { data } = useProblem(+problemId, showHiddenMedia);
@@ -43,10 +45,14 @@ export const ProblemComments = ({
     const pid = data?.id;
     if (!pid) return;
     if (confirm('Are you sure you want to flag this comment?')) {
-      postComment(accessToken, id, pid, message, true, false, false, []).catch((error) => {
-        console.warn(error);
-        alert(error.toString());
-      });
+      postComment(accessToken, id, pid, message, true, false, false, [])
+        .then(() => {
+          void invalidateProblemQueries(queryClient, pid);
+        })
+        .catch((error) => {
+          console.warn(error);
+          alert(error.toString());
+        });
     }
   }
 
@@ -56,10 +62,14 @@ export const ProblemComments = ({
     if (!pid) return;
 
     if (confirm('Are you sure you want to delete this comment?')) {
-      postComment(accessToken, id, pid, null, false, false, true, []).catch((error) => {
-        console.warn(error);
-        alert(error.toString());
-      });
+      postComment(accessToken, id, pid, null, false, false, true, [])
+        .then(() => {
+          void invalidateProblemQueries(queryClient, pid);
+        })
+        .catch((error) => {
+          console.warn(error);
+          alert(error.toString());
+        });
     }
   }
 
