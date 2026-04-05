@@ -72,7 +72,9 @@ const Footer = () => {
   };
 
   return (
-    <footer className='bg-surface-nav isolate mt-0 w-full border-t border-slate-600/25 py-7 sm:py-12'>
+    <footer
+      className={cn('bg-surface-nav isolate mt-0 w-full border-t py-7 sm:py-12', designContract.surfaces.shellHairline)}
+    >
       <div className='max-w-container mx-auto px-4 sm:px-6'>
         <div className='mb-7 grid grid-cols-2 gap-4 sm:mb-12 sm:gap-8 lg:grid-cols-4'>
           <div className='space-y-2.5 sm:space-y-4'>
@@ -146,7 +148,12 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className='flex flex-col items-center justify-between gap-4 border-t border-slate-600/25 pt-6 sm:gap-6 sm:pt-8 md:flex-row'>
+        <div
+          className={cn(
+            'flex flex-col items-center justify-between gap-4 border-t pt-6 sm:gap-6 sm:pt-8 md:flex-row',
+            designContract.surfaces.shellHairlineInner,
+          )}
+        >
           <div className={cn('flex flex-wrap justify-center gap-x-6 gap-y-3', designContract.typography.label)}>
             <a
               href='mailto:jostein.oygarden@gmail.com'

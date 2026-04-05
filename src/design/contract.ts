@@ -98,6 +98,17 @@ export const designContract = {
       'grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-2.5 md:grid-cols-4 md:gap-3 lg:grid-cols-6 lg:gap-2.5',
   },
   surfaces: {
+    /**
+     * App shell: sticky header (glass) + page footer share the same hairline token so chrome matches.
+     * Softer than `border-surface-border` at full opacity so it doesn’t fight backdrop blur.
+     */
+    shellHairline: 'border-surface-border/40',
+    /** Inner divider inside the footer (above legal row) — same family, lighter. */
+    shellHairlineInner: 'border-surface-border/25',
+    /**
+     * Sticky top nav: translucent fill + blur; `supports` reduces opacity when blur is active (more “glass”).
+     */
+    shellHeaderBg: 'bg-surface-card/78 supports-[backdrop-filter]:bg-surface-card/60 backdrop-blur-xl',
     panel: 'bg-surface-card border-surface-border border',
     elevated: 'shadow-xl',
     divider: 'divide-y divide-white/7',

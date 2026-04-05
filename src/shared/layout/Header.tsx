@@ -6,6 +6,7 @@ import { useMeta } from '../components/Meta/context';
 import SearchBox from '../components/SearchBox/SearchBox';
 import { Avatar } from '../ui';
 import { cn } from '../../lib/utils';
+import { designContract } from '../../design/contract';
 import { downloadUsersTicks, useAccessToken } from '../../api';
 
 type DropdownItemProps = {
@@ -201,8 +202,9 @@ const Header = () => {
   return (
     <nav
       className={cn(
-        'border-surface-border/70 z-50 w-full border-b backdrop-blur-xl transition-[transform,background-color,backdrop-filter] duration-300',
-        'bg-surface-card/80 supports-[backdrop-filter]:bg-surface-card/65',
+        'z-50 w-full border-b transition-[transform,background-color,backdrop-filter] duration-300',
+        designContract.surfaces.shellHairline,
+        designContract.surfaces.shellHeaderBg,
         shouldStickHeader ? 'sticky top-0' : 'relative',
         !isVisible && '-translate-y-full lg:translate-y-0',
       )}
