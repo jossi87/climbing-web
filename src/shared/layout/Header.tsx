@@ -92,11 +92,11 @@ const Header = () => {
         onClick={onClick}
         className={cn(
           'mx-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[12px] leading-snug font-medium transition-colors sm:text-[13px]',
-          isActive ? 'bg-brand/14 text-brand' : 'text-slate-300 hover:bg-white/[0.09] hover:text-slate-50',
+          isActive ? 'bg-brand/14 text-slate-50' : 'text-slate-300 hover:bg-white/[0.09] hover:text-slate-50',
           className,
         )}
       >
-        <Icon size={16} strokeWidth={2} className={cn('shrink-0', isActive ? 'text-brand' : 'text-slate-400')} />{' '}
+        <Icon size={16} strokeWidth={2} className={cn('shrink-0', isActive ? 'text-slate-200' : 'text-slate-400')} />{' '}
         {children}
       </Link>
     );

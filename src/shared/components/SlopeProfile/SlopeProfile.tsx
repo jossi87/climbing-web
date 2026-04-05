@@ -120,9 +120,13 @@ export const SlopeProfile = ({ areaName = '', sectorName = '', slope, compact = 
       <button
         type='button'
         onClick={() => downloadGpxFile(areaName ?? '', sectorName ?? '', slope.coordinates ?? [])}
-        className='group text-brand/95 hover:bg-brand/12 hover:text-brand hover:ring-brand/35 focus-visible:ring-brand/50 -mx-0.5 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 font-semibold transition-colors hover:ring-1 focus-visible:ring-2 focus-visible:outline-none'
+        className='group text-brand/95 hover:bg-brand/12 hover:ring-brand/35 focus-visible:ring-brand/50 -mx-0.5 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 font-semibold transition-colors hover:text-slate-100 hover:ring-1 focus-visible:ring-2 focus-visible:outline-none'
       >
-        <Download size={icon} className='text-brand/95 group-hover:text-brand shrink-0 transition-colors' aria-hidden />
+        <Download
+          size={icon}
+          className='text-brand/95 shrink-0 transition-colors group-hover:text-slate-100'
+          aria-hidden
+        />
         GPX
       </button>
     </>

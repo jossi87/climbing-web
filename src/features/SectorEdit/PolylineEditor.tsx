@@ -81,8 +81,8 @@ export const PolylineEditor = ({ coordinates, parking, onChange, upload }: Props
     cn(
       'flex items-center gap-2 px-4 py-2 text-xs font-black uppercase tracking-widest transition-all border-b-2',
       activeTab === id
-        ? 'border-brand text-brand bg-brand/5'
-        : 'border-transparent text-slate-500 hover:text-slate-300 hover:bg-white/5',
+        ? 'border-brand bg-brand/10 text-slate-50'
+        : 'border-transparent text-slate-500 hover:bg-white/5 hover:text-slate-300',
     );
 
   return (
@@ -159,7 +159,7 @@ export const PolylineEditor = ({ coordinates, parking, onChange, upload }: Props
           >
             <input {...getInputProps()} />
             <div className='flex flex-col items-center gap-3'>
-              <div className='bg-brand/10 text-brand rounded-full p-3'>
+              <div className='border-brand/35 bg-brand/15 ring-brand/25 rounded-full border p-3 text-slate-100 ring-1'>
                 <Upload size={24} />
               </div>
               <div className='space-y-1'>

@@ -17,7 +17,7 @@ type Props = {
 export const PageHeader = ({ title, icon: Icon, subheader, stats }: Props) => (
   <div className='mb-8 flex flex-col justify-between gap-6 px-4 sm:px-0 md:flex-row md:items-end'>
     <div className='flex items-center gap-4'>
-      <div className='bg-brand/10 border-brand/20 text-brand rounded-lg border p-2.5 shadow-sm'>
+      <div className='border-brand/35 bg-brand/15 ring-brand/25 rounded-lg border p-2.5 text-slate-100 shadow-sm ring-1'>
         <Icon size={20} />
       </div>
       <div>

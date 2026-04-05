@@ -27,7 +27,7 @@ export const HeaderButtons = ({ header, subheader, icon, children }: Props) => {
       {header && (
         <div className='flex items-center gap-3'>
           {Icon && (
-            <div className='bg-brand/10 text-brand rounded-lg p-2'>
+            <div className='border-brand/35 bg-brand/15 ring-brand/25 rounded-lg border p-2 text-slate-100 ring-1'>
               <Icon size={24} />
             </div>
           )}

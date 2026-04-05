@@ -1,6 +1,10 @@
 /**
  * Rail kicker: “Latest activity”, breadcrumb crumbs (matches `SectionLabel`).
  * Form field captions use `typography.label` (`type-label`, 11px).
+ *
+ * Brand contrast: avoid pairing `text-brand` with `bg-brand/*` tints (weak contrast, worse in light mode).
+ * Prefer solid on-states `bg-brand text-slate-950 ring-1 ring-black/20`, tinted callouts
+ * `border-brand/35 bg-brand/15 text-slate-100`, and reserve `text-brand` for neutral surfaces.
  */
 export const SECTION_EYEBROW = 'text-[10px] font-semibold tracking-[0.16em] text-slate-500 uppercase';
 

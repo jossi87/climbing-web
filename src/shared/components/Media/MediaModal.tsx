@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, type MouseEvent, useRef, useCallback } from 'react';
+import { useState, useEffect, useMemo, type MouseEvent, useRef, useCallback, Fragment, type ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
 import {
@@ -43,6 +43,142 @@ function svgListNrColor(svg: components['schemas']['Svg']) {
   if (svg.todo) return 'text-sky-400';
   if (svg.dangerous) return 'text-red-500';
   return 'text-slate-500';
+}
+
+/**
+ * Higher ≈ harder. One French-style token: leading number, optional +/- after number, letter, +.
+ * Used when scanning full strings so `10-` in `10- (8c+)` wins over `6+` (string sort alone fails).
+ */
+function scoreFrenchGradeToken(n: number, signAfterNum: string, letter: string, plusAfterLetter: boolean): number {
+  const sign = signAfterNum === '+' ? 15 : signAfterNum === '-' ? -15 : 0;
+  const L = letter.toLowerCase();
+  const letterStep = L ? (L.charCodeAt(0) - 96) * 3 : 0;
+  const tail = plusAfterLetter ? 1 : 0;
+  return n * 1000 + sign + letterStep + tail;
+}
+
+/** Single-string parse (start, parenthetical, first digits). */
+function gradeLabelSortKey(label: string | undefined): number {
+  const t = (label ?? '').trim();
+  if (!t || t === '.') return -1;
+
+  const head = t.match(/^(\d+)(?:\s*([+-]))?([a-z]?)(\+?)(?=[\s(.]|$)/i);
+  if (head) {
+    return scoreFrenchGradeToken(parseInt(head[1], 10), head[2] ?? '', (head[3] ?? '').toLowerCase(), !!head[4]);
+  }
+
+  const paren = t.match(/\(\s*(\d+)([a-z]?)(\+?)\s*\)/i);
+  if (paren) {
+    return scoreFrenchGradeToken(parseInt(paren[1], 10), '', (paren[2] ?? '').toLowerCase(), !!paren[3]);
+  }
+
+  const any = t.match(/(\d+)/);
+  return any ? parseInt(any[1], 10) * 1000 : 0;
+}
+
+/** Max difficulty mentioned anywhere in `text` (grade field, problem name, “6+ / 10-”, etc.). */
+function gradeLabelSortKeyMaxInText(text: string | undefined): number {
+  const t = (text ?? '').trim();
+  if (!t || t === '.') return -1;
+
+  let best = gradeLabelSortKey(t);
+  // Mid-string tokens: boundary then French block (avoid greedy 3-digit years: cap 2 digits at boundary)
+  const re = /(?:^|[\s(/[,])(\d{1,2})(?:\s*([+-]))?([a-z]?)(\+?)(?=[\s).,\]/]|$)/gi;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(t)) !== null) {
+    const n = parseInt(m[1], 10);
+    const hasTail = !!(m[2] || m[3] || m[4]);
+    if (n > 17 && !hasTail) continue;
+    best = Math.max(best, scoreFrenchGradeToken(n, m[2] ?? '', (m[3] ?? '').toLowerCase(), !!m[4]));
+  }
+  return best;
+}
+
+function combinedSvgDifficulty(s: components['schemas']['Svg']): number {
+  const g = (s.problemGrade ?? '').trim();
+  const n = (s.problemName ?? '').trim();
+  const kg = g && g !== '.' ? gradeLabelSortKeyMaxInText(g) : -1;
+  const kn = n ? gradeLabelSortKeyMaxInText(n) : -1;
+  const key = Math.max(kg, kn);
+  return key * 100 + (s.problemGradeGroup ?? -1);
+}
+
+function gradeTieBreakText(s: components['schemas']['Svg']): number {
+  return gradeLabelSortKeyMaxInText([s.problemGrade, s.problemName].filter(Boolean).join(' '));
+}
+
+/** When the winning line has no API `problemGrade`, show text from the hardest sibling line that has one. */
+function sidebarDisplayGrade(rep: components['schemas']['Svg'], group: components['schemas']['Svg'][]) {
+  const r = rep.problemGrade?.trim();
+  if (r && r !== '.') return r;
+  const ordered = [...group].sort((a, b) => combinedSvgDifficulty(b) - combinedSvgDifficulty(a));
+  for (const s of ordered) {
+    const g = s.problemGrade?.trim();
+    if (g && g !== '.') return g;
+  }
+  return rep.problemGrade;
+}
+
+/** One topo line per problem: max difficulty across all lines (any pitch); smarter tie-break than localeCompare. */
+function pickRepresentativeSvgLine(group: components['schemas']['Svg'][]) {
+  if (group.length === 0) throw new Error('pickRepresentativeSvgLine: empty group');
+  let best = group[0];
+  let bestScore = combinedSvgDifficulty(best);
+  for (let i = 1; i < group.length; i++) {
+    const s = group[i];
+    const sc = combinedSvgDifficulty(s);
+    if (sc > bestScore) {
+      best = s;
+      bestScore = sc;
+    } else if (sc === bestScore) {
+      const ra = (s.problemGrade ?? '').trim();
+      const rb = (best.problemGrade ?? '').trim();
+      const aOk = !!(ra && ra !== '.');
+      const bOk = !!(rb && rb !== '.');
+      if (aOk && !bOk) best = s;
+      else if (!(!aOk && bOk) && gradeTieBreakText(s) > gradeTieBreakText(best)) best = s;
+    }
+  }
+  return best;
+}
+
+/**
+ * Multiple SVG polylines may reference the same problem — show one row with the hardest grade,
+ * merged tick/todo/dangerous flags, sorted A–Z by name.
+ */
+function sidebarSvgsMerged(svgs: components['schemas']['Svg'][]) {
+  const filtered = svgs.filter((svg) => typeof svg.problemId === 'number');
+  const byProblem = new Map<number, components['schemas']['Svg'][]>();
+  for (const s of filtered) {
+    const id = s.problemId as number;
+    const arr = byProblem.get(id);
+    if (arr) arr.push(s);
+    else byProblem.set(id, [s]);
+  }
+
+  const merged: components['schemas']['Svg'][] = [];
+  for (const group of byProblem.values()) {
+    const rep = pickRepresentativeSvgLine(group);
+    const displayGrade = sidebarDisplayGrade(rep, group);
+    const anyTicked = group.some((s) => s.ticked);
+    const anyTodo = group.some((s) => s.todo);
+    const anyDanger = group.some((s) => s.dangerous);
+    merged.push({
+      ...rep,
+      problemGrade: displayGrade ?? rep.problemGrade,
+      ticked: anyTicked,
+      todo: !anyTicked && anyTodo,
+      dangerous: !anyTicked && !anyTodo && anyDanger,
+    });
+  }
+
+  merged.sort((a, b) => {
+    const na = a.nr ?? Number.POSITIVE_INFINITY;
+    const nb = b.nr ?? Number.POSITIVE_INFINITY;
+    if (na !== nb) return na - nb;
+    return (a.problemName ?? '').localeCompare(b.problemName ?? '', undefined, { sensitivity: 'base' });
+  });
+  return merged;
 }
 
 type Props = {
@@ -167,13 +303,7 @@ const MediaModal = ({
       .map((v) => v.problemId)
       .filter((value, index, self) => self.indexOf(value) === index).length > 1;
 
-  const sidebarSvgs = useMemo(
-    () =>
-      svgs
-        .filter((svg) => (svg.pitch ?? 0) === 0 || (svg.pitch ?? 0) === 1)
-        .sort((a, b) => (a.nr ?? 0) - (b.nr ?? 0) || (a.problemName ?? '').localeCompare(b.problemName ?? '')),
-    [svgs],
-  );
+  const sidebarSvgs = useMemo(() => sidebarSvgsMerged(svgs), [svgs]);
 
   const activeSidebarIndex = useMemo(() => {
     if (optProblemId == null) return -1;
@@ -270,10 +400,11 @@ const MediaModal = ({
                   : svg.dangerous
                     ? 'Flagged as dangerous'
                     : undefined;
-              const grade = svg.pitch === 0 && svg.problemGrade && svg.problemGrade !== '.' ? svg.problemGrade : null;
+              const rawGrade = svg.problemGrade?.trim();
+              const grade = rawGrade && rawGrade !== '.' ? rawGrade : null;
               return (
                 <Link
-                  key={`${svg.problemId}-${svg.pitch}`}
+                  key={svg.problemId}
                   ref={activeSidebarIndex === rowIndex ? activeSidebarRowRef : undefined}
                   to={`/problem/${svg.problemId}/${m.id}`}
                   onMouseEnter={() => setProblemIdHovered(svg.problemId ?? null)}
@@ -281,8 +412,8 @@ const MediaModal = ({
                   title={statusHint}
                   aria-label={[svg.problemName, grade ?? undefined, statusHint].filter(Boolean).join('. ') || undefined}
                   className={cn(
-                    'group block scroll-mt-1 px-2 py-1.5 transition-colors sm:px-2.5',
-                    isRowActive ? 'bg-brand/10 shadow-[inset_3px_0_0_0_#f97316]' : 'hover:bg-surface-nav',
+                    'group block scroll-mt-1 border-l-2 border-transparent px-2 py-1.5 transition-colors sm:px-2.5',
+                    isRowActive ? 'border-brand bg-white/[0.07]' : 'hover:bg-surface-nav',
                   )}
                 >
                   <div
@@ -297,7 +428,7 @@ const MediaModal = ({
                     <span
                       className={cn(
                         'min-w-0 flex-1 truncate font-medium',
-                        isRowActive ? 'text-brand' : 'text-slate-200 group-hover:text-slate-100',
+                        isRowActive ? 'text-slate-50' : 'text-slate-200 group-hover:text-slate-100',
                       )}
                     >
                       {svg.problemName}
@@ -337,7 +468,7 @@ const MediaModal = ({
               className={cn(
                 'flex h-10 w-10 shrink-0 items-center justify-center rounded-full shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 backdrop-blur-md transition-all active:scale-95 sm:h-11 sm:w-11',
                 showSidebar
-                  ? 'bg-brand/35 text-brand ring-brand/35 hover:bg-brand/45 hover:ring-brand/45'
+                  ? 'bg-brand hover:bg-brand/90 text-slate-950 ring-1 ring-black/20 hover:text-slate-950'
                   : 'bg-black/50 text-slate-200 ring-white/[0.1] hover:bg-black/65 hover:text-slate-100 hover:ring-white/[0.18]',
               )}
             >
@@ -621,7 +752,7 @@ const MediaModal = ({
         )}
 
         <div className='pointer-events-none absolute right-4 bottom-4 left-4 z-170 flex items-end justify-between gap-3 sm:right-8 sm:bottom-8 sm:left-8'>
-          <div className='max-w-xl space-y-2.5'>
+          <div className='max-w-xl shrink-0 space-y-2.5'>
             {showLocation && m.mediaMetadata?.location && (
               <div className='type-label pointer-events-auto inline-flex items-center gap-2 rounded-full bg-black/50 px-3 py-1.5 text-slate-100 shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1 ring-white/[0.08] backdrop-blur-md'>
                 <MapPin size={12} className='text-brand' /> {m.mediaMetadata.location}
@@ -633,25 +764,39 @@ const MediaModal = ({
               </div>
             )}
           </div>
-          <div className='type-label pointer-events-auto flex max-w-[min(100%,14rem)] flex-col items-end gap-1.5 text-right text-slate-100/95 sm:max-w-xs sm:gap-2'>
-            {activePitch && (
-              <span className='rounded-full bg-black/50 px-3 py-1.5 shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1 ring-white/[0.08] backdrop-blur-md'>
-                <span className='text-brand'>{activePitch.grade}</span>
-                {activePitch.description ? <span className='text-slate-200'> · {activePitch.description}</span> : null}
-              </span>
-            )}
-            <div className='flex flex-wrap items-center justify-end gap-2'>
-              {(m.pitch ?? 0) > 0 && (
-                <span className='rounded-full bg-black/45 px-2.5 py-1 text-slate-200/95 shadow-md ring-1 ring-white/[0.06] backdrop-blur-sm'>
-                  Pitch {m.pitch}
-                </span>
-              )}
-              {carouselSize > 1 && (
-                <span className='rounded-full bg-black/45 px-2.5 py-1 text-slate-300 tabular-nums shadow-md ring-1 ring-white/[0.06] backdrop-blur-sm'>
-                  {carouselIndex} / {carouselSize}
-                </span>
-              )}
-            </div>
+          <div className='pointer-events-auto ms-2 min-w-0 flex-1 self-end text-end sm:ms-4'>
+            {(() => {
+              const chunks: { key: string; node: ReactNode }[] = [];
+              const desc = activePitch?.description?.trim();
+              if (desc) chunks.push({ key: 'desc', node: <span className='text-slate-200'>{desc}</span> });
+              if (activePitch?.grade)
+                chunks.push({
+                  key: 'grade',
+                  node: <span className='text-brand normal-case'>{activePitch.grade}</span>,
+                });
+              if ((m.pitch ?? 0) > 0)
+                chunks.push({ key: 'pitch', node: <span className='text-slate-200'>Pitch {m.pitch}</span> });
+              if (carouselSize > 1)
+                chunks.push({
+                  key: 'idx',
+                  node: (
+                    <span className='text-slate-300 tabular-nums'>
+                      {carouselIndex} / {carouselSize}
+                    </span>
+                  ),
+                });
+              if (chunks.length === 0) return null;
+              return (
+                <div className='ms-auto inline-block max-w-full rounded-2xl bg-black/50 px-3 py-1.5 text-right text-[11px] leading-snug font-semibold tracking-normal text-pretty text-slate-100/95 normal-case shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1 ring-white/[0.08] backdrop-blur-md sm:text-[12px]'>
+                  {chunks.map(({ key, node }, i) => (
+                    <Fragment key={key}>
+                      {i > 0 ? ' ' : null}
+                      {node}
+                    </Fragment>
+                  ))}
+                </div>
+              );
+            })()}
           </div>
         </div>
       </div>
@@ -667,7 +812,7 @@ const MediaModal = ({
           >
             <div className='border-surface-border flex items-center justify-between border-b pb-6'>
               <div className='flex items-center gap-3'>
-                <div className='bg-brand/10 text-brand rounded-2xl p-3'>
+                <div className='border-brand/35 bg-brand/15 ring-brand/25 rounded-2xl border p-3 text-slate-100 ring-1'>
                   <Info size={24} strokeWidth={2} />
                 </div>
                 <h3 className='type-h2'>Information</h3>

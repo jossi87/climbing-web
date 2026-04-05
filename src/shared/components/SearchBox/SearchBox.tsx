@@ -143,6 +143,11 @@ const SearchBox = () => {
         placeholder={isMobile ? 'Search...' : 'Search areas, sectors, problems or users...'}
         value={value}
         isPending={isPending}
+        onClear={() => {
+          setValue('');
+          setIsOpen(false);
+          setActiveIndex(-1);
+        }}
         onChange={(e) => {
           setValue(e.target.value);
           setActiveIndex(-1);

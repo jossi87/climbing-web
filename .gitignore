@@ -12,6 +12,7 @@ build/stats.html
 .env.*.local
 
 # IDE
+.cursor/
 .vscode/
 .idea/
 *.sublime-project
