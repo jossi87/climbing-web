@@ -41,7 +41,7 @@ const MediaEditModal = ({ save, onCloseWithoutReload, m, numPitches }: Props) =>
               <input
                 type='text'
                 placeholder='Description'
-                className='bg-surface-nav border-surface-border focus:border-brand type-body w-full rounded-lg border py-2.5 pr-4 pl-10 transition-colors placeholder:opacity-50 focus:outline-none'
+                className='bg-surface-nav border-surface-border type-body focus:border-brand w-full rounded-lg border py-2.5 pr-4 pl-10 transition-colors placeholder:opacity-50 focus:outline-none'
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
@@ -53,7 +53,7 @@ const MediaEditModal = ({ save, onCloseWithoutReload, m, numPitches }: Props) =>
               <label className='type-label ml-1'>Pitch (route has {numPitches} pitches):</label>
               <div className='relative'>
                 <select
-                  className='bg-surface-nav border-surface-border focus:border-brand type-body w-full cursor-pointer appearance-none rounded-lg border px-3 py-2.5 transition-colors focus:outline-none'
+                  className='bg-surface-nav border-surface-border type-body focus:border-brand w-full cursor-pointer appearance-none rounded-lg border px-3 py-2.5 transition-colors focus:outline-none'
                   value={pitch}
                   onChange={(e) => setPitch(Number(e.target.value))}
                   disabled={trivia}

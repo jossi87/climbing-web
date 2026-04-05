@@ -10,7 +10,7 @@ type FooterLinkProps = {
 
 export const FooterLink = ({ href, icon: Icon, title, subtitle, hoverColor = 'brand' }: FooterLinkProps) => {
   const hoverClass = hoverColor === 'brand' ? 'hover:text-brand' : 'hover:text-facebook';
-  const borderClass = hoverColor === 'brand' ? 'group-hover:border-brand/50' : 'group-hover:border-facebook/50';
+  const borderClass = hoverColor === 'brand' ? 'group-hover:border-brand/45' : 'group-hover:border-facebook/50';
   const titleHover = hoverColor === 'brand' ? 'group-hover:text-brand' : 'group-hover:text-facebook';
 
   return (

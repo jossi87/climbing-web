@@ -3,6 +3,7 @@ import { Loading } from '../../ui/StatusWidgets';
 import { LockSymbol } from '../../ui/Indicators';
 import { useTodo } from '../../../api';
 import { cn } from '../../../lib/utils';
+import { designContract } from '../../../design/contract';
 import {
   profileRowRootClass,
   tickCragLink,
@@ -42,7 +43,9 @@ const Todo = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
           <div className='flex flex-col gap-y-2'>
             {(sector.problems ?? []).map((problem) => (
               <div key={problem.id} className={cn(profileRowRootClass, 'min-w-0 text-pretty [overflow-wrap:anywhere]')}>
-                <span className={cn(tickFlags, 'font-mono tabular-nums')}>#{problem.nr}</span>{' '}
+                <span className={cn(tickFlags, 'font-mono tabular-nums', designContract.ascentStatus.todo)}>
+                  #{problem.nr}
+                </span>{' '}
                 <Link to={`/problem/${problem.id}`} className={tickProblemLink}>
                   {problem.name}
                 </Link>
@@ -60,7 +63,7 @@ const Todo = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
                         <Link
                           key={u.id}
                           to={`/user/${u.id}/todo`}
-                          className={cn(tickFlags, 'hover:text-brand transition-colors')}
+                          className={cn(tickFlags, 'hover:text-status-todo transition-colors')}
                         >
                           {u.name}
                         </Link>

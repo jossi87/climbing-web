@@ -56,7 +56,7 @@ const ProfileSettings = () => {
                 <label className={cn('ml-1', designContract.typography.label)}>First Name</label>
                 <input
                   type='text'
-                  className='bg-surface-nav border-surface-border focus:border-brand type-body w-full rounded-lg border px-4 py-2.5 transition-colors placeholder:text-slate-600 focus:outline-none'
+                  className='bg-surface-nav border-surface-border type-body focus:border-brand w-full rounded-lg border px-4 py-2.5 transition-colors placeholder:text-slate-600 focus:outline-none'
                   value={firstname}
                   onChange={(e) => setFirstname(e.target.value)}
                 />
@@ -65,7 +65,7 @@ const ProfileSettings = () => {
                 <label className={cn('ml-1', designContract.typography.label)}>Last Name</label>
                 <input
                   type='text'
-                  className='bg-surface-nav border-surface-border focus:border-brand type-body w-full rounded-lg border px-4 py-2.5 transition-colors placeholder:text-slate-600 focus:outline-none'
+                  className='bg-surface-nav border-surface-border type-body focus:border-brand w-full rounded-lg border px-4 py-2.5 transition-colors placeholder:text-slate-600 focus:outline-none'
                   value={lastname}
                   onChange={(e) => setLastname(e.target.value)}
                 />
@@ -76,7 +76,7 @@ const ProfileSettings = () => {
               <input
                 id='email-visibility'
                 type='checkbox'
-                className='border-surface-border text-brand focus:ring-brand bg-surface-nav h-4 w-4 rounded'
+                className='border-surface-border bg-surface-nav text-brand focus:ring-brand/45 h-4 w-4 rounded'
                 checked={emailVisibleToAll}
                 onChange={(e) => setEmailVisibleToAll(e.target.checked)}
               />
@@ -91,7 +91,7 @@ const ProfileSettings = () => {
                 <div className='group relative h-32 w-32'>
                   <img
                     src={avatar.preview}
-                    className='border-brand/50 h-full w-full rounded-xl border-2 object-cover'
+                    className='border-brand/40 h-full w-full rounded-xl border-2 object-cover'
                     alt='Preview'
                   />
                   <button
@@ -107,7 +107,7 @@ const ProfileSettings = () => {
                   className={cn(
                     'cursor-pointer rounded-xl border-2 border-dashed p-8 text-center transition-all',
                     isDragActive
-                      ? 'border-brand bg-brand/5'
+                      ? 'bg-surface-raised border-brand/50'
                       : 'border-surface-border bg-surface-card hover:border-slate-500',
                   )}
                 >
@@ -131,7 +131,10 @@ const ProfileSettings = () => {
                 });
               }}
               disabled={!hasChanges || !isFormValid || isSaving}
-              className='bg-brand hover:bg-brand/90 disabled:bg-surface-nav shadow-brand/20 type-label flex w-full items-center justify-center gap-2 rounded-lg px-8 py-2.5 shadow-lg transition-all disabled:text-slate-600 disabled:shadow-none sm:w-auto'
+              className={cn(
+                designContract.controls.savePrimaryModal,
+                'disabled:bg-surface-nav flex w-full shadow-lg transition-all disabled:shadow-none sm:w-auto',
+              )}
             >
               {isSaving ? <Loader2 className='animate-spin' size={16} /> : <Save size={16} />}
               Save Profile
@@ -152,7 +155,7 @@ const ProfileSettings = () => {
                       id={id}
                       type='checkbox'
                       disabled={region.readOnly}
-                      className='border-surface-border text-brand focus:ring-brand bg-surface-nav h-4 w-4 rounded disabled:opacity-30'
+                      className='border-surface-border bg-surface-nav text-brand focus:ring-brand/45 h-4 w-4 rounded disabled:opacity-30'
                       checked={region.enabled}
                       onChange={(e) => setRegion({ region, del: !e.target.checked })}
                     />

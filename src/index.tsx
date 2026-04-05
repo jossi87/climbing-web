@@ -40,7 +40,7 @@ function ErrorFallback({ error, resetError }: { error: unknown; componentStack: 
         </div>
         <button
           onClick={resetError}
-          className='bg-brand text-surface-dark mt-8 rounded-md px-6 py-2 text-[11px] font-semibold tracking-wide uppercase transition hover:brightness-110 active:scale-95'
+          className='type-on-accent bg-brand mt-8 rounded-md px-6 py-2 text-[11px] font-semibold tracking-wide uppercase transition hover:brightness-110 active:scale-95'
         >
           Try again
         </button>

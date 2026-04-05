@@ -99,27 +99,12 @@ export default function Markers({ opacity, markers, addEventHandlers, flyToId, s
     if (isParkingMarker(m)) {
       return (
         <Marker icon={parkingIcon} position={position} key={['parking', lat, lng].join('/')}>
-          <Popup closeButton={false} className='buldreinfo-dark-popup'>
-            <style>{`
-              .buldreinfo-dark-popup .leaflet-popup-content-wrapper {
-                background: var(--color-surface-card) !important;
-                color: var(--color-white) !important;
-                border: 1px solid var(--color-surface-border) !important;
-                border-radius: 10px !important;
-              }
-              .buldreinfo-dark-popup .leaflet-popup-tip {
-                background: var(--color-surface-card) !important;
-                border: 1px solid var(--color-surface-border) !important;
-              }
-              .buldreinfo-dark-popup .leaflet-popup-content {
-                margin: 10px !important;
-              }
-            `}</style>
+          <Popup closeButton={false}>
             <a
               href={`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`}
               target='_blank'
               rel='noopener noreferrer'
-              className='bg-surface-nav border-surface-border hover:border-brand/35 hover:text-brand inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[11px] leading-none font-semibold text-slate-200 no-underline transition-colors'
+              className='border-surface-border bg-surface-nav type-body inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[11px] leading-none font-semibold text-slate-200 no-underline transition-colors hover:border-white/15 hover:text-slate-100'
             >
               <Navigation size={12} />
               Navigate
@@ -138,23 +123,8 @@ export default function Markers({ opacity, markers, addEventHandlers, flyToId, s
     if (isCameraMarker(m)) {
       return (
         <Marker icon={weatherIcon} position={position} key={['camera', lat, lng].join('/')}>
-          <Popup closeButton={false} className='buldreinfo-dark-popup'>
+          <Popup closeButton={false} maxWidth={420}>
             <div className='scrollbar-hide max-h-[60vh] min-w-64 space-y-4 overflow-y-auto text-left'>
-              <style>{`
-                .buldreinfo-dark-popup .leaflet-popup-content-wrapper {
-                  background: var(--color-surface-card) !important;
-                  color: var(--color-white) !important;
-                  border: 1px solid var(--color-surface-border) !important;
-                  border-radius: 12px !important;
-                }
-                .buldreinfo-dark-popup .leaflet-popup-tip {
-                  background: var(--color-surface-card) !important;
-                  border: 1px solid var(--color-surface-border) !important;
-                }
-                .buldreinfo-dark-popup .leaflet-popup-content {
-                  margin: 16px !important;
-                }
-              `}</style>
               <div className='bg-surface-card border-surface-border sticky top-0 z-10 flex flex-col border-b pb-2'>
                 <span className='text-sm leading-tight font-bold text-slate-100'>{m.name}</span>
               </div>
@@ -166,7 +136,7 @@ export default function Markers({ opacity, markers, addEventHandlers, flyToId, s
                       href={feed.urlStillImage}
                       target='_blank'
                       rel='noreferrer'
-                      className='border-surface-border hover:border-brand/50 bg-surface-dark block overflow-hidden rounded-lg border transition-colors'
+                      className='border-surface-border bg-surface-dark block overflow-hidden rounded-lg border transition-colors hover:border-white/12'
                     >
                       <img src={feed.urlStillImage} alt={m.name} className='block h-auto w-full' loading='lazy' />
                     </a>
@@ -183,10 +153,10 @@ export default function Markers({ opacity, markers, addEventHandlers, flyToId, s
                     href={m.urlYr}
                     target='_blank'
                     rel='noreferrer'
-                    className='bg-surface-dark border-surface-border hover:border-brand/50 group flex items-center justify-between rounded-lg border px-3 py-2 no-underline transition-all'
+                    className='group border-surface-border bg-surface-dark flex items-center justify-between rounded-lg border px-3 py-2 no-underline transition-all hover:border-white/12'
                   >
                     <div className='flex items-center gap-2'>
-                      <CloudSun size={14} className='group-hover:text-brand text-slate-500 transition-colors' />
+                      <CloudSun size={14} className='text-slate-500 transition-colors group-hover:text-slate-300' />
                       <span className='text-[11px] font-bold text-slate-400 group-hover:text-slate-200'>
                         Weather Forecast
                       </span>
@@ -199,9 +169,9 @@ export default function Markers({ opacity, markers, addEventHandlers, flyToId, s
                     href={m.urlOther}
                     target='_blank'
                     rel='noreferrer'
-                    className='hover:text-brand group flex items-center gap-2.5 px-3 py-1.5 text-[11px] font-bold text-slate-500 no-underline transition-colors'
+                    className='group flex items-center gap-2.5 px-3 py-1.5 text-[11px] font-bold text-slate-500 no-underline transition-colors hover:text-slate-200'
                   >
-                    <ExternalLink size={14} className='group-hover:text-brand text-slate-600 transition-colors' />
+                    <ExternalLink size={14} className='text-slate-600 transition-colors group-hover:text-slate-400' />
                     Official Source
                   </a>
                 )}
@@ -225,8 +195,8 @@ export default function Markers({ opacity, markers, addEventHandlers, flyToId, s
           <Tooltip opacity={opacity} permanent className='buldreinfo-tooltip-compact'>
             {labelText}
           </Tooltip>
-          <Popup closeButton={false}>
-            <div className='py-1 text-left text-slate-200'>{m.html}</div>
+          <Popup closeButton={false} maxWidth={560} minWidth={220}>
+            <div className='py-0.5 text-left text-slate-300'>{m.html}</div>
           </Popup>
         </Marker>
       );

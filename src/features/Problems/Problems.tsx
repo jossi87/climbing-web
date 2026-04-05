@@ -254,7 +254,7 @@ export const Problems = ({ filterOpen }: Props) => {
           </div>
 
           <div className='relative z-10 p-4 pt-3 sm:p-5 sm:pt-4'>
-            <TableOfContents areas={areas} compact />
+            <TableOfContents areas={areas} compact showAreaJumpToTop={false} />
           </div>
         </Card>
       </div>

@@ -119,7 +119,7 @@ export const SlopeProfile = ({
       </span>
       {sep}
       <span className='inline-flex items-center gap-1 font-medium text-slate-100'>
-        <Clock size={icon} className='shrink-0 text-sky-400/80' aria-hidden />
+        <Clock size={icon} className='text-brand/80 shrink-0' aria-hidden />
         <span className='tabular-nums'>{slope.calculatedDurationInMinutes ?? 0} min</span>
       </span>
       {sources ? (
@@ -142,7 +142,7 @@ export const SlopeProfile = ({
           'focus-visible:ring-2',
           variant
             ? 'hover:bg-surface-raised-hover focus-visible:ring-white/25'
-            : 'text-brand/95 hover:bg-brand/12 hover:ring-brand/35 focus-visible:ring-brand/50 hover:ring-1',
+            : 'hover:bg-surface-raised-hover text-brand/95 hover:ring-brand/35 focus-visible:ring-brand/50 hover:ring-1',
         )}
         style={variant ? { color: lineColor } : undefined}
       >

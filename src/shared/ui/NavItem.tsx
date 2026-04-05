@@ -24,7 +24,7 @@ export const NavItem = ({ to, icon: Icon, label, className }: NavItemProps) => {
       <Icon size={18} className={cn('transition-colors', isActive ? 'text-brand' : 'group-hover:text-slate-200')} />
       <span className='text-sm font-medium'>{label}</span>
       {isActive && (
-        <div className='bg-brand shadow-brand absolute right-0 -bottom-0.5 left-0 z-50 h-0.5 rounded-full lg:-bottom-4.25' />
+        <div className='bg-brand absolute right-0 -bottom-0.5 left-0 z-50 h-0.5 rounded-full lg:-bottom-4.25' />
       )}
     </Link>
   );

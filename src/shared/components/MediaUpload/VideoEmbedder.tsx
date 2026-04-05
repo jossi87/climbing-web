@@ -107,7 +107,7 @@ const VideoEmbedder = ({ addMedia }: Props) => {
         <input
           type='text'
           placeholder='YouTube/Vimeo URL (supports "t"-parameter)'
-          className='bg-surface-nav border-surface-border focus:border-brand type-body w-full rounded-xl border py-2.5 pr-4 pl-10 transition-all placeholder:text-slate-600 focus:outline-none'
+          className='bg-surface-nav border-surface-border type-body focus:border-brand w-full rounded-xl border py-2.5 pr-4 pl-10 transition-all placeholder:text-slate-600 focus:outline-none'
           onChange={handleChange}
           value={embedVideoUrl || ''}
         />
@@ -116,9 +116,9 @@ const VideoEmbedder = ({ addMedia }: Props) => {
         onClick={handleAdd}
         disabled={!enabled}
         className={cn(
-          'type-label flex items-center gap-2 rounded-xl px-6 py-2.5 shadow-lg transition-all',
+          'type-label type-on-accent flex items-center gap-2 rounded-xl px-6 py-2.5 shadow-lg transition-all',
           enabled
-            ? 'bg-brand hover:bg-brand/90 shadow-brand/20'
+            ? 'bg-brand shadow-black/25 hover:brightness-110'
             : 'bg-surface-nav border-surface-border cursor-not-allowed border text-slate-500 opacity-50 shadow-none',
         )}
       >

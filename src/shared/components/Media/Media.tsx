@@ -139,7 +139,7 @@ const Media = ({
         className={cn(
           'group relative w-full min-w-0 cursor-pointer overflow-hidden border transition-all duration-300',
           tileCompact ? 'rounded-lg' : 'rounded-xl',
-          'bg-surface-nav border-surface-border hover:border-brand/50 hover:shadow-lg',
+          'border-surface-border bg-surface-nav hover:border-brand/45 hover:shadow-lg',
           x.inherited && 'border-slate-700',
         )}
       >

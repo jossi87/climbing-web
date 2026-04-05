@@ -81,7 +81,7 @@ export const PolylineEditor = ({ coordinates, parking, onChange, upload }: Props
     cn(
       'flex items-center gap-2 px-4 py-2 text-xs font-black uppercase tracking-widest transition-all border-b-2',
       activeTab === id
-        ? 'border-brand bg-brand/10 text-slate-50'
+        ? 'border-brand/50 bg-surface-hover text-slate-50'
         : 'border-transparent text-slate-500 hover:bg-surface-raised-hover hover:text-slate-300',
     );
 
@@ -139,7 +139,7 @@ export const PolylineEditor = ({ coordinates, parking, onChange, upload }: Props
             <label className={cn('ml-1', designContract.typography.label, 'text-slate-500')}>Coordinate String</label>
             <input
               type='text'
-              className='bg-surface-nav border-surface-border focus:border-brand type-small w-full rounded-lg border px-3 py-2 transition-colors placeholder:text-slate-600 focus:outline-none'
+              className='bg-surface-nav border-surface-border type-small focus:border-brand/50 w-full rounded-lg border px-3 py-2 transition-colors placeholder:text-slate-600 focus:outline-none'
               placeholder='lat,lng;lat,lng...'
               value={coordinates?.map((c) => `${c.latitude},${c.longitude}`).join(';') || ''}
               onChange={(e) => onChange(parsePolyline(e.target.value))}
@@ -153,13 +153,13 @@ export const PolylineEditor = ({ coordinates, parking, onChange, upload }: Props
             className={cn(
               'cursor-pointer rounded-xl border-2 border-dashed p-6 text-center transition-all',
               isDragActive
-                ? 'border-brand bg-brand/5'
+                ? 'bg-surface-raised border-brand/50'
                 : 'border-surface-border bg-surface-raised hover:border-slate-500',
             )}
           >
             <input {...getInputProps()} />
             <div className='flex flex-col items-center gap-3'>
-              <div className='border-brand/35 bg-brand/15 ring-brand/25 rounded-full border p-3 text-slate-100 ring-1'>
+              <div className='border-surface-border bg-surface-raised ring-surface-border/40 rounded-full border p-3 text-slate-100 ring-1'>
                 <Upload size={24} />
               </div>
               <div className='space-y-1'>
@@ -173,7 +173,7 @@ export const PolylineEditor = ({ coordinates, parking, onChange, upload }: Props
               </div>
               <button
                 type='button'
-                className='bg-brand hover:bg-brand/90 type-label mt-2 rounded-lg px-4 py-2 transition-all'
+                className='type-label type-on-accent bg-brand mt-2 rounded-lg px-4 py-2 transition-all hover:brightness-110'
               >
                 Select File
               </button>

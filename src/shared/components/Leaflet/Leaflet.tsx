@@ -89,6 +89,8 @@ type Props = {
     | null;
   rocks?: string[];
   showSatelliteImage?: boolean;
+  /** Bottom-right elevation labels toggle; hide on embedded TOC maps so it is not mistaken for page chrome. */
+  showElevationControl?: boolean;
   children?: ReactNode | ((state: { showElevation: boolean }) => ReactNode);
 };
 
@@ -146,6 +148,7 @@ const Leaflet = ({
   slopes = null,
   rocks = [],
   showSatelliteImage,
+  showElevationControl = true,
   children,
   onMouseClick = undefined,
   onMouseMove = undefined,
@@ -167,8 +170,8 @@ const Leaflet = ({
           const centerCoordinates = computeCenterFromDegrees(coords) ?? [coords[0][0], coords[0][1]];
           const html = (
             <>
-              <b>{r}:</b>
-              <div className='mt-1 flex flex-col gap-1'>
+              <div className={cn(designContract.typography.micro, 'text-slate-500')}>{r}</div>
+              <div className='mt-2 flex flex-col gap-1.5'>
                 {markersOnRock
                   .filter((m): m is MarkerDef & { url: string } => 'url' in m && !!m.url)
                   .map((m) => (
@@ -177,7 +180,10 @@ const Leaflet = ({
                         rel='noreferrer noopener'
                         target='_blank'
                         href={m.url}
-                        className='text-brand font-bold underline-offset-2 hover:underline'
+                        className={cn(
+                          designContract.typography.body,
+                          'buldreinfo-popup-primary-link font-medium underline-offset-2 transition-colors hover:underline',
+                        )}
                       >
                         {'label' in m ? m.label : ''}
                       </a>
@@ -236,6 +242,48 @@ const Leaflet = ({
           background-color: var(--color-surface-card) !important;
           font-family: inherit !important;
           border: 1px solid var(--color-surface-border) !important;
+        }
+
+        /* Default Leaflet popups are light; force dark UI to match the app */
+        .leaflet-container .leaflet-popup-content-wrapper {
+          background: var(--color-surface-card) !important;
+          color: var(--color-white) !important;
+          border: 1px solid var(--color-surface-border) !important;
+          border-radius: 12px !important;
+          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55) !important;
+        }
+        .leaflet-container .leaflet-popup-tip {
+          background: var(--color-surface-card) !important;
+          border: 1px solid var(--color-surface-border) !important;
+          box-shadow: none !important;
+        }
+        .leaflet-container .leaflet-popup-content {
+          margin: 12px 14px !important;
+          color: rgb(226 232 240) !important;
+          line-height: 1.45 !important;
+        }
+        /* Popup links: override Leaflet default anchor color (#0078A8); Tailwind loses to that rule. */
+        .leaflet-container .leaflet-popup-pane a:not(.leaflet-popup-close-button) {
+          color: rgb(148 163 184) !important;
+          text-decoration: none !important;
+          -webkit-tap-highlight-color: transparent !important;
+        }
+        .leaflet-container .leaflet-popup-pane a:not(.leaflet-popup-close-button):hover {
+          color: rgb(226 232 240) !important;
+        }
+        .leaflet-container .leaflet-popup-pane a.buldreinfo-popup-primary-link {
+          color: rgb(248 250 252) !important;
+          font-weight: 600 !important;
+        }
+        .leaflet-container .leaflet-popup-pane a.buldreinfo-popup-primary-link:hover {
+          color: rgb(255 255 255) !important;
+        }
+        .leaflet-container a.leaflet-popup-close-button {
+          color: rgb(148 163 184) !important;
+          padding: 8px 10px 0 0 !important;
+        }
+        .leaflet-container a.leaflet-popup-close-button:hover {
+          color: rgb(226 232 240) !important;
         }
 
         .leaflet-bar, .leaflet-control-layers {
@@ -310,7 +358,7 @@ const Leaflet = ({
         }
 
         .leaflet-bottom .bg-surface-card {
-          background: rgba(13, 17, 23, 0.7) !important;
+          background: color-mix(in srgb, var(--color-surface-card) 74%, transparent) !important;
           backdrop-filter: blur(8px);
           border: 1px solid var(--color-surface-border) !important;
           border-radius: 10px !important;
@@ -324,7 +372,7 @@ const Leaflet = ({
         }
 
         .leaflet-control-scale-line {
-          background: rgba(13, 17, 23, 0.5) !important;
+          background: color-mix(in srgb, var(--color-surface-card) 52%, transparent) !important;
           border: 1px solid var(--color-surface-border) !important;
           border-top: none !important;
           color: white !important;
@@ -341,6 +389,25 @@ const Leaflet = ({
           font-size: 8px !important;
         }
 
+        .leaflet-container .leaflet-tooltip {
+          background-color: var(--color-surface-nav) !important;
+          border: 1px solid var(--color-surface-border) !important;
+          color: var(--color-white) !important;
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45) !important;
+        }
+        .leaflet-container .leaflet-tooltip-top:before {
+          border-top-color: var(--color-surface-nav) !important;
+        }
+        .leaflet-container .leaflet-tooltip-bottom:before {
+          border-bottom-color: var(--color-surface-nav) !important;
+        }
+        .leaflet-container .leaflet-tooltip-left:before {
+          border-left-color: var(--color-surface-nav) !important;
+        }
+        .leaflet-container .leaflet-tooltip-right:before {
+          border-right-color: var(--color-surface-nav) !important;
+        }
+
         .buldreinfo-tooltip-compact {
           font-size: 9px !important;
           line-height: 1.15 !important;
@@ -350,7 +417,7 @@ const Leaflet = ({
           white-space: nowrap !important;
           overflow: hidden !important;
           text-overflow: ellipsis !important;
-          opacity: 0.9 !important;
+          opacity: 0.95 !important;
         }
 
         .marker-cluster-small,
@@ -365,7 +432,7 @@ const Leaflet = ({
         .marker-cluster-small div,
         .marker-cluster-medium div,
         .marker-cluster-large div {
-          background: rgba(255, 181, 57, 0.92) !important;
+          background: color-mix(in srgb, var(--color-brand) 88%, #12151c) !important;
           color: rgb(15, 23, 42) !important;
           border: none !important;
           border-radius: 9999px !important;
@@ -406,7 +473,7 @@ const Leaflet = ({
             </div>
           </UseControlWrapper>
         )}
-        {((outlines?.length ?? 0) > 0 || (markers?.length ?? 0) > 0) && (
+        {showElevationControl && ((outlines?.length ?? 0) > 0 || (markers?.length ?? 0) > 0) && (
           <UseControlWrapper position='bottomright'>
             <button
               type='button'
@@ -414,7 +481,7 @@ const Leaflet = ({
               className={cn(
                 'inline-flex h-8 w-8 items-center justify-center rounded-md border p-0 leading-none shadow-md transition-colors',
                 showElevation
-                  ? 'bg-brand/12 border-brand/45 text-slate-100'
+                  ? 'bg-surface-hover border-brand/45 text-slate-100'
                   : 'border-surface-border/60 bg-surface-card text-slate-400 hover:text-slate-200',
               )}
               aria-label={showElevation ? 'Hide elevation labels' : 'Show elevation labels'}

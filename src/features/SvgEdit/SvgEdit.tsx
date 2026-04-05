@@ -35,7 +35,7 @@ const pageActionIconBtn =
 const pageActionIconBtnGlass =
   'border-white/12 bg-surface-raised text-slate-300 hover:border-white/18 hover:bg-surface-raised-hover';
 const pageActionIconBtnGreen = 'border-green-400/45 bg-green-500/20 text-green-300 hover:bg-green-500/28';
-const pageActionIconBtnBrand = 'border-brand/55 bg-brand text-slate-950 shadow-sm hover:border-brand hover:bg-brand/90';
+const pageActionIconBtnBrand = 'border-brand/55 bg-brand text-white shadow-sm hover:border-brand hover:brightness-110';
 
 const useIds = (): { problemId: number; pitch: number; mediaId: number } => {
   const { problemId, pitch, mediaId } = useParams();
@@ -244,16 +244,16 @@ export const SvgEdit = ({
     'inline-flex items-center gap-1.5 rounded-md px-2 py-1.5 transition-colors disabled:pointer-events-none disabled:opacity-35',
     designContract.typography.uiCompact,
   );
-  /** Active modes — cool / warm cues: text (sky), anchors (amber), trad (orange), path anchor (brand). */
-  const toolBtnOnText = 'bg-sky-500/15 text-sky-200 ring-1 ring-inset ring-sky-400/25';
+  /** Active modes — cool / warm cues: text (brand), anchors (amber), trad (orange), path anchor (brand ring). */
+  const toolBtnOnText = 'bg-brand/15 text-brand ring-1 ring-inset ring-brand/30';
   const toolBtnOnAnchor = 'bg-amber-500/12 text-amber-100 ring-1 ring-inset ring-amber-400/25';
   const toolBtnOnTrad = 'bg-orange-500/12 text-orange-100 ring-1 ring-inset ring-orange-400/25';
-  const toolBtnOnPathAnchor = 'bg-brand/15 text-slate-100 ring-1 ring-inset ring-brand/35';
+  const toolBtnOnPathAnchor = 'bg-surface-raised-hover text-slate-100 ring-1 ring-inset ring-brand/40';
   const toolBtnOff = 'text-slate-500 hover:bg-surface-raised-hover hover:text-slate-200';
   const toolBtnReset = 'text-red-400/90 hover:bg-red-500/10 hover:text-red-200';
 
   const fieldClass = cn(
-    'bg-surface-nav border-surface-border rounded-md border px-2 py-1.5 outline-none focus-visible:ring-2 focus-visible:ring-brand/35',
+    'bg-surface-nav border-surface-border rounded-md border px-2 py-1.5 outline-none focus-visible:ring-2 focus-visible:ring-brand/40',
     designContract.typography.meta,
     'text-slate-200',
   );
@@ -271,7 +271,7 @@ export const SvgEdit = ({
                   className={cn(toolBtn, mode === 'add-text' ? toolBtnOnText : toolBtnOff)}
                   onClick={() => setMode(mode === 'add-text' ? 'points' : 'add-text')}
                 >
-                  <Type size={14} strokeWidth={2} className={mode === 'add-text' ? 'text-sky-300' : undefined} /> Text
+                  <Type size={14} strokeWidth={2} className={mode === 'add-text' ? 'text-brand' : undefined} /> Text
                 </button>
                 <button
                   type='button'
@@ -565,7 +565,7 @@ export const SvgEdit = ({
             <input
               id='svg-edit-path'
               className={cn(
-                'border-surface-border bg-surface-nav focus-visible:ring-brand/35 w-full min-w-0 rounded-lg border px-3 py-2 font-mono text-sm text-slate-200 outline-none focus-visible:ring-2',
+                'border-surface-border bg-surface-nav focus-visible:ring-brand/40 w-full min-w-0 rounded-lg border px-3 py-2 font-mono text-sm text-slate-200 outline-none focus-visible:ring-2',
               )}
               value={path || ''}
               onChange={(e) => dispatch({ action: 'update-path', path: e.target.value })}

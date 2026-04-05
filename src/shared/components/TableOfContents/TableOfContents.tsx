@@ -56,6 +56,8 @@ export type Props = {
   header?: ReactNode;
   subHeader?: ReactNode;
   compact?: boolean;
+  /** Hide per-area “Top” scroll control (e.g. below a map where it reads as map chrome). */
+  showAreaJumpToTop?: boolean;
 };
 
 const getSunLabel = (fromHour?: number, toHour?: number) => {
@@ -66,7 +68,7 @@ const getSunLabel = (fromHour?: number, toHour?: number) => {
 const getWallLabel = (wallDirectionManual?: { direction?: string }, wallDirectionCalculated?: { direction?: string }) =>
   wallDirectionManual?.direction ?? wallDirectionCalculated?.direction ?? null;
 
-export const TableOfContents = ({ areas, header, subHeader, compact = false }: Props) => {
+export const TableOfContents = ({ areas, header, subHeader, compact = false, showAreaJumpToTop = true }: Props) => {
   const areaRefs = useRef<Record<number, HTMLElement | null>>({});
 
   if (!areas || areas.length === 0) {
@@ -97,7 +99,7 @@ export const TableOfContents = ({ areas, header, subHeader, compact = false }: P
             <button
               key={area.id}
               onClick={() => areaRefs.current[area.id]?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-              className='bg-surface-nav border-surface-border hover:border-brand/50 type-label flex items-center gap-1.5 rounded-lg border px-2.5 py-1 opacity-80 transition-all hover:opacity-100'
+              className='type-label border-surface-border bg-surface-raised hover:border-brand/40 flex items-center gap-1.5 rounded-lg border px-2.5 py-1 opacity-80 transition-all hover:opacity-100'
             >
               {area.name}
               <LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} />
@@ -142,7 +144,7 @@ export const TableOfContents = ({ areas, header, subHeader, compact = false }: P
                   <SunOnWall sunFromHour={area.sunFromHour} sunToHour={area.sunToHour} />
                 )}
               </div>
-              {compact ? <JumpToTop compact /> : <JumpToTop />}
+              {showAreaJumpToTop ? compact ? <JumpToTop compact /> : <JumpToTop /> : null}
             </div>
 
             <div className={cn(compact ? 'space-y-3.5' : 'space-y-10')}>
@@ -200,14 +202,24 @@ export const TableOfContents = ({ areas, header, subHeader, compact = false }: P
                       <div
                         key={problem.id}
                         className={cn(
-                          'flex gap-3 rounded-lg border border-transparent transition-colors',
-                          compact ? 'hover:bg-surface-raised-hover px-1.5 py-1' : 'p-2.5',
-                          !compact &&
-                            (problem.ticked
-                              ? 'bg-surface-raised border-emerald-500/40'
+                          'flex gap-3 rounded-lg border transition-colors',
+                          compact ? 'px-1.5 py-1' : 'p-2.5',
+                          problem.broken
+                            ? cn(
+                                compact ? 'bg-surface-raised/60' : 'bg-surface-raised',
+                                designContract.ascentStatus.rowBorderDanger,
+                              )
+                            : problem.ticked
+                              ? cn(
+                                  compact ? 'bg-surface-raised/60' : 'bg-surface-raised',
+                                  designContract.ascentStatus.rowBorderTicked,
+                                )
                               : problem.todo
-                                ? 'bg-surface-raised border-sky-500/40'
-                                : 'hover:bg-surface-raised-hover'),
+                                ? cn(
+                                    compact ? 'bg-surface-raised/60' : 'bg-surface-raised',
+                                    designContract.ascentStatus.rowBorderTodo,
+                                  )
+                                : 'hover:bg-surface-raised-hover border-transparent',
                         )}
                       >
                         <div className='w-6 shrink-0 pt-0.5 text-[11px] text-slate-500'>#{problem.nr}</div>

@@ -14,7 +14,7 @@ type Props = {
 export const Section = ({ title, icon: Icon, subheader, children, className }: Props) => (
   <Card className={className}>
     <div className='mb-6 flex items-start gap-4'>
-      <div className='border-brand/35 bg-brand/15 ring-brand/25 rounded-lg border p-2.5 text-slate-100 ring-1'>
+      <div className={designContract.surfaces.iconWell}>
         <Icon size={20} />
       </div>
       <div>

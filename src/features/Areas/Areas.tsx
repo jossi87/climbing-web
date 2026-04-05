@@ -110,7 +110,9 @@ const Areas = () => {
                 onClick={() => setShowForDevelopers(false)}
                 className={cn(
                   'inline-flex h-6 items-center rounded-full px-2.5 text-[11px] leading-none font-medium transition-colors sm:text-[12px]',
-                  !showForDevelopers ? 'bg-brand text-slate-950' : 'text-slate-400 hover:text-slate-200',
+                  !showForDevelopers
+                    ? designContract.surfaces.segmentActiveBrandBorder
+                    : designContract.surfaces.segmentInactiveInGroup,
                 )}
               >
                 Developed
@@ -120,7 +122,9 @@ const Areas = () => {
                 onClick={() => setShowForDevelopers(true)}
                 className={cn(
                   'inline-flex h-6 items-center rounded-full px-2.5 text-[11px] leading-none font-medium transition-colors sm:text-[12px]',
-                  showForDevelopers ? 'bg-brand text-slate-950' : 'text-slate-400 hover:text-slate-200',
+                  showForDevelopers
+                    ? designContract.surfaces.segmentActiveBrandBorder
+                    : designContract.surfaces.segmentInactiveInGroup,
                 )}
               >
                 Developers
@@ -133,7 +137,9 @@ const Areas = () => {
                 onClick={() => setSunFilter('all')}
                 className={cn(
                   'inline-flex h-6 items-center rounded-full px-2.5 text-[11px] leading-none font-medium transition-colors sm:text-[12px]',
-                  sunFilter === 'all' ? 'bg-brand text-slate-950' : 'text-slate-400 hover:text-slate-200',
+                  sunFilter === 'all'
+                    ? designContract.surfaces.segmentActiveBrandBorder
+                    : designContract.surfaces.segmentInactiveInGroup,
                 )}
               >
                 All
@@ -143,7 +149,9 @@ const Areas = () => {
                 onClick={() => setSunFilter('sun')}
                 className={cn(
                   'inline-flex h-6 items-center rounded-full px-2.5 text-[11px] leading-none font-medium transition-colors sm:text-[12px]',
-                  sunFilter === 'sun' ? 'bg-brand text-slate-950' : 'text-slate-400 hover:text-slate-200',
+                  sunFilter === 'sun'
+                    ? designContract.surfaces.segmentActiveBrandBorder
+                    : designContract.surfaces.segmentInactiveInGroup,
                 )}
               >
                 With
@@ -153,7 +161,9 @@ const Areas = () => {
                 onClick={() => setSunFilter('no-sun')}
                 className={cn(
                   'inline-flex h-6 items-center rounded-full px-2.5 text-[11px] leading-none font-medium transition-colors sm:text-[12px]',
-                  sunFilter === 'no-sun' ? 'bg-brand text-slate-950' : 'text-slate-400 hover:text-slate-200',
+                  sunFilter === 'no-sun'
+                    ? designContract.surfaces.segmentActiveBrandBorder
+                    : designContract.surfaces.segmentInactiveInGroup,
                 )}
               >
                 Without

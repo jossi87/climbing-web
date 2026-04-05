@@ -14,7 +14,7 @@ import {
   Heart,
 } from 'lucide-react';
 import { useMeta } from '../components/Meta/context';
-import { SectionLabel, TextLink } from '../ui';
+import { SectionLabel } from '../ui';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 
@@ -37,7 +37,7 @@ const Footer = () => {
       <>
         <div
           className={cn(
-            'group-hover:border-brand/40 group-hover:text-brand border-surface-border/60 bg-surface-raised flex h-8 w-8 shrink-0 items-center justify-center rounded border text-slate-400 transition-colors sm:h-9 sm:w-9',
+            'bg-surface-raised flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-slate-600/45 text-slate-400 transition-colors group-hover:border-slate-500/55 group-hover:text-slate-200 sm:h-9 sm:w-9',
             className,
           )}
         >
@@ -48,7 +48,7 @@ const Footer = () => {
           )}
         </div>
         <div className='flex flex-col text-left'>
-          <span className='group-hover:text-brand block text-[12px] font-semibold text-slate-200 transition-colors sm:text-[13px]'>
+          <span className='block text-[12px] font-semibold text-slate-200 transition-colors group-hover:text-slate-50 sm:text-[13px]'>
             {title}
           </span>
           {subtitle && (
@@ -72,7 +72,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className='bg-surface-nav border-surface-border mt-0 w-full border-t py-7 sm:py-12'>
+    <footer className='bg-surface-nav isolate mt-0 w-full border-t border-slate-600/25 py-7 sm:py-12'>
       <div className='max-w-container mx-auto px-4 sm:px-6'>
         <div className='mb-7 grid grid-cols-2 gap-4 sm:mb-12 sm:gap-8 lg:grid-cols-4'>
           <div className='space-y-2.5 sm:space-y-4'>
@@ -117,15 +117,15 @@ const Footer = () => {
               target='_blank'
               className='group flex items-center gap-3 text-slate-400 transition-colors hover:text-slate-200'
             >
-              <div className='group-hover:border-brand/40 border-surface-border/60 bg-surface-raised flex h-8 w-8 shrink-0 items-center justify-center rounded border transition-colors sm:h-9 sm:w-9'>
+              <div className='bg-surface-raised flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-slate-600/45 transition-colors group-hover:border-slate-500/55 sm:h-9 sm:w-9'>
                 <img
                   src='/png/brv.png'
                   alt='BRV'
-                  className='h-5 w-5 object-contain opacity-40 brightness-0 invert transition-all group-hover:opacity-100'
+                  className='h-5 w-5 border-0 object-contain opacity-40 brightness-0 invert transition-all outline-none group-hover:opacity-100'
                 />
               </div>
               <div className='flex flex-col items-start text-left'>
-                <span className='group-hover:text-brand block text-[12px] font-semibold text-slate-200 transition-colors sm:text-[13px]'>
+                <span className='block text-[12px] font-semibold text-slate-200 transition-colors group-hover:text-slate-50 sm:text-[13px]'>
                   BRV
                 </span>
                 <span className={cn('block text-[9px] leading-tight', designContract.typography.label)}>
@@ -141,33 +141,39 @@ const Footer = () => {
               href='https://www.facebook.com/groups/brattelinjer'
               fallbackText='f'
               title='Bratte Linjer'
-              subtitle='Facebook Discussion'
+              subtitle='Facebook'
             />
           </div>
         </div>
 
-        <div className='flex flex-col items-center justify-between gap-4 border-t border-white/5 pt-6 sm:gap-6 sm:pt-8 md:flex-row'>
+        <div className='flex flex-col items-center justify-between gap-4 border-t border-slate-600/25 pt-6 sm:gap-6 sm:pt-8 md:flex-row'>
           <div className={cn('flex flex-wrap justify-center gap-x-6 gap-y-3', designContract.typography.label)}>
-            <TextLink href='mailto:jostein.oygarden@gmail.com' external={false}>
-              <span className='flex items-center gap-1.5'>
-                <Mail size={12} /> Contact
-              </span>
-            </TextLink>
-            <TextLink href='/gpl-3.0.txt'>
-              <span className='flex items-center gap-1.5'>
-                <FileText size={12} /> License
-              </span>
-            </TextLink>
-            <TextLink href='/privacy-policy' external={false}>
-              <span className='flex items-center gap-1.5'>
-                <ShieldCheck size={12} /> Privacy
-              </span>
-            </TextLink>
-            <TextLink href='/donate' external={false}>
-              <span className='flex items-center gap-1.5'>
-                <Heart size={12} /> Donate
-              </span>
-            </TextLink>
+            <a
+              href='mailto:jostein.oygarden@gmail.com'
+              className='flex items-center gap-1.5 font-bold text-slate-300 underline decoration-white/18 underline-offset-4 transition-colors hover:text-slate-50 hover:decoration-white/30'
+            >
+              <Mail size={12} /> Contact
+            </a>
+            <a
+              href='/gpl-3.0.txt'
+              target='_blank'
+              rel='noreferrer'
+              className='flex items-center gap-1.5 font-bold text-slate-300 underline decoration-white/18 underline-offset-4 transition-colors hover:text-slate-50 hover:decoration-white/30'
+            >
+              <FileText size={12} /> License
+            </a>
+            <a
+              href='/privacy-policy'
+              className='flex items-center gap-1.5 font-bold text-slate-300 underline decoration-white/18 underline-offset-4 transition-colors hover:text-slate-50 hover:decoration-white/30'
+            >
+              <ShieldCheck size={12} /> Privacy
+            </a>
+            <a
+              href='/donate'
+              className='flex items-center gap-1.5 font-bold text-slate-300 underline decoration-white/18 underline-offset-4 transition-colors hover:text-slate-50 hover:decoration-white/30'
+            >
+              <Heart size={12} /> Donate
+            </a>
           </div>
           <p className={cn('text-center text-[9px] select-none', designContract.typography.label)}>
             Buldreinfo / Bratte Linjer &copy; 2003-{currYear}

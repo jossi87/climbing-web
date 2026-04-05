@@ -134,7 +134,8 @@ const Ticks = () => {
                     onClick={() => handlePageChange(1)}
                     className={cn(
                       designContract.typography.uiCompact,
-                      'bg-surface-nav border-surface-border hover:border-brand/35 hover:text-brand rounded-lg border px-3 py-1.5 font-semibold opacity-85 transition-colors',
+                      designContract.surfaces.segmentIdleRaised,
+                      'rounded-lg px-3 py-1.5 font-semibold',
                     )}
                   >
                     1
@@ -148,7 +149,8 @@ const Ticks = () => {
                   onClick={() => handlePageChange(currPage)}
                   className={cn(
                     designContract.typography.uiCompact,
-                    'bg-brand shadow-brand/20 rounded-lg px-3 py-1.5 font-semibold text-slate-950 shadow-lg',
+                    designContract.surfaces.segmentActiveBrandBorder,
+                    'rounded-lg px-3 py-1.5 font-semibold shadow-lg',
                   )}
                 >
                   {currPage}
@@ -162,7 +164,8 @@ const Ticks = () => {
                     onClick={() => handlePageChange(numPages)}
                     className={cn(
                       designContract.typography.uiCompact,
-                      'bg-surface-nav border-surface-border hover:border-brand/35 hover:text-brand rounded-lg border px-3 py-1.5 font-semibold opacity-85 transition-colors',
+                      designContract.surfaces.segmentIdleRaised,
+                      'rounded-lg px-3 py-1.5 font-semibold',
                     )}
                   >
                     {numPages}

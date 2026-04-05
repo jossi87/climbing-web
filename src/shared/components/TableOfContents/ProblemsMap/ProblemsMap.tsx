@@ -82,27 +82,39 @@ const useMarkers = (areas: Props['areas']): MarkerDef[] => {
             label: problem.name ?? '',
             url: `/problem/${problem.id}`,
             html: (
-              <div className='flex min-w-50 flex-col gap-2 p-1'>
-                <nav className={cn('flex flex-wrap items-center gap-1.5', designContract.typography.label)}>
-                  <Link to={`/area/${area.id}`} className='hover:text-brand text-slate-400 transition-colors'>
+              <div className='buldreinfo-map-popup flex w-max max-w-full min-w-[13rem] flex-col gap-2.5 py-0.5 sm:min-w-[18rem] md:min-w-[22rem]'>
+                <nav
+                  className={cn(
+                    'flex flex-wrap items-center gap-1.5',
+                    designContract.typography.micro,
+                    'text-slate-500',
+                  )}
+                >
+                  <Link to={`/area/${area.id}`} className={designContract.typography.listLinkMuted}>
                     {area.name}
                   </Link>
                   <LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} />
-                  <ChevronRight size={10} className='opacity-40' />
-                  <Link to={`/sector/${sector.id}`} className='hover:text-brand text-slate-400 transition-colors'>
+                  <ChevronRight size={10} className='shrink-0 text-slate-600' aria-hidden />
+                  <Link to={`/sector/${sector.id}`} className={designContract.typography.listLinkMuted}>
                     {sector.name}
                   </Link>
                   <LockSymbol lockedAdmin={sector.lockedAdmin} lockedSuperadmin={sector.lockedSuperadmin} />
                 </nav>
-                <div className='border-surface-border/50 flex items-center gap-1.5 border-t pt-1'>
-                  <span className='font-mono text-xs text-slate-500'>#{problem.nr}</span>
+                <div className='border-surface-border/40 flex flex-wrap items-baseline gap-x-2 gap-y-1 border-t border-dashed pt-2.5'>
+                  <span className={cn(designContract.typography.meta, 'font-mono text-slate-500 tabular-nums')}>
+                    #{problem.nr}
+                  </span>
                   <Link
                     to={`/problem/${problem.id}`}
-                    className='type-body hover:text-brand font-semibold transition-colors'
+                    className={cn(
+                      designContract.typography.body,
+                      designContract.typography.listEmphasis,
+                      'buldreinfo-popup-primary-link transition-colors',
+                    )}
                   >
                     {problem.name}
                   </Link>
-                  <span className='font-mono text-xs text-slate-400 normal-case'>[{problem.grade}]</span>
+                  <span className={cn(designContract.typography.grade)}>{problem.grade}</span>
                 </div>
               </div>
             ),
@@ -189,7 +201,7 @@ export const ProblemsMap = ({ areas }: Props) => {
 
   return (
     <div className='relative z-0 h-[35vh] w-full'>
-      <Leaflet defaultCenter={defaultCenter} defaultZoom={defaultZoom}>
+      <Leaflet defaultCenter={defaultCenter} defaultZoom={defaultZoom} showElevationControl={false}>
         {({ showElevation }) => (
           <>
             <SectorOutlines areas={areas} showElevation={showElevation} />

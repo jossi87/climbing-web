@@ -66,7 +66,7 @@ const ExternalLinks = ({ externalLinks, onExternalLinksUpdated, hideLabel = fals
           <select
             value={links.length}
             onChange={onNumberOfExternalLinksChange}
-            className='text-brand type-label cursor-pointer appearance-none bg-transparent pr-6 focus:outline-none'
+            className='type-label text-brand cursor-pointer appearance-none bg-transparent pr-6 focus:outline-none'
           >
             <option value={0} className='bg-surface-card'>
               No external links

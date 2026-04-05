@@ -2,9 +2,8 @@
  * Rail kicker: “Latest activity”, breadcrumb crumbs (matches `SectionLabel`).
  * Form field captions use `typography.label` (`type-label`, 11px).
  *
- * Brand contrast: avoid pairing `text-brand` with `bg-brand/*` tints (weak contrast, worse in light mode).
- * Prefer solid on-states `bg-brand text-slate-950 ring-1 ring-black/20`, tinted callouts
- * `border-brand/35 bg-brand/15 text-slate-100`, and reserve `text-brand` for neutral surfaces.
+ * Brand (#c6a15b): primary **text, links, tab indicators, and focus rings**. Prefer **opaque** neutrals for panel
+ * wells (`iconWell`, `surface-raised`). Very light `bg-brand/20` on controls is OK; avoid large `bg-brand/10` washes.
  */
 export const SECTION_EYEBROW = 'text-[10px] font-semibold tracking-[0.16em] text-slate-500 uppercase';
 
@@ -81,13 +80,47 @@ export const designContract = {
     card: 'bg-surface-card border-surface-border rounded-2xl border shadow-sm',
     subtle: 'bg-surface-nav border-surface-border border',
     /**
-     * Inset cells (frontpage stats tiles, activity rows): opaque fill on a `surface-card` shell — same pattern everywhere.
-     * See `--color-surface-raised*` in `index.css`.
+     * Compact controls & trays (search field, chips, dropdown rows): use `raised` fills so they read as inputs — not
+     * as the card panel itself. See `--color-surface-raised*` in `index.css`.
      */
     raised: 'bg-surface-raised',
     raisedHover: 'hover:bg-surface-raised-hover',
+    /**
+     * Rows / cells **inside** `Card` / `.app-card`: flush with `surface-card` until hover — one unified panel; avoids
+     * matching `.search-input` and other raised controls.
+     */
+    panelRow: 'bg-transparent transition-[background-color] duration-150 hover:bg-surface-raised',
+    /** Stat grid cells on the frontpage (same panel as {@link panelRow}, plus border affordance). */
+    panelStatCell:
+      'border border-transparent bg-transparent transition-[background-color,border-color] duration-200 hover:border-brand/45 hover:bg-surface-raised',
     /** Selected / “on” compact controls (filter grade, active chip) — opaque, no `bg-white/xx`. */
     controlActive: 'border-white/15 bg-surface-raised-hover text-slate-100',
+    /**
+     * Icon wells (PageHeader, Section, HeaderButtons, callouts) — always opaque neutrals.
+     * Avoid `bg-brand/15` etc.; they read muddy/brown when composited on dark surfaces.
+     */
+    iconWell: 'rounded-lg border border-surface-border bg-surface-raised p-2.5 text-slate-200 shadow-sm',
+    iconWellCompact:
+      'rounded-lg border border-surface-border bg-surface-raised p-2 text-slate-200 shadow-sm ring-1 ring-surface-border/30',
+    /**
+     * Legacy **light** pill (near-white) — avoid on dark panels; use {@link segmentActiveBrandBorder} instead.
+     */
+    segmentSelected: 'bg-slate-200 text-slate-900 shadow-sm',
+    /**
+     * **Selected** segment / radio-style control on dark UI — brand border + ring, neutral label (Areas, Regions,
+     * editors, pagination current page). Pair with {@link segmentInactiveInGroup} or {@link segmentIdleRaised}.
+     */
+    segmentActiveBrandBorder: 'border border-brand/50 bg-surface-hover text-slate-200 shadow-sm ring-1 ring-brand/20',
+    /**
+     * **Unselected** chip inside one continuous segment strip (dataset / sun filters on Areas) — transparent
+     * border keeps width stable next to {@link segmentActiveBrandBorder}.
+     */
+    segmentInactiveInGroup: 'border border-transparent text-slate-400 hover:text-slate-200',
+    /**
+     * **Unselected** chip on card/raised toolbars (Regions type row, Sector edit map modes) — bordered idle state.
+     */
+    segmentIdleRaised:
+      'border border-surface-border bg-surface-raised text-slate-300 transition-colors hover:bg-surface-raised-hover hover:text-slate-200',
     /**
      * Inline stat/meta chips — same language as Area sector pills & Sector type rows.
      * Use `inlineChipInteractive` for links/buttons (hover border).
@@ -98,7 +131,7 @@ export const designContract = {
       'inline-flex max-w-full min-w-0 items-center gap-1.5 rounded-md border border-white/12 bg-surface-raised px-2.5 py-1 text-xs text-slate-200 transition-colors hover:border-white/22 hover:bg-surface-raised-hover',
     /**
      * Hover affordance for {@link Badge} used inside links (weather, webcams, external URLs).
-     * Static info chips omit this — only interactive targets get the brand ring.
+     * Static info chips omit this — only interactive targets get the brand accent ring.
      */
     badgeLinkHover:
       'cursor-pointer transition-colors duration-150 hover:bg-surface-raised-hover hover:text-slate-100 hover:ring-1 hover:ring-brand/35',
@@ -119,7 +152,7 @@ export const designContract = {
      */
     pageHeaderIconButton:
       'inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-colors sm:h-8 sm:w-8',
-    /** Add (+) — create entity; blue to distinguish from amber edit actions. */
+    /** Add (+) — create entity; sky accent so it reads separately from gold **edit** actions. */
     pageHeaderIconButtonAdd: 'border-sky-400/45 bg-sky-500/20 text-sky-300 hover:bg-sky-500/30 hover:text-sky-200',
     pageHeaderIconGlyph: 'pointer-events-none h-3 w-3 sm:h-[14px] sm:w-[14px]',
     /** Full-width tab row (Profile, Area, etc.): active state via short bar — no full-width rules above/below */
@@ -150,16 +183,30 @@ export const designContract = {
     savePrimaryModal:
       'inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-500/45 bg-emerald-600 px-6 py-2.5 text-[10px] font-bold tracking-widest text-slate-100 uppercase transition-colors hover:border-emerald-400/55 hover:bg-emerald-500 disabled:pointer-events-none disabled:opacity-45',
   },
+  /**
+   * Ascent / problem row / topo number colors (global): **green** ticked, **blue** todo, **red** dangerous.
+   * Maps to `--color-status-*` in `index.css` (`text-status-ticked`, etc.).
+   */
+  ascentStatus: {
+    ticked: 'text-status-ticked',
+    todo: 'text-status-todo',
+    dangerous: 'text-status-danger',
+    rowBorderTicked: 'border-status-ticked/40',
+    rowBorderTodo: 'border-status-todo/40',
+    rowBorderDanger: 'border-status-danger/45',
+    todoButtonOn: 'border-status-todo/50 bg-status-todo/22 text-status-todo hover:bg-status-todo/32',
+    tickButtonOn: 'border-status-ticked/45 bg-status-ticked/20 text-status-ticked hover:bg-status-ticked/28',
+  },
   activityColors: {
     filter: {
-      fa: 'text-sky-300/85',
-      ticks: 'text-emerald-300/85',
+      fa: 'text-brand/85',
+      ticks: 'text-status-ticked/85',
       media: 'text-fuchsia-300/90',
       comments: 'text-red-300/85',
     },
     status: {
-      fa: 'text-sky-300/80',
-      ticks: 'text-emerald-300/80',
+      fa: 'text-brand/80',
+      ticks: 'text-status-ticked/80',
       media: 'text-fuchsia-300/90',
       comments: 'text-red-300/85',
     },

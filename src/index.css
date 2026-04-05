@@ -2,15 +2,23 @@
 
 @theme {
   --color-brand: #c6a15b;
-  --color-surface-dark: #0d1014;
-  --color-surface-nav: #16181e;
+  /** Problem / topo status: ticked (green), todo (blue), dangerous (red) — same semantics as SVG route labels. */
+  --color-status-ticked: #34d399;
+  --color-status-todo: #38bdf8;
+  --color-status-danger: #f87171;
+  /*
+   * Surfaces skew **slate-blue**, not neutral gray: balanced dark grays read olive/brown on
+   * Windows + RDP next to true black — especially `surface-raised` chips (footer, loading, search).
+   */
+  --color-surface-dark: #080b10;
+  --color-surface-nav: #0f121a;
   /* Same as nav/footer chrome — panels read as part of the page, not a brighter lift */
-  --color-surface-card: #16181e;
+  --color-surface-card: #0f121a;
   /** Solid “lift” between card and hover — use instead of `surface-nav/50` etc. on chrome (tiles, rows, trays). */
-  --color-surface-raised: #1a1d25;
-  --color-surface-raised-hover: #242830;
-  --color-surface-hover: #292d35;
-  --color-surface-border: #363d4a;
+  --color-surface-raised: #131a26;
+  --color-surface-raised-hover: #1b2230;
+  --color-surface-hover: #232a38;
+  --color-surface-border: #2c3545;
   --color-white: #e2e8f0;
   --shadow-brand: 0 0 10px rgba(198, 161, 91, 0.14);
   --spacing-container: 1400px;
@@ -29,7 +37,7 @@
   html {
     /* Reserve space for the vertical scrollbar so layout doesn’t shift when content grows (CLS). */
     scrollbar-gutter: stable;
-    @apply selection:bg-brand/30 font-sans text-slate-300 antialiased;
+    @apply selection:bg-surface-hover font-sans text-slate-300 antialiased selection:text-slate-100;
     font-family: var(--font-ui);
     font-size: 14px;
     letter-spacing: -0.005em;
@@ -68,8 +76,33 @@
   button {
     @apply cursor-pointer disabled:cursor-not-allowed disabled:opacity-50;
   }
+  /*
+   * Focus: neutral ring only. Brand here read as a muddy “frame” on RDP / dark UI;
+   * reserve gold for nav/tab accents, not global focus halos.
+   */
   :focus-visible {
-    @apply ring-brand/15 border-brand/40 ring-1;
+    @apply ring-offset-surface-dark ring-2 ring-slate-400/35 ring-offset-2 outline-none;
+  }
+
+  /*
+   * Footer is `bg-surface-nav` (not surface-dark). Matching ring-offset to the page shell
+   * leaves a visible “double frame” / muddy edge on Affiliation, Community, etc. when links
+   * are focused or keyboard-skipped — reads brown on some displays.
+   */
+  footer :focus-visible {
+    @apply ring-offset-0 outline-none;
+  }
+
+  /*
+   * Footer icon tiles used `border-white/10` on `surface-raised`; on Windows (+ RDP) that blend
+   * reads as a brown/tan “halo” around the squares. Cool slate + no tap flash.
+   */
+  footer a {
+    -webkit-tap-highlight-color: transparent;
+  }
+  footer a img {
+    border: 0;
+    outline: none;
   }
 }
 
@@ -110,6 +143,11 @@
     @apply text-[11px] leading-[1.35] font-medium text-slate-300 sm:text-[12px];
   }
 
+  /** Saturated buttons / toggles — use instead of raw `text-white` (eslint typography rule). */
+  .type-on-accent {
+    @apply text-white;
+  }
+
   .badge-micro {
     @apply inline-flex h-4 items-center rounded border border-white/16 px-1.5 text-[11px] leading-none font-medium text-slate-300 sm:text-[12px];
   }
@@ -140,8 +178,8 @@
   }
   .search-input:focus,
   .search-input:focus-visible {
-    @apply border-brand/60 bg-surface-raised-hover ring-0 outline-none;
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-brand) 45%, transparent);
+    @apply bg-surface-raised-hover border-slate-500/45 ring-0 outline-none;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-surface-border) 80%, transparent);
   }
 
   .header-meta-text {
@@ -162,7 +200,6 @@
   }
   .btn-glass-active svg {
     @apply text-brand;
-    filter: drop-shadow(0 0 2px rgba(198, 161, 91, 0.12));
   }
 
   .animate-in {

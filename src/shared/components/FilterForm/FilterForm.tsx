@@ -125,7 +125,7 @@ const CheckboxLabel = ({ label, checked, onChange, disabled = false }: CheckboxL
     <div
       className={cn(
         'flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors',
-        checked ? 'bg-brand border-brand' : 'bg-surface-nav border-surface-border group-hover:border-slate-400',
+        checked ? 'border-brand bg-brand' : 'border-surface-border bg-surface-nav group-hover:border-slate-400',
       )}
     >
       {checked && <div className='h-2 w-2 rounded-sm bg-white' />}
@@ -343,7 +343,7 @@ export const FilterForm = () => {
                   <span className='text-sm text-slate-300'>Sun on wall at</span>
                   <div className='relative'>
                     <select
-                      className='bg-surface-nav border-surface-border focus:border-brand type-body appearance-none rounded-md border px-3 py-1.5 pr-8 focus:outline-none'
+                      className='bg-surface-nav border-surface-border type-body focus:border-brand appearance-none rounded-md border px-3 py-1.5 pr-8 focus:outline-none'
                       value={filterOnlySunOnWallAt || 0}
                       onChange={(e) => {
                         dispatch?.({
@@ -368,7 +368,7 @@ export const FilterForm = () => {
                   <span className='text-sm text-slate-300'>Shade on wall at</span>
                   <div className='relative'>
                     <select
-                      className='bg-surface-nav border-surface-border focus:border-brand type-body appearance-none rounded-md border px-3 py-1.5 pr-8 focus:outline-none'
+                      className='bg-surface-nav border-surface-border type-body focus:border-brand appearance-none rounded-md border px-3 py-1.5 pr-8 focus:outline-none'
                       value={filterOnlyShadeOnWallAt || 0}
                       onChange={(e) => {
                         dispatch?.({

@@ -8,6 +8,7 @@ import Linkify from 'linkify-react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { AlertTriangle, ShieldCheck, Edit2, Trash2, Flag } from 'lucide-react';
 import { cn } from '../../../lib/utils';
+import { designContract } from '../../../design/contract';
 import {
   profileRowRootClass,
   tickCommentSmall,
@@ -21,7 +22,7 @@ const actionIconBtn =
   'rounded-md p-1.5 text-slate-600 transition-colors hover:bg-surface-raised-hover hover:text-slate-300';
 
 const hseIconBtn =
-  'ml-1 inline-flex shrink-0 items-center rounded p-0.5 text-slate-500 transition-colors hover:bg-surface-raised-hover hover:text-red-400/90';
+  'ml-1 inline-flex shrink-0 items-center rounded p-0.5 text-slate-500 transition-colors hover:bg-surface-raised-hover hover:text-status-danger';
 
 export const ProblemComments = ({
   problemId,
@@ -122,7 +123,10 @@ export const ProblemComments = ({
                     </span>
                     {c.danger ? (
                       <span
-                        className='ml-1.5 inline-flex shrink-0 translate-y-px items-center text-red-400/90'
+                        className={cn(
+                          'ml-1.5 inline-flex shrink-0 translate-y-px items-center opacity-90',
+                          designContract.ascentStatus.dangerous,
+                        )}
                         title='Flagged as dangerous'
                         aria-label='Comment flagged as dangerous'
                       >

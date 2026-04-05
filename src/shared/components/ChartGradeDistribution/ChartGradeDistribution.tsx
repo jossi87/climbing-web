@@ -72,7 +72,12 @@ const ChartGradeDistribution = ({
           {gradeDistribution.map((g, i) => {
             const hPrim = ((g.prim ?? 0) / maxValue) * 100;
             const hSec = ((g.sec ?? 0) / maxValue) * 100;
+            const totalH = hPrim + hSec;
+            const hasPrim = (g.prim ?? 0) > 0;
+            const hasSec = (g.sec ?? 0) > 0;
             const isActive = selectedIdx === i;
+            const pctSecInStack = totalH > 0 && hasSec && hasPrim ? (hSec / totalH) * 100 : hasSec ? 100 : 0;
+            const pctPrimInStack = totalH > 0 && hasSec && hasPrim ? (hPrim / totalH) * 100 : hasPrim ? 100 : 0;
 
             return (
               <div
@@ -85,51 +90,68 @@ const ChartGradeDistribution = ({
                     <span
                       className={
                         embedded
-                          ? 'bg-surface-card border-surface-border/50 text-brand rounded-md border px-2 py-0.5 text-[10px] font-semibold'
-                          : 'bg-surface-dark border-brand/25 text-brand rounded-md border px-2 py-0.5 text-[10px] font-semibold shadow-sm'
+                          ? 'border-surface-border/50 bg-surface-card rounded-md border px-2 py-0.5 text-[10px] font-semibold text-slate-200'
+                          : 'border-surface-border/50 bg-surface-raised rounded-md border px-2 py-0.5 text-[10px] font-semibold text-slate-200 shadow-sm'
                       }
                     >
                       {g.num}
                     </span>
                   </div>
                 )}
+                {/*
+                 * Full-height track is square. Rounding applies only to the inner stack, sized to the
+                 * bar height — every grade gets the same corner radius, not only near-full columns.
+                 */}
                 <div
                   className={cn(
-                    'flex w-full flex-col justify-end overflow-hidden rounded-md transition-all duration-300',
+                    'flex h-full w-full flex-col justify-end transition-all duration-300',
                     embedded
                       ? isActive
-                        ? 'ring-1 ring-white/15'
+                        ? 'ring-surface-border/60 ring-1'
                         : 'bg-surface-card group-hover:bg-surface-raised'
                       : isActive
                         ? 'bg-surface-hover ring-1 ring-red-300/35'
                         : 'bg-surface-raised group-hover:bg-surface-raised-hover',
                   )}
-                  style={{ height: '100%' }}
                 >
-                  <div
-                    style={{ height: `${hSec}%` }}
-                    className={`w-full transition-colors ${
-                      embedded
-                        ? isActive
-                          ? 'bg-blue-400/90'
-                          : 'bg-blue-400/40 group-hover:bg-blue-400/55'
-                        : isActive
-                          ? 'bg-blue-400'
-                          : 'bg-blue-400/45 group-hover:bg-blue-400/65'
-                    }`}
-                  />
-                  <div
-                    style={{ height: `${hPrim}%` }}
-                    className={`w-full transition-colors ${
-                      embedded
-                        ? isActive
-                          ? 'bg-red-400/90'
-                          : 'bg-red-400/50 group-hover:bg-red-400/70'
-                        : isActive
-                          ? 'bg-red-400'
-                          : 'bg-red-400/55 group-hover:bg-red-400/80'
-                    }`}
-                  />
+                  {totalH > 0 ? (
+                    <div
+                      className='flex w-full flex-col justify-end overflow-hidden rounded-md'
+                      style={{
+                        height: `${totalH}%`,
+                        minHeight: totalH > 0 && totalH < 2 ? 4 : undefined,
+                      }}
+                    >
+                      {hasSec ? (
+                        <div
+                          style={{ height: hasPrim ? `${pctSecInStack}%` : '100%' }}
+                          className={`w-full shrink-0 transition-colors ${
+                            embedded
+                              ? isActive
+                                ? 'bg-blue-400/90'
+                                : 'bg-blue-400/40 group-hover:bg-blue-400/55'
+                              : isActive
+                                ? 'bg-blue-400'
+                                : 'bg-blue-400/45 group-hover:bg-blue-400/65'
+                          }`}
+                        />
+                      ) : null}
+                      {hasPrim ? (
+                        <div
+                          style={{ height: hasSec ? `${pctPrimInStack}%` : '100%' }}
+                          className={`w-full shrink-0 transition-colors ${
+                            embedded
+                              ? isActive
+                                ? 'bg-red-400/90'
+                                : 'bg-red-400/50 group-hover:bg-red-400/70'
+                              : isActive
+                                ? 'bg-red-400'
+                                : 'bg-red-400/55 group-hover:bg-red-400/80'
+                          }`}
+                        />
+                      ) : null}
+                    </div>
+                  ) : null}
                 </div>
 
                 <div

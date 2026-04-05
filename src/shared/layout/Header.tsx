@@ -93,7 +93,7 @@ const Header = () => {
         className={cn(
           'mx-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[12px] leading-snug font-medium transition-colors sm:text-[13px]',
           isActive
-            ? 'bg-surface-raised-hover ring-brand/40 text-slate-50 ring-1'
+            ? 'bg-surface-hover ring-brand/45 text-slate-50 ring-1'
             : 'hover:bg-surface-raised-hover text-slate-300 hover:text-slate-50',
           className,
         )}
@@ -116,7 +116,7 @@ const Header = () => {
           onClick={() => setIsAccountOpen(!isAccountOpen)}
           className={cn(
             'cursor-pointer transition-all',
-            isAccountOpen ? 'ring-brand ring-2' : 'ring-1 ring-white/10 hover:ring-white/20',
+            isAccountOpen ? 'ring-brand/60 ring-2' : 'ring-1 ring-white/10 hover:ring-white/20',
           )}
         />
         {isAccountOpen && (
@@ -191,7 +191,7 @@ const Header = () => {
     ) : (
       <button
         onClick={() => loginWithRedirect()}
-        className='bg-surface-nav border-brand/45 text-brand/90 hover:border-brand/65 hover:text-brand flex items-center gap-2 rounded border px-3 py-1.5 text-[10px] font-semibold tracking-[0.08em] normal-case transition-colors active:scale-95'
+        className='border-brand/50 bg-surface-raised text-brand hover:border-brand hover:bg-surface-hover flex items-center gap-2 rounded border px-3 py-1.5 text-[10px] font-semibold tracking-[0.08em] normal-case transition-colors active:scale-95'
       >
         <LogIn size={14} /> <span>Sign in</span>
       </button>
@@ -211,15 +211,15 @@ const Header = () => {
           <div className='flex h-full min-w-0 flex-1 items-center gap-4'>
             <Link
               to='/'
-              className='group focus-visible:ring-brand/35 focus-visible:ring-offset-surface-card relative flex h-full shrink-0 items-center rounded-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none'
+              className='group focus-visible:ring-offset-surface-card focus-visible:ring-brand/45 relative flex h-full shrink-0 items-center rounded-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none'
             >
               <img
                 src='/png/logo_70x62.png'
                 alt=''
-                className='h-auto w-7 brightness-0 invert transition-[transform,filter] duration-300 ease-out will-change-transform group-hover:scale-[1.06] group-hover:drop-shadow-[0_0_14px_rgba(198,161,91,0.35)] group-active:scale-100'
+                className='h-auto w-7 brightness-0 invert transition-[transform,filter] duration-300 ease-out will-change-transform group-hover:scale-[1.06] group-hover:drop-shadow-[0_0_12px_rgba(226,232,240,0.22)] group-active:scale-100'
               />
               <span className='sr-only'>Home</span>
-              {isHome && <div className='bg-brand shadow-brand absolute right-0 bottom-0 left-0 h-0.5 rounded-t' />}
+              {isHome && <div className='bg-brand absolute right-0 bottom-0 left-0 h-0.5 rounded-t' />}
             </Link>
             <div className='w-full min-w-0 flex-1 lg:max-w-sm xl:max-w-md'>
               <SearchBox />

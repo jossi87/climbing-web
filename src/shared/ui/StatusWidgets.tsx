@@ -9,8 +9,8 @@ type LoadingProps = {
 
 const LoadingContent = () => (
   <div className='flex min-h-[160px] w-full min-w-0 flex-1 flex-col items-center justify-center gap-4 sm:min-h-[220px]'>
-    <div className='bg-surface-nav border-surface-border/60 rounded-full border p-3'>
-      <RefreshCw className='text-brand h-7 w-7 animate-spin' />
+    <div className='bg-surface-raised rounded-full border border-slate-500/35 p-3'>
+      <RefreshCw className='h-7 w-7 animate-spin text-slate-400' />
     </div>
     <div className='text-center'>
       <h3 className={designContract.typography.label}>Loading</h3>
@@ -33,7 +33,7 @@ export const NotLoggedIn = () => {
   return (
     <div className='bg-surface-card border-surface-border rounded-xl border p-6 shadow-2xl'>
       <div className='mb-6 flex items-center gap-5 text-left'>
-        <div className='bg-surface-nav border-surface-border rounded-2xl border p-4 text-slate-400 shadow-inner'>
+        <div className='border-surface-border bg-surface-raised rounded-2xl border p-4 text-slate-400 shadow-inner'>
           <Lock size={24} />
         </div>
         <div>
@@ -43,7 +43,7 @@ export const NotLoggedIn = () => {
       </div>
       <button
         onClick={() => loginWithRedirect({ appState: { returnTo: window.location.pathname } })}
-        className='bg-brand hover:bg-brand/90 type-body flex w-full items-center justify-center gap-3 rounded-xl px-6 py-3 font-semibold shadow-lg transition-all active:scale-95'
+        className='type-body type-on-accent bg-brand flex w-full items-center justify-center gap-3 rounded-xl px-6 py-3 font-semibold shadow-lg transition-all hover:brightness-110 active:scale-95'
       >
         <LogIn size={18} /> Sign in
       </button>
@@ -54,7 +54,7 @@ export const NotLoggedIn = () => {
 export const InsufficientPrivileges = () => (
   <div className='bg-surface-card border-surface-border rounded-xl border p-6 text-left shadow-2xl'>
     <div className='mb-5 flex items-center gap-5'>
-      <div className='rounded-2xl border border-red-500/20 bg-red-500/10 p-4 text-red-500 shadow-inner'>
+      <div className='border-surface-border bg-surface-raised rounded-2xl border border-red-500/30 p-4 text-red-400 shadow-inner'>
         <AlertTriangle size={24} />
       </div>
       <div>
@@ -67,7 +67,7 @@ export const InsufficientPrivileges = () => (
         Contact{' '}
         <a
           href='mailto:jostein.oygarden@gmail.com'
-          className='hover:text-brand decoration-brand/30 font-semibold text-slate-200 underline underline-offset-4 transition-colors'
+          className='decoration-brand/30 hover:text-brand font-semibold text-slate-200 underline underline-offset-4 transition-colors'
         >
           Jostein Øygarden
         </a>{' '}

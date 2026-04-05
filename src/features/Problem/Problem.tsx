@@ -369,7 +369,7 @@ export const Problem = () => {
                   >
                     <AlertTriangle
                       size={14}
-                      className='inline-block shrink-0 text-red-400'
+                      className={cn('inline-block shrink-0', designContract.ascentStatus.dangerous)}
                       strokeWidth={2.25}
                       aria-hidden
                     />
@@ -379,7 +379,11 @@ export const Problem = () => {
                   className={cn(
                     designContract.typography.meta,
                     'shrink-0 font-mono tabular-nums',
-                    isTicked ? 'text-emerald-400' : optimisticTodo ? 'text-blue-300' : 'text-slate-300',
+                    isTicked
+                      ? designContract.ascentStatus.ticked
+                      : optimisticTodo
+                        ? designContract.ascentStatus.todo
+                        : 'text-slate-300',
                   )}
                 >
                   #{data.nr}
@@ -415,7 +419,7 @@ export const Problem = () => {
                     className={cn(
                       designContract.controls.pageHeaderIconButton,
                       optimisticTodo
-                        ? 'border-blue-400/50 bg-blue-500/22 text-blue-200 hover:bg-blue-500/32'
+                        ? designContract.ascentStatus.todoButtonOn
                         : 'bg-surface-raised hover:bg-surface-raised-hover border-white/12 text-slate-300 hover:border-white/18',
                     )}
                   >
@@ -433,7 +437,7 @@ export const Problem = () => {
                   className={cn(
                     designContract.controls.pageHeaderIconButton,
                     isTicked
-                      ? 'border-green-400/45 bg-green-500/20 text-green-300 hover:bg-green-500/28'
+                      ? designContract.ascentStatus.tickButtonOn
                       : 'bg-surface-raised hover:bg-surface-raised-hover border-white/12 text-slate-300 hover:border-white/18',
                   )}
                 >
@@ -458,7 +462,7 @@ export const Problem = () => {
                     className={cn(
                       designContract.controls.pageHeaderIconButton,
                       showHiddenMedia
-                        ? 'border-sky-400/45 bg-sky-500/20 text-sky-200 hover:bg-sky-500/28'
+                        ? 'border-brand/45 bg-brand/20 text-brand hover:bg-brand/30'
                         : 'bg-surface-raised hover:bg-surface-raised-hover border-white/12 text-slate-300 hover:border-white/18',
                     )}
                   >
@@ -671,7 +675,7 @@ export const Problem = () => {
           {hasTicks && (
             <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm sm:border'>
               <div className='border-surface-border/40 flex flex-nowrap items-center gap-x-2 border-b px-4 py-2.5 sm:px-5'>
-                <Check size={12} className='shrink-0 text-emerald-400' strokeWidth={2.25} />
+                <Check size={12} className={cn('shrink-0', designContract.ascentStatus.ticked)} strokeWidth={2.25} />
                 <span className='inline-flex min-w-0 flex-nowrap items-center gap-x-1.5'>
                   <span className='type-label'>Ticks</span>
                   <span className={cn(designContract.typography.meta, 'shrink-0 text-slate-500 tabular-nums')}>
@@ -687,7 +691,7 @@ export const Problem = () => {
           {hasComments && (
             <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm sm:border'>
               <div className='border-surface-border/40 flex flex-nowrap items-center gap-x-2 border-b px-4 py-2.5 sm:px-5'>
-                <MessageSquare size={12} className='shrink-0 text-sky-400' strokeWidth={2.25} />
+                <MessageSquare size={12} className='text-brand shrink-0' strokeWidth={2.25} />
                 <span className='inline-flex min-w-0 flex-nowrap items-center gap-x-1.5'>
                   <span className='type-label'>Comments</span>
                   <span className={cn(designContract.typography.meta, 'shrink-0 text-slate-500 tabular-nums')}>

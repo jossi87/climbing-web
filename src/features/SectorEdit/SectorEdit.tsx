@@ -30,6 +30,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { designContract } from '../../design/contract';
 import { Card, SectionHeader } from '../../shared/ui';
 
 type Area = components['schemas']['Area'];
@@ -557,9 +558,6 @@ export const SectorEdit = ({ sector, area }: Props) => {
             <div className='space-y-4'>
               <div className='space-y-2'>
                 <label className={labelClasses}>Sector map</label>
-                <p className='ml-1 max-w-prose text-[10px] leading-relaxed text-slate-500 sm:text-[11px]'>
-                  Choose parking, outline, approach, or descent, then draw on the map. Reset clears the active mode.
-                </p>
                 <div className='border-surface-border bg-surface-raised overflow-hidden rounded-lg border'>
                   <div
                     className='border-surface-border bg-surface-card border-b px-3 py-2.5'
@@ -578,10 +576,11 @@ export const SectorEdit = ({ sector, area }: Props) => {
                           type='button'
                           onClick={() => setLeafletMode(m.id)}
                           className={cn(
-                            'inline-flex min-h-10 w-full items-center justify-center gap-1.5 rounded-md px-2 py-2 text-[11px] font-semibold tracking-wide transition-colors sm:min-h-9 sm:w-auto sm:justify-start sm:rounded-lg sm:px-3 sm:text-xs',
+                            designContract.typography.uiCompact,
+                            'inline-flex min-h-10 w-full items-center justify-center gap-1.5 rounded-md px-2 py-2 tracking-wide transition-colors sm:min-h-9 sm:w-auto sm:justify-start sm:rounded-lg sm:px-3',
                             leafletMode === m.id
-                              ? 'bg-brand text-slate-950 shadow-sm ring-1 ring-black/10'
-                              : 'bg-surface-raised hover:bg-surface-hover text-slate-400 hover:text-slate-200',
+                              ? designContract.surfaces.segmentActiveBrandBorder
+                              : designContract.surfaces.segmentIdleRaised,
                           )}
                         >
                           <m.icon size={14} strokeWidth={2} className='shrink-0 opacity-80' aria-hidden />
@@ -639,7 +638,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
                         }
                       }}
                       className={cn(
-                        'focus-visible:ring-brand/40 relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2',
+                        'focus-visible:ring-brand/45 relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2',
                         sectorMarkers != null && sectorMarkers.length > 0 ? 'bg-brand' : 'bg-slate-700',
                       )}
                     >

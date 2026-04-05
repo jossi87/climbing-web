@@ -201,7 +201,7 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
         {problem.danger ? (
           <AlertTriangle
             size={12}
-            className='mr-1 inline-block shrink-0 align-[-0.125em] text-red-400'
+            className={cn('mr-1 inline-block shrink-0 align-[-0.125em]', designContract.ascentStatus.dangerous)}
             strokeWidth={2.25}
           />
         ) : null}
@@ -209,7 +209,11 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
           className={cn(
             tickWhenGrade,
             'mr-1.5 inline-block tabular-nums sm:mr-2',
-            problem.ticked ? 'text-emerald-400' : problem.todo ? 'text-sky-400' : null,
+            problem.ticked
+              ? designContract.ascentStatus.ticked
+              : problem.todo
+                ? designContract.ascentStatus.todo
+                : null,
           )}
           title={
             problem.ticked ? 'Ticked' : problem.todo ? 'On to-do list' : `${isBouldering ? 'Boulder' : 'Route'} number`

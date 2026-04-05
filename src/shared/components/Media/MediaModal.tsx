@@ -39,9 +39,9 @@ import { cn } from '../../../lib/utils';
 
 /** Route index color (matches topo SVG number semantics; typography-only, no boxes). */
 function svgListNrColor(svg: components['schemas']['Svg']) {
-  if (svg.ticked) return 'text-green-500';
-  if (svg.todo) return 'text-sky-400';
-  if (svg.dangerous) return 'text-red-500';
+  if (svg.ticked) return designContract.ascentStatus.ticked;
+  if (svg.todo) return designContract.ascentStatus.todo;
+  if (svg.dangerous) return designContract.ascentStatus.dangerous;
   return 'text-slate-500';
 }
 
@@ -413,7 +413,7 @@ const MediaModal = ({
                   aria-label={[svg.problemName, grade ?? undefined, statusHint].filter(Boolean).join('. ') || undefined}
                   className={cn(
                     'group block scroll-mt-1 border-l-2 border-transparent px-2 py-1.5 transition-colors sm:px-2.5',
-                    isRowActive ? 'border-brand bg-surface-raised-hover' : 'hover:bg-surface-raised-hover',
+                    isRowActive ? 'bg-surface-raised-hover border-brand/50' : 'hover:bg-surface-raised-hover',
                   )}
                 >
                   <div
@@ -468,7 +468,7 @@ const MediaModal = ({
               className={cn(
                 'flex h-10 w-10 shrink-0 items-center justify-center rounded-full shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all active:scale-95 sm:h-11 sm:w-11',
                 showSidebar
-                  ? 'bg-brand hover:bg-brand/90 text-slate-950 ring-1 ring-black/20 hover:text-slate-950'
+                  ? 'type-on-accent bg-brand ring-1 ring-black/20 hover:brightness-110'
                   : 'ring-surface-border/50 bg-slate-900 text-slate-200 hover:bg-slate-800 hover:text-slate-100',
               )}
             >
@@ -812,7 +812,7 @@ const MediaModal = ({
           >
             <div className='border-surface-border flex items-center justify-between border-b pb-6'>
               <div className='flex items-center gap-3'>
-                <div className='border-brand/35 bg-brand/15 ring-brand/25 rounded-2xl border p-3 text-slate-100 ring-1'>
+                <div className='border-surface-border bg-surface-raised ring-surface-border/40 rounded-2xl border p-3 text-slate-100 shadow-sm ring-1'>
                   <Info size={24} strokeWidth={2} />
                 </div>
                 <h3 className='type-h2'>Information</h3>

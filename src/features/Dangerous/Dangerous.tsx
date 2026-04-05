@@ -145,7 +145,7 @@ const Dangerous = () => {
           <ProblemsMap areas={mapAreas} />
         </div>
         <div className='p-4 sm:p-5'>
-          <TableOfContents areas={areas} compact />
+          <TableOfContents areas={areas} compact showAreaJumpToTop={false} />
         </div>
       </Card>
     </div>

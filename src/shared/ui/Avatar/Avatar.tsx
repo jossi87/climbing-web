@@ -40,7 +40,7 @@ export function Avatar({ name, mediaId, mediaVersionStamp, size = 'mini', classN
       className={cn(
         'border-surface-border flex shrink-0 items-center justify-center overflow-hidden rounded-full border transition-all select-none',
         mid === 0 ? 'border-white/12' : 'bg-surface-hover',
-        onClick && 'hover:border-brand/50 cursor-pointer',
+        onClick && 'hover:border-brand/45 cursor-pointer',
         className,
       )}
       style={{ width: pixelSize, height: pixelSize, ...fallbackStyle }}

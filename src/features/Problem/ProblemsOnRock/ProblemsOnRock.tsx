@@ -37,7 +37,7 @@ export const ProblemsOnRock = ({
             designContract.surfaces.inlineChipInteractive,
             'type-label max-w-[min(100%,20rem)] transition-all',
             problemId === p.id
-              ? 'border-brand/80 bg-brand/25 shadow-brand/15 text-slate-100 shadow-sm'
+              ? 'border-brand/50 bg-surface-hover ring-brand/25 text-slate-100 shadow-sm ring-1'
               : 'opacity-90 hover:opacity-100',
           )}
         >
@@ -69,8 +69,8 @@ export const ProblemsOnRock = ({
             {p.hasImages && <Camera size={10} className={problemId === p.id ? '' : 'opacity-70'} />}
             {p.hasMovies && <Film size={10} className={problemId === p.id ? '' : 'opacity-70'} />}
             <LockSymbol lockedAdmin={p.lockedAdmin} lockedSuperadmin={p.lockedSuperadmin} />
-            {p.ticked && <Check size={10} className={problemId === p.id ? '' : 'text-green-500'} />}
-            {p.todo && <Bookmark size={10} className={problemId === p.id ? '' : 'text-blue-400'} />}
+            {p.ticked && <Check size={10} className={designContract.ascentStatus.ticked} />}
+            {p.todo && <Bookmark size={10} className={designContract.ascentStatus.todo} />}
           </div>
         </Link>
       ))}

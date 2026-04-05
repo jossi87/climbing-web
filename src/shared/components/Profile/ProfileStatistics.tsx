@@ -263,7 +263,7 @@ const ProfileStatistics = ({ userId, view }: ProfileStatisticsProps) => {
           value={stats.numTicks + stats.numFas}
           className='text-emerald-300'
         />
-        <OverviewStatItem icon={Plus} label='FAs' value={stats.numFas} className='text-sky-300/85' />
+        <OverviewStatItem icon={Plus} label='FAs' value={stats.numFas} className='text-brand/85' />
         <OverviewStatItem icon={Repeat} label='Repeats' value={stats.numTickRepeats} className='text-amber-200/70' />
         <OverviewStatItem icon={Camera} label='Tags' value={data.numImageTags ?? 0} className='text-red-300/85' />
         <OverviewStatItem

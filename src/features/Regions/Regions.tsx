@@ -4,6 +4,7 @@ import Leaflet from '../../shared/components/Leaflet/Leaflet';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { useMeta } from '../../shared/components/Meta/context';
 import { cn } from '../../lib/utils';
+import { designContract } from '../../design/contract';
 import { Card, SectionHeader } from '../../shared/ui';
 
 const Regions = () => {
@@ -37,10 +38,10 @@ const Regions = () => {
                 key={id}
                 to={`/regions/${id}`}
                 className={cn(
-                  'inline-flex h-8 shrink-0 items-center justify-center rounded-full border px-3 text-[11px] leading-none font-medium transition-colors sm:text-[12px]',
+                  'inline-flex h-8 shrink-0 items-center justify-center rounded-full px-3 text-[11px] leading-none font-medium transition-colors sm:text-[12px]',
                   selectedType === id
-                    ? 'border-brand/55 bg-brand shadow-brand/20 text-slate-950 shadow-sm'
-                    : 'border-surface-border bg-surface-raised hover:bg-surface-raised-hover text-slate-300 hover:text-slate-200',
+                    ? designContract.surfaces.segmentActiveBrandBorder
+                    : designContract.surfaces.segmentIdleRaised,
                 )}
               >
                 {id === 'bouldering' ? 'Bouldering' : id === 'climbing' ? 'Route Climbing' : 'Ice Climbing'}

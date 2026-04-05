@@ -18,7 +18,7 @@ export const StartingAltitudeSelect = () => {
       <div className='flex items-center justify-between gap-4'>
         <div className='relative flex-1'>
           <select
-            className='bg-surface-nav border-surface-border focus:border-brand type-body w-full appearance-none rounded-md border px-3 py-1.5 pr-8 focus:outline-none'
+            className='bg-surface-nav border-surface-border type-body focus:border-brand w-full appearance-none rounded-md border px-3 py-1.5 pr-8 focus:outline-none'
             value={low}
             onChange={(e) => {
               dispatch({
@@ -42,7 +42,7 @@ export const StartingAltitudeSelect = () => {
         </div>
         <div className='relative flex-1'>
           <select
-            className='bg-surface-nav border-surface-border focus:border-brand type-body w-full appearance-none rounded-md border px-3 py-1.5 pr-8 focus:outline-none'
+            className='bg-surface-nav border-surface-border type-body focus:border-brand w-full appearance-none rounded-md border px-3 py-1.5 pr-8 focus:outline-none'
             value={high}
             onChange={(e) => {
               dispatch({

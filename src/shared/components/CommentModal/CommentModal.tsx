@@ -122,10 +122,10 @@ const CommentModal = ({
                   }}
                   className={cn(
                     designContract.typography.uiCompact,
-                    'min-w-0 flex-1 px-2 py-2.5 uppercase transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-emerald-400/45 focus-visible:outline-none max-sm:text-[10px] sm:flex-none sm:px-4',
+                    'focus-visible:ring-brand/45 min-w-0 flex-1 px-2 py-2.5 uppercase transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:outline-none max-sm:text-[10px] sm:flex-none sm:px-4',
                     !danger && !resolved
-                      ? 'bg-emerald-950 text-emerald-100 shadow-none ring-1 ring-emerald-500/45'
-                      : 'hover:bg-surface-raised-hover text-slate-500 hover:text-slate-300',
+                      ? 'bg-brand/20 text-brand ring-brand/50 shadow-none ring-1'
+                      : 'hover:bg-surface-raised-hover hover:text-brand/90 text-slate-500',
                   )}
                 >
                   Default

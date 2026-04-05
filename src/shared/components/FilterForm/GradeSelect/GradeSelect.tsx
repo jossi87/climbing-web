@@ -26,7 +26,7 @@ export const GradeSelect = ({ low: filterGradeLow, high: filterGradeHigh, dispat
       <div className='flex items-center justify-between gap-4'>
         <div className='relative flex-1'>
           <select
-            className='bg-surface-nav border-surface-border focus:border-brand type-body w-full appearance-none rounded-md border px-3 py-1.5 pr-8 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
+            className='bg-surface-nav border-surface-border type-body focus:border-brand w-full appearance-none rounded-md border px-3 py-1.5 pr-8 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
             value={low}
             onChange={(e) => {
               dispatch({
@@ -54,7 +54,7 @@ export const GradeSelect = ({ low: filterGradeLow, high: filterGradeHigh, dispat
         </div>
         <div className='relative flex-1'>
           <select
-            className='bg-surface-nav border-surface-border focus:border-brand type-body w-full appearance-none rounded-md border px-3 py-1.5 pr-8 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
+            className='bg-surface-nav border-surface-border type-body focus:border-brand w-full appearance-none rounded-md border px-3 py-1.5 pr-8 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
             value={high}
             onChange={(e) => {
               dispatch({

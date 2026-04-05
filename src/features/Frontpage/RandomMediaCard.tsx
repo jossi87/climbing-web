@@ -57,7 +57,7 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
   const locationClass = 'text-[11px] leading-snug font-medium text-slate-200 md:text-[12px]';
   const metaTextClass = 'text-[11px] leading-snug text-slate-200 md:text-[12px]';
   const interactiveLinkClass =
-    'rounded-sm transition-colors duration-150 hover:text-brand hover:underline hover:decoration-brand/60 underline-offset-[3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/35';
+    'rounded-sm transition-colors duration-150 hover:text-brand hover:underline hover:decoration-brand/50 underline-offset-[3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40';
 
   return (
     <Card flush className={cardShellClass}>

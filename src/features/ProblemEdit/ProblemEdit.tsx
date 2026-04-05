@@ -25,6 +25,7 @@ import { captureException, captureMessage } from '@sentry/react';
 import ExternalLink from '../../shared/ui/ExternalLinks';
 import { Calendar, Save, ChevronDown, AlertCircle, AlertTriangle, Edit, Loader2, RotateCcw } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { designContract } from '../../design/contract';
 import { Card, SectionHeader } from '../../shared/ui';
 
 type Problem = components['schemas']['Problem'];
@@ -496,10 +497,11 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                         }))
                       }
                       className={cn(
-                        'rounded-lg px-4 py-1.5 text-xs font-black uppercase transition-all',
+                        designContract.typography.uiCompact,
+                        'rounded-lg px-4 py-1.5 uppercase transition-all',
                         data.faAid
-                          ? 'bg-brand text-slate-950 shadow-sm ring-1 ring-black/10'
-                          : 'bg-surface-nav hover:bg-surface-hover text-slate-500 opacity-90 hover:text-slate-200',
+                          ? designContract.surfaces.segmentActiveBrandBorder
+                          : designContract.surfaces.segmentIdleRaised,
                       )}
                     >
                       Yes
@@ -508,10 +510,11 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                       type='button'
                       onClick={() => setData((p) => ({ ...p, faAid: undefined }))}
                       className={cn(
-                        'rounded-lg px-4 py-1.5 text-xs font-black uppercase transition-all',
+                        designContract.typography.uiCompact,
+                        'rounded-lg px-4 py-1.5 uppercase transition-all',
                         !data.faAid
-                          ? 'bg-brand text-slate-950 shadow-sm ring-1 ring-black/10'
-                          : 'bg-surface-nav hover:bg-surface-hover text-slate-500 opacity-90 hover:text-slate-200',
+                          ? designContract.surfaces.segmentActiveBrandBorder
+                          : designContract.surfaces.segmentIdleRaised,
                       )}
                     >
                       No
@@ -616,7 +619,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                         aria-checked={showSectorMarkers}
                         onClick={() => setShowSectorMarkers(!showSectorMarkers)}
                         className={cn(
-                          'focus-visible:ring-brand/40 relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2',
+                          'focus-visible:ring-brand/45 relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2',
                           showSectorMarkers ? 'bg-brand' : 'bg-slate-700',
                         )}
                       >

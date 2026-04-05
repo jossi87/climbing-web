@@ -63,7 +63,7 @@ const Frontpage = () => {
           </aside>
 
           <main className='order-2 md:col-span-9 md:pl-1'>
-            <Activity idArea={0} idSector={0} layoutDensity='frontpage' />
+            <Activity idArea={0} idSector={0} />
           </main>
         </div>
       </div>

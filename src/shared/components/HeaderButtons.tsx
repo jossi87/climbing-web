@@ -27,7 +27,7 @@ export const HeaderButtons = ({ header, subheader, icon, children }: Props) => {
       {header && (
         <div className='flex items-center gap-3'>
           {Icon && (
-            <div className='border-brand/35 bg-brand/15 ring-brand/25 rounded-lg border p-2 text-slate-100 ring-1'>
+            <div className={designContract.surfaces.iconWellCompact}>
               <Icon size={24} />
             </div>
           )}
@@ -41,7 +41,7 @@ export const HeaderButtons = ({ header, subheader, icon, children }: Props) => {
       )}
 
       <div className='mb-2 flex grow justify-end'>
-        <div className='bg-surface-nav border-surface-border inline-flex items-center gap-1 rounded-lg border p-1 shadow-sm'>
+        <div className='border-surface-border bg-surface-raised inline-flex items-center gap-1 rounded-lg border p-1 shadow-sm'>
           {children}
         </div>
       </div>

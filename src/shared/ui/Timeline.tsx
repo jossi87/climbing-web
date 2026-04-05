@@ -18,7 +18,7 @@ export const TimelineItem = ({
   children?: ReactNode;
 }) => (
   <div className='group relative pl-8'>
-    <div className='bg-surface-card border-surface-border group-hover:border-brand absolute top-1.5 left-0 z-10 h-4 w-4 rounded-full border-2 transition-colors' />
+    <div className='bg-surface-card border-surface-border group-hover:border-brand/50 absolute top-1.5 left-0 z-10 h-4 w-4 rounded-full border-2 transition-colors' />
     <div className='flex items-baseline gap-3'>
       <span className='text-sm font-semibold tracking-tight'>{year}</span>
       <span className='truncate text-xs font-medium text-slate-500'>{title}</span>

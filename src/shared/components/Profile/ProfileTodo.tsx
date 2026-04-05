@@ -69,7 +69,11 @@ const TodoListItem = ({ item }: { item: TodoItem }) => (
         {item.problemLockedAdmin || item.problemLockedSuperadmin ? ' ' : <ProfileRowTextSep />}
         <span className='inline-flex min-w-0 flex-wrap content-start items-center gap-x-2 gap-y-1'>
           {item.partners.map((p) => (
-            <Link key={p.id} to={`/user/${p.id}/todo`} className={cn(tickFlags, 'hover:text-brand transition-colors')}>
+            <Link
+              key={p.id}
+              to={`/user/${p.id}/todo`}
+              className={cn(tickFlags, 'hover:text-status-todo transition-colors')}
+            >
               {p.name}
             </Link>
           ))}

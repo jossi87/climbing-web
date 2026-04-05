@@ -120,9 +120,9 @@ const Profile = () => {
                   <a
                     key={email}
                     href={`mailto:${email}`}
-                    className='inline-flex max-w-full min-w-0 items-center gap-1.5 text-sky-200 transition-colors hover:text-sky-100'
+                    className='text-brand/90 hover:text-brand inline-flex max-w-full min-w-0 items-center gap-1.5 transition-colors'
                   >
-                    <Mail size={12} className='text-sky-300/80' />
+                    <Mail size={12} className='text-brand/80' />
                     <span className='min-w-0 break-all'>{email}</span>
                   </a>
                 ))}

@@ -73,13 +73,14 @@ export const SvgRoute = ({
       groupColor = '#000000';
       break;
   }
+  /* Align with `@theme` status colors (ticked / todo / dangerous). */
   let textColor = '#FFFFFF';
   if (svg.ticked) {
-    textColor = '#21ba45';
+    textColor = '#34d399';
   } else if (svg.todo) {
-    textColor = '#659DBD';
+    textColor = '#38bdf8';
   } else if (svg.dangerous) {
-    textColor = '#FF0000';
+    textColor = '#f87171';
   }
 
   let ixNr = 0;

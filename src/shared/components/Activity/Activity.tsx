@@ -16,44 +16,29 @@ import type { components } from '../../../@types/buldreinfo/swagger';
 
 type ActivitySchema = components['schemas']['Activity'];
 
-/** `frontpage` — match home layout: phone-fluid below `md`; tablet+ uses `md:` density (no `sm` step). */
-type ActivityLayoutDensity = 'default' | 'frontpage';
-
-const ActivitySkeleton = ({ density = 'default' }: { density?: ActivityLayoutDensity }) => (
-  <div
-    className={cn(
-      'border-surface-border/40 bg-surface-raised min-h-[3.25rem] animate-pulse border-b px-4 py-2.5 last:border-b-0 last:border-transparent',
-      density === 'frontpage' ? 'md:min-h-[4rem] md:px-5 md:py-3' : 'sm:min-h-[3.25rem] sm:px-4 sm:py-2.5',
-    )}
-  >
-    <div className={cn('flex items-start', density === 'frontpage' ? 'gap-2.5 md:gap-3' : 'gap-2.5 sm:gap-3')}>
-      <div
-        className={cn(
-          'bg-surface-hover rounded-full',
-          density === 'frontpage' ? 'h-10 w-10 md:h-10 md:w-10' : 'h-8 w-8',
-        )}
-      />
+/** Mirrors {@link ActivityFeedMetaRow}: story block + relative time on the right; optional second row like stars/comment. */
+const ActivitySkeleton = () => (
+  <div className='border-surface-border/40 min-h-[3.5rem] animate-pulse border-b bg-transparent px-4 py-3 last:border-b-0 last:border-transparent md:min-h-[4.25rem] md:px-5 md:py-3.5'>
+    <div className='flex items-start gap-3 md:gap-3.5'>
+      <div className='bg-surface-hover h-8 w-8 shrink-0 rounded-full pt-0.5 md:h-10 md:w-10' />
       <div className='min-w-0 flex-1 space-y-2 pt-0.5'>
-        <div
-          className={cn('bg-surface-hover rounded', density === 'frontpage' ? 'h-3.5 w-[85%] md:w-2/3' : 'h-3 w-2/3')}
-        />
-        <div className='bg-surface-hover h-2.5 w-1/3 rounded' />
+        <div className='flex min-w-0 flex-row items-start justify-between gap-2 sm:gap-3 md:gap-4'>
+          <div className='min-w-0 flex-1 space-y-1.5'>
+            <div className='bg-surface-hover h-3 max-w-[min(100%,22rem)] rounded md:h-3.5' />
+            <div className='bg-surface-hover h-3 w-[58%] rounded md:h-3.5' />
+          </div>
+          <div
+            className='bg-surface-hover h-2.5 w-[2.75rem] shrink-0 self-start rounded md:h-3 md:w-[3.25rem]'
+            aria-hidden
+          />
+        </div>
+        <div className='bg-surface-hover h-2.5 max-w-[12rem] rounded' aria-hidden />
       </div>
     </div>
   </div>
 );
 
-const Activity = ({
-  idArea,
-  idSector,
-  embedded = false,
-  layoutDensity = 'default',
-}: {
-  idArea: number;
-  idSector: number;
-  embedded?: boolean;
-  layoutDensity?: ActivityLayoutDensity;
-}) => {
+const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSector: number; embedded?: boolean }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
   const selectedGradeRef = useRef<HTMLButtonElement>(null);
@@ -105,25 +90,14 @@ const Activity = ({
     setTimeout(refetch, 10);
   };
 
-  const toolbarClass =
-    layoutDensity === 'frontpage'
-      ? cn(designContract.layout.activityToolbarFrontpage, 'mb-3 md:mb-5')
-      : cn(designContract.layout.toolbar, 'mb-3 sm:mb-5');
+  const toolbarClass = cn(designContract.layout.activityToolbarFrontpage, 'mb-4 md:mb-6');
 
   return (
     <div className='w-full'>
       <div className={toolbarClass}>
-        <SectionLabel className={cn('hidden text-slate-500', layoutDensity === 'frontpage' ? 'md:block' : 'sm:block')}>
-          Latest activity
-        </SectionLabel>
+        <SectionLabel className='hidden text-slate-500 md:block'>Latest activity</SectionLabel>
 
-        <div
-          className={
-            layoutDensity === 'frontpage'
-              ? designContract.layout.activityToolbarActionsFrontpage
-              : designContract.layout.toolbarActions
-          }
-        >
+        <div className={designContract.layout.activityToolbarActionsFrontpage}>
           <div className='relative shrink-0' ref={filterRef}>
             <button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
@@ -143,12 +117,7 @@ const Activity = ({
             </button>
 
             {isFilterOpen && (
-              <div
-                className={cn(
-                  'bg-surface-card border-surface-border absolute top-full left-0 z-50 mt-1.5 max-h-[min(18rem,70vh)] w-[min(17.5rem,calc(100vw-1.25rem))] overflow-y-auto rounded-xl border py-1.5 shadow-2xl',
-                  layoutDensity === 'frontpage' ? 'md:right-0 md:left-auto md:w-56' : 'sm:right-0 sm:left-auto sm:w-56',
-                )}
-              >
+              <div className='bg-surface-card border-surface-border absolute top-full left-0 z-50 mt-1.5 max-h-[min(18rem,70vh)] w-[min(17.5rem,calc(100vw-1.25rem))] overflow-y-auto rounded-xl border py-1.5 shadow-2xl md:right-0 md:left-auto md:w-56'>
                 <div className='border-surface-border/40 px-3 py-2'>
                   <span className={cn(designContract.typography.label, 'text-slate-500')}>Lowest grade</span>
                 </div>
@@ -217,32 +186,24 @@ const Activity = ({
       {embedded ? (
         <div className='border-surface-border bg-surface-card divide-surface-border/45 divide-y overflow-hidden rounded-xl border'>
           {isPending
-            ? [...Array(10)].map((_, i) => <ActivitySkeleton key={i} density={layoutDensity} />)
+            ? [...Array(10)].map((_, i) => <ActivitySkeleton key={i} />)
             : activity?.map((a) => (
                 <ActivityItem
                   key={a.activityIds?.join('+') ?? `activity-${a.id}`}
                   a={a}
                   isBouldering={meta.isBouldering}
-                  layoutDensity={layoutDensity}
                 />
               ))}
         </div>
       ) : (
-        <Card
-          flush
-          className={cn(
-            'divide-surface-border/45 divide-y',
-            layoutDensity === 'frontpage' && 'sm:divide-surface-border/55',
-          )}
-        >
+        <Card flush className='divide-surface-border/45 sm:divide-surface-border/55 divide-y'>
           {isPending
-            ? [...Array(10)].map((_, i) => <ActivitySkeleton key={i} density={layoutDensity} />)
+            ? [...Array(10)].map((_, i) => <ActivitySkeleton key={i} />)
             : activity?.map((a) => (
                 <ActivityItem
                   key={a.activityIds?.join('+') ?? `activity-${a.id}`}
                   a={a}
                   isBouldering={meta.isBouldering}
-                  layoutDensity={layoutDensity}
                 />
               ))}
         </Card>
@@ -264,30 +225,18 @@ const activityChipBase = cn(
   designContract.typography.uiCompact,
 );
 const activityChipIdle =
-  'border-white/10 bg-surface-raised text-slate-400 hover:border-brand/45 hover:bg-surface-raised-hover hover:text-slate-200';
+  'border-white/10 bg-surface-raised text-slate-400 hover:border-brand/40 hover:bg-surface-raised-hover hover:text-slate-200';
 const activityChipActive = cn(
   designContract.surfaces.controlActive,
-  'border-transparent shadow-sm transition-[background-color,border-color] hover:border-brand/50',
+  'border-transparent shadow-sm transition-[background-color,border-color] hover:border-brand/45',
 );
 
-/** Slightly larger + relaxed than profile todo/ascent rows so the feed reads cleanly on phones. */
-const activityRowRootClass =
-  'm-0 text-[12px] font-normal leading-[1.45] tracking-normal sm:text-[13px] sm:leading-snug';
+/** Single rhythm everywhere (matches previous frontpage feed). */
+const activityRowClass = 'm-0 text-[13px] font-normal leading-snug tracking-normal md:text-[14px] md:leading-snug';
 
-/** Home feed: one step up in size for scanning; still compact vs body text. */
-const activityRowFrontpageClass =
-  'm-0 text-[13px] font-normal leading-snug tracking-normal md:text-[14px] md:leading-snug';
-
-/** Verbs, subtype, relative time — muted vs names/route, still readable on dark feed bg. */
 const activityMetaClass = 'font-normal text-slate-300 antialiased';
 
-/** Match `actionClass` (“commented on”, “in”, …); italic differentiates quote/caption from verbs. */
-const activityCommentBlock = cn(
-  'text-pretty break-words antialiased italic',
-  'text-[11px] leading-snug text-slate-300 sm:text-[12px] sm:leading-snug',
-);
-/** Home: same mute as frontpage `actionClass` (slate-400). */
-const activityCommentFrontpage = cn(
+const activityCommentClass = cn(
   'text-pretty break-words antialiased italic',
   'text-[12px] leading-snug text-slate-400 md:text-[13px]',
 );
@@ -309,10 +258,9 @@ const FilterButton = ({ active, onClick, icon: Icon, label }: FilterButtonProps)
 type ActivityItemProps = {
   a: ActivitySchema;
   isBouldering: boolean;
-  layoutDensity?: ActivityLayoutDensity;
 };
 
-const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityItemProps) => {
+const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
   const avatarItems =
     (a.activityThumbnails ?? []).length > 0
       ? a.activityThumbnails!.map((m) => ({ mediaId: m.id, mediaVersionStamp: m.versionStamp }))
@@ -324,9 +272,8 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
           }))
         : [{ name: a.name, mediaId: undefined, mediaVersionStamp: undefined }];
 
-  const isFrontpage = layoutDensity === 'frontpage';
   const statusIconGlyph = 'shrink-0 text-white';
-  const statusIconSize = isFrontpage ? 9 : 8;
+  const statusIconSize = 9;
   const statusIcon = (() => {
     if (a.users) return <Plus size={statusIconSize} className={statusIconGlyph} strokeWidth={2} />;
     if (a.message) return <MessageSquare size={statusIconSize} className={statusIconGlyph} strokeWidth={2} />;
@@ -334,61 +281,44 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
     return <Check size={statusIconSize} className={statusIconGlyph} strokeWidth={2} />;
   })();
 
-  const pad = isFrontpage ? 'px-4 py-2.5 md:px-5 md:py-3' : 'px-3 py-2 sm:px-4 sm:py-2.5';
-  const gap = isFrontpage ? 'gap-2.5 md:gap-3' : 'gap-2.5 sm:gap-3';
+  const pad = 'px-4 py-3 md:px-5 md:py-3.5';
+  const gap = 'gap-3 md:gap-3.5';
 
-  const rowTypography = isFrontpage ? activityRowFrontpageClass : activityRowRootClass;
-  const actionClass = cn(activityMetaClass, isFrontpage && 'text-slate-400');
-  const commentClass = isFrontpage ? activityCommentFrontpage : activityCommentBlock;
+  const actionClass = cn(activityMetaClass, 'text-slate-400');
   const cragLeadClass = cn(tickCrag, 'font-medium');
-  const userLinkClass = cn(tickProblemLink, isFrontpage && 'font-semibold text-slate-50');
-  const problemLinkTone = isFrontpage ? 'soft' : 'default';
-  const faNameHoverClass = isFrontpage ? 'group-hover/user:text-slate-200' : 'group-hover/user:text-slate-100';
+  const userLinkClass = cn(tickProblemLink, 'font-semibold text-slate-50');
+  const problemLinkTone = 'soft' as const;
+  const faNameHoverClass = 'group-hover/user:text-slate-200';
 
   const hasStars = a.stars !== undefined && a.stars !== -1;
   const hasComment = !!a.message;
   const hasDescription = !hasComment && !!a.description;
   const hasText = hasComment || hasDescription;
   const hasFaUsers = !!(a.users && a.users.length > 0);
-  /** FA authors are inlined in `ActivityFeedMetaRow` for new route/boulder rows. */
   const faAuthorsInHeadline = !!(a.users && a.users.length > 0 && !a.repeat);
-  /** Line 2: stars + comment. Optional line: FA authors (only when not already in headline). */
   const hasStarsCommentLine = hasStars || hasText;
   const hasSecondaryBlock = hasStarsCommentLine || (hasFaUsers && !faAuthorsInHeadline);
-  const gapAfterHeadline = isFrontpage ? 'mt-1.5' : 'mt-1';
-  const faLineGap = isFrontpage ? 'mt-1 md:mt-1.5' : 'mt-0.5 sm:mt-1';
-  const gapAfterBlock = hasSecondaryBlock
-    ? isFrontpage
-      ? 'mt-2 md:mt-2.5'
-      : 'mt-1.5 sm:mt-2'
-    : isFrontpage
-      ? 'mt-1.5'
-      : 'mt-1 sm:mt-1.5';
-  const commentCellClass = cn(commentClass, hasText && 'w-fit max-w-full min-w-0');
+  const gapAfterHeadline = 'mt-2';
+  const faLineGap = 'mt-1.5 md:mt-2';
+  const gapAfterBlock = hasSecondaryBlock ? 'mt-2.5 md:mt-3' : 'mt-2';
+  const commentCellClass = cn(activityCommentClass, hasText && 'w-fit max-w-full min-w-0');
 
   return (
-    <div
-      className={cn(
-        'group transition-[background-color] duration-150',
-        'bg-surface-raised hover:bg-surface-raised-hover',
-        pad,
-      )}
-    >
+    <div className={cn('group', designContract.surfaces.panelRow, pad)}>
       <div className={cn('flex items-start', gap)}>
         <div className='shrink-0 pt-0.5'>
-          <AvatarGroup items={avatarItems} size={isFrontpage ? 'small' : 'tiny'} statusIcon={statusIcon} max={2} />
+          <AvatarGroup items={avatarItems} size='small' statusIcon={statusIcon} max={2} />
         </div>
 
         <div className='min-w-0 flex-1'>
           <ActivityFeedMetaRow
             a={a}
-            activityRowRootClass={rowTypography}
+            activityRowRootClass={activityRowClass}
             actionClass={actionClass}
             cragLeadClass={cragLeadClass}
             isBouldering={isBouldering}
             problemLinkTone={problemLinkTone}
             userLinkClass={userLinkClass}
-            layoutDensity={layoutDensity}
           />
 
           {hasStarsCommentLine ? (
@@ -400,7 +330,7 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
             >
               {hasStars ? (
                 <span className='inline-flex shrink-0 items-center leading-none'>
-                  <Stars numStars={a.stars!} includeStarOutlines={true} size={isFrontpage ? 12 : 11} />
+                  <Stars numStars={a.stars!} includeStarOutlines={true} size={12} />
                 </span>
               ) : null}
               {hasComment ? (
@@ -417,7 +347,7 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
             <div className={cn('w-full min-w-0', hasStarsCommentLine ? faLineGap : gapAfterHeadline)}>
               <span
                 className={cn(
-                  rowTypography,
+                  activityRowClass,
                   'inline-flex max-w-full min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5 sm:gap-x-2',
                 )}
               >
@@ -435,7 +365,7 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
                       mediaId={u.mediaId}
                       mediaVersionStamp={u.mediaVersionStamp}
                       size='micro'
-                      className='group-hover/user:ring-brand/55 ring-surface-dark shrink-0 ring-2 transition-all'
+                      className='ring-surface-card group-hover/user:ring-brand/45 shrink-0 ring-2 transition-all'
                     />
                     <span className={cn('min-w-0', faNameHoverClass)}>{u.name}</span>
                   </Link>

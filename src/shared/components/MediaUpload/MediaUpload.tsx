@@ -101,8 +101,8 @@ const MediaUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
         className={cn(
           'group relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition-all duration-300',
           isDragActive
-            ? 'border-brand bg-brand/5'
-            : 'border-surface-border bg-surface-raised hover:border-brand/50 hover:bg-surface-raised-hover',
+            ? 'bg-surface-raised border-brand/55'
+            : 'border-surface-border bg-surface-raised hover:border-brand/45 hover:bg-surface-raised-hover',
           isConverting && 'pointer-events-none cursor-wait opacity-50',
         )}
       >
@@ -110,7 +110,7 @@ const MediaUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
 
         {isConverting ? (
           <div className='flex flex-col items-center gap-3'>
-            <Loader2 className='text-brand animate-spin' size={32} />
+            <Loader2 className='animate-spin text-slate-400' size={32} />
             <p className='type-label'>Converting HEIC files...</p>
           </div>
         ) : (
@@ -171,7 +171,7 @@ const MediaUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
                       <input
                         type='number'
                         placeholder='Pitch'
-                        className='bg-surface-nav border-surface-border focus:border-brand type-small w-full rounded-lg border py-2 pr-3 pl-9 transition-colors focus:outline-none'
+                        className='bg-surface-nav border-surface-border type-small focus:border-brand w-full rounded-lg border py-2 pr-3 pl-9 transition-colors focus:outline-none'
                         value={m.pitch ?? ''}
                         onChange={(e) => updateItem({ pitch: +e.target.value })}
                       />
@@ -183,7 +183,7 @@ const MediaUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
                     <input
                       type='text'
                       placeholder='Description'
-                      className='bg-surface-nav border-surface-border focus:border-brand type-small w-full rounded-lg border py-2 pr-3 pl-9 transition-colors focus:outline-none'
+                      className='bg-surface-nav border-surface-border type-small focus:border-brand w-full rounded-lg border py-2 pr-3 pl-9 transition-colors focus:outline-none'
                       value={m.description ?? ''}
                       onChange={(e) => updateItem({ description: e.target.value })}
                     />

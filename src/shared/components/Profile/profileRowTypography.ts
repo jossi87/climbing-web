@@ -7,6 +7,7 @@ export const tickProblemLink = 'font-medium text-slate-50 antialiased transition
 export const tickWhenGrade = 'font-normal text-slate-200 antialiased';
 export const tickFlags = 'font-normal text-slate-400 antialiased';
 export const tickComment = 'font-normal italic text-slate-500 antialiased';
-export const tickFa = 'font-medium text-emerald-400 antialiased';
+/** FA marker in dense rows — same green as “ticked” status. */
+export const tickFa = 'font-medium text-status-ticked antialiased';
 
 export const tickCommentSmall = `${tickComment} text-[10px] leading-snug sm:text-[11px]`;
