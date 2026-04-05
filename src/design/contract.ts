@@ -64,9 +64,9 @@ export const designContract = {
   layout: {
     pageSection: 'w-full pb-0',
     /** Home: fluid column only below `md` (phones); tablet / iPad / desktop share 12-col sidebar layout. */
-    /** `items-start`: avoid default stretch making the short column track the tall one’s height (reduces perceived aside “jump” when the feed loads). */
-    frontpageGrid: 'grid grid-cols-1 items-start gap-6 md:grid-cols-12 md:gap-8',
-    asideStack: 'w-full space-y-5 self-start md:space-y-6 md:sticky md:top-20',
+    /** `md:items-stretch`: left column matches feed height so `asideStack` sticky works (see Frontpage aside `md:h-full`). */
+    frontpageGrid: 'grid grid-cols-1 items-start gap-6 md:grid-cols-12 md:items-stretch md:gap-8',
+    asideStack: 'w-full space-y-5 md:space-y-6 md:sticky md:top-20',
     toolbar: 'mb-4 flex flex-col items-center justify-between gap-3 px-4 sm:flex-row sm:px-0',
     /**
      * Activity toolbar: below `md`, negate `main` horizontal padding so filter chips align with the activity

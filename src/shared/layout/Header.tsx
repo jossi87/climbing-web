@@ -201,7 +201,8 @@ const Header = () => {
   return (
     <nav
       className={cn(
-        'border-surface-border/70 bg-surface-card z-50 w-full border-b transition-[transform,background-color] duration-300',
+        'border-surface-border/70 z-50 w-full border-b backdrop-blur-xl transition-[transform,background-color,backdrop-filter] duration-300',
+        'bg-surface-card/80 supports-[backdrop-filter]:bg-surface-card/65',
         shouldStickHeader ? 'sticky top-0' : 'relative',
         !isVisible && '-translate-y-full lg:translate-y-0',
       )}

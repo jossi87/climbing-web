@@ -45,7 +45,7 @@ const Frontpage = () => {
         </div>
 
         <div className={designContract.layout.frontpageGrid}>
-          <aside className='order-1 w-full [overflow-anchor:none] md:col-span-3'>
+          <aside className='order-1 w-full [overflow-anchor:none] md:col-span-3 md:h-full md:min-h-0'>
             <div className={designContract.layout.asideStack}>
               <div className='hidden md:block'>
                 <FrontpageStats
