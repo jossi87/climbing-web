@@ -47,8 +47,12 @@ export const designContract = {
     frontpageGrid: 'grid grid-cols-1 items-start gap-4 md:grid-cols-12 md:gap-8',
     asideStack: 'w-full space-y-4 self-start md:space-y-6 md:sticky md:top-20',
     toolbar: 'mb-4 flex flex-col items-center justify-between gap-3 px-4 sm:flex-row sm:px-0',
-    /** Activity on frontpage: same `md` switch as stats/sidebar (no `sm` density step on home). */
-    activityToolbarFrontpage: 'mb-4 flex flex-col items-center justify-between gap-3 px-4 md:flex-row md:px-0',
+    /**
+     * Activity toolbar: below `md`, negate `main` horizontal padding so filter chips align with the activity
+     * `.app-card` feed (same breakout as the list — avoids double inset vs full-bleed card on phones).
+     */
+    activityToolbarFrontpage:
+      'mb-4 flex max-sm:-mx-4 max-sm:w-[calc(100%+2rem)] flex-col items-center justify-between gap-3 px-4 md:mx-0 md:w-full md:flex-row md:px-0',
     activityToolbarActionsFrontpage:
       'flex w-full flex-nowrap items-center justify-center gap-0.5 sm:gap-1.5 md:w-auto md:justify-end',
     /** Activity filters: one row; compact chips; labels always visible (tight gap on narrow screens). */
