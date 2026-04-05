@@ -23,7 +23,7 @@ export const Loading = ({ inline = false }: LoadingProps) =>
   inline ? (
     <LoadingContent />
   ) : (
-    <Card flush className='overflow-hidden border-0 text-left sm:border'>
+    <Card flush className='overflow-hidden border-0 text-left'>
       <LoadingContent />
     </Card>
   );

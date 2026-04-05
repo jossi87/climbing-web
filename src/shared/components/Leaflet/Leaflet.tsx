@@ -91,6 +91,8 @@ type Props = {
   showSatelliteImage?: boolean;
   /** Bottom-right elevation labels toggle; hide on embedded TOC maps so it is not mistaken for page chrome. */
   showElevationControl?: boolean;
+  /** No stroke on `.leaflet-container` — e.g. Areas list map where the frame reads as noise. */
+  mapBorderless?: boolean;
   children?: ReactNode | ((state: { showElevation: boolean }) => ReactNode);
 };
 
@@ -149,6 +151,7 @@ const Leaflet = ({
   rocks = [],
   showSatelliteImage,
   showElevationControl = true,
+  mapBorderless = false,
   children,
   onMouseClick = undefined,
   onMouseMove = undefined,
@@ -235,6 +238,114 @@ const Leaflet = ({
     position?: string;
   }>;
 
+  const mapContainerEl = (
+    <MapContainer
+      style={{ height: height ? height : '500px', width: '100%', zIndex: 0 }}
+      zoomControl={true}
+      zoom={defaultZoom}
+      center={defaultCenter}
+    >
+      <UpdateBounds slopes={slopes} outlines={outlines} autoZoom={autoZoom} markers={markers} />
+      <MapEvent onMouseClick={onMouseClick} onMouseMove={onMouseMove} />
+      <FullscreenControl />
+      <Locate />
+      <ScaleControl maxWidth={100} metric={true} imperial={false} />
+      {rocks && rocks.length > 0 && (
+        <UseControlWrapper position='bottomleft'>
+          <div className='bg-surface-card'>
+            <label className='flex cursor-pointer items-center gap-2'>
+              <input
+                type='checkbox'
+                checked={groupByRock}
+                onChange={(e) => setGroupByRock(e.target.checked)}
+                className='accent-brand'
+              />
+              <span className={cn('text-slate-300', designContract.typography.label)}>Group by rock</span>
+            </label>
+          </div>
+        </UseControlWrapper>
+      )}
+      {showElevationControl && ((outlines?.length ?? 0) > 0 || (markers?.length ?? 0) > 0) && (
+        <UseControlWrapper position='bottomright'>
+          <button
+            type='button'
+            onClick={() => setShowElevation((v) => !v)}
+            className={cn(
+              'inline-flex h-8 w-8 items-center justify-center rounded-md border p-0 leading-none shadow-md transition-colors',
+              showElevation
+                ? 'border-brand-border bg-surface-hover text-slate-100'
+                : 'border-surface-border/60 bg-surface-card text-slate-400 hover:text-slate-200',
+            )}
+            aria-label={showElevation ? 'Hide elevation labels' : 'Show elevation labels'}
+            title={showElevation ? 'Hide elevation labels' : 'Show elevation labels'}
+          >
+            <Activity size={13} strokeWidth={2.2} className='pointer-events-none block' />
+          </button>
+        </UseControlWrapper>
+      )}
+      <LayersControl>
+        <LayersControl.BaseLayer checked={showSatelliteImage} name='Norge i Bilder'>
+          <TileLayer
+            maxZoom={21}
+            attribution='&copy; Geovekst'
+            url='https://waapi.webatlas.no/maptiles/tiles/webatlas-orto-newup/wa_grid/{z}/{x}/{y}.jpeg?api_key=b8e36d51-119a-423b-b156-d744d54123d5'
+          />
+        </LayersControl.BaseLayer>
+
+        <LayersControl.BaseLayer name='OpenStreetMap'>
+          <TileLayer
+            maxZoom={19}
+            attribution='&copy; OpenStreetMap'
+            url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+          />
+        </LayersControl.BaseLayer>
+
+        <LayersControl.BaseLayer checked={!showSatelliteImage} name='Kartverket N50 topo'>
+          <TileLayer
+            maxZoom={18}
+            attribution='&copy; Kartverket'
+            url='https://cache.kartverket.no/v1/wmts/1.0.0/topo/default/webmercator/{z}/{y}/{x}.png'
+          />
+        </LayersControl.BaseLayer>
+
+        <LayersControl.Overlay checked={true} name='Stedsnavn'>
+          <WMSTileLayer
+            params={{
+              transparent: true,
+              format: 'image/png',
+              layers: 'Stedsnavn',
+              version: '1.3.0',
+            }}
+            url='https://openwms.statkart.no/skwms1/wms.topo4'
+          />
+        </LayersControl.Overlay>
+
+        <LayersControl.Overlay checked={true} name='Vegnett'>
+          <WMSTileLayer
+            params={{
+              transparent: true,
+              format: 'image/png',
+              layers: 'all',
+              version: '1.3.0',
+            }}
+            url='https://openwms.statkart.no/skwms1/wms.vegnett'
+          />
+        </LayersControl.Overlay>
+      </LayersControl>
+      <FeatureGroup>
+        {markerGroup}
+        <Polygons
+          opacity={opacity}
+          outlines={outlines ?? []}
+          addEventHandlers={addEventHandlers}
+          showElevation={showElevation}
+        />
+        <Polylines opacity={opacity} slopes={slopes ?? []} />
+      </FeatureGroup>
+      {typeof children === 'function' ? children({ showElevation }) : children}
+    </MapContainer>
+  );
+
   return (
     <>
       <style>{`
@@ -242,6 +353,14 @@ const Leaflet = ({
           background-color: var(--color-surface-card) !important;
           font-family: inherit !important;
           border: 1px solid var(--color-surface-border) !important;
+        }
+        /*
+         * Borderless maps: use a wrapper + descendant selector. react-leaflet's MapContainer only
+         * snapshots className/id/style in useState(initial) — putting the class on MapContainer is unreliable.
+         */
+        .buldreinfo-map-borderless .leaflet-container {
+          border: none !important;
+          outline: none !important;
         }
 
         /* Default Leaflet popups are light; force dark UI to match the app */
@@ -447,111 +566,13 @@ const Leaflet = ({
           text-shadow: none !important;
         }
       `}</style>
-      <MapContainer
-        style={{ height: height ? height : '500px', width: '100%', zIndex: 0 }}
-        zoomControl={true}
-        zoom={defaultZoom}
-        center={defaultCenter}
-      >
-        <UpdateBounds slopes={slopes} outlines={outlines} autoZoom={autoZoom} markers={markers} />
-        <MapEvent onMouseClick={onMouseClick} onMouseMove={onMouseMove} />
-        <FullscreenControl />
-        <Locate />
-        <ScaleControl maxWidth={100} metric={true} imperial={false} />
-        {rocks && rocks.length > 0 && (
-          <UseControlWrapper position='bottomleft'>
-            <div className='bg-surface-card'>
-              <label className='flex cursor-pointer items-center gap-2'>
-                <input
-                  type='checkbox'
-                  checked={groupByRock}
-                  onChange={(e) => setGroupByRock(e.target.checked)}
-                  className='accent-brand'
-                />
-                <span className={cn('text-slate-300', designContract.typography.label)}>Group by rock</span>
-              </label>
-            </div>
-          </UseControlWrapper>
-        )}
-        {showElevationControl && ((outlines?.length ?? 0) > 0 || (markers?.length ?? 0) > 0) && (
-          <UseControlWrapper position='bottomright'>
-            <button
-              type='button'
-              onClick={() => setShowElevation((v) => !v)}
-              className={cn(
-                'inline-flex h-8 w-8 items-center justify-center rounded-md border p-0 leading-none shadow-md transition-colors',
-                showElevation
-                  ? 'border-brand-border bg-surface-hover text-slate-100'
-                  : 'border-surface-border/60 bg-surface-card text-slate-400 hover:text-slate-200',
-              )}
-              aria-label={showElevation ? 'Hide elevation labels' : 'Show elevation labels'}
-              title={showElevation ? 'Hide elevation labels' : 'Show elevation labels'}
-            >
-              <Activity size={13} strokeWidth={2.2} className='pointer-events-none block' />
-            </button>
-          </UseControlWrapper>
-        )}
-        <LayersControl>
-          <LayersControl.BaseLayer checked={showSatelliteImage} name='Norge i Bilder'>
-            <TileLayer
-              maxZoom={21}
-              attribution='&copy; Geovekst'
-              url='https://waapi.webatlas.no/maptiles/tiles/webatlas-orto-newup/wa_grid/{z}/{x}/{y}.jpeg?api_key=b8e36d51-119a-423b-b156-d744d54123d5'
-            />
-          </LayersControl.BaseLayer>
-
-          <LayersControl.BaseLayer name='OpenStreetMap'>
-            <TileLayer
-              maxZoom={19}
-              attribution='&copy; OpenStreetMap'
-              url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-            />
-          </LayersControl.BaseLayer>
-
-          <LayersControl.BaseLayer checked={!showSatelliteImage} name='Kartverket N50 topo'>
-            <TileLayer
-              maxZoom={18}
-              attribution='&copy; Kartverket'
-              url='https://cache.kartverket.no/v1/wmts/1.0.0/topo/default/webmercator/{z}/{y}/{x}.png'
-            />
-          </LayersControl.BaseLayer>
-
-          <LayersControl.Overlay checked={true} name='Stedsnavn'>
-            <WMSTileLayer
-              params={{
-                transparent: true,
-                format: 'image/png',
-                layers: 'Stedsnavn',
-                version: '1.3.0',
-              }}
-              url='https://openwms.statkart.no/skwms1/wms.topo4'
-            />
-          </LayersControl.Overlay>
-
-          <LayersControl.Overlay checked={true} name='Vegnett'>
-            <WMSTileLayer
-              params={{
-                transparent: true,
-                format: 'image/png',
-                layers: 'all',
-                version: '1.3.0',
-              }}
-              url='https://openwms.statkart.no/skwms1/wms.vegnett'
-            />
-          </LayersControl.Overlay>
-        </LayersControl>
-        <FeatureGroup>
-          {markerGroup}
-          <Polygons
-            opacity={opacity}
-            outlines={outlines ?? []}
-            addEventHandlers={addEventHandlers}
-            showElevation={showElevation}
-          />
-          <Polylines opacity={opacity} slopes={slopes ?? []} />
-        </FeatureGroup>
-        {typeof children === 'function' ? children({ showElevation }) : children}
-      </MapContainer>
+      {mapBorderless ? (
+        <div className={cn('buldreinfo-map-borderless min-h-0 w-full', height === '100%' && 'h-full')}>
+          {mapContainerEl}
+        </div>
+      ) : (
+        mapContainerEl
+      )}
     </>
   );
 };

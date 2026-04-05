@@ -32,6 +32,8 @@ const TickListItem = ({ tick }: TickListItemProps) => <TickListItemInner tick={t
 const TickListItemInner = ({ tick }: TickListItemProps) => {
   const areaId = tick.areaId;
   const sectorId = tick.sectorId;
+  const hasSector =
+    (sectorId != null && sectorId > 0) || (typeof tick.sectorName === 'string' && tick.sectorName.trim() !== '');
   const pitchPart = (tick.numPitches ?? 0) > 1 ? ` ${tick.numPitches}p` : '';
   const typePart = tick.subType != null && tick.subType !== '' ? `${tick.subType}${pitchPart}` : null;
 
@@ -49,23 +51,28 @@ const TickListItemInner = ({ tick }: TickListItemProps) => {
       ) : (
         <span className={tickCrag}>{tick.areaName}</span>
       )}
-      <LockSymbol lockedAdmin={!!tick.areaLockedAdmin} lockedSuperadmin={!!tick.areaLockedSuperadmin} />{' '}
-      {sectorId ? (
-        <Link to={`/sector/${sectorId}`} className={tickCragLink}>
-          {tick.sectorName}
-        </Link>
-      ) : (
-        <span className={tickCrag}>{tick.sectorName}</span>
-      )}
-      <LockSymbol lockedAdmin={!!tick.sectorLockedAdmin} lockedSuperadmin={!!tick.sectorLockedSuperadmin} />
-      {tick.sectorLockedAdmin || tick.sectorLockedSuperadmin ? ' ' : <ProfileRowTextSep />}
+      <LockSymbol lockedAdmin={!!tick.areaLockedAdmin} lockedSuperadmin={!!tick.areaLockedSuperadmin} />
+      {hasSector ? (
+        <>
+          <ProfileRowTextSep />
+          {sectorId ? (
+            <Link to={`/sector/${sectorId}`} className={tickCragLink}>
+              {tick.sectorName}
+            </Link>
+          ) : (
+            <span className={tickCrag}>{tick.sectorName}</span>
+          )}
+          <LockSymbol lockedAdmin={!!tick.sectorLockedAdmin} lockedSuperadmin={!!tick.sectorLockedSuperadmin} />
+        </>
+      ) : null}
+      <ProfileRowTextSep />
       <Link to={`/problem/${tick.idProblem}`} className={tickProblemLink}>
         {tick.name}
       </Link>{' '}
       <span className={cn(tickWhenGrade, 'whitespace-nowrap tabular-nums')}>{tick.grade}</span>
       <LockSymbol lockedAdmin={!!tick.lockedAdmin} lockedSuperadmin={!!tick.lockedSuperadmin} />{' '}
       <span className='inline-flex align-middle'>
-        <Stars numStars={tick.stars ?? 0} includeStarOutlines={true} size={12} />
+        <Stars numStars={tick.stars ?? 0} size={12} />
       </span>
       {tick.fa ? (
         <>

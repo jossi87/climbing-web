@@ -79,7 +79,7 @@ const Webcams = () => {
       <title>{`Webcams | ${meta?.title}`}</title>
       <meta name='description' content='Live webcams and camera feeds in climbing areas' />
 
-      <Card flush className='min-w-0 overflow-hidden border-0 sm:border'>
+      <Card flush className='min-w-0 overflow-hidden border-0'>
         <div className='p-4 pb-3 sm:p-5 sm:pb-4'>
           <SectionHeader
             title='Webcams'

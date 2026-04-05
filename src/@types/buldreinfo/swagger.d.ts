@@ -1620,6 +1620,8 @@ export type components = {
             externalLinks?: components["schemas"]["ExternalLink"][];
             pageViews?: string;
             siblings?: components["schemas"]["SectorJump"][];
+            /** Aggregate tick/todo counts by type (same shape as `AreaSector`) — optional on sector detail. */
+            typeNumTickedTodo?: components["schemas"]["TypeNumTickedTodo"][];
         };
         SectorJump: {
             /** Format: int32 */

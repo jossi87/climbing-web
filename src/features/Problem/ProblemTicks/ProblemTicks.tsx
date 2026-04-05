@@ -124,7 +124,7 @@ export const ProblemTicks = ({ ticks }: Props) => {
 
                 {t.stars !== -1 && (
                   <div className='mt-0.5 self-start'>
-                    <Stars numStars={t.stars ?? 0} includeStarOutlines size={11} />
+                    <Stars numStars={t.stars ?? 0} size={11} />
                   </div>
                 )}
 

@@ -240,7 +240,7 @@ export const TableOfContents = ({ areas, header, subHeader, compact = false, sho
                             <span className='text-slate-400 normal-case'>{problem.grade}</span>
                             {problem.stars ? (
                               <div className='flex origin-left scale-75 items-center'>
-                                <Stars numStars={problem.stars} includeStarOutlines={false} />
+                                <Stars numStars={problem.stars} size={14} />
                               </div>
                             ) : null}
                             <LockSymbol lockedAdmin={problem.lockedAdmin} lockedSuperadmin={problem.lockedSuperadmin} />

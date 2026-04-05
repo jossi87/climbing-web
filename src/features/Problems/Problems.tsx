@@ -187,7 +187,7 @@ export const Problems = ({ filterOpen }: Props) => {
       <meta name='description' content={totalDescription} />
 
       <div className='w-full min-w-0'>
-        <Card flush className='min-w-0 border-0 sm:border'>
+        <Card flush className='min-w-0 border-0'>
           <div className='flex flex-wrap items-start justify-between gap-3 p-4 sm:p-5'>
             <SectionHeader title={title} icon={Database} subheader={totalDescription} />
             <div className='flex items-center gap-2'>

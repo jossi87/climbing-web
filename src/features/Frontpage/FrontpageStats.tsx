@@ -7,10 +7,29 @@ import { Card, SectionLabel } from '../../shared/ui';
 import { designContract } from '../../design/contract';
 
 /**
+ * Outer corners must match the parent `Card` radius — otherwise `hover:border-brand-border` draws a square
+ * and looks clipped / wrong vs the rounded shell (glow “missing” at corners).
+ */
+function statTileOuterRadius(placement: 'top' | 'sidebar', index: number): string {
+  if (placement === 'top') {
+    if (index === 0) return 'rounded-l-xl';
+    if (index === 3) return 'rounded-r-xl';
+    return '';
+  }
+  const corners: Record<number, string> = {
+    0: 'rounded-tl-xl',
+    1: 'rounded-tr-xl',
+    2: 'rounded-bl-xl',
+    3: 'rounded-br-xl',
+  };
+  return corners[index] ?? '';
+}
+
+/**
  * Fixed height (not min-h): loaded content is taller than the old 5rem minimum, which caused a visible jump when skeletons resolved.
  * Tiles sit on the same `surface-card` face as the shell (`panelStatCell`); hover lifts to `surface-raised` like list rows.
  */
-const statTileClass = cn(
+const statTileBaseClass = cn(
   designContract.surfaces.panelStatCell,
   'group relative flex h-[6rem] w-full shrink-0 flex-col items-center justify-center overflow-hidden p-3 text-center sm:h-[6.875rem] sm:p-4',
 );
@@ -21,6 +40,8 @@ type StatItemProps = {
   label: string;
   value?: number | string;
   loading?: boolean;
+  /** Match parent card rounding so hover border follows the visible corners. */
+  tileRadiusClass?: string;
 };
 
 /**
@@ -29,9 +50,9 @@ type StatItemProps = {
  */
 const statValueShellClass = 'relative h-8 w-full shrink-0 sm:h-9';
 
-const StatItem = ({ to, icon: Icon, label, value, loading }: StatItemProps) => {
+const StatItem = ({ to, icon: Icon, label, value, loading, tileRadiusClass }: StatItemProps) => {
   const content = (
-    <div className={statTileClass}>
+    <div className={cn(statTileBaseClass, tileRadiusClass)}>
       <div
         className={cn(
           'relative z-[1] mb-1.5 shrink-0 text-slate-400 transition-colors sm:mb-2',
@@ -115,7 +136,7 @@ export const FrontpageStats = ({
   placement,
 }: FrontpageStatsProps) => {
   return (
-    <Card flush className='border-0 sm:border'>
+    <Card flush className='border-0'>
       <div
         className={cn(
           'bg-surface-card grid gap-px overflow-hidden',
@@ -130,6 +151,7 @@ export const FrontpageStats = ({
           label='Regions'
           value={regionsLoading ? undefined : numberWithCommas(numRegions)}
           loading={regionsLoading}
+          tileRadiusClass={statTileOuterRadius(placement, 0)}
         />
         <StatItem
           to='/areas'
@@ -137,6 +159,7 @@ export const FrontpageStats = ({
           label='Areas'
           value={stats ? numberWithCommas(stats.areas ?? 0) : undefined}
           loading={statsLoading}
+          tileRadiusClass={statTileOuterRadius(placement, 1)}
         />
         <StatItem
           to='/problems'
@@ -144,6 +167,7 @@ export const FrontpageStats = ({
           label={isBouldering ? 'Problems' : 'Routes'}
           value={stats ? numberWithCommas(stats.problems ?? 0) : undefined}
           loading={statsLoading}
+          tileRadiusClass={statTileOuterRadius(placement, 2)}
         />
         <StatItem
           to='/ticks/1'
@@ -151,6 +175,7 @@ export const FrontpageStats = ({
           label='Ticks'
           value={stats ? numberWithCommas(stats.ticks ?? 0) : undefined}
           loading={statsLoading}
+          tileRadiusClass={statTileOuterRadius(placement, 3)}
         />
       </div>
     </Card>

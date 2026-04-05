@@ -10,7 +10,7 @@ const Settings = () => {
     <>
       <title>{`Settings | ${meta?.title}`}</title>
       <meta name='description' content='Account settings' />
-      <Card flush className='border-0 sm:border'>
+      <Card flush className='border-0'>
         <div className='p-4 sm:p-6'>
           <SectionHeader title='Settings' icon={SettingsIcon} subheader='Manage your account preferences' />
         </div>

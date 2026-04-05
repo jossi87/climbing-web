@@ -137,7 +137,7 @@ const Dangerous = () => {
       <title>{`Dangerous | ${meta?.title}`}</title>
       <meta name='description' content={description} />
 
-      <Card flush className='min-w-0 border-0 sm:border'>
+      <Card flush className='min-w-0 border-0'>
         <div className='p-4 pb-3 sm:p-5 sm:pb-4'>
           <SectionHeader title='Dangerous' icon={AlertTriangle} subheader={description} />
         </div>

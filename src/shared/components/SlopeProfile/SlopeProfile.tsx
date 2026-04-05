@@ -162,7 +162,7 @@ export const SlopeProfile = ({
       className={cn(
         'bg-surface-card overflow-hidden',
         compact
-          ? 'max-sm:border-surface-border/70 sm:border-surface-border max-sm:rounded-none max-sm:border-x-0 max-sm:border-t max-sm:border-b-0 max-sm:shadow-none sm:rounded-xl sm:border sm:shadow-sm'
+          ? 'max-sm:border-surface-border/70 sm:border-surface-border max-sm:rounded-none max-sm:border-x-0 max-sm:border-t max-sm:border-b-0 max-sm:shadow-none sm:rounded-xl sm:shadow-sm'
           : 'border-surface-border rounded-xl border shadow-sm',
         !compact && 'max-w-2xl',
         className,

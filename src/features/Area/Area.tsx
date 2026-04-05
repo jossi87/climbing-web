@@ -232,7 +232,7 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
         ) : null}
         {problem.stars ? (
           <span className='ml-1 inline-block align-[-0.15em] opacity-90'>
-            <Stars numStars={problem.stars} includeStarOutlines={false} size={11} />
+            <Stars numStars={problem.stars} size={11} />
           </span>
         ) : null}
         {lockAndMedia ? <> {lockAndMedia}</> : null}
@@ -283,6 +283,28 @@ type SectorWithParking = AreaSectorType &
 const isSectorWithParking = (s: AreaSectorType): s is SectorWithParking => {
   return !!(s.parking && s.parking.latitude && s.parking.longitude);
 };
+
+/** Problems in area — prefer server count when present. */
+function countAreaProblems(area: components['schemas']['Area']): number {
+  const n = area.numProblems;
+  if (n != null && n > 0) return n;
+  return (area.sectors ?? []).reduce((acc, s) => acc + (s.problems?.length ?? 0), 0);
+}
+
+/** Sum of `numTicks` across embedded sector problems (same payload as the lists). */
+function sumAreaProblemTicks(area: components['schemas']['Area']): number {
+  return (area.sectors ?? []).reduce(
+    (acc, s) => acc + (s.problems ?? []).reduce((m, p) => m + (p.numTicks ?? 0), 0),
+    0,
+  );
+}
+
+/** Keep Todo tab unless `typeNumTickedTodo` has rows and every aggregate todo count is zero. */
+function shouldShowAreaTodoTabFromPayload(area: components['schemas']['Area']): boolean {
+  const rows = area.typeNumTickedTodo;
+  if (rows == null || rows.length === 0) return true;
+  return rows.reduce((s, x) => s + (x.todo ?? 0), 0) > 0;
+}
 
 const Area = () => {
   const meta = useMeta();
@@ -357,15 +379,24 @@ const Area = () => {
     const t: { id: string; label: string; icon: typeof LayoutDashboard }[] = [];
     if (!data) return t;
     t.push({ id: 'overview', label: 'Overview', icon: LayoutDashboard });
-    if (markers.length || outlines.length || data.coordinates) t.push({ id: 'map', label: 'Map', icon: MapIcon });
+    const hasMapContent = markers.length > 0 || outlines.length > 0 || slopes.length > 0;
+    if (hasMapContent) t.push({ id: 'map', label: 'Map', icon: MapIcon });
     if (data.sectors?.length) {
-      t.push({ id: 'distribution', label: 'Distribution', icon: BarChart2 });
-      t.push({ id: 'top', label: 'Top', icon: Trophy });
-      t.push({ id: 'todo', label: 'Todo', icon: Bookmark });
+      const problemCount = countAreaProblems(data);
+      const tickSum = sumAreaProblemTicks(data);
+      if (problemCount > 0) {
+        t.push({ id: 'distribution', label: 'Distribution', icon: BarChart2 });
+      }
+      if (problemCount > 0 && tickSum > 0) {
+        t.push({ id: 'top', label: 'Top', icon: Trophy });
+      }
+      if (shouldShowAreaTodoTabFromPayload(data)) {
+        t.push({ id: 'todo', label: 'Todo', icon: Bookmark });
+      }
       t.push({ id: 'activity', label: 'Activity', icon: Clock });
     }
     return t;
-  }, [data, markers.length, outlines.length]);
+  }, [data, markers.length, outlines.length, slopes.length]);
 
   const normalizedActiveTab = activeTab === 'image' ? 'overview' : activeTab;
   const effectiveTab =
@@ -493,8 +524,8 @@ const Area = () => {
         />
       </div>
 
-      <Card flush className='min-w-0 border-0 sm:border'>
-        {tabs.length > 0 && (
+      <Card flush className='min-w-0 border-0'>
+        {tabs.length > 1 && (
           <>
             <div
               className={tabBarStripContainerClassName('equal')}
@@ -629,7 +660,7 @@ const Area = () => {
       </Card>
 
       {effectiveTab === 'overview' && (data.sectors?.length ?? 0) > 0 && (
-        <Card flush className='mt-6 min-w-0 overflow-hidden border-0 shadow-sm sm:border'>
+        <Card flush className='mt-6 min-w-0 overflow-hidden border-0 shadow-sm'>
           <div
             role='tablist'
             aria-label='Choose sector grid or full problem list'
@@ -682,7 +713,7 @@ const Area = () => {
                   return (
                     <div
                       key={sector.id}
-                      className='bg-surface-card border-surface-border h-full max-w-full min-w-0 overflow-hidden rounded-xl border shadow-lg max-sm:!mx-0 max-sm:!w-full sm:border sm:shadow-xl'
+                      className='bg-surface-card border-surface-border h-full max-w-full min-w-0 overflow-hidden rounded-xl border shadow-lg max-sm:!mx-0 max-sm:!w-full sm:shadow-xl'
                     >
                       <Link
                         to={`/sector/${sector.id}`}

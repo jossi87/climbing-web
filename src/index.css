@@ -34,6 +34,10 @@
   --color-brand-border: color-mix(in srgb, var(--color-brand) 40%, var(--color-surface-border));
   --color-white: #e2e8f0;
   --shadow-brand: 0 0 10px rgba(198, 161, 91, 0.14);
+  /**
+   * Borderless card lift — **ambient shadow only** (no inset highlight: that read as a hairline “border” under toolbars).
+   */
+  --shadow-app-card: 0 20px 56px -24px rgba(0, 0, 0, 0.72);
   --spacing-container: 1400px;
   --spacing-thumbnail-w: 85px;
   --spacing-thumbnail-h: 80px;
@@ -192,18 +196,18 @@
     @apply inline-flex h-4 items-center rounded border border-white/16 px-1.5 text-[11px] leading-none font-medium text-slate-400 sm:text-[12px];
   }
 
+  /*
+   * Borderless panel (no full-bleed margins) — e.g. embedded Activity on the frontpage.
+   */
+  .app-card-surface {
+    @apply bg-surface-card overflow-hidden rounded-xl border-0;
+    box-shadow: var(--shadow-app-card);
+  }
+
   .app-card {
-    @apply bg-surface-card overflow-hidden sm:rounded-xl;
-    /* Atmospheric edge: matches `surface-border` family — one soft rim + depth, not a second gray frame */
-    border-color: color-mix(in srgb, rgb(255 255 255) 10.5%, var(--color-surface-card));
-    border-top-width: 1px;
-    border-bottom-width: 1px;
-    border-left-width: 0;
-    border-right-width: 0;
-    border-style: solid;
-    box-shadow:
-      0 1px 0 0 color-mix(in srgb, rgb(255 255 255) 4.5%, transparent),
-      0 14px 48px -20px rgba(0, 0, 0, 0.58);
+    @apply bg-surface-card overflow-hidden border-0 sm:rounded-xl;
+    /* Separation from `surface-dark` via ambient shadow only — no inset rim (avoids a visible top line). */
+    box-shadow: var(--shadow-app-card);
 
     box-sizing: border-box;
     margin-left: -1rem;
@@ -211,8 +215,6 @@
     width: calc(100% + 2rem);
 
     @media (min-width: 640px) {
-      border-left-width: 1px;
-      border-right-width: 1px;
       margin-left: 0;
       margin-right: 0;
       width: 100%;

@@ -35,7 +35,7 @@ const Trash = () => {
     <div className='w-full min-w-0'>
       <title>{`Trash | ${meta?.title}`}</title>
 
-      <Card flush className='min-w-0 border-0 sm:border'>
+      <Card flush className='min-w-0 border-0'>
         <div className='p-4 sm:p-5'>
           <SectionHeader title='Trash' icon={Trash2} subheader={`${data.length} items`} />
         </div>

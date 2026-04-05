@@ -103,15 +103,14 @@ function todoUserList(todos: ProblemTodo[]) {
   const withUser = todos.filter((t) => t.idUser != null);
   if (withUser.length === 0) return null;
   return (
-    <span className='inline-flex min-w-0 flex-wrap content-start items-start gap-x-2 gap-y-1'>
+    <span className={cn(factClass, 'min-w-0 [overflow-wrap:anywhere]')}>
       {withUser.map((u, idx) => (
-        <UserFactLink
-          key={u.idUser ?? idx}
-          userId={u.idUser!}
-          name={u.name}
-          mediaId={u.mediaId}
-          mediaVersionStamp={u.mediaVersionStamp}
-        />
+        <span key={u.idUser ?? idx}>
+          {idx > 0 ? ', ' : null}
+          <Link to={`/user/${u.idUser}`} className='text-slate-300 transition-colors hover:text-slate-100'>
+            {u.name}
+          </Link>
+        </span>
       ))}
     </span>
   );

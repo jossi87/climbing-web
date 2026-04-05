@@ -43,28 +43,26 @@ export const LockSymbol = ({
 
 export const Stars = ({
   numStars = -1,
-  includeStarOutlines = false,
+  includeStarOutlines = true,
   size = 14,
-  muted = false,
 }: {
   numStars?: number;
+  /** When true, empty slots show a light outline so the row reads as 3 stars (default). */
   includeStarOutlines?: boolean;
   size?: number;
-  /** Softer fills for dense lists (e.g. sector problem rows). */
-  muted?: boolean;
 }) => {
   if (numStars === -1) return null;
   const fullStars = Math.floor(numStars);
   const hasHalfStar = numStars % 1 !== 0;
   const stars = [];
-  const filledClass = muted ? 'fill-slate-500/90 text-slate-500' : 'fill-slate-100 text-slate-100';
-  const outlineClass = muted ? 'fill-none text-slate-500/95' : 'fill-none text-slate-400/95';
+  const filledClass = 'fill-slate-100 text-slate-100';
+  /** Empty slots: white outline — strong stroke so empty stars read clearly on dark panels. */
+  const outlineClass = 'fill-none text-white/70';
 
   for (let i = 0; i < 3; i++) {
     if (i < fullStars) stars.push(<Star key={i} size={size} className={filledClass} />);
     else if (i === fullStars && hasHalfStar) stars.push(<StarHalf key={i} size={size} className={filledClass} />);
-    else if (includeStarOutlines)
-      stars.push(<Star key={i} size={size} strokeWidth={2.65} className={cn(outlineClass, 'opacity-30')} />);
+    else if (includeStarOutlines) stars.push(<Star key={i} size={size} strokeWidth={3} className={outlineClass} />);
   }
   return <div className='inline-flex items-center gap-0.5'>{stars}</div>;
 };

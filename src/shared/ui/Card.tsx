@@ -8,7 +8,7 @@ type Props = {
 };
 
 export const Card = ({ children, className = '', flush = false }: Props) => (
-  <div className={cn('app-card relative overflow-hidden rounded-none border-0 sm:rounded-xl sm:border', className)}>
+  <div className={cn('app-card relative overflow-hidden rounded-none sm:rounded-xl', className)}>
     {/*
       Flush cards: avoid `h-full` on the inner wrapper — with an `auto`-height parent, percentage height
       is ill-defined and can interact badly with grid/flex children (frontpage aside CLS).

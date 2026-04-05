@@ -12,7 +12,7 @@ const Swagger = () => {
       <title>{`API Documentation | ${meta?.title}`}</title>
       <meta name='description' content='API Documentation' />
 
-      <Card flush className='min-w-0 border-0 sm:border'>
+      <Card flush className='min-w-0 border-0'>
         <div className='border-surface-border border-b p-4 sm:p-5'>
           <SectionHeader title='API Documentation' icon={FileJson} subheader='OpenAPI reference' />
         </div>

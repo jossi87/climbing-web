@@ -59,7 +59,7 @@ export const ProblemsOnRock = ({
           </span>
 
           <div className='ml-0.5 flex items-center gap-1.5 border-l border-white/10 pl-1.5'>
-            <Stars numStars={p.stars} includeStarOutlines={false} />
+            <Stars numStars={p.stars} size={12} />
             {p.coordinates && <MapPin size={10} className={problemId === p.id ? '' : 'opacity-70'} />}
             {p.hasTopo && (
               <span title='Topo line' className='inline-flex'>

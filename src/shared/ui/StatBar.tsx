@@ -3,9 +3,7 @@ import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 
 export const StatBar = ({ children }: { children: ReactNode }) => (
-  <div className='app-card mb-8 grid grid-cols-2 gap-px overflow-hidden border-0 sm:grid-cols-4 sm:border'>
-    {children}
-  </div>
+  <div className='app-card mb-8 grid grid-cols-2 gap-px overflow-hidden border-0 sm:grid-cols-4'>{children}</div>
 );
 
 export const StatItem = ({

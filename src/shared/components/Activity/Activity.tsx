@@ -184,7 +184,7 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
       </div>
 
       {embedded ? (
-        <div className='border-surface-border bg-surface-card overflow-hidden rounded-xl border'>
+        <div className='app-card-surface'>
           {isPending
             ? [...Array(10)].map((_, i) => <ActivitySkeleton key={i} />)
             : activity?.map((a) => (
@@ -331,7 +331,7 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
             >
               {hasStars ? (
                 <span className='inline-flex shrink-0 items-center leading-none'>
-                  <Stars numStars={a.stars!} includeStarOutlines={true} size={12} />
+                  <Stars numStars={a.stars!} size={12} />
                 </span>
               ) : null}
               {hasComment ? (

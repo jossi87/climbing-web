@@ -220,7 +220,7 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
         ) : null}
         {problem.stars ? (
           <span className='ml-1 inline-block align-[-0.15em] opacity-90'>
-            <Stars numStars={problem.stars} includeStarOutlines={false} size={11} />
+            <Stars numStars={problem.stars} size={11} />
           </span>
         ) : null}
         {lockAndMedia ? <> {lockAndMedia}</> : null}
@@ -248,6 +248,17 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
 };
 
 type ProblemType = NonNullable<NonNullable<ReturnType<typeof useSector>['data']>['problems']>[number];
+
+function sumSectorProblemTicks(problems: components['schemas']['SectorProblem'][] | undefined): number {
+  return (problems ?? []).reduce((s, p) => s + (p.numTicks ?? 0), 0);
+}
+
+/** Keep Todo tab unless `typeNumTickedTodo` has rows and every aggregate todo count is zero. */
+function shouldShowSectorTodoTabFromPayload(sector: components['schemas']['Sector']): boolean {
+  const rows = sector.typeNumTickedTodo;
+  if (rows == null || rows.length === 0) return true;
+  return rows.reduce((s, x) => s + (x.todo ?? 0), 0) > 0;
+}
 
 const Sector = () => {
   const { sectorId } = useParams();
@@ -302,19 +313,25 @@ const Sector = () => {
     if (!data) return [] as { id: string; label: string; icon: LucideIcon }[];
     const t: { id: string; label: string; icon: LucideIcon }[] = [];
     t.push({ id: 'overview', label: 'Overview', icon: LayoutDashboard });
+    const addPolygon = meta.isClimbing || markers.length === 0;
+    const hasOutlineOnMap = (data.outline ?? []).length > 0 && addPolygon;
     const hasApproachOrDescent =
       (data.approach?.coordinates ?? []).length > 0 || (data.descent?.coordinates ?? []).length > 0;
-    if (markers.length > 0 || (data.outline ?? []).length || hasApproachOrDescent) {
+    if (markers.length > 0 || hasOutlineOnMap || hasApproachOrDescent) {
       t.push({ id: 'map', label: 'Map', icon: MapIcon });
     }
     if ((data.problems ?? []).length > 0) {
       t.push({ id: 'distribution', label: 'Distribution', icon: BarChart2 });
-      t.push({ id: 'top', label: 'Top', icon: Trophy });
-      t.push({ id: 'todo', label: 'Todo', icon: Bookmark });
+      if (sumSectorProblemTicks(data.problems) > 0) {
+        t.push({ id: 'top', label: 'Top', icon: Trophy });
+      }
+      if (shouldShowSectorTodoTabFromPayload(data)) {
+        t.push({ id: 'todo', label: 'Todo', icon: Bookmark });
+      }
       t.push({ id: 'activity', label: 'Activity', icon: Clock });
     }
     return t;
-  }, [data, markers]);
+  }, [data, markers, meta.isClimbing]);
 
   const normalizedActiveTab = activeTab === 'media' ? 'overview' : activeTab;
   const effectiveTab =
@@ -583,8 +600,8 @@ const Sector = () => {
         />
       </div>
 
-      <Card flush className='min-w-0 border-0 shadow-sm sm:border'>
-        {tabs.length > 0 && (
+      <Card flush className='min-w-0 border-0 shadow-sm'>
+        {tabs.length > 1 && (
           <>
             <div
               className={tabBarStripContainerClassName('equal')}
@@ -769,7 +786,7 @@ const Sector = () => {
       )}
 
       {effectiveTab === 'overview' && (data.problems?.length ?? 0) > 0 && (
-        <Card flush className='min-w-0 border-0 shadow-sm sm:border'>
+        <Card flush className='min-w-0 border-0 shadow-sm'>
           <div className='p-4 sm:p-5'>
             <ProblemList
               storageKey={`sector/${sectorId}`}

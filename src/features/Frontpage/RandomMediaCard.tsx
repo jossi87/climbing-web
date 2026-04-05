@@ -15,10 +15,11 @@ type Props = {
 /** Matches API crop; img is `absolute` so decode/intrinsic size cannot collapse the frame (CLS). */
 const mediaFrameClass = 'relative aspect-[275/250] w-full overflow-hidden bg-surface-card';
 
-const desktopCopyMin = 'hidden min-h-[5.25rem] p-4 md:block md:min-h-[5.5rem]';
+const desktopCopyMin = 'hidden min-h-[5.25rem] bg-surface-card p-4 md:block md:min-h-[5.5rem]';
 
 export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
-  const cardShellClass = 'group overflow-hidden border-0 text-left md:border';
+  /** Explicit `bg-surface-card` so the shell never reads as white next to `app-card` shadow merge / aside. */
+  const cardShellClass = 'group bg-surface-card overflow-hidden border-0 text-left';
 
   if (isLoading)
     return (

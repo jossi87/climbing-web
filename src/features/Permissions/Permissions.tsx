@@ -81,7 +81,7 @@ const Permissions = () => {
     <div className='w-full min-w-0'>
       <title>{`Permissions | ${meta?.title}`}</title>
       <meta name='description' content='Manage user roles and access' />
-      <Card flush className='min-w-0 overflow-visible border-0 sm:border'>
+      <Card flush className='min-w-0 overflow-visible border-0'>
         <div className='p-4 pb-3 sm:p-5 sm:pb-4'>
           <div className='flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between'>
             <SectionHeader className='mb-0 min-w-0 lg:flex-1' title='Permissions' icon={Users} subheader={subheader} />

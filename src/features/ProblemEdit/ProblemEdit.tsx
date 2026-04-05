@@ -262,7 +262,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
     <div className='w-full min-w-0 pb-20 text-left'>
       <title>{`Edit ${data.name} | ${meta?.title}`}</title>
 
-      <Card flush className='min-w-0 border-0 sm:border'>
+      <Card flush className='min-w-0 border-0'>
         <div className='p-4 sm:p-5'>
           <SectionHeader
             title={meta.isBouldering ? 'Edit problem' : 'Edit route'}

@@ -95,7 +95,7 @@ const Ticks = () => {
     <div className='space-y-6'>
       <title>{`Ticks | ${meta?.title}`}</title>
 
-      <Card flush className='min-w-0 border-0 sm:border'>
+      <Card flush className='min-w-0 border-0'>
         <div className='p-4 sm:p-6'>
           {!isLoading && (
             <SectionHeader

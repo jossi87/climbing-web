@@ -501,7 +501,7 @@ export const Problem = () => {
         />
       </div>
 
-      <Card flush className='min-w-0 border-0 shadow-sm sm:border'>
+      <Card flush className='min-w-0 border-0 shadow-sm'>
         {showMapTab ? (
           <>
             <div
@@ -608,7 +608,7 @@ export const Problem = () => {
       )}
 
       {showOverviewContent && hasPitches && data.sections && (
-        <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm sm:border'>
+        <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm'>
           <div className='p-4 sm:p-5'>
             <div className='flex flex-col gap-7'>
               {data.sections.map((s) => (
@@ -673,7 +673,7 @@ export const Problem = () => {
           )}
         >
           {hasTicks && (
-            <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm sm:border'>
+            <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm'>
               <div className='border-surface-border/40 flex flex-nowrap items-center gap-x-2 border-b px-4 py-2.5 sm:px-5'>
                 <Check size={12} className={cn('shrink-0', designContract.ascentStatus.ticked)} strokeWidth={2.25} />
                 <span className='inline-flex min-w-0 flex-nowrap items-center gap-x-1.5'>
@@ -689,7 +689,7 @@ export const Problem = () => {
             </Card>
           )}
           {hasComments && (
-            <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm sm:border'>
+            <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm'>
               <div className='border-surface-border/40 flex flex-nowrap items-center gap-x-2 border-b px-4 py-2.5 sm:px-5'>
                 <MessageSquare size={12} className='text-brand shrink-0' strokeWidth={2.25} />
                 <span className='inline-flex min-w-0 flex-nowrap items-center gap-x-1.5'>
@@ -714,7 +714,7 @@ export const Problem = () => {
       ) : null}
 
       {hasMetaCard ? (
-        <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm sm:border'>
+        <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm'>
           <div className='grid grid-cols-1 gap-x-6 gap-y-5 p-4 sm:p-5 lg:grid-cols-[min(11rem,30%)_1fr] lg:gap-x-8 lg:gap-y-6'>
             {hasRockBlock && (
               <>

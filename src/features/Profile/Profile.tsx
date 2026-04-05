@@ -43,7 +43,7 @@ const Profile = () => {
   if (isLoading) {
     return (
       <div className='w-full min-w-0'>
-        <Card flush className='min-w-0 border-0 sm:border'>
+        <Card flush className='min-w-0 border-0'>
           <div className='space-y-3 p-4 sm:p-5'>
             <div className='flex items-center gap-3'>
               <div className='skeleton-bar h-9 w-9 animate-pulse rounded-full' />
@@ -96,7 +96,7 @@ const Profile = () => {
       <title>{`${fullName} | ${meta?.title}`}</title>
       <meta name='description' content='Profile with public ascents, media, and other statistics.' />
 
-      <Card flush className='min-w-0 border-0 sm:border'>
+      <Card flush className='min-w-0 border-0'>
         <div className='p-4 sm:p-5'>
           <div className='flex min-w-0 items-start gap-3'>
             <ClickableAvatar
@@ -109,10 +109,10 @@ const Profile = () => {
               <h1 className='type-h1 truncate'>
                 {profile.firstname} {profile.lastname}
               </h1>
-              <div className='type-micro mt-2 grid min-w-0 grid-cols-1 gap-y-1.5 sm:flex sm:flex-wrap sm:items-center sm:gap-x-3 sm:gap-y-1.5'>
+              <div className='type-micro mt-2 grid min-w-0 grid-cols-1 gap-y-1.5 text-slate-400 sm:flex sm:flex-wrap sm:items-center sm:gap-x-3 sm:gap-y-1.5'>
                 {regions.length > 0 && (
-                  <span className='text-brand/90 inline-flex max-w-full min-w-0 items-center gap-1.5'>
-                    <Globe size={12} className='text-brand/80' />
+                  <span className='inline-flex max-w-full min-w-0 items-center gap-1.5'>
+                    <Globe size={12} className='shrink-0 text-slate-500' aria-hidden />
                     <span className='min-w-0 break-all'>{regions.join(', ')}</span>
                   </span>
                 )}
@@ -120,15 +120,21 @@ const Profile = () => {
                   <a
                     key={email}
                     href={`mailto:${email}`}
-                    className='text-brand/90 hover:text-brand inline-flex max-w-full min-w-0 items-center gap-1.5 transition-colors'
+                    className={cn(
+                      'group hover:text-brand inline-flex max-w-full min-w-0 items-center gap-1.5 font-normal text-slate-400 transition-colors',
+                    )}
                   >
-                    <Mail size={12} className='text-brand/80' />
+                    <Mail
+                      size={12}
+                      className='group-hover:text-brand shrink-0 text-slate-500 transition-colors'
+                      aria-hidden
+                    />
                     <span className='min-w-0 break-all'>{email}</span>
                   </a>
                 ))}
                 {profile.lastActivity && (
-                  <span className='inline-flex max-w-full min-w-0 items-center gap-1.5 text-emerald-200'>
-                    <Clock size={12} className='text-emerald-300/80' />
+                  <span className='inline-flex max-w-full min-w-0 items-center gap-1.5'>
+                    <Clock size={12} className='shrink-0 text-slate-500' aria-hidden />
                     <span className='min-w-0 break-words'>Active {profile.lastActivity}</span>
                   </span>
                 )}

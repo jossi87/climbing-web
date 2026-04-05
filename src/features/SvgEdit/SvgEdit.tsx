@@ -261,7 +261,7 @@ export const SvgEdit = ({
 
   return (
     <div className='w-full min-w-0' onMouseUp={() => dispatch({ action: 'idle' })}>
-      <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm sm:border'>
+      <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm'>
         <div className='divide-y divide-white/6'>
           <div className='p-3 sm:p-5'>
             <div className='mb-4 flex min-w-0 flex-nowrap items-start gap-x-2'>

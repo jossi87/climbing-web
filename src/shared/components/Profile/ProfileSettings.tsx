@@ -11,7 +11,7 @@ const ProfileSettings = () => {
 
   if (!data) {
     return (
-      <Card flush className='border-0 sm:border'>
+      <Card flush className='border-0'>
         <div className='animate-pulse space-y-5 p-8 sm:p-10' aria-busy aria-label='Loading profile settings'>
           <div className='skeleton-bar h-8 w-[min(100%,14rem)] rounded-md' />
           <div className='space-y-2.5'>
@@ -57,7 +57,7 @@ const ProfileSettings = () => {
 
     return (
       <div className='space-y-6'>
-        <Card flush className='border-0 sm:border'>
+        <Card flush className='border-0'>
           <section className='p-4 sm:p-6'>
             <div className='mb-6 grid grid-cols-1 gap-6 sm:grid-cols-2'>
               <div className='space-y-2'>
@@ -150,7 +150,7 @@ const ProfileSettings = () => {
           </section>
         </Card>
 
-        <Card flush className='border-0 sm:border'>
+        <Card flush className='border-0'>
           <section className='p-4 sm:p-6'>
             <SectionHeader title='Display Regions' icon={Globe} subheader='Choose visible regions' />
             <div className='border-surface-border divide-surface-border/60 bg-surface-card divide-y rounded-xl border'>
