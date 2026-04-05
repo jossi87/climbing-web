@@ -64,8 +64,8 @@ const TickListItemInner = ({ tick }: TickListItemProps) => {
       </Link>{' '}
       <span className={cn(tickWhenGrade, 'whitespace-nowrap tabular-nums')}>{tick.grade}</span>
       <LockSymbol lockedAdmin={!!tick.lockedAdmin} lockedSuperadmin={!!tick.lockedSuperadmin} />{' '}
-      <span className='inline-flex align-middle opacity-75'>
-        <Stars numStars={tick.stars ?? 0} includeStarOutlines={true} size={11} muted />
+      <span className='inline-flex align-middle'>
+        <Stars numStars={tick.stars ?? 0} includeStarOutlines={true} size={12} />
       </span>
       {tick.fa ? (
         <>

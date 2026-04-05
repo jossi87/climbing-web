@@ -92,7 +92,7 @@ const CommentModal = ({
               <textarea
                 placeholder='Write your comment…'
                 aria-labelledby='comment-body-label'
-                className='bg-surface-nav border-surface-border type-body min-h-24 w-full resize-y rounded-xl border py-3 pr-4 pl-10 transition-colors placeholder:text-slate-600 focus:border-white/20 focus:outline-none max-sm:min-h-[min(11rem,32dvh)] sm:min-h-28'
+                className='bg-surface-nav border-surface-border type-body focus:border-brand-border/60 min-h-24 w-full resize-y rounded-xl border py-3 pr-4 pl-10 transition-colors focus:outline-none max-sm:min-h-[min(11rem,32dvh)] sm:min-h-28'
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
               />
@@ -122,9 +122,9 @@ const CommentModal = ({
                   }}
                   className={cn(
                     designContract.typography.uiCompact,
-                    'focus-visible:ring-brand/45 min-w-0 flex-1 px-2 py-2.5 uppercase transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:outline-none max-sm:text-[10px] sm:flex-none sm:px-4',
+                    'focus-visible:ring-brand-border/70 min-w-0 flex-1 px-2 py-2.5 uppercase transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:outline-none max-sm:text-[10px] sm:flex-none sm:px-4',
                     !danger && !resolved
-                      ? 'bg-brand/20 text-brand ring-brand/50 shadow-none ring-1'
+                      ? 'bg-brand/20 text-brand ring-brand-border/55 shadow-none ring-1'
                       : 'hover:bg-surface-raised-hover hover:text-brand/90 text-slate-500',
                   )}
                 >

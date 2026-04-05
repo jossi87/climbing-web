@@ -93,7 +93,7 @@ const Header = () => {
         className={cn(
           'mx-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[12px] leading-snug font-medium transition-colors sm:text-[13px]',
           isActive
-            ? 'bg-surface-hover ring-brand/45 text-slate-50 ring-1'
+            ? 'bg-surface-hover ring-brand-border/70 text-slate-50 ring-1'
             : 'hover:bg-surface-raised-hover text-slate-300 hover:text-slate-50',
           className,
         )}
@@ -116,7 +116,7 @@ const Header = () => {
           onClick={() => setIsAccountOpen(!isAccountOpen)}
           className={cn(
             'cursor-pointer transition-all',
-            isAccountOpen ? 'ring-brand/60 ring-2' : 'ring-1 ring-white/10 hover:ring-white/20',
+            isAccountOpen ? 'ring-brand-border/80 ring-2' : 'ring-1 ring-white/10 hover:ring-white/20',
           )}
         />
         {isAccountOpen && (
@@ -191,7 +191,7 @@ const Header = () => {
     ) : (
       <button
         onClick={() => loginWithRedirect()}
-        className='border-brand/50 bg-surface-raised text-brand hover:border-brand hover:bg-surface-hover flex items-center gap-2 rounded border px-3 py-1.5 text-[10px] font-semibold tracking-[0.08em] normal-case transition-colors active:scale-95'
+        className='border-brand-border bg-surface-raised text-brand hover:border-brand-border hover:bg-surface-hover flex items-center gap-2 rounded border px-3 py-1.5 text-[10px] font-semibold tracking-[0.08em] normal-case transition-colors active:scale-95'
       >
         <LogIn size={14} /> <span>Sign in</span>
       </button>
@@ -211,7 +211,7 @@ const Header = () => {
           <div className='flex h-full min-w-0 flex-1 items-center gap-4'>
             <Link
               to='/'
-              className='group focus-visible:ring-offset-surface-card focus-visible:ring-brand/45 relative flex h-full shrink-0 items-center rounded-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none'
+              className='group focus-visible:ring-brand-border/70 focus-visible:ring-offset-surface-card relative flex h-full shrink-0 items-center rounded-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none'
             >
               <img
                 src='/png/logo_70x62.png'

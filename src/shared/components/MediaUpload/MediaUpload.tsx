@@ -101,8 +101,8 @@ const MediaUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
         className={cn(
           'group relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition-all duration-300',
           isDragActive
-            ? 'bg-surface-raised border-brand/55'
-            : 'border-surface-border bg-surface-raised hover:border-brand/45 hover:bg-surface-raised-hover',
+            ? 'border-brand-border bg-surface-raised'
+            : 'border-surface-border bg-surface-raised hover:border-brand-border hover:bg-surface-raised-hover',
           isConverting && 'pointer-events-none cursor-wait opacity-50',
         )}
       >

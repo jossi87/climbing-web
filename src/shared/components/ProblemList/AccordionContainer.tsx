@@ -38,7 +38,7 @@ const AccordionContainer = ({ accordionRows }: Props) => {
                 size={14}
                 strokeWidth={2}
                 className={cn(
-                  'shrink-0 text-slate-600 transition-transform duration-200',
+                  'shrink-0 text-slate-500 transition-transform duration-200',
                   isActive && 'rotate-180 text-slate-500',
                 )}
               />

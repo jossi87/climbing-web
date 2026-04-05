@@ -25,7 +25,7 @@ export const ProblemOrder = ({ problemOrder, onChange }: Props) => {
               <Hash
                 className={cn(
                   'absolute top-1/2 left-3 -translate-y-1/2 transition-colors',
-                  isModified ? 'text-orange-500' : 'text-slate-600',
+                  isModified ? 'text-orange-500' : 'text-slate-500',
                 )}
                 size={14}
               />

@@ -27,7 +27,7 @@ function joinDates(dates: (string | undefined | null)[]) {
 }
 
 /** Room between rows; light vertical padding so body + note + stars read as one unit. */
-const rowShell = 'group px-3 py-1.5 transition-colors hover:bg-surface-raised-hover sm:px-4 sm:py-2';
+const rowShell = 'px-3 py-1.5 sm:px-4 sm:py-2';
 
 const quoteBlock = cn(
   tickCommentSmall,
@@ -118,14 +118,7 @@ export const ProblemTicks = ({ ticks }: Props) => {
                     </>
                   )}
                   {displayDate ? (
-                    <span
-                      className={cn(
-                        tickFlags,
-                        'ml-1.5 inline text-slate-500 tabular-nums transition-colors group-hover:text-slate-400',
-                      )}
-                    >
-                      {displayDate}
-                    </span>
+                    <span className={cn(tickFlags, 'ml-1.5 inline text-slate-500 tabular-nums')}>{displayDate}</span>
                   ) : null}
                 </div>
 

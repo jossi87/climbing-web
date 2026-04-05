@@ -142,7 +142,7 @@ export const SlopeProfile = ({
           'focus-visible:ring-2',
           variant
             ? 'hover:bg-surface-raised-hover focus-visible:ring-white/25'
-            : 'hover:bg-surface-raised-hover text-brand/95 hover:ring-brand/35 focus-visible:ring-brand/50 hover:ring-1',
+            : 'hover:bg-surface-raised-hover text-brand/95 hover:ring-brand-border/50 focus-visible:ring-brand-border/60 hover:ring-1',
         )}
         style={variant ? { color: lineColor } : undefined}
       >

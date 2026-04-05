@@ -37,7 +37,7 @@ export const ProblemsOnRock = ({
             designContract.surfaces.inlineChipInteractive,
             'type-label max-w-[min(100%,20rem)] transition-all',
             problemId === p.id
-              ? 'border-brand/50 bg-surface-hover ring-brand/25 text-slate-100 shadow-sm ring-1'
+              ? 'border-brand-border bg-surface-hover ring-brand-border/30 text-slate-100 shadow-sm ring-1'
               : 'opacity-90 hover:opacity-100',
           )}
         >

@@ -500,7 +500,7 @@ const Sector = () => {
                       className={cn(
                         'group inline-flex max-w-full min-w-0 items-center gap-1 border-0 bg-transparent p-0 text-left text-[12px] font-semibold text-slate-50 transition-colors sm:text-[13px]',
                         'hover:text-slate-100',
-                        'focus-visible:ring-brand/40 focus-visible:rounded-sm focus-visible:ring-2 focus-visible:outline-none',
+                        'focus-visible:ring-brand-border/70 focus-visible:rounded-sm focus-visible:ring-2 focus-visible:outline-none',
                       )}
                     >
                       <span className='min-w-0 truncate'>{data.name}</span>

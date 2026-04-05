@@ -82,7 +82,7 @@ export const AreaEdit = () => {
   const defaultZoom: number = data.coordinates ? 8 : meta.defaultZoom;
 
   const inputClasses =
-    'w-full bg-surface-nav border border-surface-border rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-slate-600 transition-colors focus:border-brand focus:outline-none';
+    'w-full bg-surface-nav border border-surface-border rounded-lg px-3 py-2.5 text-sm text-white transition-colors focus:border-brand focus:outline-none';
   const labelClasses = 'ml-1 mb-1 block text-[11px] font-medium text-slate-400 sm:text-[12px]';
 
   return (
@@ -321,7 +321,7 @@ export const AreaEdit = () => {
                     {safeSectorOrder.map((s) => (
                       <div key={s.id} className='group flex items-center'>
                         <div className='relative flex-1'>
-                          <Hash className='absolute top-1/2 left-3 -translate-y-1/2 text-slate-600' size={12} />
+                          <Hash className='absolute top-1/2 left-3 -translate-y-1/2 text-slate-500' size={12} />
                           <input
                             className={cn(inputClasses, 'rounded-r-none border-r-0 pl-8')}
                             value={s.sorting ?? ''}

@@ -144,7 +144,7 @@ const ToggleLabel = ({ label, checked, onChange }: { label: string; checked: boo
       className={cn(
         'relative inline-flex h-4 w-8 shrink-0 cursor-pointer items-center rounded-full border p-0.5 transition-colors duration-200 ease-in-out focus:outline-none',
         checked
-          ? 'border-brand/45 bg-surface-hover shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]'
+          ? 'border-brand-border bg-surface-hover shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]'
           : 'border-surface-border bg-surface-raised group-hover:border-surface-border group-hover:bg-surface-raised-hover',
       )}
     >

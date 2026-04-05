@@ -142,7 +142,7 @@ const Ticks = () => {
                   </button>
                 )}
                 {currPage > 2 && (
-                  <span className={cn(designContract.typography.uiCompact, 'px-1 text-slate-600')}>…</span>
+                  <span className={cn(designContract.typography.uiCompact, 'px-1 text-slate-500')}>…</span>
                 )}
                 <button
                   type='button'
@@ -156,7 +156,7 @@ const Ticks = () => {
                   {currPage}
                 </button>
                 {currPage < numPages - 1 && (
-                  <span className={cn(designContract.typography.uiCompact, 'px-1 text-slate-600')}>…</span>
+                  <span className={cn(designContract.typography.uiCompact, 'px-1 text-slate-500')}>…</span>
                 )}
                 {currPage < numPages && (
                   <button

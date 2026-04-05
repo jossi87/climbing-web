@@ -7,18 +7,26 @@
   --color-status-todo: #38bdf8;
   --color-status-danger: #f87171;
   /*
-   * Surfaces skew **slate-blue**, not neutral gray: balanced dark grays read olive/brown on
-   * Windows + RDP next to true black — especially `surface-raised` chips (footer, loading, search).
+   * Surfaces: **neutral charcoal** (minimal blue in the paint), not slate-blue — reads as “dark mode”
+   * rather than midnight-navy. Steps stay close so panels feel like one material with subtle lift.
    */
-  --color-surface-dark: #080b10;
-  --color-surface-nav: #0f121a;
+  --color-surface-dark: #0c0c0d;
+  --color-surface-nav: #131316;
   /* Same as nav/footer chrome — panels read as part of the page, not a brighter lift */
-  --color-surface-card: #0f121a;
-  /** Solid “lift” between card and hover — use instead of `surface-nav/50` etc. on chrome (tiles, rows, trays). */
-  --color-surface-raised: #131a26;
-  --color-surface-raised-hover: #1b2230;
-  --color-surface-hover: #232a38;
-  --color-surface-border: #2c3545;
+  --color-surface-card: #131316;
+  /** Solid “lift” between card and hover — chips, rows, trays */
+  --color-surface-raised: #1c1c20;
+  --color-surface-raised-hover: #26262b;
+  --color-surface-hover: #303036;
+  /**
+   * Hairline edges: derived from `surface-card` + a whisper of white — avoids a separate “stripe gray” that fights
+   * the charcoal base (reads more Linear / Apple settings than boxed wireframes).
+   */
+  --color-surface-border: color-mix(in srgb, var(--color-surface-card) 92%, rgb(255 255 255) 8%);
+  /**
+   * Gold mixed into `surface-border` — chips / hovers; stays subtle as border softens.
+   */
+  --color-brand-border: color-mix(in srgb, var(--color-brand) 40%, var(--color-surface-border));
   --color-white: #e2e8f0;
   --shadow-brand: 0 0 10px rgba(198, 161, 91, 0.14);
   --spacing-container: 1400px;
@@ -77,12 +85,23 @@
   button {
     @apply cursor-pointer disabled:cursor-not-allowed disabled:opacity-50;
   }
+
   /*
-   * Focus: neutral ring only. Brand here read as a muddy “frame” on RDP / dark UI;
-   * reserve gold for nav/tab accents, not global focus halos.
+   * Placeholders: one step brighter than old `slate-600` so hint text stays legible on `surface-nav` / inputs
+   * (WCAG still expects labels; this avoids “invisible” hints on charcoal).
+   */
+  input::placeholder,
+  textarea::placeholder {
+    color: rgb(148 163 184);
+    opacity: 1;
+  }
+
+  /*
+   * Focus: neutral ring — visible on charcoal (≥3:1 against adjacent UI for keyboard users).
+   * Components that need brand accent (tabs, search) override with `focus-visible:ring-brand-border`.
    */
   :focus-visible {
-    @apply ring-offset-surface-dark ring-2 ring-slate-400/35 ring-offset-2 outline-none;
+    @apply ring-offset-surface-dark ring-2 ring-slate-300/55 ring-offset-2 outline-none;
   }
 
   /*
@@ -104,6 +123,17 @@
   footer a img {
     border: 0;
     outline: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    .animate-in,
+    .fade-in {
+      animation-duration: 1ms;
+      animation-iteration-count: 1;
+    }
   }
 }
 
@@ -154,11 +184,17 @@
   }
 
   .app-card {
-    @apply bg-surface-card border-surface-border overflow-hidden shadow-sm sm:rounded-xl sm:border;
+    @apply bg-surface-card overflow-hidden sm:rounded-xl;
+    /* Atmospheric edge: low-chroma lift, not a second gray “frame” */
+    border-color: color-mix(in srgb, rgb(255 255 255) 9%, var(--color-surface-card));
     border-top-width: 1px;
     border-bottom-width: 1px;
     border-left-width: 0;
     border-right-width: 0;
+    border-style: solid;
+    box-shadow:
+      0 1px 0 0 color-mix(in srgb, rgb(255 255 255) 4%, transparent),
+      0 12px 40px -16px rgba(0, 0, 0, 0.55);
 
     box-sizing: border-box;
     margin-left: -1rem;
@@ -179,8 +215,8 @@
   }
   .search-input:focus,
   .search-input:focus-visible {
-    @apply bg-surface-raised-hover border-slate-500/45 ring-0 outline-none;
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-surface-border) 80%, transparent);
+    @apply border-brand-border bg-surface-raised-hover ring-0 outline-none;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-brand) 42%, transparent);
   }
 
   .header-meta-text {

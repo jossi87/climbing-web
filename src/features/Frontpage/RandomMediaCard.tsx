@@ -58,14 +58,14 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
   const locationClass = 'text-[11px] leading-snug font-normal text-slate-300 md:text-[12px] md:text-slate-400';
   const metaTextClass = 'text-[11px] leading-snug text-slate-400 md:text-[12px]';
   const interactiveLinkClass =
-    'rounded-sm transition-colors duration-150 hover:text-brand hover:underline hover:decoration-brand/50 underline-offset-[3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40';
+    'rounded-sm transition-colors duration-150 hover:text-brand hover:underline hover:decoration-brand/50 underline-offset-[3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-border/70';
 
   return (
     <Card flush className={cardShellClass}>
       <div className={mediaFrameClass}>
         <Link
           to={`/problem/${randomMedia.idProblem}`}
-          className='focus-visible:ring-brand/45 absolute inset-0 block transition-[filter,transform] duration-300 outline-none hover:brightness-110 focus-visible:ring-2 focus-visible:ring-inset'
+          className='focus-visible:ring-brand-border/80 absolute inset-0 block transition-[filter,transform] duration-300 outline-none hover:brightness-110 focus-visible:ring-2 focus-visible:ring-inset'
         >
           <img
             className='h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105'

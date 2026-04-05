@@ -40,7 +40,7 @@ export function Avatar({ name, mediaId, mediaVersionStamp, size = 'mini', classN
       className={cn(
         'border-surface-border flex shrink-0 items-center justify-center overflow-hidden rounded-full border transition-all select-none',
         mid === 0 ? 'border-white/12' : 'bg-surface-hover',
-        onClick && 'hover:border-brand/45 cursor-pointer',
+        onClick && 'hover:border-brand-border cursor-pointer',
         className,
       )}
       style={{ width: pixelSize, height: pixelSize, ...fallbackStyle }}
@@ -102,7 +102,7 @@ export function AvatarGroup({
         <div
           className={cn(
             'bg-surface-card absolute -right-1 -bottom-1 z-10 flex items-center justify-center rounded-full border border-white/12 p-px shadow-sm',
-            'ring-brand/35 ring-1',
+            'ring-brand-border/50 ring-1',
           )}
         >
           <span className='inline-flex items-center justify-center text-slate-100 drop-shadow-sm'>{statusIcon}</span>

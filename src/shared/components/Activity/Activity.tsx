@@ -224,10 +224,10 @@ const activityChipBase = cn(
   designContract.typography.uiCompact,
 );
 const activityChipIdle =
-  'border-white/10 bg-surface-raised text-slate-400 hover:border-brand/40 hover:bg-surface-raised-hover hover:text-slate-200';
+  'border-white/10 bg-surface-raised text-slate-400 hover:border-brand-border hover:bg-surface-raised-hover hover:text-slate-200';
 const activityChipActive = cn(
   designContract.surfaces.controlActive,
-  'border-transparent shadow-sm transition-[background-color,border-color] hover:border-brand/45',
+  'border-transparent shadow-sm transition-[background-color,border-color] hover:border-brand-border',
 );
 
 /** Single rhythm + {@link designContract.typography.feed} body tone (calm on dark `surface-card`). */
@@ -364,7 +364,7 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
                       mediaId={u.mediaId}
                       mediaVersionStamp={u.mediaVersionStamp}
                       size='micro'
-                      className='ring-surface-card group-hover/user:ring-brand/45 shrink-0 ring-2 transition-all'
+                      className='ring-surface-card group-hover/user:ring-brand-border shrink-0 ring-2 transition-all'
                     />
                     <span className='min-w-0'>{u.name}</span>
                   </Link>

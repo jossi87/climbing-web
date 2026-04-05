@@ -81,7 +81,7 @@ export const PolylineEditor = ({ coordinates, parking, onChange, upload }: Props
     cn(
       'flex items-center gap-2 px-4 py-2 text-xs font-black uppercase tracking-widest transition-all border-b-2',
       activeTab === id
-        ? 'border-brand/50 bg-surface-hover text-slate-50'
+        ? 'border-brand-border bg-surface-hover text-slate-50'
         : 'border-transparent text-slate-500 hover:bg-surface-raised-hover hover:text-slate-300',
     );
 
@@ -139,7 +139,7 @@ export const PolylineEditor = ({ coordinates, parking, onChange, upload }: Props
             <label className={cn('ml-1', designContract.typography.label, 'text-slate-500')}>Coordinate String</label>
             <input
               type='text'
-              className='bg-surface-nav border-surface-border type-small focus:border-brand/50 w-full rounded-lg border px-3 py-2 transition-colors placeholder:text-slate-600 focus:outline-none'
+              className='type-small border-surface-border bg-surface-nav focus:border-brand-border w-full rounded-lg border px-3 py-2 transition-colors focus:outline-none'
               placeholder='lat,lng;lat,lng...'
               value={coordinates?.map((c) => `${c.latitude},${c.longitude}`).join(';') || ''}
               onChange={(e) => onChange(parsePolyline(e.target.value))}
@@ -153,7 +153,7 @@ export const PolylineEditor = ({ coordinates, parking, onChange, upload }: Props
             className={cn(
               'cursor-pointer rounded-xl border-2 border-dashed p-6 text-center transition-all',
               isDragActive
-                ? 'bg-surface-raised border-brand/50'
+                ? 'border-brand-border bg-surface-raised'
                 : 'border-surface-border bg-surface-raised hover:border-slate-500',
             )}
           >

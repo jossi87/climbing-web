@@ -413,7 +413,7 @@ const MediaModal = ({
                   aria-label={[svg.problemName, grade ?? undefined, statusHint].filter(Boolean).join('. ') || undefined}
                   className={cn(
                     'group block scroll-mt-1 border-l-2 border-transparent px-2 py-1.5 transition-colors sm:px-2.5',
-                    isRowActive ? 'bg-surface-raised-hover border-brand/50' : 'hover:bg-surface-raised-hover',
+                    isRowActive ? 'border-brand-border bg-surface-raised-hover' : 'hover:bg-surface-raised-hover',
                   )}
                 >
                   <div

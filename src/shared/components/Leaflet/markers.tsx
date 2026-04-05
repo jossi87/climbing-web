@@ -141,7 +141,7 @@ export default function Markers({ opacity, markers, addEventHandlers, flyToId, s
                       <img src={feed.urlStillImage} alt={m.name} className='block h-auto w-full' loading='lazy' />
                     </a>
                     <div className='flex items-center justify-end'>
-                      <span className='text-[9px] font-medium text-slate-600'>{feed.lastUpdated}</span>
+                      <span className='text-[9px] font-medium text-slate-500'>{feed.lastUpdated}</span>
                     </div>
                   </div>
                 ))}
@@ -161,7 +161,7 @@ export default function Markers({ opacity, markers, addEventHandlers, flyToId, s
                         Weather Forecast
                       </span>
                     </div>
-                    <span className='text-[9px] font-black tracking-tighter text-slate-600 uppercase'>yr.no</span>
+                    <span className='text-[9px] font-black tracking-tighter text-slate-500 uppercase'>yr.no</span>
                   </a>
                 )}
                 {m.urlOther && (
@@ -171,7 +171,7 @@ export default function Markers({ opacity, markers, addEventHandlers, flyToId, s
                     rel='noreferrer'
                     className='group flex items-center gap-2.5 px-3 py-1.5 text-[11px] font-bold text-slate-500 no-underline transition-colors hover:text-slate-200'
                   >
-                    <ExternalLink size={14} className='text-slate-600 transition-colors group-hover:text-slate-400' />
+                    <ExternalLink size={14} className='text-slate-500 transition-colors group-hover:text-slate-400' />
                     Official Source
                   </a>
                 )}

@@ -63,7 +63,7 @@ function getSearchFallbackMeta(kind: SearchEntityKind): { Icon: LucideIcon; labe
 
 const SEARCH_THUMB_PX = 44;
 
-const FALLBACK_THUMB_CLASS = 'border-white/5 bg-surface-nav transition-colors group-hover:border-brand/35';
+const FALLBACK_THUMB_CLASS = 'border-white/5 bg-surface-nav transition-colors group-hover:border-brand-border';
 const FALLBACK_ICON_CLASS = 'shrink-0 text-slate-500 group-hover:text-slate-400';
 
 const SearchBox = () => {
@@ -223,7 +223,7 @@ const SearchBox = () => {
                       result.externalUrl || imageSrc
                         ? FALLBACK_THUMB_CLASS
                         : userInitialsFallback
-                          ? 'group-hover:border-brand/35 border-white/12'
+                          ? 'group-hover:border-brand-border border-white/12'
                           : FALLBACK_THUMB_CLASS,
                     )}
                     style={userInitialsFallback ? avatarFallbackColors(result.title) : undefined}

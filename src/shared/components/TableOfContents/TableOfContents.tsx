@@ -99,7 +99,7 @@ export const TableOfContents = ({ areas, header, subHeader, compact = false, sho
             <button
               key={area.id}
               onClick={() => areaRefs.current[area.id]?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-              className='type-label border-surface-border bg-surface-raised hover:border-brand/40 flex items-center gap-1.5 rounded-lg border px-2.5 py-1 opacity-80 transition-all hover:opacity-100'
+              className='type-label border-surface-border bg-surface-raised hover:border-brand-border flex items-center gap-1.5 rounded-lg border px-2.5 py-1 opacity-80 transition-all hover:opacity-100'
             >
               {area.name}
               <LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} />

@@ -255,7 +255,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
     data.coordinates != null && (data.coordinates.latitude != null || data.coordinates.longitude != null);
 
   const inputClasses =
-    'w-full bg-surface-nav border border-surface-border rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-slate-600 transition-colors focus:border-brand focus:outline-none';
+    'w-full bg-surface-nav border border-surface-border rounded-lg px-3 py-2.5 text-sm text-white transition-colors focus:border-brand focus:outline-none';
   const labelClasses = 'ml-1 mb-1 block text-[11px] font-medium text-slate-400 sm:text-[12px]';
 
   return (
@@ -619,7 +619,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                         aria-checked={showSectorMarkers}
                         onClick={() => setShowSectorMarkers(!showSectorMarkers)}
                         className={cn(
-                          'focus-visible:ring-brand/45 relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2',
+                          'focus-visible:ring-brand-border/70 relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2',
                           showSectorMarkers ? 'bg-brand' : 'bg-slate-700',
                         )}
                       >

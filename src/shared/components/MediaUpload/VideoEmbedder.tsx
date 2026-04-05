@@ -107,7 +107,7 @@ const VideoEmbedder = ({ addMedia }: Props) => {
         <input
           type='text'
           placeholder='YouTube/Vimeo URL (supports "t"-parameter)'
-          className='bg-surface-nav border-surface-border type-body focus:border-brand w-full rounded-xl border py-2.5 pr-4 pl-10 transition-all placeholder:text-slate-600 focus:outline-none'
+          className='bg-surface-nav border-surface-border type-body focus:border-brand w-full rounded-xl border py-2.5 pr-4 pl-10 transition-all focus:outline-none'
           onChange={handleChange}
           value={embedVideoUrl || ''}
         />

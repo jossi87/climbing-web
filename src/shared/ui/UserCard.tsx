@@ -20,7 +20,7 @@ export const UserCard = ({ user, variant = 'default', metaAction }: UserCardProp
       'group flex items-center gap-3 transition-all duration-300 sm:gap-4',
       variant === 'minimal'
         ? 'hover:bg-surface-raised-hover rounded-lg px-1.5 py-2'
-        : 'border-surface-border/50 hover:bg-surface-raised-hover hover:border-brand/40 rounded-xl border p-3 sm:p-4',
+        : 'border-surface-border/50 hover:bg-surface-raised-hover hover:border-brand-border rounded-xl border p-3 sm:p-4',
     )}
   >
     <ClickableAvatar
@@ -58,7 +58,7 @@ export const UserCard = ({ user, variant = 'default', metaAction }: UserCardProp
             variant === 'minimal' ? 'text-slate-300 hover:text-slate-100' : 'text-slate-400 hover:text-slate-100',
           )}
         >
-          <Mail size={12} className={cn('shrink-0', variant === 'minimal' ? 'text-slate-400' : 'text-slate-600')} />
+          <Mail size={12} className={cn('shrink-0', variant === 'minimal' ? 'text-slate-400' : 'text-slate-500')} />
           <span className='min-w-0 truncate'>{user.emails[0]}</span>
         </a>
       )}

@@ -2,8 +2,11 @@
  * Rail kicker: “Latest activity”, breadcrumb crumbs (matches `SectionLabel`).
  * Form field captions use `typography.label` (`type-label`, 11px).
  *
- * Brand (#c6a15b): primary **text, links, tab indicators, and focus rings**. Prefer **opaque** neutrals for panel
- * wells (`iconWell`, `surface-raised`). Very light `bg-brand/20` on controls is OK; avoid large `bg-brand/10` washes.
+ * Brand (#c6a15b): primary **text, links, tab ink**. For **borders/rings** on dark panels prefer `brand-border`
+ * (`index.css`) — gold mixed into `surface-border`, less “mustard frame”.
+ *
+ * A11y baseline: global `input`/`textarea` placeholders and `:focus-visible` live in `index.css`; keep secondary copy
+ * at `slate-500`+ on charcoal (avoid `slate-600` for readable UI chrome).
  */
 export const SECTION_EYEBROW = 'text-[10px] font-semibold tracking-[0.16em] text-slate-500 uppercase';
 
@@ -107,13 +110,12 @@ export const designContract = {
     raised: 'bg-surface-raised',
     raisedHover: 'hover:bg-surface-raised-hover',
     /**
-     * Rows / cells **inside** `Card` / `.app-card`: flush with `surface-card` until hover — one unified panel; avoids
-     * matching `.search-input` and other raised controls.
+     * Rows **inside** `Card` / `.app-card`: no row hover fill — inline links carry hover; avoids competing affordances.
      */
-    panelRow: 'bg-transparent transition-[background-color] duration-150 hover:bg-surface-raised',
+    panelRow: 'bg-transparent',
     /** Stat grid cells on the frontpage (same panel as {@link panelRow}, plus border affordance). */
     panelStatCell:
-      'border border-transparent bg-transparent transition-[background-color,border-color] duration-200 hover:border-brand/45 hover:bg-surface-raised',
+      'border border-transparent bg-transparent transition-[background-color,border-color] duration-200 hover:border-brand-border hover:bg-surface-raised',
     /** Selected / “on” compact controls (filter grade, active chip) — opaque, no `bg-white/xx`. */
     controlActive: 'border-white/15 bg-surface-raised-hover text-slate-300',
     /**
@@ -131,7 +133,8 @@ export const designContract = {
      * **Selected** segment / radio-style control on dark UI — brand border + ring, neutral label (Areas, Regions,
      * editors, pagination current page). Pair with {@link segmentInactiveInGroup} or {@link segmentIdleRaised}.
      */
-    segmentActiveBrandBorder: 'border border-brand/50 bg-surface-hover text-slate-200 shadow-sm ring-1 ring-brand/20',
+    segmentActiveBrandBorder:
+      'border border-brand-border bg-surface-hover text-slate-200 shadow-sm ring-1 ring-brand-border/35',
     /**
      * **Unselected** chip inside one continuous segment strip (dataset / sun filters on Areas) — transparent
      * border keeps width stable next to {@link segmentActiveBrandBorder}.
@@ -155,12 +158,12 @@ export const designContract = {
      * Static info chips omit this — only interactive targets get the brand accent ring.
      */
     badgeLinkHover:
-      'cursor-pointer transition-colors duration-150 hover:bg-surface-raised-hover hover:text-slate-200 hover:ring-1 hover:ring-brand/35',
+      'cursor-pointer transition-colors duration-150 hover:bg-surface-raised-hover hover:text-slate-200 hover:ring-1 hover:ring-brand-border/45',
     /**
      * Ring chip for downloads, map links, and other meta actions — matches {@link DownloadButton}.
      */
     metaChipInteractive:
-      'inline-flex max-w-full cursor-pointer items-center gap-1 rounded-md bg-surface-raised px-2 py-0.5 text-[11px] font-medium text-slate-300 ring-1 ring-white/10 transition-colors duration-150 hover:bg-surface-raised-hover hover:text-slate-200 hover:ring-brand/35 sm:text-[12px]',
+      'inline-flex max-w-full cursor-pointer items-center gap-1 rounded-md bg-surface-raised px-2 py-0.5 text-[11px] font-medium text-slate-300 ring-1 ring-white/10 transition-colors duration-150 hover:bg-surface-raised-hover hover:text-slate-200 hover:ring-brand-border/45 sm:text-[12px]',
   },
   controls: {
     chipButton: 'btn-glass',

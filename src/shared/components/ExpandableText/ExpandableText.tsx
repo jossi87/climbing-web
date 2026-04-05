@@ -30,7 +30,7 @@ const ExpandableText: FC<ExpandableTextProps> = ({ text, maxLength, initialIsExp
       {isTruncated && (
         <button
           onClick={toggleExpand}
-          className='type-label border-surface-border bg-surface-raised hover:border-brand/40 inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 opacity-80 transition-all hover:opacity-100'
+          className='type-label border-surface-border bg-surface-raised hover:border-brand-border inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 opacity-80 transition-all hover:opacity-100'
         >
           {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           {isExpanded ? 'Show Less' : 'Show More'}

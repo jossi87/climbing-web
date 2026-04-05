@@ -31,7 +31,8 @@ type EditableSvg = SvgType & {
 const pageActionIconBtn =
   'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-colors disabled:pointer-events-none disabled:opacity-40';
 const pageActionIconBtnGreen = 'border-green-400/45 bg-green-500/20 text-green-300 hover:bg-green-500/28';
-const pageActionIconBtnBrand = 'border-brand/55 bg-brand text-white shadow-sm hover:border-brand hover:brightness-110';
+const pageActionIconBtnBrand =
+  'border-brand-border bg-brand text-white shadow-sm hover:border-brand-border hover:brightness-110';
 
 const MediaSvgEdit = () => {
   const meta = useMeta();
@@ -262,7 +263,7 @@ const MediaSvgEdit = () => {
   const toolBtnReset = 'text-red-400/90 hover:bg-red-500/10 hover:text-red-200';
 
   const fieldClass = cn(
-    'bg-surface-nav border-surface-border rounded-md border px-2 py-1.5 outline-none focus-visible:ring-2 focus-visible:ring-brand/40',
+    'rounded-md border border-surface-border bg-surface-nav px-2 py-1.5 outline-none focus-visible:ring-2 focus-visible:ring-brand-border/60',
     designContract.typography.meta,
     'text-slate-200',
   );
@@ -491,7 +492,7 @@ const MediaSvgEdit = () => {
                       'inline-flex max-w-full min-w-0 items-stretch overflow-hidden rounded-lg transition-colors',
                       designContract.typography.uiCompact,
                       activeElementIndex === index
-                        ? 'bg-surface-raised-hover ring-brand/40 text-slate-100 ring-1 ring-inset'
+                        ? 'bg-surface-raised-hover ring-brand-border/45 text-slate-100 ring-1 ring-inset'
                         : 'bg-surface-raised ring-surface-border/50 hover:bg-surface-raised-hover text-slate-500 ring-1 ring-inset hover:text-slate-300',
                     )}
                   >

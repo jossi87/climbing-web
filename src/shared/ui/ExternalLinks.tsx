@@ -50,7 +50,7 @@ const ExternalLinks = ({ externalLinks, onExternalLinksUpdated, hideLabel = fals
   );
 
   const inputClasses =
-    'w-full bg-surface-nav border border-surface-border rounded-lg py-1.5 px-9 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-brand transition-colors';
+    'w-full bg-surface-nav border border-surface-border rounded-lg py-1.5 px-9 text-xs text-white focus:outline-none focus:border-brand transition-colors';
   const labelClasses = 'ml-1 mb-1 block';
 
   return (

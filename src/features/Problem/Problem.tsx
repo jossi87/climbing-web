@@ -462,7 +462,7 @@ export const Problem = () => {
                     className={cn(
                       designContract.controls.pageHeaderIconButton,
                       showHiddenMedia
-                        ? 'border-brand/45 bg-brand/20 text-brand hover:bg-brand/30'
+                        ? 'border-brand-border bg-brand/20 text-brand hover:bg-brand/30'
                         : 'bg-surface-raised hover:bg-surface-raised-hover border-white/12 text-slate-300 hover:border-white/18',
                     )}
                   >
