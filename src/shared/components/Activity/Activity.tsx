@@ -9,7 +9,6 @@ import { Avatar, AvatarGroup, Card, SectionLabel } from '../../ui';
 import { Stars } from '../../ui/Indicators';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
-import { tickCrag, tickProblemLink } from '../Profile/profileRowTypography';
 import { ActivityFeedMetaRow } from './ActivityFeedMetaRow';
 import { LazyMedia } from './components/LazyMedia';
 import type { components } from '../../../@types/buldreinfo/swagger';
@@ -18,7 +17,7 @@ type ActivitySchema = components['schemas']['Activity'];
 
 /** Mirrors {@link ActivityFeedMetaRow}: story block + relative time on the right; optional second row like stars/comment. */
 const ActivitySkeleton = () => (
-  <div className='border-surface-border/40 min-h-[3.5rem] animate-pulse border-b bg-transparent px-4 py-3 last:border-b-0 last:border-transparent md:min-h-[4.25rem] md:px-5 md:py-3.5'>
+  <div className='min-h-[3.5rem] animate-pulse bg-transparent px-4 py-3 md:min-h-[4.25rem] md:px-5 md:py-3.5'>
     <div className='flex items-start gap-3 md:gap-3.5'>
       <div className='bg-surface-hover h-8 w-8 shrink-0 rounded-full pt-0.5 md:h-10 md:w-10' />
       <div className='min-w-0 flex-1 space-y-2 pt-0.5'>
@@ -105,13 +104,13 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
               aria-expanded={isFilterOpen}
               type='button'
             >
-              <Filter size={12} className='shrink-0 text-slate-100' strokeWidth={2} />
-              <span className={cn(designContract.typography.uiCompact, 'min-w-0 truncate text-slate-100')}>
+              <Filter size={12} className='shrink-0 text-slate-300' strokeWidth={2} />
+              <span className={cn(designContract.typography.uiCompact, 'min-w-0 truncate text-slate-300')}>
                 {normalizedLowerGradeText === 'n/a' ? 'All' : normalizedLowerGradeText}
               </span>
               <ChevronDown
                 size={10}
-                className={cn('shrink-0 text-slate-200 transition-transform', isFilterOpen && 'rotate-180')}
+                className={cn('shrink-0 text-slate-300 transition-transform', isFilterOpen && 'rotate-180')}
                 strokeWidth={2}
               />
             </button>
@@ -139,7 +138,7 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
                         'flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left transition-colors',
                         g.id === lowerGradeId
                           ? cn(designContract.surfaces.controlActive, 'font-semibold')
-                          : 'hover:bg-surface-raised text-slate-400 hover:text-slate-200',
+                          : 'hover:bg-surface-raised text-slate-400 hover:text-slate-300',
                       )}
                       onClick={() => {
                         setLowerGradeId(g.id);
@@ -184,7 +183,7 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
       </div>
 
       {embedded ? (
-        <div className='border-surface-border bg-surface-card divide-surface-border/45 divide-y overflow-hidden rounded-xl border'>
+        <div className='border-surface-border bg-surface-card overflow-hidden rounded-xl border'>
           {isPending
             ? [...Array(10)].map((_, i) => <ActivitySkeleton key={i} />)
             : activity?.map((a) => (
@@ -196,7 +195,7 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
               ))}
         </div>
       ) : (
-        <Card flush className='divide-surface-border/45 sm:divide-surface-border/55 divide-y'>
+        <Card flush>
           {isPending
             ? [...Array(10)].map((_, i) => <ActivitySkeleton key={i} />)
             : activity?.map((a) => (
@@ -231,14 +230,15 @@ const activityChipActive = cn(
   'border-transparent shadow-sm transition-[background-color,border-color] hover:border-brand/45',
 );
 
-/** Single rhythm everywhere (matches previous frontpage feed). */
-const activityRowClass = 'm-0 text-[13px] font-normal leading-snug tracking-normal md:text-[14px] md:leading-snug';
-
-const activityMetaClass = 'font-normal text-slate-300 antialiased';
+/** Single rhythm + {@link designContract.typography.feed} body tone (calm on dark `surface-card`). */
+const activityRowClass = cn(
+  'm-0 text-[12px] font-normal leading-snug tracking-normal md:text-[13px] md:leading-snug',
+  designContract.typography.feed.sentence,
+);
 
 const activityCommentClass = cn(
   'text-pretty break-words antialiased italic',
-  'text-[12px] leading-snug text-slate-400 md:text-[13px]',
+  'text-[12px] leading-snug text-slate-500 md:text-[13px]',
 );
 
 const FilterButton = ({ active, onClick, icon: Icon, label }: FilterButtonProps) => (
@@ -248,8 +248,8 @@ const FilterButton = ({ active, onClick, icon: Icon, label }: FilterButtonProps)
     aria-pressed={active}
     type='button'
   >
-    <Icon size={12} strokeWidth={2} className={cn('shrink-0', active ? 'text-slate-100' : 'text-slate-500')} />
-    <span className={cn(designContract.typography.uiCompact, active ? 'text-slate-100' : 'text-slate-400')}>
+    <Icon size={12} strokeWidth={2} className={cn('shrink-0', active ? 'text-slate-300' : 'text-slate-500')} />
+    <span className={cn(designContract.typography.uiCompact, active ? 'text-slate-300' : 'text-slate-400')}>
       {label}
     </span>
   </button>
@@ -272,7 +272,7 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
           }))
         : [{ name: a.name, mediaId: undefined, mediaVersionStamp: undefined }];
 
-  const statusIconGlyph = 'shrink-0 text-white';
+  const statusIconGlyph = 'shrink-0 text-slate-400';
   const statusIconSize = 9;
   const statusIcon = (() => {
     if (a.users) return <Plus size={statusIconSize} className={statusIconGlyph} strokeWidth={2} />;
@@ -284,11 +284,10 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
   const pad = 'px-4 py-3 md:px-5 md:py-3.5';
   const gap = 'gap-3 md:gap-3.5';
 
-  const actionClass = cn(activityMetaClass, 'text-slate-400');
-  const cragLeadClass = cn(tickCrag, 'font-medium');
-  const userLinkClass = cn(tickProblemLink, 'font-semibold text-slate-50');
+  const actionClass = designContract.typography.feed.action;
+  const cragLeadClass = designContract.typography.feed.lead;
+  const userLinkClass = designContract.typography.feed.emphasis;
   const problemLinkTone = 'soft' as const;
-  const faNameHoverClass = 'group-hover/user:text-slate-200';
 
   const hasStars = a.stars !== undefined && a.stars !== -1;
   const hasComment = !!a.message;
@@ -356,8 +355,8 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
                     key={u.id}
                     to={`/user/${u.id}`}
                     className={cn(
-                      actionClass,
-                      'group/user hover:text-brand inline-flex max-w-full min-w-0 items-center gap-1 leading-snug transition-colors',
+                      userLinkClass,
+                      'group/user inline-flex max-w-full min-w-0 items-center gap-1 leading-snug',
                     )}
                   >
                     <Avatar
@@ -367,7 +366,7 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
                       size='micro'
                       className='ring-surface-card group-hover/user:ring-brand/45 shrink-0 ring-2 transition-all'
                     />
-                    <span className={cn('min-w-0', faNameHoverClass)}>{u.name}</span>
+                    <span className='min-w-0'>{u.name}</span>
                   </Link>
                 ))}
               </span>

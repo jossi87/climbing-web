@@ -37,7 +37,8 @@
   html {
     /* Reserve space for the vertical scrollbar so layout doesn’t shift when content grows (CLS). */
     scrollbar-gutter: stable;
-    @apply selection:bg-surface-hover font-sans text-slate-300 antialiased selection:text-slate-100;
+    /* Default copy: stay below `slate-300` so titles/emphasis can use 200–300 without the whole page “glowing”. */
+    @apply selection:bg-surface-hover font-sans text-slate-400 antialiased selection:text-slate-200;
     font-family: var(--font-ui);
     font-size: 14px;
     letter-spacing: -0.005em;
@@ -65,7 +66,7 @@
   h6,
   b,
   strong {
-    @apply font-semibold text-slate-200;
+    @apply font-medium text-slate-300;
   }
   input,
   button,
@@ -117,21 +118,21 @@
    * - type-micro: captions & tight UI
    */
   .type-h1 {
-    @apply text-2xl font-semibold tracking-tight text-slate-100;
+    @apply text-2xl font-medium tracking-tight text-slate-200;
     font-family: var(--font-ui);
   }
 
   .type-h2 {
-    @apply text-lg font-semibold tracking-tight text-slate-100;
+    @apply text-lg font-medium tracking-tight text-slate-200;
     font-family: var(--font-ui);
   }
 
   .type-body {
-    @apply text-sm leading-relaxed font-normal text-slate-200 sm:text-base;
+    @apply text-sm leading-relaxed font-normal text-slate-300 sm:text-base;
   }
 
   .type-small {
-    @apply text-sm leading-snug font-medium text-slate-300;
+    @apply text-sm leading-snug font-medium text-slate-400;
   }
 
   .type-label {
@@ -140,7 +141,7 @@
   }
 
   .type-micro {
-    @apply text-[11px] leading-[1.35] font-medium text-slate-300 sm:text-[12px];
+    @apply text-[11px] leading-[1.35] font-medium text-slate-400 sm:text-[12px];
   }
 
   /** Saturated buttons / toggles — use instead of raw `text-white` (eslint typography rule). */
@@ -149,7 +150,7 @@
   }
 
   .badge-micro {
-    @apply inline-flex h-4 items-center rounded border border-white/16 px-1.5 text-[11px] leading-none font-medium text-slate-300 sm:text-[12px];
+    @apply inline-flex h-4 items-center rounded border border-white/16 px-1.5 text-[11px] leading-none font-medium text-slate-400 sm:text-[12px];
   }
 
   .app-card {
@@ -174,7 +175,7 @@
   }
 
   .search-input {
-    @apply bg-surface-raised h-10 rounded-md border border-transparent px-3 text-[12px] font-medium text-slate-100 transition-[color,background-color,border-color,box-shadow] duration-200 sm:text-sm;
+    @apply bg-surface-raised h-10 rounded-md border border-transparent px-3 text-[12px] font-medium text-slate-300 transition-[color,background-color,border-color,box-shadow] duration-200 sm:text-sm;
   }
   .search-input:focus,
   .search-input:focus-visible {

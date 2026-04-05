@@ -3,7 +3,10 @@ import type { components } from '../../../../@types/buldreinfo/swagger';
 import { LockSymbol } from '../../../ui/Indicators';
 import { ProfileRowTextSep } from '../../Profile/ProfileRowTextSep';
 import { tickCragLink, tickFlags, tickProblemLink } from '../../Profile/profileRowTypography';
+import { designContract } from '../../../../design/contract';
 import { cn } from '../../../../lib/utils';
+
+const feed = designContract.typography.feed;
 
 type Props = {
   a: components['schemas']['Activity'];
@@ -16,12 +19,10 @@ type Props = {
   compactEnd?: boolean;
 };
 
-/** Home feed: crags de-emphasized so route + grade read first. */
-const softCragLink = 'font-normal text-slate-400 antialiased transition-colors hover:text-brand';
-/** Stand out from gray crag/meta copy so route names scan on one line (esp. mobile). */
-const softProblemLink = 'inline-block font-bold text-white antialiased transition-colors hover:text-brand';
-/** Beside problem title: same bright color, lighter weight so the name stays primary. */
-const softGradeBesideProblem = 'font-normal text-white antialiased';
+/** Activity feed — see {@link designContract.typography.feed}. */
+const softCragLink = cn(feed.locationLink, 'inline');
+const softProblemLink = cn(feed.routeTitle, 'inline');
+const softGradeBesideProblem = feed.gradeHighlight;
 const defaultGradeBesideProblem = 'font-normal text-slate-50 antialiased';
 
 /** Same hierarchy as profile ascents / todo: crag → problem + grade + type (no badge box). */
@@ -58,7 +59,7 @@ export const ProblemLink = ({ a, type, flagsClassName, tone = 'default', compact
 
       <ProfileRowTextSep />
 
-      <Link to={`/problem/${a.problemId}`} className={problem}>
+      <Link to={`/problem/${a.problemId}`} className={cn(problem, '[overflow-wrap:anywhere] break-words')}>
         {a.problemName?.trim()}
       </Link>
       {showGrade ? (

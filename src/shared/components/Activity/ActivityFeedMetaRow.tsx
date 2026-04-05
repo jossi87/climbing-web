@@ -79,13 +79,14 @@ export function ActivityFeedMetaRow({
   );
 
   const timeClass =
-    'shrink-0 text-[11px] leading-none whitespace-nowrap tabular-nums tracking-tight text-slate-500 md:text-[12px] md:text-slate-400';
+    'shrink-0 text-[11px] leading-none whitespace-nowrap tabular-nums tracking-tight text-slate-500 md:text-[12px]';
 
   return (
     <div className={cn(activityRowRootClass, 'text-pretty [overflow-wrap:anywhere]')}>
       <div className='flex min-w-0 flex-row items-start justify-between gap-2 sm:gap-3 md:gap-4'>
         <div className='min-w-0 flex-1'>
-          <div className='inline-flex max-w-full min-w-0 flex-wrap items-baseline gap-x-[0.3em]'>{story}</div>
+          {/* Normal inline flow so long route names break mid-line; avoid flex-wrap (whole links jump as one unit). */}
+          <div className='min-w-0 max-w-full break-words'>{story}</div>
         </div>
         <span className={cn(timeClass, 'max-md:leading-snug self-start text-right')}>{a.timeAgo}</span>
       </div>

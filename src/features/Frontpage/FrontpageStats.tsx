@@ -35,7 +35,7 @@ const StatItem = ({ to, icon: Icon, label, value, loading }: StatItemProps) => {
       <div
         className={cn(
           'relative z-[1] mb-1.5 shrink-0 text-slate-400 transition-colors sm:mb-2',
-          'group-hover:text-slate-200',
+          'group-hover:text-slate-300',
           loading && 'animate-pulse',
         )}
       >
@@ -60,7 +60,7 @@ const StatItem = ({ to, icon: Icon, label, value, loading }: StatItemProps) => {
             )}
           >
             {value !== undefined && value !== '' ? (
-              <span className='text-base leading-none font-semibold tracking-tight whitespace-nowrap text-slate-100 tabular-nums sm:text-lg'>
+              <span className='text-base leading-none font-medium tracking-tight whitespace-nowrap text-slate-300 tabular-nums sm:text-lg'>
                 {value}
               </span>
             ) : null}
@@ -69,8 +69,8 @@ const StatItem = ({ to, icon: Icon, label, value, loading }: StatItemProps) => {
         <div className='flex h-4 shrink-0 items-center justify-center'>
           <SectionLabel
             className={cn(
-              '!text-[9px] !leading-none !tracking-[0.06em] text-slate-400 sm:!text-[10px] sm:!tracking-[0.1em]',
-              !loading && 'transition-colors group-hover:text-slate-300',
+              '!text-[9px] !leading-none !tracking-[0.06em] text-slate-500 sm:!text-[10px] sm:!tracking-[0.1em]',
+              !loading && 'transition-colors group-hover:text-slate-400',
             )}
           >
             {label}

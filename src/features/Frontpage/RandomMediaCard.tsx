@@ -52,10 +52,11 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
 
   const taggedUsers = randomMedia.tagged || [];
   const photographer = randomMedia.photographer;
-  const problemTitleClass = 'text-[15px] leading-snug font-semibold text-slate-100 md:text-[16px]';
-  const gradeClass = 'text-[13px] leading-none font-medium text-slate-300 tabular-nums md:text-[14px]';
-  const locationClass = 'text-[11px] leading-snug font-medium text-slate-200 md:text-[12px]';
-  const metaTextClass = 'text-[11px] leading-snug text-slate-200 md:text-[12px]';
+  const problemTitleClass = 'text-[15px] leading-snug font-semibold text-slate-300 md:text-[16px]';
+  const gradeClass = 'text-[13px] leading-none font-light tabular-nums tracking-tight text-slate-300 md:text-[14px]';
+  /** Brighter on image overlay (mobile); on card body `slate-400` matches mid-band secondary text */
+  const locationClass = 'text-[11px] leading-snug font-normal text-slate-300 md:text-[12px] md:text-slate-400';
+  const metaTextClass = 'text-[11px] leading-snug text-slate-400 md:text-[12px]';
   const interactiveLinkClass =
     'rounded-sm transition-colors duration-150 hover:text-brand hover:underline hover:decoration-brand/50 underline-offset-[3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40';
 
@@ -99,7 +100,7 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
             <Link to={`/area/${randomMedia.idArea}`} className={interactiveLinkClass}>
               <span className={locationClass}>{randomMedia.area}</span>
             </Link>
-            <span className='mx-1 text-slate-200/90' aria-hidden>
+            <span className='mx-1 text-slate-500' aria-hidden>
               ·
             </span>
             <Link to={`/sector/${randomMedia.idSector}`} className={interactiveLinkClass}>
@@ -162,7 +163,7 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
             <Link to={`/area/${randomMedia.idArea}`} className={interactiveLinkClass}>
               <span className={locationClass}>{randomMedia.area}</span>
             </Link>
-            <span className='mx-1 text-slate-200/90' aria-hidden>
+            <span className='mx-1 text-slate-500' aria-hidden>
               ·
             </span>
             <Link to={`/sector/${randomMedia.idSector}`} className={interactiveLinkClass}>

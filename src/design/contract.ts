@@ -28,13 +28,30 @@ export const designContract = {
     /**
      * Toolbar chips, filter pills, compact controls (matches tab strip ~11–12px).
      */
-    uiCompact: 'text-[11px] font-semibold leading-none tracking-normal sm:text-[12px]',
+    uiCompact: 'text-[11px] font-medium leading-none tracking-normal sm:text-[12px]',
     /** Dropdown / menu rows */
     menuItem: 'text-[11px] font-medium leading-snug sm:text-[12px]',
     /** Inline links in list/table content (Top, Todo, etc.) */
-    listLink: 'text-slate-200 transition-colors hover:text-slate-100',
-    listLinkMuted: 'text-slate-400 transition-colors hover:text-slate-200',
-    listEmphasis: 'font-semibold text-slate-100',
+    listLink: 'text-slate-300 transition-colors hover:text-slate-200',
+    listLinkMuted: 'text-slate-500 transition-colors hover:text-slate-300',
+    /** Inline emphasis in tables/lists — prefer medium weight so rows don’t all feel “bold UI”. */
+    listEmphasis: 'font-medium text-slate-300',
+    /**
+     * Dense dark feeds: route title vs grade share the same luminance (`slate-300`); grade is **lighter weight** +
+     * slightly tighter tracking so it reads as a thin suffix, not a second headline.
+     */
+    feed: {
+      sentence: 'text-slate-400 antialiased',
+      /** “ticked”, “in” — readable, not buried */
+      action: 'text-slate-500 antialiased',
+      emphasis: 'font-normal text-slate-300 antialiased transition-colors hover:text-brand',
+      /** Route title — one step heavier than body, not brighter white */
+      routeTitle: 'font-semibold text-slate-300 antialiased transition-colors hover:text-brand',
+      locationLink: 'font-normal text-slate-400 antialiased transition-colors hover:text-brand',
+      /** Same color as {@link feed.routeTitle}; thinner + tighter so it’s subtly distinct */
+      gradeHighlight: 'font-light tabular-nums tracking-tight text-slate-300 antialiased',
+      lead: 'font-medium text-slate-400 antialiased',
+    },
     /** Grade tokens (no brackets): mono + muted */
     grade: 'type-small font-mono tabular-nums text-slate-400',
     /** Same type rhythm as `SectionLabel` / breadcrumbs — use for explicit overlines in TSX. */
@@ -98,7 +115,7 @@ export const designContract = {
     panelStatCell:
       'border border-transparent bg-transparent transition-[background-color,border-color] duration-200 hover:border-brand/45 hover:bg-surface-raised',
     /** Selected / “on” compact controls (filter grade, active chip) — opaque, no `bg-white/xx`. */
-    controlActive: 'border-white/15 bg-surface-raised-hover text-slate-100',
+    controlActive: 'border-white/15 bg-surface-raised-hover text-slate-300',
     /**
      * Icon wells (PageHeader, Section, HeaderButtons, callouts) — always opaque neutrals.
      * Avoid `bg-brand/15` etc.; they read muddy/brown when composited on dark surfaces.
@@ -138,12 +155,12 @@ export const designContract = {
      * Static info chips omit this — only interactive targets get the brand accent ring.
      */
     badgeLinkHover:
-      'cursor-pointer transition-colors duration-150 hover:bg-surface-raised-hover hover:text-slate-100 hover:ring-1 hover:ring-brand/35',
+      'cursor-pointer transition-colors duration-150 hover:bg-surface-raised-hover hover:text-slate-200 hover:ring-1 hover:ring-brand/35',
     /**
      * Ring chip for downloads, map links, and other meta actions — matches {@link DownloadButton}.
      */
     metaChipInteractive:
-      'inline-flex max-w-full cursor-pointer items-center gap-1 rounded-md bg-surface-raised px-2 py-0.5 text-[11px] font-medium text-slate-300 ring-1 ring-white/10 transition-colors duration-150 hover:bg-surface-raised-hover hover:text-slate-100 hover:ring-brand/35 sm:text-[12px]',
+      'inline-flex max-w-full cursor-pointer items-center gap-1 rounded-md bg-surface-raised px-2 py-0.5 text-[11px] font-medium text-slate-300 ring-1 ring-white/10 transition-colors duration-150 hover:bg-surface-raised-hover hover:text-slate-200 hover:ring-brand/35 sm:text-[12px]',
   },
   controls: {
     chipButton: 'btn-glass',
@@ -169,11 +186,11 @@ export const designContract = {
     /** Content-sized tab pairs (e.g. Sectors | Routes): extra air between tabs */
     tabBarStripGapInline: 'gap-x-6 gap-y-1 sm:gap-x-10',
     tabBarButton:
-      'relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 border-b-2 border-transparent px-1 py-2.5 text-[11px] leading-none font-semibold transition-colors sm:flex-row sm:gap-1.5 sm:px-3 sm:py-3 sm:text-[12px]',
+      'relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 border-b-2 border-transparent px-1 py-2.5 text-[11px] leading-none font-medium transition-colors sm:flex-row sm:gap-1.5 sm:px-3 sm:py-3 sm:text-[12px]',
     /** Capped-width bar reads better on 2-tab rows than a full-cell underline */
     tabBarButtonActive:
-      'text-slate-100 after:pointer-events-none after:absolute after:bottom-0 after:left-1/2 after:h-[3px] after:w-[min(5.75rem,calc(100%-0.75rem))] after:max-w-[11rem] after:-translate-x-1/2 after:rounded-full after:bg-brand',
-    tabBarButtonInactive: 'text-slate-400 hover:text-slate-200',
+      'text-slate-300 after:pointer-events-none after:absolute after:bottom-0 after:left-1/2 after:h-[3px] after:w-[min(5.75rem,calc(100%-0.75rem))] after:max-w-[11rem] after:-translate-x-1/2 after:rounded-full after:bg-brand',
+    tabBarButtonInactive: 'text-slate-500 hover:text-slate-300',
     tabButton:
       'flex items-center gap-2 border-b-2 px-6 py-3 text-[10px] font-semibold tracking-[0.16em] uppercase transition-colors',
     navPill:
