@@ -224,11 +224,20 @@ const activityChipBase = cn(
   'inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full border px-2.5 leading-none transition-[background-color,color,transform,border-color] duration-200 active:scale-95 sm:h-8 sm:gap-2 sm:px-4',
   designContract.typography.uiCompact,
 );
-const activityChipIdle =
-  'border-white/10 bg-surface-raised text-slate-300 hover:border-brand-border hover:bg-surface-raised-hover hover:text-slate-100';
+/** Grade dropdown trigger — reads as the primary filter control. */
 const activityChipActive = cn(
   designContract.surfaces.controlActive,
   'border-transparent shadow-sm transition-[background-color,border-color] hover:border-brand-border',
+);
+
+/**
+ * Type toggles (FA / Ticks / Media / Com): same neutral “on” as before; “off” reads clearly recessed vs {@link activityChipActive}.
+ */
+const filterTypeChipOff =
+  'border border-white/8 bg-surface-raised text-slate-500 hover:border-white/14 hover:bg-surface-raised-hover hover:text-slate-400';
+const filterTypeChipOn = cn(
+  designContract.surfaces.controlActive,
+  'border-transparent shadow-sm transition-[background-color,border-color] hover:border-white/25',
 );
 
 /** Single rhythm + {@link designContract.typography.feed} body tone (calm on dark `surface-card`). */
@@ -245,12 +254,12 @@ const activityCommentClass = cn(
 const FilterButton = ({ active, onClick, icon: Icon, label }: FilterButtonProps) => (
   <button
     onClick={onClick}
-    className={cn(activityChipBase, active ? activityChipActive : activityChipIdle)}
+    className={cn(activityChipBase, active ? filterTypeChipOn : filterTypeChipOff)}
     aria-pressed={active}
     type='button'
   >
-    <Icon size={12} strokeWidth={2} className={cn('shrink-0', active ? 'text-slate-300' : 'text-slate-400')} />
-    <span className={cn(designContract.typography.uiCompact, active ? 'text-slate-300' : 'text-slate-300')}>
+    <Icon size={12} strokeWidth={2} className={cn('shrink-0', active ? 'text-slate-300' : 'text-slate-500')} />
+    <span className={cn(designContract.typography.uiCompact, active ? 'text-slate-300' : 'text-slate-500')}>
       {label}
     </span>
   </button>
@@ -273,13 +282,13 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
           }))
         : [{ name: a.name, mediaId: undefined, mediaVersionStamp: undefined }];
 
-  const statusIconGlyph = 'shrink-0 text-slate-400';
-  const statusIconSize = 9;
+  const statusIconGlyph = 'shrink-0 text-slate-300';
+  const statusIconSize = 10;
   const statusIcon = (() => {
-    if (a.users) return <Plus size={statusIconSize} className={statusIconGlyph} strokeWidth={2} />;
-    if (a.message) return <MessageSquare size={statusIconSize} className={statusIconGlyph} strokeWidth={2} />;
-    if (a.media && !a.name) return <Camera size={statusIconSize} className={statusIconGlyph} strokeWidth={2} />;
-    return <Check size={statusIconSize} className={statusIconGlyph} strokeWidth={2} />;
+    if (a.users) return <Plus size={statusIconSize} className={statusIconGlyph} strokeWidth={2.25} />;
+    if (a.message) return <MessageSquare size={statusIconSize} className={statusIconGlyph} strokeWidth={2.25} />;
+    if (a.media && !a.name) return <Camera size={statusIconSize} className={statusIconGlyph} strokeWidth={2.25} />;
+    return <Check size={statusIconSize} className={statusIconGlyph} strokeWidth={2.25} />;
   })();
 
   /** Roomier vertical rhythm on small screens — easier to scan the feed; desktop stays compact. */

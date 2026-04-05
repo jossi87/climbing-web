@@ -62,7 +62,7 @@ export const Stars = ({
   for (let i = 0; i < 3; i++) {
     if (i < fullStars) stars.push(<Star key={i} size={size} className={filledClass} />);
     else if (i === fullStars && hasHalfStar) stars.push(<StarHalf key={i} size={size} className={filledClass} />);
-    else if (includeStarOutlines) stars.push(<Star key={i} size={size} strokeWidth={3} className={outlineClass} />);
+    else if (includeStarOutlines) stars.push(<Star key={i} size={size} strokeWidth={2.5} className={outlineClass} />);
   }
   return <div className='inline-flex items-center gap-0.5'>{stars}</div>;
 };

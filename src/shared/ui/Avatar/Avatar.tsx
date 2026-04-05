@@ -34,6 +34,8 @@ export function Avatar({ name, mediaId, mediaVersionStamp, size = 'mini', classN
   const mid = mediaId ?? 0;
   const initials = avatarInitialsFromName(name);
   const fallbackStyle = mid === 0 ? avatarFallbackColors(name) : undefined;
+  /** ~2× for retina; capped so we don’t request huge originals on modal-sized avatars. */
+  const mediaTargetWidth = Math.min(2048, Math.round(pixelSize * 2));
 
   return (
     <div
@@ -55,12 +57,13 @@ export function Avatar({ name, mediaId, mediaVersionStamp, size = 'mini', classN
         </span>
       ) : (
         <img
-          src={getMediaFileUrl(mid, mediaVersionStamp ?? 0, false, { targetWidth: pixelSize })}
+          src={getMediaFileUrl(mid, mediaVersionStamp ?? 0, false, { targetWidth: mediaTargetWidth })}
           alt={name ?? ''}
           loading='lazy'
           width={pixelSize}
           height={pixelSize}
           className='pointer-events-none h-full w-full object-cover'
+          decoding='async'
         />
       )}
     </div>
@@ -101,11 +104,13 @@ export function AvatarGroup({
       {statusIcon && (
         <div
           className={cn(
-            'bg-surface-card absolute -right-1 -bottom-1 z-10 flex items-center justify-center rounded-full border border-white/12 p-px shadow-sm',
-            'ring-brand-border/50 ring-1',
+            'border-brand-border/50 bg-surface-card absolute -right-px -bottom-px z-10 flex h-[18px] w-[18px] items-center justify-center rounded-full border',
           )}
         >
-          <span className='inline-flex items-center justify-center text-slate-100 drop-shadow-sm'>{statusIcon}</span>
+          {/* No drop-shadow / ring — they soften tiny Lucide glyphs; hairline border stays crisp. */}
+          <span className='inline-flex items-center justify-center text-slate-200 [&_svg]:block [&_svg]:shrink-0'>
+            {statusIcon}
+          </span>
         </div>
       )}
     </div>
