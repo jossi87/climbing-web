@@ -534,7 +534,7 @@ const Sector = () => {
                     </button>
                     {sectorPickerOpen && (
                       <ul
-                        className='border-surface-border bg-surface-card ring-surface-border/50 absolute top-[calc(100%+0.35rem)] left-0 z-50 max-h-64 min-w-[min(100vw-2rem,18rem)] overflow-auto rounded-2xl border py-1 shadow-2xl ring-1'
+                        className='border-surface-border bg-surface-card ring-surface-border/50 absolute top-[calc(100%+0.35rem)] left-0 z-[100] max-h-64 min-w-[min(100vw-2rem,18rem)] overflow-auto rounded-2xl border py-1 shadow-2xl ring-1'
                         role='listbox'
                       >
                         {(data.sectors ?? []).map((s) => {

@@ -526,13 +526,18 @@ export const ProblemList = ({
                 aria-label={showFilter ? 'Hide filters' : 'Show filters'}
                 onClick={() => setFilterShowing((v) => !v)}
                 className={cn(
-                  'inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg border px-3 text-[11px] font-medium whitespace-nowrap transition-colors sm:text-[12px] md:h-8 md:gap-1.5 md:px-3',
+                  // Match {@link ToolbarDropdown} default triggers: same radius, fill, and open/closed pattern.
+                  'inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-md border px-3 text-[11px] font-medium whitespace-nowrap transition-colors sm:text-[12px] md:h-8 md:gap-1.5 md:px-3',
                   showFilter
-                    ? 'border-surface-border bg-surface-hover ring-surface-border/50 text-slate-100 ring-1'
-                    : 'border-surface-border/60 hover:border-surface-border hover:bg-surface-raised bg-transparent text-slate-400 hover:text-slate-100',
+                    ? 'border-surface-border bg-surface-hover text-slate-100'
+                    : 'border-surface-border bg-surface-raised hover:border-surface-border hover:bg-surface-raised-hover text-slate-300 hover:text-slate-200',
                 )}
               >
-                <Filter size={11} className='shrink-0 opacity-90' />
+                <Filter
+                  size={11}
+                  className={cn('shrink-0', showFilter ? 'text-slate-300' : 'text-slate-400')}
+                  strokeWidth={2}
+                />
                 <span>Filters</span>
               </button>
             </>

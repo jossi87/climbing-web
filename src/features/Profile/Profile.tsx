@@ -44,21 +44,25 @@ const Profile = () => {
     return (
       <div className='w-full min-w-0'>
         <Card flush className='min-w-0 border-0'>
-          <div className='space-y-3 p-4 sm:p-5'>
-            <div className='flex items-center gap-3'>
-              <div className='skeleton-bar h-9 w-9 animate-pulse rounded-full' />
-              <div className='skeleton-bar h-5 w-40 animate-pulse rounded' />
+          <div className='animate-pulse' aria-busy aria-label='Loading profile'>
+            <div className='p-4 sm:p-5'>
+              {/* Avatar `small` (40px) + title + meta lines — no extra row (old skeleton mimicked non-existent chips). */}
+              <div className='flex min-w-0 items-start gap-3'>
+                <div className='skeleton-bar h-10 w-10 shrink-0 rounded-full' />
+                <div className='min-w-0 flex-1 space-y-2'>
+                  <div className='skeleton-bar h-7 max-w-[min(100%,16rem)] rounded-md' />
+                  <div className='space-y-1.5 pt-0.5'>
+                    <div className='skeleton-bar-muted h-3 max-w-md rounded' />
+                    <div className='skeleton-bar-muted h-3 max-w-[min(100%,14rem)] rounded' />
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className='flex gap-1 overflow-hidden'>
+            <div className={tabBarStripContainerClassName('equal')}>
               {Array.from({ length: 5 }).map((_, idx) => (
-                <div key={idx} className='skeleton-bar-muted h-8 w-20 animate-pulse rounded-md' />
+                <div key={idx} className='skeleton-bar h-11 min-w-0 flex-1 rounded-none' />
               ))}
             </div>
-          </div>
-          <div className={tabBarStripContainerClassName('equal')}>
-            {Array.from({ length: 5 }).map((_, idx) => (
-              <div key={idx} className='skeleton-bar h-11 min-w-0 flex-1 animate-pulse' />
-            ))}
           </div>
           <div className='p-4 sm:p-6'>
             <Loading inline />

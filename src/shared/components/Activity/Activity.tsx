@@ -19,7 +19,8 @@ type ActivitySchema = components['schemas']['Activity'];
 const ActivitySkeleton = () => (
   <div className='min-h-[3.75rem] animate-pulse bg-transparent px-4 py-4 md:min-h-[4.25rem] md:px-5 md:py-3.5'>
     <div className='flex items-start gap-3 md:gap-3.5'>
-      <div className='skeleton-bar h-8 w-8 shrink-0 rounded-full pt-0.5 md:h-10 md:w-10' />
+      {/* Match {@link Avatar} size `small` (40px) at all breakpoints */}
+      <div className='skeleton-bar h-10 w-10 shrink-0 rounded-full pt-0.5' />
       <div className='min-w-0 flex-1 space-y-2 pt-0.5'>
         <div className='flex w-full min-w-0 flex-row items-start justify-between gap-3 sm:gap-4 md:gap-6'>
           <div className='min-w-0 flex-1 space-y-1.5'>
@@ -37,6 +38,10 @@ const ActivitySkeleton = () => (
   </div>
 );
 
+/**
+ * Latest-activity list + toolbar. `embedded` swaps {@link Card} for `.app-card-surface` (borderless shell); no caller
+ * uses it yet — kept for frontpage / inset layouts.
+ */
 const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSector: number; embedded?: boolean }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
@@ -101,7 +106,12 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
           <div className='relative shrink-0' ref={filterRef}>
             <button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
-              className={cn(activityChipBase, activityChipActive, 'min-w-0 max-sm:max-w-[min(100%,8.5rem)]')}
+              className={cn(
+                activityChipBase,
+                activityChipActive,
+                'min-w-0 max-sm:max-w-[min(100%,8.5rem)]',
+                isFilterOpen && 'bg-surface-hover',
+              )}
               aria-expanded={isFilterOpen}
               type='button'
             >
@@ -117,7 +127,7 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
             </button>
 
             {isFilterOpen && (
-              <div className='bg-surface-card border-surface-border absolute top-full left-0 z-50 mt-1.5 max-h-[min(18rem,70vh)] w-[min(17.5rem,calc(100vw-1.25rem))] overflow-y-auto rounded-xl border py-1.5 shadow-2xl md:right-0 md:left-auto md:w-56'>
+              <div className='bg-surface-card border-surface-border absolute top-full left-0 z-[100] mt-1.5 max-h-[min(18rem,70vh)] w-[min(17.5rem,calc(100vw-1.25rem))] overflow-y-auto rounded-xl border py-1.5 shadow-2xl md:right-0 md:left-auto md:w-56'>
                 <div className='border-surface-border/40 px-3 py-2'>
                   <span className={cn(designContract.typography.label, 'text-slate-400')}>Lowest grade</span>
                 </div>
@@ -178,7 +188,8 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
             active={activityTypeComments}
             onClick={() => handleFilterToggle('comments')}
             icon={MessageSquare}
-            label='Com'
+            label='Comments'
+            labelNarrow='Com'
           />
         </div>
       </div>
@@ -216,7 +227,9 @@ type FilterButtonProps = {
   active: boolean;
   onClick: () => void;
   icon: ElementType;
+  /** Visible label on `sm+`; use with {@link labelNarrow} when the chip row is tight on phones. */
   label: string;
+  labelNarrow?: string;
 };
 
 /** Roomier pills on `sm+`; keep phones compact so one row still fits. */
@@ -224,10 +237,10 @@ const activityChipBase = cn(
   'inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full border px-2.5 leading-none transition-[background-color,color,transform,border-color] duration-200 active:scale-95 sm:h-8 sm:gap-2 sm:px-4',
   designContract.typography.uiCompact,
 );
-/** Grade dropdown trigger — reads as the primary filter control. */
+/** Grade dropdown trigger — reads as the primary filter control (neutral hover, same family as type toggles). */
 const activityChipActive = cn(
   designContract.surfaces.controlActive,
-  'border-transparent shadow-sm transition-[background-color,border-color] hover:border-brand-border',
+  'border-transparent shadow-sm transition-[background-color,border-color] hover:border-white/25',
 );
 
 /**
@@ -251,16 +264,32 @@ const activityCommentClass = cn(
   'text-[12px] leading-snug text-slate-400 md:text-[13px]',
 );
 
-const FilterButton = ({ active, onClick, icon: Icon, label }: FilterButtonProps) => (
+const FilterButton = ({ active, onClick, icon: Icon, label, labelNarrow }: FilterButtonProps) => (
   <button
     onClick={onClick}
     className={cn(activityChipBase, active ? filterTypeChipOn : filterTypeChipOff)}
     aria-pressed={active}
+    {...(labelNarrow ? { 'aria-label': label } : {})}
     type='button'
   >
-    <Icon size={12} strokeWidth={2} className={cn('shrink-0', active ? 'text-slate-300' : 'text-slate-500')} />
-    <span className={cn(designContract.typography.uiCompact, active ? 'text-slate-300' : 'text-slate-500')}>
-      {label}
+    <Icon
+      size={12}
+      strokeWidth={2}
+      className={cn('shrink-0', active ? 'text-slate-300' : 'text-slate-500')}
+      aria-hidden
+    />
+    <span
+      aria-hidden={!!labelNarrow}
+      className={cn(designContract.typography.uiCompact, active ? 'text-slate-300' : 'text-slate-500')}
+    >
+      {labelNarrow ? (
+        <>
+          <span className='sm:hidden'>{labelNarrow}</span>
+          <span className='hidden sm:inline'>{label}</span>
+        </>
+      ) : (
+        label
+      )}
     </span>
   </button>
 );
