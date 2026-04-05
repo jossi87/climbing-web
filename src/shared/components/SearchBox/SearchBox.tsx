@@ -66,13 +66,19 @@ const SEARCH_THUMB_PX = 44;
 const FALLBACK_THUMB_CLASS = 'border-white/5 bg-surface-nav transition-colors group-hover:border-brand-border';
 const FALLBACK_ICON_CLASS = 'shrink-0 text-slate-400 group-hover:text-slate-300';
 
+/** Matches `innerWidth < 640` (below Tailwind `sm`) — used synchronously so placeholder doesn’t flash long→short on load. */
+function isNarrowSearchViewport(): boolean {
+  if (typeof window === 'undefined') return false;
+  return window.matchMedia('(max-width: 639px)').matches;
+}
+
 const SearchBox = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { search, isPending, data } = useSearch();
   const [value, setValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(isNarrowSearchViewport);
   const [activeIndex, setActiveIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
   /** When true, the next `pathname` change came from picking a search result — keep the query for more picks. */
@@ -80,12 +86,15 @@ const SearchBox = () => {
   const results = (data ?? []) as SearchResult[];
 
   useEffect(() => {
-    const updateIsMobile = () => {
-      setIsMobile(window.innerWidth < 640);
-    };
+    const mq = window.matchMedia('(max-width: 639px)');
+    const updateIsMobile = () => setIsMobile(mq.matches);
     updateIsMobile();
-    window.addEventListener('resize', updateIsMobile);
-    return () => window.removeEventListener('resize', updateIsMobile);
+    if (typeof mq.addEventListener === 'function') {
+      mq.addEventListener('change', updateIsMobile);
+      return () => mq.removeEventListener('change', updateIsMobile);
+    }
+    mq.addListener(updateIsMobile);
+    return () => mq.removeListener(updateIsMobile);
   }, []);
 
   useEffect(() => {
