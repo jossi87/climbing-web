@@ -38,8 +38,8 @@ const AccordionContainer = ({ accordionRows }: Props) => {
                 size={14}
                 strokeWidth={2}
                 className={cn(
-                  'shrink-0 text-slate-500 transition-transform duration-200',
-                  isActive && 'rotate-180 text-slate-500',
+                  'shrink-0 text-slate-400 transition-transform duration-200',
+                  isActive && 'rotate-180 text-slate-400',
                 )}
               />
             </button>
@@ -50,7 +50,7 @@ const AccordionContainer = ({ accordionRows }: Props) => {
               )}
             >
               <div className='px-2.5 pb-2.5 pl-3 sm:px-3 sm:pb-3'>
-                {hasData ? d.content : <i className='text-[11px] text-slate-500 sm:text-[12px]'>No data</i>}
+                {hasData ? d.content : <i className='text-[11px] text-slate-400 sm:text-[12px]'>No data</i>}
               </div>
             </div>
           </div>

@@ -45,7 +45,7 @@ export const ProblemsOnRock = ({
             <span
               className={cn(
                 'font-medium',
-                problemId === p.id ? 'text-slate-200' : 'text-slate-500',
+                problemId === p.id ? 'text-slate-200' : 'text-slate-400',
                 designContract.typography.meta,
                 'font-mono tabular-nums',
               )}

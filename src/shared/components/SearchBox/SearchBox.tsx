@@ -64,7 +64,7 @@ function getSearchFallbackMeta(kind: SearchEntityKind): { Icon: LucideIcon; labe
 const SEARCH_THUMB_PX = 44;
 
 const FALLBACK_THUMB_CLASS = 'border-white/5 bg-surface-nav transition-colors group-hover:border-brand-border';
-const FALLBACK_ICON_CLASS = 'shrink-0 text-slate-500 group-hover:text-slate-400';
+const FALLBACK_ICON_CLASS = 'shrink-0 text-slate-400 group-hover:text-slate-300';
 
 const SearchBox = () => {
   const navigate = useNavigate();
@@ -229,7 +229,7 @@ const SearchBox = () => {
                     style={userInitialsFallback ? avatarFallbackColors(result.title) : undefined}
                   >
                     {result.externalUrl ? (
-                      <ExternalLink size={18} className='group-hover:text-brand text-slate-500' />
+                      <ExternalLink size={18} className='group-hover:text-brand text-slate-400' />
                     ) : imageSrc ? (
                       <img src={imageSrc} className='h-full w-full object-cover' alt='' />
                     ) : userInitialsFallback ? (
@@ -260,7 +260,7 @@ const SearchBox = () => {
                             {problemTitle.grade ? (
                               <>
                                 {' '}
-                                <span className={cn(designContract.typography.grade, 'font-normal text-slate-500')}>
+                                <span className={cn(designContract.typography.grade, 'font-normal text-slate-400')}>
                                   {problemTitle.grade}
                                 </span>
                               </>
@@ -270,7 +270,7 @@ const SearchBox = () => {
                         <LockSymbol lockedAdmin={!!result.lockedAdmin} lockedSuperadmin={!!result.lockedSuperadmin} />
                       </div>
                       {result.pageViews && (
-                        <span className='text-xs font-medium text-slate-500 tabular-nums'>{result.pageViews}</span>
+                        <span className='text-xs font-medium text-slate-400 tabular-nums'>{result.pageViews}</span>
                       )}
                     </div>
                     {result.description && (

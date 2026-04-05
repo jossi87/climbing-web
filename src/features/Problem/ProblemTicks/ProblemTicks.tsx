@@ -118,7 +118,7 @@ export const ProblemTicks = ({ ticks }: Props) => {
                     </>
                   )}
                   {displayDate ? (
-                    <span className={cn(tickFlags, 'ml-1.5 inline text-slate-500 tabular-nums')}>{displayDate}</span>
+                    <span className={cn(tickFlags, 'ml-1.5 inline text-slate-400 tabular-nums')}>{displayDate}</span>
                   ) : null}
                 </div>
 

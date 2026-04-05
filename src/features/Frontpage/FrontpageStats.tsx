@@ -50,7 +50,7 @@ const StatItem = ({ to, icon: Icon, label, value, loading }: StatItemProps) => {
             )}
             aria-hidden={!loading}
           >
-            <div className='bg-surface-hover h-4 w-12 animate-pulse rounded-md sm:w-14' />
+            <div className='skeleton-bar h-4 w-12 animate-pulse rounded-md sm:w-14' />
           </div>
           <div
             className={cn(
@@ -69,7 +69,7 @@ const StatItem = ({ to, icon: Icon, label, value, loading }: StatItemProps) => {
         <div className='flex h-4 shrink-0 items-center justify-center'>
           <SectionLabel
             className={cn(
-              '!text-[9px] !leading-none !tracking-[0.06em] text-slate-500 sm:!text-[10px] sm:!tracking-[0.1em]',
+              '!text-[9px] !leading-none !tracking-[0.06em] text-slate-400 sm:!text-[10px] sm:!tracking-[0.1em]',
               !loading && 'transition-colors group-hover:text-slate-400',
             )}
           >

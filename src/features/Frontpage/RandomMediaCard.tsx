@@ -24,15 +24,15 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
     return (
       <Card flush className={cardShellClass}>
         <div className={mediaFrameClass}>
-          <div className='bg-surface-raised absolute inset-0 animate-pulse' />
+          <div className='skeleton-bar absolute inset-0 animate-pulse' />
         </div>
         <div className={desktopCopyMin}>
           <div className='space-y-3'>
             <div className='flex flex-wrap items-baseline gap-x-2 gap-y-1'>
-              <div className='bg-surface-hover h-[1.125rem] max-w-[min(100%,14rem)] flex-1 animate-pulse rounded sm:h-5' />
-              <div className='bg-surface-hover h-3.5 w-10 shrink-0 animate-pulse rounded md:h-4 md:w-11' />
+              <div className='skeleton-bar h-[1.125rem] max-w-[min(100%,14rem)] flex-1 animate-pulse rounded sm:h-5' />
+              <div className='skeleton-bar-muted h-3.5 w-10 shrink-0 animate-pulse rounded md:h-4 md:w-11' />
             </div>
-            <div className='bg-surface-hover h-3 w-full max-w-[18rem] animate-pulse rounded md:h-[0.875rem]' />
+            <div className='skeleton-bar-muted h-3 w-full max-w-[18rem] animate-pulse rounded md:h-[0.875rem]' />
           </div>
         </div>
       </Card>
@@ -41,17 +41,21 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
   if (!randomMedia)
     return (
       <Card flush className={cardShellClass}>
-        <div className={cn(mediaFrameClass, 'flex items-center justify-center text-center text-sm text-slate-500')}>
+        <div className={cn(mediaFrameClass, 'flex items-center justify-center text-center text-sm text-slate-400')}>
           No featured media
         </div>
         <div className={desktopCopyMin}>
-          <p className='text-sm text-slate-500'>Check back later for a random photo from the index.</p>
+          <p className='text-sm text-slate-400'>Check back later for a random photo from the index.</p>
         </div>
       </Card>
     );
 
   const taggedUsers = randomMedia.tagged || [];
   const photographer = randomMedia.photographer;
+  const photographerId = photographer?.id ?? null;
+  const photographerAlsoTagged = photographerId != null && taggedUsers.some((u) => u.id === photographerId);
+  /** Separate “By …” block only when the photographer isn’t already listed as tagged (avoids duplicate names). */
+  const showPhotographerByRow = Boolean(photographer && !photographerAlsoTagged);
   const problemTitleClass = 'text-[15px] leading-snug font-semibold text-slate-300 md:text-[16px]';
   const gradeClass = 'text-[13px] leading-none font-light tabular-nums tracking-tight text-slate-300 md:text-[14px]';
   /** Brighter on image overlay (mobile); on card body `slate-400` matches mid-band secondary text */
@@ -108,7 +112,7 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
             </Link>
           </div>
 
-          {(taggedUsers.length > 0 || photographer) && (
+          {(taggedUsers.length > 0 || showPhotographerByRow) && (
             <div className='border-surface-border/45 mt-5 flex flex-wrap items-center gap-x-4 gap-y-3 border-t pt-5'>
               {taggedUsers.length > 0 && (
                 <div className='flex items-center gap-2'>
@@ -119,16 +123,21 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
                   />
                   <span className={metaTextClass}>
                     {taggedUsers.length === 1 ? (
-                      <Link to={`/user/${taggedUsers[0].id}`} className={interactiveLinkClass}>
-                        {taggedUsers[0].name}
-                      </Link>
+                      <>
+                        <Link to={`/user/${taggedUsers[0].id}`} className={interactiveLinkClass}>
+                          {taggedUsers[0].name}
+                        </Link>
+                        {photographerAlsoTagged ? (
+                          <span className='ml-1 text-slate-300/85'>{'· photographer & in photo'}</span>
+                        ) : null}
+                      </>
                     ) : (
                       `${taggedUsers.length} in photo`
                     )}
                   </span>
                 </div>
               )}
-              {photographer && (
+              {showPhotographerByRow && photographer ? (
                 <div className='flex items-center gap-2'>
                   <ClickableAvatar
                     name={photographer.name}
@@ -144,7 +153,7 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
                     </Link>
                   </div>
                 </div>
-              )}
+              ) : null}
             </div>
           )}
         </div>
@@ -172,7 +181,7 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
           </div>
         </div>
 
-        {(taggedUsers.length > 0 || photographer) && (
+        {(taggedUsers.length > 0 || showPhotographerByRow) && (
           <div className='border-surface-border/50 mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 border-t pt-5'>
             {taggedUsers.length > 0 && (
               <div className='flex items-center gap-3'>
@@ -184,10 +193,13 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
                   {taggedUsers.length > 1 && (
                     <span className='ml-1 text-slate-500'>and {taggedUsers.length - 1} more</span>
                   )}
+                  {taggedUsers.length === 1 && photographerAlsoTagged ? (
+                    <span className='ml-1 text-slate-500'>{'· photographer & in photo'}</span>
+                  ) : null}
                 </div>
               </div>
             )}
-            {photographer && (
+            {showPhotographerByRow && photographer ? (
               <div className='flex items-center gap-2.5'>
                 <ClickableAvatar
                   name={photographer.name}
@@ -202,7 +214,7 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
                   </Link>
                 </div>
               </div>
-            )}
+            ) : null}
           </div>
         )}
       </div>

@@ -9,7 +9,7 @@ type LoadingProps = {
 
 const LoadingContent = () => (
   <div className='flex min-h-[160px] w-full min-w-0 flex-1 flex-col items-center justify-center gap-4 sm:min-h-[220px]'>
-    <div className='bg-surface-raised rounded-full border border-slate-500/35 p-3'>
+    <div className='bg-surface-raised border-surface-border rounded-full border p-3'>
       <RefreshCw className='h-7 w-7 animate-spin text-slate-400' />
     </div>
     <div className='text-center'>

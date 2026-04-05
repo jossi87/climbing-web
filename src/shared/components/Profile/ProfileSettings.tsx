@@ -12,7 +12,15 @@ const ProfileSettings = () => {
   if (!data) {
     return (
       <Card flush className='border-0 sm:border'>
-        <div className='bg-surface-card animate-pulse p-8 text-center text-slate-500 sm:p-10'>Loading...</div>
+        <div className='animate-pulse space-y-5 p-8 sm:p-10' aria-busy aria-label='Loading profile settings'>
+          <div className='skeleton-bar h-8 w-[min(100%,14rem)] rounded-md' />
+          <div className='space-y-2.5'>
+            <div className='skeleton-bar-muted h-3 w-full max-w-md rounded' />
+            <div className='skeleton-bar-muted h-3 w-[88%] max-w-lg rounded' />
+            <div className='skeleton-bar-muted h-3 w-[72%] max-w-sm rounded' />
+          </div>
+          <div className='skeleton-bar-muted mx-auto h-10 w-full max-w-xs rounded-lg' />
+        </div>
       </Card>
     );
   }

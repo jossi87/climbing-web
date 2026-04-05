@@ -79,7 +79,7 @@ export function ActivityFeedMetaRow({
   );
 
   const timeClass =
-    'shrink-0 text-[11px] leading-none whitespace-nowrap tabular-nums tracking-tight text-slate-500 md:text-[12px]';
+    'shrink-0 text-[11px] leading-none whitespace-nowrap tabular-nums tracking-tight text-slate-400 md:text-[12px]';
 
   return (
     <div className={cn(activityRowRootClass, 'text-pretty [overflow-wrap:anywhere]')}>

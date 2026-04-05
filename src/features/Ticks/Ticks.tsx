@@ -22,8 +22,8 @@ const PlaceholderFeed = () => {
     <div className='animate-pulse space-y-3'>
       {Array.from({ length: 14 }, (_, i) => (
         <div key={i}>
-          <div className='bg-surface-raised h-3 w-[94%] rounded sm:h-3.5' />
-          <div className='bg-surface-raised-hover mt-1.5 h-2.5 w-[52%] rounded' />
+          <div className='skeleton-bar h-3 w-[94%] rounded sm:h-3.5' />
+          <div className='skeleton-bar-muted mt-1.5 h-2.5 w-[52%] rounded' />
         </div>
       ))}
     </div>
@@ -142,7 +142,7 @@ const Ticks = () => {
                   </button>
                 )}
                 {currPage > 2 && (
-                  <span className={cn(designContract.typography.uiCompact, 'px-1 text-slate-500')}>…</span>
+                  <span className={cn(designContract.typography.uiCompact, 'px-1 text-slate-400')}>…</span>
                 )}
                 <button
                   type='button'
@@ -156,7 +156,7 @@ const Ticks = () => {
                   {currPage}
                 </button>
                 {currPage < numPages - 1 && (
-                  <span className={cn(designContract.typography.uiCompact, 'px-1 text-slate-500')}>…</span>
+                  <span className={cn(designContract.typography.uiCompact, 'px-1 text-slate-400')}>…</span>
                 )}
                 {currPage < numPages && (
                   <button

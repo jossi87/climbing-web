@@ -41,7 +41,7 @@ export const LazyMedia = ({
               }}
             />
           ) : (
-            <div className='bg-surface-raised h-full w-full animate-pulse' />
+            <div className='skeleton-bar h-full w-full animate-pulse' />
           )}
 
           {m.movie && (

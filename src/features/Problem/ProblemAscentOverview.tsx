@@ -40,7 +40,7 @@ const factClass = 'text-[13px] font-normal leading-normal text-slate-300 sm:text
 const factSegmentClass = cn(factClass, 'inline-flex min-h-5 items-center');
 
 /** Lucide icons: same box as row text line (12px). */
-const factIconClass = 'shrink-0 text-slate-500';
+const factIconClass = 'shrink-0 text-slate-400';
 
 function dateWithCalendar(date: string) {
   return (

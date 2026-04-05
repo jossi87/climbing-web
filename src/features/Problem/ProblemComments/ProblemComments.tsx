@@ -19,10 +19,10 @@ import {
 const rowShell = 'px-3 py-1.5 sm:px-4 sm:py-2';
 
 const actionIconBtn =
-  'rounded-md p-1.5 text-slate-500 transition-colors hover:bg-surface-raised-hover hover:text-slate-300';
+  'rounded-md p-1.5 text-slate-400 transition-colors hover:bg-surface-raised-hover hover:text-slate-200';
 
 const hseIconBtn =
-  'ml-1 inline-flex shrink-0 items-center rounded p-0.5 text-slate-500 transition-colors hover:bg-surface-raised-hover hover:text-status-danger';
+  'ml-1 inline-flex shrink-0 items-center rounded p-0.5 text-slate-400 transition-colors hover:bg-surface-raised-hover hover:text-status-danger';
 
 export const ProblemComments = ({
   problemId,
@@ -113,7 +113,7 @@ export const ProblemComments = ({
                     >
                       {c.name}
                     </Link>
-                    <span className={cn(tickFlags, 'ml-1.5 inline text-slate-500 tabular-nums')}>{c.date}</span>
+                    <span className={cn(tickFlags, 'ml-1.5 inline text-slate-400 tabular-nums')}>{c.date}</span>
                     {c.danger ? (
                       <span
                         className={cn(

@@ -287,7 +287,7 @@ const ToolbarDropdown = <T extends string>({
         )}
       >
         {Icon ? (
-          <Icon size={11} className={cn('shrink-0 transition-colors', isOpen ? 'text-slate-300' : 'text-slate-500')} />
+          <Icon size={11} className={cn('shrink-0 transition-colors', isOpen ? 'text-slate-300' : 'text-slate-400')} />
         ) : null}
         {!compact && <span className='shrink-0 text-slate-500'>{label}:</span>}
         {variant === 'ghost' && compact && fullWidth ? (

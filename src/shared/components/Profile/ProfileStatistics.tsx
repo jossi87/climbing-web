@@ -167,7 +167,7 @@ const ProfileStatistics = ({ userId, view }: ProfileStatisticsProps) => {
 
   if (view === 'map') {
     if (!stats.markers.length) {
-      return <div className='py-10 text-center text-slate-500'>No map data available.</div>;
+      return <div className='py-10 text-center text-slate-400'>No map data available.</div>;
     }
 
     return (
@@ -189,7 +189,7 @@ const ProfileStatistics = ({ userId, view }: ProfileStatisticsProps) => {
 
   if (view === 'ascents') {
     if (!data.ticks?.length) {
-      return <div className='py-10 text-center text-slate-500'>No ascents yet.</div>;
+      return <div className='py-10 text-center text-slate-400'>No ascents yet.</div>;
     }
 
     return (

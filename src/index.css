@@ -22,7 +22,12 @@
    * Hairline edges: derived from `surface-card` + a whisper of white — avoids a separate “stripe gray” that fights
    * the charcoal base (reads more Linear / Apple settings than boxed wireframes).
    */
-  --color-surface-border: color-mix(in srgb, var(--color-surface-card) 92%, rgb(255 255 255) 8%);
+  --color-surface-border: color-mix(in srgb, var(--color-surface-card) 88%, rgb(255 255 255) 12%);
+  /**
+   * Loading placeholders — between `raised` and `hover`, never as bright as real hover (keeps semantics clear).
+   */
+  --color-surface-skeleton: color-mix(in srgb, var(--color-surface-raised) 68%, var(--color-surface-hover) 32%);
+  --color-surface-skeleton-muted: color-mix(in srgb, var(--color-surface-raised) 82%, var(--color-surface-hover) 18%);
   /**
    * Gold mixed into `surface-border` — chips / hovers; stays subtle as border softens.
    */
@@ -134,6 +139,10 @@
       animation-duration: 1ms;
       animation-iteration-count: 1;
     }
+    .animate-pulse {
+      animation: none;
+      opacity: 0.82;
+    }
   }
 }
 
@@ -185,16 +194,16 @@
 
   .app-card {
     @apply bg-surface-card overflow-hidden sm:rounded-xl;
-    /* Atmospheric edge: low-chroma lift, not a second gray “frame” */
-    border-color: color-mix(in srgb, rgb(255 255 255) 9%, var(--color-surface-card));
+    /* Atmospheric edge: matches `surface-border` family — one soft rim + depth, not a second gray frame */
+    border-color: color-mix(in srgb, rgb(255 255 255) 10.5%, var(--color-surface-card));
     border-top-width: 1px;
     border-bottom-width: 1px;
     border-left-width: 0;
     border-right-width: 0;
     border-style: solid;
     box-shadow:
-      0 1px 0 0 color-mix(in srgb, rgb(255 255 255) 4%, transparent),
-      0 12px 40px -16px rgba(0, 0, 0, 0.55);
+      0 1px 0 0 color-mix(in srgb, rgb(255 255 255) 4.5%, transparent),
+      0 14px 48px -20px rgba(0, 0, 0, 0.58);
 
     box-sizing: border-box;
     margin-left: -1rem;
@@ -246,6 +255,17 @@
   }
   .fade-in {
     animation-name: fadeIn;
+  }
+
+  /**
+   * Loading bars — use instead of `bg-surface-hover` (reserved for interactive hover).
+   * Pair with `animate-pulse` on the same node or an ancestor.
+   */
+  .skeleton-bar {
+    background-color: var(--color-surface-skeleton);
+  }
+  .skeleton-bar-muted {
+    background-color: var(--color-surface-skeleton-muted);
   }
 }
 

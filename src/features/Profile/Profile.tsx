@@ -46,18 +46,18 @@ const Profile = () => {
         <Card flush className='min-w-0 border-0 sm:border'>
           <div className='space-y-3 p-4 sm:p-5'>
             <div className='flex items-center gap-3'>
-              <div className='bg-surface-nav h-9 w-9 animate-pulse rounded-full' />
-              <div className='bg-surface-nav h-5 w-40 animate-pulse rounded' />
+              <div className='skeleton-bar h-9 w-9 animate-pulse rounded-full' />
+              <div className='skeleton-bar h-5 w-40 animate-pulse rounded' />
             </div>
             <div className='flex gap-1 overflow-hidden'>
               {Array.from({ length: 5 }).map((_, idx) => (
-                <div key={idx} className='bg-surface-nav h-8 w-20 animate-pulse' />
+                <div key={idx} className='skeleton-bar-muted h-8 w-20 animate-pulse rounded-md' />
               ))}
             </div>
           </div>
           <div className={tabBarStripContainerClassName('equal')}>
             {Array.from({ length: 5 }).map((_, idx) => (
-              <div key={idx} className='bg-surface-raised h-11 min-w-0 flex-1 animate-pulse' />
+              <div key={idx} className='skeleton-bar h-11 min-w-0 flex-1 animate-pulse' />
             ))}
           </div>
           <div className='p-4 sm:p-6'>

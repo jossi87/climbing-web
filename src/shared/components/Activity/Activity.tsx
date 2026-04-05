@@ -17,21 +17,21 @@ type ActivitySchema = components['schemas']['Activity'];
 
 /** Mirrors {@link ActivityFeedMetaRow}: story block + relative time on the right; optional second row like stars/comment. */
 const ActivitySkeleton = () => (
-  <div className='min-h-[3.5rem] animate-pulse bg-transparent px-4 py-3 md:min-h-[4.25rem] md:px-5 md:py-3.5'>
+  <div className='min-h-[3.75rem] animate-pulse bg-transparent px-4 py-4 md:min-h-[4.25rem] md:px-5 md:py-3.5'>
     <div className='flex items-start gap-3 md:gap-3.5'>
-      <div className='bg-surface-hover h-8 w-8 shrink-0 rounded-full pt-0.5 md:h-10 md:w-10' />
+      <div className='skeleton-bar h-8 w-8 shrink-0 rounded-full pt-0.5 md:h-10 md:w-10' />
       <div className='min-w-0 flex-1 space-y-2 pt-0.5'>
         <div className='flex min-w-0 flex-row items-start justify-between gap-2 sm:gap-3 md:gap-4'>
           <div className='min-w-0 flex-1 space-y-1.5'>
-            <div className='bg-surface-hover h-3 max-w-[min(100%,22rem)] rounded md:h-3.5' />
-            <div className='bg-surface-hover h-3 w-[58%] rounded md:h-3.5' />
+            <div className='skeleton-bar h-3 max-w-[min(100%,22rem)] rounded md:h-3.5' />
+            <div className='skeleton-bar-muted h-3 w-[58%] rounded md:h-3.5' />
           </div>
           <div
-            className='bg-surface-hover h-2.5 w-[2.75rem] shrink-0 self-start rounded md:h-3 md:w-[3.25rem]'
+            className='skeleton-bar-muted h-2.5 w-[2.75rem] shrink-0 self-start rounded md:h-3 md:w-[3.25rem]'
             aria-hidden
           />
         </div>
-        <div className='bg-surface-hover h-2.5 max-w-[12rem] rounded' aria-hidden />
+        <div className='skeleton-bar-muted h-2.5 max-w-[12rem] rounded' aria-hidden />
       </div>
     </div>
   </div>
@@ -89,12 +89,13 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
     setTimeout(refetch, 10);
   };
 
-  const toolbarClass = cn(designContract.layout.activityToolbarFrontpage, 'mb-4 md:mb-6');
+  /** Extra space before the card on phones so filters and first row don’t feel glued together. */
+  const toolbarClass = cn(designContract.layout.activityToolbarFrontpage, 'mb-6 max-md:mb-7 md:mb-6');
 
   return (
     <div className='w-full'>
       <div className={toolbarClass}>
-        <SectionLabel className='hidden text-slate-500 md:block'>Latest activity</SectionLabel>
+        <SectionLabel className='hidden text-slate-400 md:block'>Latest activity</SectionLabel>
 
         <div className={designContract.layout.activityToolbarActionsFrontpage}>
           <div className='relative shrink-0' ref={filterRef}>
@@ -118,7 +119,7 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
             {isFilterOpen && (
               <div className='bg-surface-card border-surface-border absolute top-full left-0 z-50 mt-1.5 max-h-[min(18rem,70vh)] w-[min(17.5rem,calc(100vw-1.25rem))] overflow-y-auto rounded-xl border py-1.5 shadow-2xl md:right-0 md:left-auto md:w-56'>
                 <div className='border-surface-border/40 px-3 py-2'>
-                  <span className={cn(designContract.typography.label, 'text-slate-500')}>Lowest grade</span>
+                  <span className={cn(designContract.typography.label, 'text-slate-400')}>Lowest grade</span>
                 </div>
                 <div className='border-surface-border/35 mb-1 border-t' />
                 {meta.grades
@@ -224,7 +225,7 @@ const activityChipBase = cn(
   designContract.typography.uiCompact,
 );
 const activityChipIdle =
-  'border-white/10 bg-surface-raised text-slate-400 hover:border-brand-border hover:bg-surface-raised-hover hover:text-slate-200';
+  'border-white/10 bg-surface-raised text-slate-300 hover:border-brand-border hover:bg-surface-raised-hover hover:text-slate-100';
 const activityChipActive = cn(
   designContract.surfaces.controlActive,
   'border-transparent shadow-sm transition-[background-color,border-color] hover:border-brand-border',
@@ -238,7 +239,7 @@ const activityRowClass = cn(
 
 const activityCommentClass = cn(
   'text-pretty break-words antialiased italic',
-  'text-[12px] leading-snug text-slate-500 md:text-[13px]',
+  'text-[12px] leading-snug text-slate-400 md:text-[13px]',
 );
 
 const FilterButton = ({ active, onClick, icon: Icon, label }: FilterButtonProps) => (
@@ -248,8 +249,8 @@ const FilterButton = ({ active, onClick, icon: Icon, label }: FilterButtonProps)
     aria-pressed={active}
     type='button'
   >
-    <Icon size={12} strokeWidth={2} className={cn('shrink-0', active ? 'text-slate-300' : 'text-slate-500')} />
-    <span className={cn(designContract.typography.uiCompact, active ? 'text-slate-300' : 'text-slate-400')}>
+    <Icon size={12} strokeWidth={2} className={cn('shrink-0', active ? 'text-slate-300' : 'text-slate-400')} />
+    <span className={cn(designContract.typography.uiCompact, active ? 'text-slate-300' : 'text-slate-300')}>
       {label}
     </span>
   </button>
@@ -281,8 +282,9 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
     return <Check size={statusIconSize} className={statusIconGlyph} strokeWidth={2} />;
   })();
 
-  const pad = 'px-4 py-3 md:px-5 md:py-3.5';
-  const gap = 'gap-3 md:gap-3.5';
+  /** Roomier vertical rhythm on small screens — easier to scan the feed; desktop stays compact. */
+  const pad = 'px-4 py-4 md:px-5 md:py-3.5';
+  const gap = 'gap-3.5 md:gap-3.5';
 
   const actionClass = designContract.typography.feed.action;
   const cragLeadClass = designContract.typography.feed.lead;

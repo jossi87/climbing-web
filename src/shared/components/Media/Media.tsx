@@ -184,7 +184,7 @@ const Media = ({
               </>
             )
           ) : (
-            <div className='bg-surface-hover absolute inset-0 animate-pulse' />
+            <div className='skeleton-bar absolute inset-0 animate-pulse' />
           )}{' '}
         </div>{' '}
       </div>

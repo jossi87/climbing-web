@@ -94,7 +94,7 @@ export const Problem = () => {
           </div>
           <div>
             <h3 className='font-bold text-slate-200'>404</h3>
-            <p className='text-sm text-slate-500'>Cannot find the specified problem or insufficient permissions.</p>
+            <p className='text-sm text-slate-400'>Cannot find the specified problem or insufficient permissions.</p>
           </div>
         </div>
       </div>
@@ -678,7 +678,7 @@ export const Problem = () => {
                 <Check size={12} className={cn('shrink-0', designContract.ascentStatus.ticked)} strokeWidth={2.25} />
                 <span className='inline-flex min-w-0 flex-nowrap items-center gap-x-1.5'>
                   <span className='type-label'>Ticks</span>
-                  <span className={cn(designContract.typography.meta, 'shrink-0 text-slate-500 tabular-nums')}>
+                  <span className={cn(designContract.typography.meta, 'shrink-0 text-slate-400 tabular-nums')}>
                     {data.ticks?.length ?? 0}
                   </span>
                 </span>
@@ -694,7 +694,7 @@ export const Problem = () => {
                 <MessageSquare size={12} className='text-brand shrink-0' strokeWidth={2.25} />
                 <span className='inline-flex min-w-0 flex-nowrap items-center gap-x-1.5'>
                   <span className='type-label'>Comments</span>
-                  <span className={cn(designContract.typography.meta, 'shrink-0 text-slate-500 tabular-nums')}>
+                  <span className={cn(designContract.typography.meta, 'shrink-0 text-slate-400 tabular-nums')}>
                     {data.comments?.length ?? 0}
                   </span>
                 </span>

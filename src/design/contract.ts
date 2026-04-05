@@ -5,10 +5,10 @@
  * Brand (#c6a15b): primary **text, links, tab ink**. For **borders/rings** on dark panels prefer `brand-border`
  * (`index.css`) — gold mixed into `surface-border`, less “mustard frame”.
  *
- * A11y baseline: global `input`/`textarea` placeholders and `:focus-visible` live in `index.css`; keep secondary copy
- * at `slate-500`+ on charcoal (avoid `slate-600` for readable UI chrome).
+ * A11y baseline: global `input`/`textarea` placeholders and `:focus-visible` live in `index.css`. On `surface-card`
+ * (`#131316`), prefer **`slate-400`+** for readable secondary copy; reserve **`slate-500`** for non-essential hints.
  */
-export const SECTION_EYEBROW = 'text-[10px] font-semibold tracking-[0.16em] text-slate-500 uppercase';
+export const SECTION_EYEBROW = 'text-[10px] font-semibold tracking-[0.16em] text-slate-400 uppercase';
 
 export const designContract = {
   typography: {
@@ -36,7 +36,7 @@ export const designContract = {
     menuItem: 'text-[11px] font-medium leading-snug sm:text-[12px]',
     /** Inline links in list/table content (Top, Todo, etc.) */
     listLink: 'text-slate-300 transition-colors hover:text-slate-200',
-    listLinkMuted: 'text-slate-500 transition-colors hover:text-slate-300',
+    listLinkMuted: 'text-slate-400 transition-colors hover:text-slate-300',
     /** Inline emphasis in tables/lists — prefer medium weight so rows don’t all feel “bold UI”. */
     listEmphasis: 'font-medium text-slate-300',
     /**
@@ -44,16 +44,17 @@ export const designContract = {
      * slightly tighter tracking so it reads as a thin suffix, not a second headline.
      */
     feed: {
+      /** Default line color on dark panels — bright enough for small body text (WCAG-friendly vs `surface-card`). */
       sentence: 'text-slate-400 antialiased',
-      /** “ticked”, “in” — readable, not buried */
-      action: 'text-slate-500 antialiased',
+      /** Glue words (“ticked”, “in”) — same step as {@link sentence}, never dimmer (old `slate-500` failed on charcoal). */
+      action: 'text-slate-400 antialiased',
       emphasis: 'font-normal text-slate-300 antialiased transition-colors hover:text-brand',
       /** Route title — one step heavier than body, not brighter white */
       routeTitle: 'font-semibold text-slate-300 antialiased transition-colors hover:text-brand',
-      locationLink: 'font-normal text-slate-400 antialiased transition-colors hover:text-brand',
+      locationLink: 'font-normal text-slate-300 antialiased transition-colors hover:text-brand',
       /** Same color as {@link feed.routeTitle}; thinner + tighter so it’s subtly distinct */
       gradeHighlight: 'font-light tabular-nums tracking-tight text-slate-300 antialiased',
-      lead: 'font-medium text-slate-400 antialiased',
+      lead: 'font-medium text-slate-300 antialiased',
     },
     /** Grade tokens (no brackets): mono + muted */
     grade: 'type-small font-mono tabular-nums text-slate-400',
@@ -64,15 +65,15 @@ export const designContract = {
     pageSection: 'w-full pb-0',
     /** Home: fluid column only below `md` (phones); tablet / iPad / desktop share 12-col sidebar layout. */
     /** `items-start`: avoid default stretch making the short column track the tall one’s height (reduces perceived aside “jump” when the feed loads). */
-    frontpageGrid: 'grid grid-cols-1 items-start gap-4 md:grid-cols-12 md:gap-8',
-    asideStack: 'w-full space-y-4 self-start md:space-y-6 md:sticky md:top-20',
+    frontpageGrid: 'grid grid-cols-1 items-start gap-6 md:grid-cols-12 md:gap-8',
+    asideStack: 'w-full space-y-5 self-start md:space-y-6 md:sticky md:top-20',
     toolbar: 'mb-4 flex flex-col items-center justify-between gap-3 px-4 sm:flex-row sm:px-0',
     /**
      * Activity toolbar: below `md`, negate `main` horizontal padding so filter chips align with the activity
      * `.app-card` feed (same breakout as the list — avoids double inset vs full-bleed card on phones).
      */
     activityToolbarFrontpage:
-      'mb-4 flex max-sm:-mx-4 max-sm:w-[calc(100%+2rem)] flex-col items-center justify-between gap-3 px-4 md:mx-0 md:w-full md:flex-row md:px-0',
+      'flex max-sm:-mx-4 max-sm:w-[calc(100%+2rem)] flex-col items-center justify-between gap-3 px-4 md:mx-0 md:w-full md:flex-row md:px-0',
     activityToolbarActionsFrontpage:
       'flex w-full flex-nowrap items-center justify-center gap-0.5 sm:gap-1.5 md:w-auto md:justify-end',
     /** Activity filters: one row; compact chips; labels always visible (tight gap on narrow screens). */
@@ -193,7 +194,7 @@ export const designContract = {
     /** Capped-width bar reads better on 2-tab rows than a full-cell underline */
     tabBarButtonActive:
       'text-slate-300 after:pointer-events-none after:absolute after:bottom-0 after:left-1/2 after:h-[3px] after:w-[min(5.75rem,calc(100%-0.75rem))] after:max-w-[11rem] after:-translate-x-1/2 after:rounded-full after:bg-brand',
-    tabBarButtonInactive: 'text-slate-500 hover:text-slate-300',
+    tabBarButtonInactive: 'text-slate-400 hover:text-slate-300',
     tabButton:
       'flex items-center gap-2 border-b-2 px-6 py-3 text-[10px] font-semibold tracking-[0.16em] uppercase transition-colors',
     navPill:
