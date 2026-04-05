@@ -2,6 +2,7 @@ import type { Slope } from '../../../@types/buldreinfo';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { AreaChart, Area, Tooltip, XAxis, YAxis } from 'recharts';
 import { getDistanceWithUnit } from '../Leaflet/geo-utils';
+import { SLOPE_APPROACH_COLOR, SLOPE_DESCENT_COLOR } from '../../slopePolylineColors';
 import { Download, Clock, Database, ArrowUpRight, ArrowDownRight, Ruler } from 'lucide-react';
 import { useState, useLayoutEffect, useRef, useId } from 'react';
 import { cn } from '../../../lib/utils';
@@ -11,10 +12,12 @@ type Props = {
   areaName?: string | null;
   sectorName?: string | null;
   slope: Slope;
-  /** Smaller chart + stats strip (problem / sector map); on small screens matches the flush map card (no inset corners). */
+  /** Shallow chart + stats strip (problem / sector map tab); parent grid is full width below sm, half-width columns from sm. */
   compact?: boolean;
   /** Shown inside the widget header (e.g. Approach / Descent). */
   title?: string;
+  /** Matches Leaflet polyline hue: green approach, violet descent. */
+  variant?: 'approach' | 'descent';
   className?: string;
 };
 
@@ -51,7 +54,15 @@ const downloadGpxFile = (areaName: string, sectorName: string, coordinates: comp
   document.body.removeChild(link);
 };
 
-export const SlopeProfile = ({ areaName = '', sectorName = '', slope, compact = false, title, className }: Props) => {
+export const SlopeProfile = ({
+  areaName = '',
+  sectorName = '',
+  slope,
+  compact = false,
+  title,
+  variant,
+  className,
+}: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const gradientId = useId().replace(/:/g, '');
   const [dims, setDims] = useState<{ width: number; height: number } | null>(null);
@@ -73,10 +84,11 @@ export const SlopeProfile = ({ areaName = '', sectorName = '', slope, compact = 
 
   const icon = compact ? 10 : 12;
   const statText = compact ? 'text-[11px] leading-snug' : 'text-[12px] leading-snug';
-  /** Brand gold — stroke strong enough to read on light + dark chart backgrounds. */
-  const chartStroke = '#c6a15b';
-  const chartFillTop = '#c6a15b';
-  const chartFillBot = '#c6a15b';
+  const lineColor =
+    variant === 'approach' ? SLOPE_APPROACH_COLOR : variant === 'descent' ? SLOPE_DESCENT_COLOR : '#c6a15b';
+  const chartStroke = lineColor;
+  const chartFillTop = lineColor;
+  const chartFillBot = lineColor;
 
   const sep = (
     <span className='text-slate-600 select-none' aria-hidden>
@@ -87,7 +99,12 @@ export const SlopeProfile = ({ areaName = '', sectorName = '', slope, compact = 
   const statsInner = (
     <>
       <span className='inline-flex items-center gap-1 font-medium text-slate-100'>
-        <Ruler size={icon} className='text-brand/90 shrink-0' aria-hidden />
+        <Ruler
+          size={icon}
+          className={cn('shrink-0', !variant && 'text-brand/90')}
+          style={variant ? { color: lineColor } : undefined}
+          aria-hidden
+        />
         <span>{getDistanceWithUnit(slope)}</span>
       </span>
       {sep}
@@ -120,11 +137,19 @@ export const SlopeProfile = ({ areaName = '', sectorName = '', slope, compact = 
       <button
         type='button'
         onClick={() => downloadGpxFile(areaName ?? '', sectorName ?? '', slope.coordinates ?? [])}
-        className='group text-brand/95 hover:bg-brand/12 hover:ring-brand/35 focus-visible:ring-brand/50 -mx-0.5 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 font-semibold transition-colors hover:text-slate-100 hover:ring-1 focus-visible:ring-2 focus-visible:outline-none'
+        className={cn(
+          'group -mx-0.5 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 font-semibold transition-colors hover:text-slate-100 focus-visible:outline-none',
+          'focus-visible:ring-2',
+          variant
+            ? 'hover:bg-white/8 focus-visible:ring-white/25'
+            : 'text-brand/95 hover:bg-brand/12 hover:ring-brand/35 focus-visible:ring-brand/50 hover:ring-1',
+        )}
+        style={variant ? { color: lineColor } : undefined}
       >
         <Download
           size={icon}
-          className='text-brand/95 shrink-0 transition-colors group-hover:text-slate-100'
+          className={cn('shrink-0 transition-colors group-hover:text-slate-100', !variant && 'text-brand/95')}
+          style={variant ? { color: lineColor } : undefined}
           aria-hidden
         />
         GPX
@@ -147,11 +172,18 @@ export const SlopeProfile = ({ areaName = '', sectorName = '', slope, compact = 
         <div
           className={cn(
             'bg-surface-nav/40 border-b border-white/[0.07] py-1.5',
+            variant && 'border-l-[3px]',
             compact ? 'px-2.5 sm:px-3.5' : 'px-3 sm:px-3.5',
           )}
+          style={variant ? { borderLeftColor: lineColor } : undefined}
         >
           <span
-            className={cn(designContract.typography.micro, 'font-semibold tracking-[0.12em] text-slate-100 uppercase')}
+            className={cn(
+              designContract.typography.micro,
+              'font-semibold tracking-[0.12em] uppercase',
+              !variant && 'text-slate-100',
+            )}
+            style={variant ? { color: lineColor } : undefined}
           >
             {title}
           </span>
@@ -162,7 +194,8 @@ export const SlopeProfile = ({ areaName = '', sectorName = '', slope, compact = 
         ref={containerRef}
         className={cn(
           'from-surface-nav/70 via-surface-card to-surface-nav/90 relative w-full overflow-hidden bg-gradient-to-b',
-          compact ? 'aspect-[8/1] min-h-[2.75rem] sm:min-h-[3rem]' : 'aspect-[4/1] min-h-20 p-0.5',
+          /** Compact: short strip — mobile follows full width below; from sm each card sits in one grid column (~half main). */
+          compact ? 'aspect-[12/2.5] sm:aspect-[20/2.5]' : 'aspect-[5/2] min-h-[4.75rem] p-0.5 sm:min-h-[5.25rem]',
         )}
       >
         {dims && (

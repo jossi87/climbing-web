@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import ProblemList from '../../shared/components/ProblemList';
 import ChartGradeDistribution from '../../shared/components/ChartGradeDistribution/ChartGradeDistribution';
 import { SlopeProfile } from '../../shared/components/SlopeProfile';
+import { SLOPE_APPROACH_COLOR, SLOPE_DESCENT_COLOR } from '../../shared/slopePolylineColors';
 import Top from '../../shared/components/Top/Top';
 import Activity from '../../shared/components/Activity/Activity';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
@@ -384,18 +385,20 @@ const Sector = () => {
   }
   if ((data.approach?.coordinates ?? []).length) {
     slopes.push({
-      backgroundColor: 'lime',
+      backgroundColor: SLOPE_APPROACH_COLOR,
       slope: data.approach as Slope,
       label: getDistanceWithUnit(data.approach as Slope) ?? undefined,
     });
   }
   if ((data.descent?.coordinates ?? []).length) {
     slopes.push({
-      backgroundColor: 'purple',
+      backgroundColor: SLOPE_DESCENT_COLOR,
       slope: data.descent as Slope,
       label: getDistanceWithUnit(data.descent as Slope) ?? undefined,
     });
   }
+  const mapProfileHasApproach = (data.approach?.coordinates ?? []).length > 0;
+  const mapProfileHasDescent = (data.descent?.coordinates ?? []).length > 0;
   const uniqueRocks = Array.from(
     new Set(
       data.problems
@@ -728,35 +731,38 @@ const Sector = () => {
         )}
       </Card>
 
-      {effectiveTab === 'map' &&
-        ((data.approach?.coordinates ?? []).length > 0 || (data.descent?.coordinates ?? []).length > 0) && (
-          <div className={cn('mt-4 min-w-0 sm:mt-5', 'max-sm:-mx-4 max-sm:w-[calc(100%+2rem)] sm:mx-0 sm:w-full')}>
-            <div className='grid min-w-0 grid-cols-1 gap-3 md:grid-cols-2 md:items-stretch md:gap-4'>
-              {(data.approach?.coordinates ?? []).length > 0 && (
-                <div className={cn((data.descent?.coordinates ?? []).length === 0 && 'min-w-0 md:col-span-2')}>
-                  <SlopeProfile
-                    compact
-                    title='Approach'
-                    areaName={data.areaName ?? ''}
-                    sectorName={data.name ?? ''}
-                    slope={data.approach as Slope}
-                  />
-                </div>
-              )}
-              {(data.descent?.coordinates ?? []).length > 0 && (
-                <div className={cn((data.approach?.coordinates ?? []).length === 0 && 'min-w-0 md:col-span-2')}>
-                  <SlopeProfile
-                    compact
-                    title='Descent'
-                    areaName={data.areaName ?? ''}
-                    sectorName={data.name ?? ''}
-                    slope={data.descent as Slope}
-                  />
-                </div>
-              )}
-            </div>
+      {effectiveTab === 'map' && (mapProfileHasApproach || mapProfileHasDescent) && (
+        <div className={cn('mt-4 min-w-0 sm:mt-5', 'max-sm:-mx-4 max-sm:w-[calc(100%+2rem)] sm:mx-0 sm:w-full')}>
+          <div className='grid min-w-0 grid-cols-1 items-stretch gap-3 sm:grid-cols-2 sm:gap-4'>
+            {mapProfileHasApproach && (
+              <div className='w-full min-w-0'>
+                <SlopeProfile
+                  compact
+                  variant='approach'
+                  className='w-full min-w-0'
+                  title='Approach'
+                  areaName={data.areaName ?? ''}
+                  sectorName={data.name ?? ''}
+                  slope={data.approach as Slope}
+                />
+              </div>
+            )}
+            {mapProfileHasDescent && (
+              <div className='w-full min-w-0'>
+                <SlopeProfile
+                  compact
+                  variant='descent'
+                  className='w-full min-w-0'
+                  title='Descent'
+                  areaName={data.areaName ?? ''}
+                  sectorName={data.name ?? ''}
+                  slope={data.descent as Slope}
+                />
+              </div>
+            )}
           </div>
-        )}
+        </div>
+      )}
 
       {effectiveTab === 'overview' && (data.problems?.length ?? 0) > 0 && (
         <Card flush className='min-w-0 border-0 shadow-sm sm:border'>

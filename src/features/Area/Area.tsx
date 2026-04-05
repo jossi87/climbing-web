@@ -5,6 +5,7 @@ import Top from '../../shared/components/Top/Top';
 import Activity from '../../shared/components/Activity/Activity';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
 import { getDistanceWithUnit } from '../../shared/components/Leaflet/geo-utils';
+import { SLOPE_APPROACH_COLOR, SLOPE_DESCENT_COLOR } from '../../shared/slopePolylineColors';
 import Media from '../../shared/components/Media/Media';
 import Todo from '../../shared/components/Todo/Todo';
 import { Loading } from '../../shared/ui/StatusWidgets';
@@ -333,12 +334,12 @@ const Area = () => {
       if (approach?.coordinates?.length) {
         distance = getDistanceWithUnit(approach);
         const label = (!s.outline || !showSlopeLengthOnOutline) && distance ? distance : '';
-        nextSlopes.push({ backgroundColor: 'lime', slope: approach, label: label ?? '' });
+        nextSlopes.push({ backgroundColor: SLOPE_APPROACH_COLOR, slope: approach, label: label ?? '' });
       }
       if (s.descent?.coordinates?.length) {
         distance = getDistanceWithUnit(s.descent);
         const label = (!s.outline || !showSlopeLengthOnOutline) && distance ? distance : '';
-        nextSlopes.push({ backgroundColor: 'purple', slope: s.descent, label: label ?? '' });
+        nextSlopes.push({ backgroundColor: SLOPE_DESCENT_COLOR, slope: s.descent, label: label ?? '' });
       }
       if (s.outline?.length) {
         const label = (s.name ?? '') + (showSlopeLengthOnOutline && distance ? ' (' + distance + ')' : '');

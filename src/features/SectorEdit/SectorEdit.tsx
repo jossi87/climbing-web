@@ -4,6 +4,7 @@ import { Loading } from '../../shared/ui/StatusWidgets';
 import { useMeta } from '../../shared/components/Meta';
 import { postSector, spaPathFromRedirectResponse, useAccessToken, useArea, useElevation, useSector } from '../../api';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
+import { SLOPE_APPROACH_COLOR, SLOPE_DESCENT_COLOR } from '../../shared/slopePolylineColors';
 import { useNavigate, useParams } from 'react-router-dom';
 import { VisibilitySelectorField } from '../../shared/ui/VisibilitySelector';
 import type { components } from '../../@types/buldreinfo/swagger';
@@ -322,14 +323,14 @@ export const SectorEdit = ({ sector, area }: Props) => {
       if (s.approach?.coordinates?.length) {
         slopes.push({
           slope: s.approach,
-          backgroundColor: 'lime',
+          backgroundColor: SLOPE_APPROACH_COLOR,
           background: true,
         });
       }
       if (s.descent?.coordinates?.length) {
         slopes.push({
           slope: s.descent,
-          backgroundColor: 'purple',
+          backgroundColor: SLOPE_DESCENT_COLOR,
           background: true,
         });
       }
@@ -342,14 +343,14 @@ export const SectorEdit = ({ sector, area }: Props) => {
   if (data.approach?.coordinates?.length) {
     slopes.push({
       slope: data.approach,
-      backgroundColor: 'lime',
+      backgroundColor: SLOPE_APPROACH_COLOR,
       background: false,
     });
   }
   if (data.descent?.coordinates?.length) {
     slopes.push({
       slope: data.descent,
-      backgroundColor: 'purple',
+      backgroundColor: SLOPE_DESCENT_COLOR,
       background: false,
     });
   }

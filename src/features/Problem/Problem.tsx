@@ -17,6 +17,7 @@ import type { Slope } from '../../@types/buldreinfo';
 import TickModal from '../../shared/components/TickModal/TickModal';
 import CommentModal from '../../shared/components/CommentModal/CommentModal';
 import { SlopeProfile } from '../../shared/components/SlopeProfile';
+import { SLOPE_APPROACH_COLOR, SLOPE_DESCENT_COLOR } from '../../shared/slopePolylineColors';
 import Linkify from 'linkify-react';
 import { ProblemsOnRock } from './ProblemsOnRock';
 import { ProblemTicks } from './ProblemTicks';
@@ -155,14 +156,14 @@ export const Problem = () => {
   if (data.sectorApproach?.coordinates?.length) {
     slopes.push({
       slope: data.sectorApproach as Slope,
-      backgroundColor: 'lime',
+      backgroundColor: SLOPE_APPROACH_COLOR,
       label: getDistanceWithUnit(data.sectorApproach as Slope) ?? undefined,
     });
   }
   if (data.sectorDescent?.coordinates?.length) {
     slopes.push({
       slope: data.sectorDescent as Slope,
-      backgroundColor: 'purple',
+      backgroundColor: SLOPE_DESCENT_COLOR,
       label: getDistanceWithUnit(data.sectorDescent as Slope) ?? undefined,
     });
   }
@@ -571,11 +572,13 @@ export const Problem = () => {
 
       {showMapTab && activeTab === 'map' && (hasApproach || hasDescent) && (
         <div className={cn('mt-4 min-w-0 sm:mt-5', 'max-sm:-mx-4 max-sm:w-[calc(100%+2rem)] sm:mx-0 sm:w-full')}>
-          <div className='grid min-w-0 grid-cols-1 gap-3 md:grid-cols-2 md:items-stretch md:gap-4'>
+          <div className='grid min-w-0 grid-cols-1 items-stretch gap-3 sm:grid-cols-2 sm:gap-4'>
             {hasApproach && (
-              <div className={cn(!hasDescent && 'min-w-0 md:col-span-2')}>
+              <div className='w-full min-w-0'>
                 <SlopeProfile
                   compact
+                  variant='approach'
+                  className='w-full min-w-0'
                   title='Approach'
                   areaName={data.areaName ?? ''}
                   sectorName={data.sectorName ?? ''}
@@ -584,9 +587,11 @@ export const Problem = () => {
               </div>
             )}
             {hasDescent && (
-              <div className={cn(!hasApproach && 'min-w-0 md:col-span-2')}>
+              <div className='w-full min-w-0'>
                 <SlopeProfile
                   compact
+                  variant='descent'
+                  className='w-full min-w-0'
                   title='Descent'
                   areaName={data.areaName ?? ''}
                   sectorName={data.sectorName ?? ''}
