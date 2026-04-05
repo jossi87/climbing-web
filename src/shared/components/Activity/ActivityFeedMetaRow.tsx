@@ -6,7 +6,7 @@ import { ProblemLink } from './components/ProblemLink';
 
 type ActivitySchema = components['schemas']['Activity'];
 
-/** One summary line: story + time on the right (same layout site-wide — home, area, sector). */
+/** One summary line: story (flex) + relative time aligned to the far right (same layout site-wide — home, area, sector). */
 export function ActivityFeedMetaRow({
   a,
   activityRowRootClass,
@@ -83,12 +83,12 @@ export function ActivityFeedMetaRow({
 
   return (
     <div className={cn(activityRowRootClass, 'text-pretty [overflow-wrap:anywhere]')}>
-      <div className='flex min-w-0 flex-row items-start justify-between gap-2 sm:gap-3 md:gap-4'>
+      <div className='flex min-w-0 w-full flex-row items-start justify-between gap-3 sm:gap-4 md:gap-6'>
         <div className='min-w-0 flex-1'>
           {/* Normal inline flow so long route names break mid-line; avoid flex-wrap (whole links jump as one unit). */}
           <div className='min-w-0 max-w-full break-words'>{story}</div>
         </div>
-        <span className={cn(timeClass, 'max-md:leading-snug self-start text-right')}>{a.timeAgo}</span>
+        <span className={cn(timeClass, 'text-right max-md:leading-snug self-start pt-0.5')}>{a.timeAgo}</span>
       </div>
     </div>
   );

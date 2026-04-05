@@ -15,19 +15,19 @@ import type { components } from '../../../@types/buldreinfo/swagger';
 
 type ActivitySchema = components['schemas']['Activity'];
 
-/** Mirrors {@link ActivityFeedMetaRow}: story block + relative time on the right; optional second row like stars/comment. */
+/** Mirrors {@link ActivityFeedMetaRow}: story flex-1 + time on the far right; optional second row like stars/comment. */
 const ActivitySkeleton = () => (
   <div className='min-h-[3.75rem] animate-pulse bg-transparent px-4 py-4 md:min-h-[4.25rem] md:px-5 md:py-3.5'>
     <div className='flex items-start gap-3 md:gap-3.5'>
       <div className='skeleton-bar h-8 w-8 shrink-0 rounded-full pt-0.5 md:h-10 md:w-10' />
       <div className='min-w-0 flex-1 space-y-2 pt-0.5'>
-        <div className='flex min-w-0 flex-row items-start justify-between gap-2 sm:gap-3 md:gap-4'>
+        <div className='flex w-full min-w-0 flex-row items-start justify-between gap-3 sm:gap-4 md:gap-6'>
           <div className='min-w-0 flex-1 space-y-1.5'>
             <div className='skeleton-bar h-3 max-w-[min(100%,22rem)] rounded md:h-3.5' />
             <div className='skeleton-bar-muted h-3 w-[58%] rounded md:h-3.5' />
           </div>
           <div
-            className='skeleton-bar-muted h-2.5 w-[2.75rem] shrink-0 self-start rounded md:h-3 md:w-[3.25rem]'
+            className='skeleton-bar-muted h-2.5 w-[2.75rem] shrink-0 self-start rounded pt-0.5 md:h-3 md:w-[3.25rem]'
             aria-hidden
           />
         </div>
