@@ -94,7 +94,7 @@ const useMarkers = (areas: Props['areas']): MarkerDef[] => {
                   </Link>
                   <LockSymbol lockedAdmin={sector.lockedAdmin} lockedSuperadmin={sector.lockedSuperadmin} />
                 </nav>
-                <div className='flex items-center gap-1.5 border-t border-slate-700/50 pt-1'>
+                <div className='border-surface-border/50 flex items-center gap-1.5 border-t pt-1'>
                   <span className='font-mono text-xs text-slate-500'>#{problem.nr}</span>
                   <Link
                     to={`/problem/${problem.id}`}

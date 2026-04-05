@@ -82,12 +82,12 @@ export const PolylineEditor = ({ coordinates, parking, onChange, upload }: Props
       'flex items-center gap-2 px-4 py-2 text-xs font-black uppercase tracking-widest transition-all border-b-2',
       activeTab === id
         ? 'border-brand bg-brand/10 text-slate-50'
-        : 'border-transparent text-slate-500 hover:bg-white/5 hover:text-slate-300',
+        : 'border-transparent text-slate-500 hover:bg-surface-raised-hover hover:text-slate-300',
     );
 
   return (
     <div className='bg-surface-card border-surface-border overflow-hidden rounded-xl border shadow-sm'>
-      <div className='border-surface-border bg-surface-nav/20 flex border-b'>
+      <div className='border-surface-border bg-surface-raised flex border-b'>
         <button type='button' onClick={() => setActiveTab('POINTS')} className={navItemClasses('POINTS')}>
           <List size={14} /> Points
         </button>
@@ -154,7 +154,7 @@ export const PolylineEditor = ({ coordinates, parking, onChange, upload }: Props
               'cursor-pointer rounded-xl border-2 border-dashed p-6 text-center transition-all',
               isDragActive
                 ? 'border-brand bg-brand/5'
-                : 'border-surface-border bg-surface-nav/20 hover:border-slate-500',
+                : 'border-surface-border bg-surface-raised hover:border-slate-500',
             )}
           >
             <input {...getInputProps()} />

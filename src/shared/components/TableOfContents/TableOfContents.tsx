@@ -14,7 +14,7 @@ const JumpToTop = ({ compact = false }: { compact?: boolean }) => (
     className={cn(
       'transition-colors hover:opacity-100',
       compact
-        ? 'type-micro bg-surface-nav/35 inline-flex items-center gap-1 rounded-full border border-white/12 px-2 py-0.5 opacity-80'
+        ? 'type-micro bg-surface-raised inline-flex items-center gap-1 rounded-full border border-white/12 px-2 py-0.5 opacity-80'
         : 'p-1 opacity-70',
     )}
   >
@@ -92,7 +92,7 @@ export const TableOfContents = ({ areas, header, subHeader, compact = false }: P
           ))}
         </div>
       ) : (
-        <div className='bg-surface-nav/30 border-surface-border/50 flex flex-wrap gap-1.5 rounded-xl border p-3'>
+        <div className='bg-surface-raised border-surface-border/50 flex flex-wrap gap-1.5 rounded-xl border p-3'>
           {areas.map((area) => (
             <button
               key={area.id}
@@ -133,7 +133,7 @@ export const TableOfContents = ({ areas, header, subHeader, compact = false }: P
                 <LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} />
                 {compact ? (
                   getSunLabel(area.sunFromHour, area.sunToHour) ? (
-                    <span className='type-micro bg-surface-nav/45 inline-flex items-center gap-1 rounded-full border border-white/12 px-2 py-0.5 text-slate-200'>
+                    <span className='type-micro bg-surface-raised inline-flex items-center gap-1 rounded-full border border-white/12 px-2 py-0.5 text-slate-200'>
                       <Sun size={10} className='text-slate-300/90' />
                       {getSunLabel(area.sunFromHour, area.sunToHour)}
                     </span>
@@ -168,13 +168,13 @@ export const TableOfContents = ({ areas, header, subHeader, compact = false }: P
                       {compact ? (
                         <>
                           {getWallLabel(sector.wallDirectionManual, sector.wallDirectionCalculated) ? (
-                            <span className='type-micro bg-surface-nav/45 inline-flex items-center gap-1 rounded-full border border-white/12 px-2 py-0.5 text-slate-200'>
+                            <span className='type-micro bg-surface-raised inline-flex items-center gap-1 rounded-full border border-white/12 px-2 py-0.5 text-slate-200'>
                               <Compass size={10} className='text-slate-300/90' />
                               {getWallLabel(sector.wallDirectionManual, sector.wallDirectionCalculated)}
                             </span>
                           ) : null}
                           {getSunLabel(sector.sunFromHour, sector.sunToHour) ? (
-                            <span className='type-micro bg-surface-nav/45 inline-flex items-center gap-1 rounded-full border border-white/12 px-2 py-0.5 text-slate-200'>
+                            <span className='type-micro bg-surface-raised inline-flex items-center gap-1 rounded-full border border-white/12 px-2 py-0.5 text-slate-200'>
                               <Sun size={10} className='text-slate-300/90' />
                               {getSunLabel(sector.sunFromHour, sector.sunToHour)}
                             </span>
@@ -201,13 +201,13 @@ export const TableOfContents = ({ areas, header, subHeader, compact = false }: P
                         key={problem.id}
                         className={cn(
                           'flex gap-3 rounded-lg border border-transparent transition-colors',
-                          compact ? 'hover:bg-surface-nav/20 px-1.5 py-1' : 'p-2.5',
+                          compact ? 'hover:bg-surface-raised-hover px-1.5 py-1' : 'p-2.5',
                           !compact &&
                             (problem.ticked
-                              ? 'border-green-500/10 bg-green-500/5'
+                              ? 'bg-surface-raised border-emerald-500/40'
                               : problem.todo
-                                ? 'border-blue-500/10 bg-blue-500/5'
-                                : 'hover:bg-surface-nav/30'),
+                                ? 'bg-surface-raised border-sky-500/40'
+                                : 'hover:bg-surface-raised-hover'),
                         )}
                       >
                         <div className='w-6 shrink-0 pt-0.5 text-[11px] text-slate-500'>#{problem.nr}</div>

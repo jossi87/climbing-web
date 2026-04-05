@@ -258,7 +258,7 @@ const MediaSvgEdit = () => {
     'inline-flex items-center gap-1.5 rounded-md px-2 py-1.5 transition-colors disabled:pointer-events-none disabled:opacity-35',
     designContract.typography.uiCompact,
   );
-  const toolBtnOff = 'text-slate-500 hover:bg-white/[0.05] hover:text-slate-200';
+  const toolBtnOff = 'text-slate-500 hover:bg-surface-raised-hover hover:text-slate-200';
   const toolBtnReset = 'text-red-400/90 hover:bg-red-500/10 hover:text-red-200';
 
   const fieldClass = cn(
@@ -392,7 +392,7 @@ const MediaSvgEdit = () => {
                     setActivePoint(0);
                     setForceUpdate((v) => v + 1);
                   }}
-                  className={cn(toolBtn, toolBtnOff, 'border border-transparent hover:border-white/[0.08]')}
+                  className={cn(toolBtn, toolBtnOff, 'hover:border-surface-border/60 border border-transparent')}
                 >
                   <Spline size={14} strokeWidth={2} className='text-sky-400' /> Descent
                 </button>
@@ -417,7 +417,7 @@ const MediaSvgEdit = () => {
                     setActivePoint(0);
                     setForceUpdate((v) => v + 1);
                   }}
-                  className={cn(toolBtn, toolBtnOff, 'border border-transparent hover:border-white/[0.08]')}
+                  className={cn(toolBtn, toolBtnOff, 'hover:border-surface-border/60 border border-transparent')}
                 >
                   <Anchor size={14} strokeWidth={2} className='text-amber-400' /> Bolted
                 </button>
@@ -442,7 +442,7 @@ const MediaSvgEdit = () => {
                     setActivePoint(0);
                     setForceUpdate((v) => v + 1);
                   }}
-                  className={cn(toolBtn, toolBtnOff, 'border border-transparent hover:border-white/[0.08]')}
+                  className={cn(toolBtn, toolBtnOff, 'hover:border-surface-border/60 border border-transparent')}
                 >
                   <Triangle size={14} strokeWidth={2} className='text-orange-400' /> Trad
                 </button>
@@ -492,7 +492,7 @@ const MediaSvgEdit = () => {
                       designContract.typography.uiCompact,
                       activeElementIndex === index
                         ? 'bg-brand/15 ring-brand/35 text-slate-100 ring-1 ring-inset'
-                        : 'bg-white/[0.04] text-slate-500 ring-1 ring-white/[0.06] ring-inset hover:bg-white/[0.07] hover:text-slate-300',
+                        : 'bg-surface-raised ring-surface-border/50 hover:bg-surface-raised-hover text-slate-500 ring-1 ring-inset hover:text-slate-300',
                     )}
                   >
                     <button
@@ -519,7 +519,7 @@ const MediaSvgEdit = () => {
                         setActiveElementIndex(-1);
                         setForceUpdate((v) => v + 1);
                       }}
-                      className='shrink-0 border-l border-white/[0.08] px-1.5 text-slate-500 hover:bg-red-500/15 hover:text-red-300'
+                      className='border-surface-border/50 shrink-0 border-l px-1.5 text-slate-500 hover:bg-red-950 hover:text-red-300'
                     >
                       <Trash2 size={12} strokeWidth={2} />
                     </button>

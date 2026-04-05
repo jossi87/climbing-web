@@ -120,7 +120,7 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
 
     const metaMuted = tickFlags;
     const metaTypeClass =
-      'inline-flex max-w-full items-center rounded-md border border-white/12 bg-white/[0.06] px-1.5 py-0.5 text-[10px] font-medium text-slate-100 antialiased shadow-sm sm:text-[11px]';
+      'inline-flex max-w-full items-center rounded-md border border-white/12 bg-surface-raised px-1.5 py-0.5 text-[10px] font-medium text-slate-100 antialiased shadow-sm sm:text-[11px]';
 
     return (
       <>
@@ -678,7 +678,7 @@ const Area = () => {
                   return (
                     <div
                       key={sector.id}
-                      className='bg-surface-card/40 h-full max-w-full min-w-0 overflow-hidden rounded-xl border border-white/10 shadow-lg ring-1 ring-white/10 max-sm:!mx-0 max-sm:!w-full sm:border sm:shadow-xl sm:ring-0'
+                      className='bg-surface-card border-surface-border h-full max-w-full min-w-0 overflow-hidden rounded-xl border shadow-lg max-sm:!mx-0 max-sm:!w-full sm:border sm:shadow-xl'
                     >
                       <Link
                         to={`/sector/${sector.id}`}
@@ -742,7 +742,7 @@ const Area = () => {
                                     key={x.type}
                                     title={[x.type, `${x.num}`, tickTodo].filter(Boolean).join(' · ')}
                                     className={cn(
-                                      'inline-flex max-w-[min(100%,11rem)] min-w-0 items-center gap-x-0.5 rounded-full border border-white/15 bg-white/[0.08] px-1.5 py-px text-[7px] leading-tight text-slate-200 shadow-sm backdrop-blur-md sm:text-[8px]',
+                                      'bg-surface-raised inline-flex max-w-[min(100%,11rem)] min-w-0 items-center gap-x-0.5 rounded-full border border-white/15 px-1.5 py-px text-[7px] leading-tight text-slate-200 shadow-sm sm:text-[8px]',
                                       greenBorderOnly && 'border-emerald-500/50',
                                     )}
                                   >

@@ -33,7 +33,7 @@ type Coords = { x: number; y: number };
 const pageActionIconBtn =
   'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-colors disabled:pointer-events-none disabled:opacity-40';
 const pageActionIconBtnGlass =
-  'border-white/12 bg-white/[0.06] text-slate-300 hover:border-white/18 hover:bg-white/[0.1]';
+  'border-white/12 bg-surface-raised text-slate-300 hover:border-white/18 hover:bg-surface-raised-hover';
 const pageActionIconBtnGreen = 'border-green-400/45 bg-green-500/20 text-green-300 hover:bg-green-500/28';
 const pageActionIconBtnBrand = 'border-brand/55 bg-brand text-slate-950 shadow-sm hover:border-brand hover:bg-brand/90';
 
@@ -249,7 +249,7 @@ export const SvgEdit = ({
   const toolBtnOnAnchor = 'bg-amber-500/12 text-amber-100 ring-1 ring-inset ring-amber-400/25';
   const toolBtnOnTrad = 'bg-orange-500/12 text-orange-100 ring-1 ring-inset ring-orange-400/25';
   const toolBtnOnPathAnchor = 'bg-brand/15 text-slate-100 ring-1 ring-inset ring-brand/35';
-  const toolBtnOff = 'text-slate-500 hover:bg-white/[0.05] hover:text-slate-200';
+  const toolBtnOff = 'text-slate-500 hover:bg-surface-raised-hover hover:text-slate-200';
   const toolBtnReset = 'text-red-400/90 hover:bg-red-500/10 hover:text-red-200';
 
   const fieldClass = cn(
@@ -425,7 +425,7 @@ export const SvgEdit = ({
                   />
                   <button
                     type='button'
-                    className={cn(toolBtn, toolBtnOff, 'border-white/10 bg-white/[0.04]')}
+                    className={cn(toolBtn, toolBtnOff, 'bg-surface-raised border-white/10')}
                     onClick={() => onUpdateMediaRegion(customMediaRegion ?? null)}
                   >
                     <RefreshCw size={12} strokeWidth={2} /> Apply

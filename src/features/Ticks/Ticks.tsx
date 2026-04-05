@@ -22,8 +22,8 @@ const PlaceholderFeed = () => {
     <div className='animate-pulse space-y-3'>
       {Array.from({ length: 14 }, (_, i) => (
         <div key={i}>
-          <div className='bg-surface-nav/40 h-3 w-[94%] rounded sm:h-3.5' />
-          <div className='bg-surface-nav/28 mt-1.5 h-2.5 w-[52%] rounded' />
+          <div className='bg-surface-raised h-3 w-[94%] rounded sm:h-3.5' />
+          <div className='bg-surface-raised-hover mt-1.5 h-2.5 w-[52%] rounded' />
         </div>
       ))}
     </div>

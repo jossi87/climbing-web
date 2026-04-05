@@ -379,7 +379,7 @@ const MediaModal = ({
     >
       {canShowSidebar && showSidebar && (
         <div className='bg-surface-dark border-surface-border animate-in slide-in-from-left z-160 flex h-full w-80 flex-col border-r shadow-2xl duration-300'>
-          <div className='border-surface-border bg-surface-nav/20 flex items-center justify-between border-b px-3 py-2 sm:px-3.5'>
+          <div className='border-surface-border bg-surface-raised flex items-center justify-between border-b px-3 py-2 sm:px-3.5'>
             <h3 className='type-label'>Problems in View</h3>
             <button
               type='button'
@@ -413,7 +413,7 @@ const MediaModal = ({
                   aria-label={[svg.problemName, grade ?? undefined, statusHint].filter(Boolean).join('. ') || undefined}
                   className={cn(
                     'group block scroll-mt-1 border-l-2 border-transparent px-2 py-1.5 transition-colors sm:px-2.5',
-                    isRowActive ? 'border-brand bg-white/[0.07]' : 'hover:bg-surface-nav',
+                    isRowActive ? 'border-brand bg-surface-raised-hover' : 'hover:bg-surface-raised-hover',
                   )}
                 >
                   <div
@@ -454,7 +454,7 @@ const MediaModal = ({
               type='button'
               onClick={() => window.open(m.url ?? '', '_blank')}
               title='Open original'
-              className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black/50 text-slate-200 shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 ring-white/[0.1] backdrop-blur-md transition-all hover:bg-black/65 hover:text-slate-100 hover:ring-white/[0.18] active:scale-95 sm:h-11 sm:w-11'
+              className='ring-surface-border/50 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-900 text-slate-200 shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all hover:bg-slate-800 hover:text-slate-100 active:scale-95 sm:h-11 sm:w-11'
             >
               <ExternalLink size={17} strokeWidth={2} />
             </button>
@@ -466,10 +466,10 @@ const MediaModal = ({
               onClick={() => setShowSidebar(!showSidebar)}
               title={showSidebar ? 'Hide problem list' : 'Show problem list'}
               className={cn(
-                'flex h-10 w-10 shrink-0 items-center justify-center rounded-full shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 backdrop-blur-md transition-all active:scale-95 sm:h-11 sm:w-11',
+                'flex h-10 w-10 shrink-0 items-center justify-center rounded-full shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all active:scale-95 sm:h-11 sm:w-11',
                 showSidebar
                   ? 'bg-brand hover:bg-brand/90 text-slate-950 ring-1 ring-black/20 hover:text-slate-950'
-                  : 'bg-black/50 text-slate-200 ring-white/[0.1] hover:bg-black/65 hover:text-slate-100 hover:ring-white/[0.18]',
+                  : 'ring-surface-border/50 bg-slate-900 text-slate-200 hover:bg-slate-800 hover:text-slate-100',
               )}
             >
               <ListIcon size={17} strokeWidth={2} />
@@ -481,7 +481,7 @@ const MediaModal = ({
             onClick={() => setShowInfo(true)}
             title='Information'
             aria-label='Information'
-            className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black/50 text-slate-200 shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 ring-white/[0.1] backdrop-blur-md transition-all hover:bg-black/65 hover:text-slate-100 hover:ring-white/[0.18] active:scale-95 sm:h-11 sm:w-11'
+            className='ring-surface-border/50 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-900 text-slate-200 shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all hover:bg-slate-800 hover:text-slate-100 active:scale-95 sm:h-11 sm:w-11'
           >
             <Info size={17} strokeWidth={2} />
           </button>
@@ -492,7 +492,7 @@ const MediaModal = ({
               onClick={() => setShowHelp(true)}
               title='Topo legend'
               aria-label='Topo legend'
-              className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black/50 text-slate-200 shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 ring-white/[0.1] backdrop-blur-md transition-all hover:bg-black/65 hover:text-slate-100 hover:ring-white/[0.18] active:scale-95 sm:h-11 sm:w-11'
+              className='ring-surface-border/50 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-900 text-slate-200 shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all hover:bg-slate-800 hover:text-slate-100 active:scale-95 sm:h-11 sm:w-11'
             >
               <HelpCircle size={17} strokeWidth={2} />
             </button>
@@ -504,10 +504,10 @@ const MediaModal = ({
               onClick={() => setShowMenu(!showMenu)}
               title='More actions'
               className={cn(
-                'flex h-10 w-10 items-center justify-center rounded-full shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 backdrop-blur-md transition-all active:scale-95 sm:h-11 sm:w-11',
+                'flex h-10 w-10 items-center justify-center rounded-full shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all active:scale-95 sm:h-11 sm:w-11',
                 showMenu
-                  ? 'bg-white/20 text-slate-100 ring-white/25'
-                  : 'bg-black/50 text-slate-200 ring-white/[0.1] hover:bg-black/65 hover:text-slate-100 hover:ring-white/[0.18]',
+                  ? 'bg-surface-hover ring-surface-border/50 text-slate-100'
+                  : 'ring-surface-border/50 bg-slate-900 text-slate-200 hover:bg-slate-800 hover:text-slate-100',
               )}
             >
               <MoreVertical size={17} strokeWidth={2} />
@@ -519,7 +519,7 @@ const MediaModal = ({
                   <button
                     type='button'
                     onClick={() => navigate(`/problem/svg-edit/${optProblemId}/${pitch || 0}/${m.id}`)}
-                    className='type-small hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 opacity-85 transition-colors hover:opacity-100'
+                    className='type-small hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 opacity-85 transition-colors hover:opacity-100'
                   >
                     <Paintbrush size={14} className='text-brand' /> Draw topo line
                   </button>
@@ -528,7 +528,7 @@ const MediaModal = ({
                   <button
                     type='button'
                     onClick={() => navigate(`/media/svg-edit/${m.id}`)}
-                    className='type-small hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 opacity-85 transition-colors hover:opacity-100'
+                    className='type-small hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 opacity-85 transition-colors hover:opacity-100'
                   >
                     <Paintbrush size={14} className='text-brand' /> Draw on image
                   </button>
@@ -537,7 +537,7 @@ const MediaModal = ({
                   <button
                     type='button'
                     onClick={onMoveImageLeft}
-                    className='type-small hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 opacity-85 transition-colors hover:opacity-100'
+                    className='type-small hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 opacity-85 transition-colors hover:opacity-100'
                   >
                     <ArrowLeft size={14} /> Move image left
                   </button>
@@ -546,7 +546,7 @@ const MediaModal = ({
                   <button
                     type='button'
                     onClick={onMoveImageRight}
-                    className='type-small hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 opacity-85 transition-colors hover:opacity-100'
+                    className='type-small hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 opacity-85 transition-colors hover:opacity-100'
                   >
                     <ArrowRight size={14} /> Move image right
                   </button>
@@ -555,7 +555,7 @@ const MediaModal = ({
                   <button
                     type='button'
                     onClick={onMoveImageToArea}
-                    className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
+                    className='hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
                   >
                     <Move size={14} /> Move image to area
                   </button>
@@ -564,7 +564,7 @@ const MediaModal = ({
                   <button
                     type='button'
                     onClick={onMoveImageToSector}
-                    className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
+                    className='hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
                   >
                     <Move size={14} /> Move image to sector
                   </button>
@@ -573,7 +573,7 @@ const MediaModal = ({
                   <button
                     type='button'
                     onClick={onMoveImageToProblem}
-                    className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
+                    className='hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
                   >
                     <Move size={14} /> Move image to {isBouldering ? 'problem' : 'route'}
                   </button>
@@ -582,7 +582,7 @@ const MediaModal = ({
                   <button
                     type='button'
                     onClick={onSetMediaAsAvatar}
-                    className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
+                    className='hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
                   >
                     <UserIcon size={14} /> Set as avatar
                   </button>
@@ -599,7 +599,7 @@ const MediaModal = ({
                         getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, m.idType !== 1, { original: true }),
                       )
                     }
-                    className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
+                    className='hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
                   >
                     <Download size={14} /> Download Original
                   </button>
@@ -609,21 +609,21 @@ const MediaModal = ({
                     <button
                       type='button'
                       onClick={() => onRotate(90)}
-                      className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
+                      className='hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
                     >
                       <RotateCw size={14} /> Rotate 90° CW
                     </button>
                     <button
                       type='button'
                       onClick={() => onRotate(270)}
-                      className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
+                      className='hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
                     >
                       <RotateCcw size={14} /> Rotate 90° CCW
                     </button>
                     <button
                       type='button'
                       onClick={() => onRotate(180)}
-                      className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
+                      className='hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
                     >
                       <RefreshCw size={14} /> Rotate 180°
                     </button>
@@ -633,7 +633,7 @@ const MediaModal = ({
                   <button
                     type='button'
                     onClick={onEdit}
-                    className='hover:bg-surface-nav flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
+                    className='hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
                   >
                     <Edit size={14} /> Edit Information
                   </button>
@@ -656,7 +656,7 @@ const MediaModal = ({
             onClick={onClose}
             title='Close'
             aria-label='Close'
-            className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black/50 text-slate-200 shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 ring-white/[0.1] backdrop-blur-md transition-all hover:bg-red-600/88 hover:text-slate-100 hover:ring-red-500/35 active:scale-95 sm:h-11 sm:w-11'
+            className='ring-surface-border/50 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-900 text-slate-200 shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all hover:bg-red-700 hover:text-slate-100 active:scale-95 sm:h-11 sm:w-11'
           >
             <X size={19} strokeWidth={2} />
           </button>
@@ -719,7 +719,7 @@ const MediaModal = ({
                 alt=''
               />
               <div className='absolute inset-0 flex items-center justify-center'>
-                <div className='relative flex h-20 w-20 items-center justify-center rounded-full border border-white/20 bg-white/5 shadow-[0_10px_28px_rgba(0,0,0,0.55)] backdrop-blur-[4px] transition-transform duration-300 group-hover:scale-110'>
+                <div className='bg-surface-card border-surface-border relative flex h-20 w-20 items-center justify-center rounded-full border shadow-[0_10px_28px_rgba(0,0,0,0.55)] transition-transform duration-300 group-hover:scale-110'>
                   <Play
                     size={44}
                     fill='currentColor'
@@ -754,12 +754,12 @@ const MediaModal = ({
         <div className='pointer-events-none absolute right-4 bottom-4 left-4 z-170 flex items-end justify-between gap-3 sm:right-8 sm:bottom-8 sm:left-8'>
           <div className='max-w-xl shrink-0 space-y-2.5'>
             {showLocation && m.mediaMetadata?.location && (
-              <div className='type-label pointer-events-auto inline-flex items-center gap-2 rounded-full bg-black/50 px-3 py-1.5 text-slate-100 shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1 ring-white/[0.08] backdrop-blur-md'>
+              <div className='type-label ring-surface-border/40 pointer-events-auto inline-flex items-center gap-2 rounded-full bg-slate-900 px-3 py-1.5 text-slate-100 shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1'>
                 <MapPin size={12} className='text-brand' /> {m.mediaMetadata.location}
               </div>
             )}
             {m.mediaMetadata?.description && (
-              <div className='type-body pointer-events-auto max-w-xl rounded-2xl bg-black/45 p-3.5 leading-relaxed font-medium text-slate-100/95 shadow-[0_8px_32px_rgba(0,0,0,0.5)] ring-1 ring-white/[0.06] backdrop-blur-md sm:p-4'>
+              <div className='type-body ring-surface-border/35 pointer-events-auto max-w-xl rounded-2xl bg-slate-900 p-3.5 leading-relaxed font-medium text-slate-100 shadow-[0_8px_32px_rgba(0,0,0,0.5)] ring-1 sm:p-4'>
                 {m.mediaMetadata.description}
               </div>
             )}
@@ -787,7 +787,7 @@ const MediaModal = ({
                 });
               if (chunks.length === 0) return null;
               return (
-                <div className='ms-auto inline-block max-w-full rounded-2xl bg-black/50 px-3 py-1.5 text-right text-[11px] leading-snug font-semibold tracking-normal text-pretty text-slate-100/95 normal-case shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1 ring-white/[0.08] backdrop-blur-md sm:text-[12px]'>
+                <div className='ring-surface-border/40 ms-auto inline-block max-w-full rounded-2xl bg-slate-900 px-3 py-1.5 text-right text-[11px] leading-snug font-semibold tracking-normal text-pretty text-slate-100 normal-case shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1 sm:text-[12px]'>
                   {chunks.map(({ key, node }, i) => (
                     <Fragment key={key}>
                       {i > 0 ? ' ' : null}
@@ -821,7 +821,7 @@ const MediaModal = ({
                 type='button'
                 onClick={() => setShowInfo(false)}
                 aria-label='Close'
-                className='hover:bg-surface-nav rounded-xl p-2 transition-colors'
+                className='hover:bg-surface-raised-hover rounded-xl p-2 transition-colors'
               >
                 <X size={24} />
               </button>
@@ -895,7 +895,7 @@ const MediaModal = ({
                 type='button'
                 onClick={() => setShowHelp(false)}
                 aria-label='Close'
-                className='hover:bg-surface-nav -mr-1 rounded-xl p-2 transition-colors'
+                className='hover:bg-surface-raised-hover -mr-1 rounded-xl p-2 transition-colors'
               >
                 <X size={24} />
               </button>

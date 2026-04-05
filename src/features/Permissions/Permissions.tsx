@@ -91,7 +91,7 @@ const Permissions = () => {
                 placeholder='Search users...'
                 onChange={(e) => setQuery(e.target.value)}
                 value={query}
-                className='bg-surface-nav/35 border-white/5 placeholder:text-slate-500/80 focus:border-white/10'
+                className='bg-surface-raised border-surface-border focus:border-surface-border placeholder:text-slate-500'
               />
             </div>
           </div>
@@ -134,7 +134,7 @@ const Permissions = () => {
                                       prev === (u.userId ?? -1) ? null : (u.userId ?? -1),
                                     )
                                   }
-                                  className='bg-surface-nav/65 hover:bg-surface-nav/75 inline-flex w-full min-w-0 items-center justify-between rounded-md border border-white/10 px-2 py-1 text-left text-[10px] font-semibold text-slate-100 transition-colors hover:border-white/20 focus:border-white/25 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-[11px]'
+                                  className='bg-surface-raised hover:bg-surface-raised-hover border-surface-border inline-flex w-full min-w-0 items-center justify-between rounded-md border px-2 py-1 text-left text-[10px] font-semibold text-slate-100 transition-colors hover:border-slate-500 focus:border-slate-400 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-[11px]'
                                 >
                                   <span className='truncate'>{ROLE_CONFIG[currentLevel]?.label ?? 'Default user'}</span>
                                   <ChevronDown size={12} className='ml-2 shrink-0 text-slate-500' />
@@ -153,7 +153,7 @@ const Permissions = () => {
                                           'w-full px-2 py-1.5 text-left text-[10px] font-semibold transition-colors sm:text-[11px]',
                                           opt.value === currentLevel
                                             ? 'bg-surface-hover text-slate-100'
-                                            : 'hover:bg-surface-hover/60 text-slate-300',
+                                            : 'hover:bg-surface-hover text-slate-300',
                                         )}
                                       >
                                         {opt.label}

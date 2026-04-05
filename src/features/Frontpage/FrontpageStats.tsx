@@ -4,14 +4,18 @@ import { numberWithCommas } from '../../api';
 import { cn } from '../../lib/utils';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { Card, SectionLabel } from '../../shared/ui';
+import { designContract } from '../../design/contract';
 
 /**
- * Frosted tiles; hover highlights with a brand border (copy stays slate).
  * Fixed height (not min-h): loaded content is taller than the old 5rem minimum, which caused a visible jump when skeletons resolved.
+ * Tiles use opaque `surface-raised` (not alpha-blended `surface-nav/50`) so color matches the design system under any compositing.
  */
-const statTileClass =
-  'border border-white/10 bg-surface-nav/50 group relative flex h-[6rem] w-full shrink-0 flex-col items-center justify-center overflow-hidden p-3 text-center transition-[background-color,border-color] duration-200 sm:h-[6.875rem] sm:p-4 ' +
-  'hover:border-brand/50 hover:bg-surface-nav';
+const statTileClass = cn(
+  designContract.surfaces.raised,
+  designContract.surfaces.raisedHover,
+  'group relative flex h-[6rem] w-full shrink-0 flex-col items-center justify-center overflow-hidden border border-white/10 p-3 text-center transition-[background-color,border-color] duration-200 sm:h-[6.875rem] sm:p-4',
+  'hover:border-brand/50',
+);
 
 type StatItemProps = {
   to?: string;

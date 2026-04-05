@@ -6,6 +6,9 @@
   --color-surface-nav: #16181e;
   /* Same as nav/footer chrome — panels read as part of the page, not a brighter lift */
   --color-surface-card: #16181e;
+  /** Solid “lift” between card and hover — use instead of `surface-nav/50` etc. on chrome (tiles, rows, trays). */
+  --color-surface-raised: #1a1d25;
+  --color-surface-raised-hover: #242830;
   --color-surface-hover: #292d35;
   --color-surface-border: #363d4a;
   --color-white: #e2e8f0;
@@ -32,10 +35,11 @@
     letter-spacing: -0.005em;
     font-display: swap;
     background-color: var(--color-surface-dark);
-    background-image:
-      radial-gradient(1000px circle at 10% 0%, rgba(198, 161, 91, 0.08), transparent 45%),
-      radial-gradient(900px circle at 90% 20%, rgba(140, 109, 67, 0.035), transparent 52%);
-    background-attachment: fixed;
+  }
+
+  #root {
+    min-height: 100%;
+    background-color: var(--color-surface-dark);
   }
   @media (min-width: 768px) {
     html {
@@ -132,11 +136,11 @@
   }
 
   .search-input {
-    @apply h-10 rounded-md border border-transparent bg-white/[0.1] px-3 text-[12px] font-medium text-slate-100 transition-[color,background-color,border-color,box-shadow] duration-200 sm:text-sm;
+    @apply bg-surface-raised h-10 rounded-md border border-transparent px-3 text-[12px] font-medium text-slate-100 transition-[color,background-color,border-color,box-shadow] duration-200 sm:text-sm;
   }
   .search-input:focus,
   .search-input:focus-visible {
-    @apply border-brand/60 bg-white/[0.08] ring-0 outline-none;
+    @apply border-brand/60 bg-surface-raised-hover ring-0 outline-none;
     box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-brand) 45%, transparent);
   }
 
@@ -146,7 +150,7 @@
 
   .btn-glass {
     @apply flex h-8 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[11px] font-semibold tracking-wide uppercase transition-colors duration-200 active:scale-95 sm:px-3;
-    background-color: color-mix(in srgb, var(--color-surface-nav), transparent 50%);
+    background-color: var(--color-surface-raised);
     border-color: var(--color-surface-border);
     color: rgb(168 177 193);
   }

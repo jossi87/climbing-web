@@ -15,12 +15,13 @@ import {
   tickProblemLink,
 } from '../../../shared/components/Profile/profileRowTypography';
 
-const rowShell = 'group px-3 py-1.5 transition-colors hover:bg-white/[0.015] sm:px-4 sm:py-2';
+const rowShell = 'group px-3 py-1.5 transition-colors hover:bg-surface-raised-hover sm:px-4 sm:py-2';
 
-const actionIconBtn = 'rounded-md p-1.5 text-slate-600 transition-colors hover:bg-white/[0.06] hover:text-slate-300';
+const actionIconBtn =
+  'rounded-md p-1.5 text-slate-600 transition-colors hover:bg-surface-raised-hover hover:text-slate-300';
 
 const hseIconBtn =
-  'ml-1 inline-flex shrink-0 items-center rounded p-0.5 text-slate-500 transition-colors hover:bg-white/[0.06] hover:text-red-400/90';
+  'ml-1 inline-flex shrink-0 items-center rounded p-0.5 text-slate-500 transition-colors hover:bg-surface-raised-hover hover:text-red-400/90';
 
 export const ProblemComments = ({
   problemId,

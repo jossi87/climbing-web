@@ -15,7 +15,7 @@ type BadgeProps = {
 export const Badge = ({ children, title, className, icon: Icon }: BadgeProps) => (
   <span
     className={cn(
-      'inline-flex max-w-full items-center gap-1 rounded-md bg-white/[0.05] px-2 py-0.5 text-[11px] leading-snug font-medium text-slate-300 ring-1 ring-white/[0.1] transition-colors duration-150 sm:text-[12px]',
+      'bg-surface-raised inline-flex max-w-full items-center gap-1 rounded-md px-2 py-0.5 text-[11px] leading-snug font-medium text-slate-300 ring-1 ring-white/10 transition-colors duration-150 sm:text-[12px]',
       className,
     )}
     title={title}

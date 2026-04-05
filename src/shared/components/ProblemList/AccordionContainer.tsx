@@ -18,7 +18,7 @@ const AccordionContainer = ({ accordionRows }: Props) => {
   }, []);
 
   return (
-    <div className='divide-y divide-white/[0.06] overflow-hidden rounded-lg border border-white/[0.06]'>
+    <div className='divide-surface-border/40 border-surface-border/50 divide-y overflow-hidden rounded-lg border'>
       {accordionRows.map((d, i) => {
         const isActive = activeIndex === i;
         const hasData = (d.length ?? 0) > 0;
@@ -30,7 +30,7 @@ const AccordionContainer = ({ accordionRows }: Props) => {
               onClick={() => toggleAccordion(i)}
               className={cn(
                 'flex w-full items-center justify-between px-2.5 py-2 text-left transition-colors sm:px-3 sm:py-2.5',
-                isActive ? 'bg-white/[0.03]' : 'hover:bg-white/[0.02]',
+                isActive ? 'bg-surface-raised' : 'hover:bg-surface-raised-hover',
               )}
             >
               <span className='text-[11px] font-medium tracking-tight text-slate-400 sm:text-[12px]'>{d.label}</span>

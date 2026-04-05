@@ -141,7 +141,7 @@ export const SlopeProfile = ({
           'group -mx-0.5 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 font-semibold transition-colors hover:text-slate-100 focus-visible:outline-none',
           'focus-visible:ring-2',
           variant
-            ? 'hover:bg-white/8 focus-visible:ring-white/25'
+            ? 'hover:bg-surface-raised-hover focus-visible:ring-white/25'
             : 'text-brand/95 hover:bg-brand/12 hover:ring-brand/35 focus-visible:ring-brand/50 hover:ring-1',
         )}
         style={variant ? { color: lineColor } : undefined}
@@ -162,8 +162,8 @@ export const SlopeProfile = ({
       className={cn(
         'bg-surface-card overflow-hidden',
         compact
-          ? 'max-sm:border-surface-border/70 max-sm:rounded-none max-sm:border-x-0 max-sm:border-t max-sm:border-b-0 max-sm:shadow-none sm:rounded-xl sm:border sm:border-white/[0.09] sm:shadow-sm sm:ring-1 sm:ring-white/[0.04]'
-          : 'rounded-xl border border-white/[0.09] shadow-sm ring-1 ring-white/[0.04]',
+          ? 'max-sm:border-surface-border/70 sm:border-surface-border max-sm:rounded-none max-sm:border-x-0 max-sm:border-t max-sm:border-b-0 max-sm:shadow-none sm:rounded-xl sm:border sm:shadow-sm'
+          : 'border-surface-border rounded-xl border shadow-sm',
         !compact && 'max-w-2xl',
         className,
       )}
@@ -171,7 +171,7 @@ export const SlopeProfile = ({
       {title ? (
         <div
           className={cn(
-            'bg-surface-nav/40 border-b border-white/[0.07] py-1.5',
+            'bg-surface-raised border-surface-border/50 border-b py-1.5',
             variant && 'border-l-[3px]',
             compact ? 'px-2.5 sm:px-3.5' : 'px-3 sm:px-3.5',
           )}
@@ -193,7 +193,7 @@ export const SlopeProfile = ({
       <div
         ref={containerRef}
         className={cn(
-          'from-surface-nav/70 via-surface-card to-surface-nav/90 relative w-full overflow-hidden bg-gradient-to-b',
+          'from-surface-card via-surface-raised to-surface-card relative w-full overflow-hidden bg-gradient-to-b',
           /** Compact: short strip — mobile follows full width below; from sm each card sits in one grid column (~half main). */
           compact ? 'aspect-[12/2.5] sm:aspect-[20/2.5]' : 'aspect-[5/2] min-h-[4.75rem] p-0.5 sm:min-h-[5.25rem]',
         )}
@@ -233,7 +233,7 @@ export const SlopeProfile = ({
               content={({ active, payload, label }) => {
                 if (!active || !payload?.length) return null;
                 return (
-                  <div className='bg-surface-card/95 rounded-lg px-2.5 py-1.5 shadow-lg ring-1 ring-white/10 backdrop-blur-sm'>
+                  <div className='bg-surface-card ring-surface-border/50 rounded-lg px-2.5 py-1.5 shadow-lg ring-1'>
                     <div className='flex gap-3 font-mono text-[10px] text-slate-300'>
                       <span>D: {parseInt(String(label ?? '0'))}m</span>
                       <span>E: {parseInt(String(payload[0].value ?? '0'))}m</span>
@@ -248,7 +248,7 @@ export const SlopeProfile = ({
 
       <div
         className={cn(
-          'border-surface-border/80 bg-surface-nav/35 border-t py-2 text-slate-200',
+          'border-surface-border/80 bg-surface-raised border-t py-2 text-slate-200',
           compact ? 'px-2.5 sm:px-3' : 'px-2.5 sm:px-3',
           statText,
         )}

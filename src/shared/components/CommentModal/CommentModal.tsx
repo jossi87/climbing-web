@@ -59,7 +59,7 @@ const CommentModal = ({
       aria-labelledby='comment-modal-title'
     >
       <div className={modalPanelClass}>
-        <div className='border-surface-border bg-surface-nav/30 flex shrink-0 items-center justify-between border-b px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-6 sm:py-4 sm:pt-4'>
+        <div className='border-surface-border bg-surface-raised flex shrink-0 items-center justify-between border-b px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-6 sm:py-4 sm:pt-4'>
           <h3 id='comment-modal-title' className='type-label flex min-w-0 items-center gap-2 text-slate-200'>
             <MessageSquare size={18} className='shrink-0 text-slate-400' />
             <span className='truncate'>Add comment</span>
@@ -67,7 +67,7 @@ const CommentModal = ({
           <button
             type='button'
             onClick={onClose}
-            className='-mr-1 shrink-0 rounded-lg p-1.5 opacity-70 transition-colors hover:bg-white/5 hover:opacity-100'
+            className='hover:bg-surface-raised-hover -mr-1 shrink-0 rounded-lg p-1.5 opacity-70 transition-colors hover:opacity-100'
             aria-label='Close'
           >
             <X size={20} />
@@ -108,7 +108,7 @@ const CommentModal = ({
             <div className='space-y-1.5'>
               <label className={cn('ml-1', fieldLabelClass)}>Status</label>
               <div
-                className='border-surface-border bg-surface-nav/80 flex min-h-[2.75rem] w-full min-w-0 flex-nowrap divide-x divide-white/12 overflow-hidden rounded-xl border shadow-sm sm:w-fit'
+                className='border-surface-border bg-surface-raised divide-surface-border/50 flex min-h-[2.75rem] w-full min-w-0 flex-nowrap divide-x overflow-hidden rounded-xl border shadow-sm sm:w-fit'
                 role='radiogroup'
                 aria-label='Comment safety status'
               >
@@ -124,8 +124,8 @@ const CommentModal = ({
                     designContract.typography.uiCompact,
                     'min-w-0 flex-1 px-2 py-2.5 uppercase transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-emerald-400/45 focus-visible:outline-none max-sm:text-[10px] sm:flex-none sm:px-4',
                     !danger && !resolved
-                      ? 'bg-emerald-500/20 text-slate-100 shadow-[inset_0_0_0_1px_rgba(52,211,153,0.4)]'
-                      : 'text-slate-500 hover:bg-white/[0.06] hover:text-slate-300',
+                      ? 'bg-emerald-950 text-emerald-100 shadow-none ring-1 ring-emerald-500/45'
+                      : 'hover:bg-surface-raised-hover text-slate-500 hover:text-slate-300',
                   )}
                 >
                   Default
@@ -142,8 +142,8 @@ const CommentModal = ({
                     designContract.typography.uiCompact,
                     'flex min-w-0 flex-1 items-center justify-center gap-1 px-2 py-2.5 uppercase transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-red-400/50 focus-visible:outline-none max-sm:text-[10px] sm:flex-none sm:gap-2 sm:px-4',
                     danger && !resolved
-                      ? 'bg-red-600/35 text-slate-50 shadow-[inset_0_0_0_1px_rgba(248,113,113,0.55)]'
-                      : 'text-slate-500 hover:bg-white/[0.06] hover:text-red-300',
+                      ? 'bg-red-950 text-red-100 shadow-none ring-1 ring-red-400/50'
+                      : 'hover:bg-surface-raised-hover text-slate-500 hover:text-red-300',
                   )}
                 >
                   <ShieldAlert size={14} className='shrink-0' /> Dangerous
@@ -160,8 +160,8 @@ const CommentModal = ({
                     designContract.typography.uiCompact,
                     'flex min-w-0 flex-1 items-center justify-center gap-1 px-2 py-2.5 uppercase transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-emerald-400/45 focus-visible:outline-none max-sm:text-[10px] sm:flex-none sm:gap-2 sm:px-4',
                     !danger && resolved
-                      ? 'bg-emerald-600/35 text-slate-50 shadow-[inset_0_0_0_1px_rgba(52,211,153,0.5)]'
-                      : 'text-slate-500 hover:bg-white/[0.06] hover:text-emerald-300',
+                      ? 'bg-emerald-950 text-emerald-100 shadow-none ring-1 ring-emerald-400/50'
+                      : 'hover:bg-surface-raised-hover text-slate-500 hover:text-emerald-300',
                   )}
                 >
                   <ShieldCheck size={14} className='shrink-0' /> Safe
@@ -173,7 +173,7 @@ const CommentModal = ({
           {danger && (
             <div
               className={cn(
-                'flex items-start gap-2.5 rounded-xl border border-red-500/20 bg-red-500/10 p-3 leading-relaxed text-red-400 sm:gap-3 sm:p-3.5',
+                'bg-surface-raised flex items-start gap-2.5 rounded-xl border border-red-500/35 p-3 leading-relaxed text-red-400 sm:gap-3 sm:p-3.5',
                 designContract.typography.micro,
               )}
             >
@@ -188,7 +188,7 @@ const CommentModal = ({
           )}
         </div>
 
-        <div className='bg-surface-nav/30 border-surface-border flex shrink-0 justify-end gap-1.5 border-t px-3 py-2.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:gap-3 sm:px-4 sm:py-4 sm:pb-4'>
+        <div className='bg-surface-raised border-surface-border flex shrink-0 justify-end gap-1.5 border-t px-3 py-2.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:gap-3 sm:px-4 sm:py-4 sm:pb-4'>
           <button
             type='button'
             onClick={onClose}
@@ -202,7 +202,7 @@ const CommentModal = ({
             disabled={saving || !message.trim()}
             className={cn(
               designContract.controls.savePrimaryModal,
-              'rounded-lg shadow-sm disabled:bg-slate-700/80 disabled:opacity-50 max-sm:px-3 max-sm:py-2 max-sm:text-[9px] max-sm:tracking-wide',
+              'disabled:bg-surface-hover rounded-lg shadow-sm disabled:opacity-50 max-sm:px-3 max-sm:py-2 max-sm:text-[9px] max-sm:tracking-wide',
             )}
           >
             {saving ? (

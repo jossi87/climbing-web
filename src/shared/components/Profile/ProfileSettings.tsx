@@ -12,7 +12,7 @@ const ProfileSettings = () => {
   if (!data) {
     return (
       <Card flush className='border-0 sm:border'>
-        <div className='bg-surface-nav/20 animate-pulse p-8 text-center text-slate-500 sm:p-10'>Loading...</div>
+        <div className='bg-surface-card animate-pulse p-8 text-center text-slate-500 sm:p-10'>Loading...</div>
       </Card>
     );
   }
@@ -72,7 +72,7 @@ const ProfileSettings = () => {
               </div>
             </div>
 
-            <div className='bg-surface-nav/30 border-surface-border/50 mb-8 flex items-center gap-3 rounded-lg border p-3'>
+            <div className='bg-surface-raised border-surface-border/50 mb-8 flex items-center gap-3 rounded-lg border p-3'>
               <input
                 id='email-visibility'
                 type='checkbox'
@@ -108,7 +108,7 @@ const ProfileSettings = () => {
                     'cursor-pointer rounded-xl border-2 border-dashed p-8 text-center transition-all',
                     isDragActive
                       ? 'border-brand bg-brand/5'
-                      : 'border-surface-border bg-surface-nav/20 hover:border-slate-500',
+                      : 'border-surface-border bg-surface-card hover:border-slate-500',
                   )}
                 >
                   <input {...getInputProps()} />
@@ -142,7 +142,7 @@ const ProfileSettings = () => {
         <Card flush className='border-0 sm:border'>
           <section className='p-4 sm:p-6'>
             <SectionHeader title='Display Regions' icon={Globe} subheader='Choose visible regions' />
-            <div className='bg-surface-nav/20 border-surface-border divide-surface-border/60 divide-y rounded-xl border'>
+            <div className='border-surface-border divide-surface-border/60 bg-surface-card divide-y rounded-xl border'>
               {(d.userRegions ?? []).map((region) => {
                 const label = region.role ? `${region.name} (${region.role})` : region.name;
                 const id = `region-${region.id}`;

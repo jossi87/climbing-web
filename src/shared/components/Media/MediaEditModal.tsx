@@ -22,7 +22,7 @@ const MediaEditModal = ({ save, onCloseWithoutReload, m, numPitches }: Props) =>
   return (
     <div className='animate-in fade-in fixed inset-0 z-200 flex h-[100dvh] min-h-[100dvh] w-full max-w-[100vw] items-center justify-center bg-black/80 p-4 backdrop-blur-sm duration-200'>
       <div className='bg-surface-card border-surface-border flex w-full max-w-md flex-col overflow-hidden rounded-2xl border shadow-2xl'>
-        <div className='border-surface-border bg-surface-nav/30 flex items-center justify-between border-b px-6 py-4'>
+        <div className='border-surface-border bg-surface-raised flex items-center justify-between border-b px-6 py-4'>
           <h3 className='type-label'>Edit media</h3>
           <button
             type='button'
@@ -69,7 +69,7 @@ const MediaEditModal = ({ save, onCloseWithoutReload, m, numPitches }: Props) =>
             </div>
           )}
 
-          <div className='bg-surface-nav/20 border-surface-border/50 flex items-center justify-between rounded-xl border p-4'>
+          <div className='bg-surface-card border-surface-border/50 flex items-center justify-between rounded-xl border p-4'>
             <div className='space-y-0.5'>
               <label className='type-body font-semibold'>Trivia-image?</label>
               <p className='type-small opacity-70'>Enable to mark as general trivia</p>
@@ -96,7 +96,7 @@ const MediaEditModal = ({ save, onCloseWithoutReload, m, numPitches }: Props) =>
           </div>
         </div>
 
-        <div className='bg-surface-nav/30 border-surface-border flex justify-end gap-3 border-t p-4'>
+        <div className='bg-surface-raised border-surface-border flex justify-end gap-3 border-t p-4'>
           <button
             type='button'
             onClick={onCloseWithoutReload}
@@ -111,7 +111,7 @@ const MediaEditModal = ({ save, onCloseWithoutReload, m, numPitches }: Props) =>
               save(m.id ?? 0, description, pitch, trivia);
             }}
             disabled={saving}
-            className={cn(designContract.controls.savePrimaryModal, 'rounded-lg disabled:bg-slate-700/60')}
+            className={cn(designContract.controls.savePrimaryModal, 'disabled:bg-surface-hover rounded-lg')}
           >
             {saving ? <RefreshCw className='animate-spin' size={14} /> : <Check size={14} />}
             Save

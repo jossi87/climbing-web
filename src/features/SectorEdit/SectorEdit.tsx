@@ -560,9 +560,9 @@ export const SectorEdit = ({ sector, area }: Props) => {
                 <p className='ml-1 max-w-prose text-[10px] leading-relaxed text-slate-500 sm:text-[11px]'>
                   Choose parking, outline, approach, or descent, then draw on the map. Reset clears the active mode.
                 </p>
-                <div className='border-surface-border bg-surface-nav/15 overflow-hidden rounded-lg border'>
+                <div className='border-surface-border bg-surface-raised overflow-hidden rounded-lg border'>
                   <div
-                    className='border-surface-border bg-surface-nav/40 border-b px-3 py-2.5'
+                    className='border-surface-border bg-surface-card border-b px-3 py-2.5'
                     role='group'
                     aria-label='Map drawing mode'
                   >
@@ -581,7 +581,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
                             'inline-flex min-h-10 w-full items-center justify-center gap-1.5 rounded-md px-2 py-2 text-[11px] font-semibold tracking-wide transition-colors sm:min-h-9 sm:w-auto sm:justify-start sm:rounded-lg sm:px-3 sm:text-xs',
                             leafletMode === m.id
                               ? 'bg-brand text-slate-950 shadow-sm ring-1 ring-black/10'
-                              : 'bg-surface-nav/80 hover:bg-surface-hover text-slate-400 hover:text-slate-200',
+                              : 'bg-surface-raised hover:bg-surface-hover text-slate-400 hover:text-slate-200',
                           )}
                         >
                           <m.icon size={14} strokeWidth={2} className='shrink-0 opacity-80' aria-hidden />
@@ -710,7 +710,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
                 <button
                   type='button'
                   onClick={() => setShowProblemOrder(!showProblemOrder)}
-                  className='bg-surface-nav/10 type-label flex w-full items-center justify-between rounded-lg p-3 sm:p-4'
+                  className='bg-surface-card type-label flex w-full items-center justify-between rounded-lg p-3 sm:p-4'
                 >
                   <span className='flex items-center gap-2'>
                     <Route size={14} className='text-brand' /> Change order of problems in sector

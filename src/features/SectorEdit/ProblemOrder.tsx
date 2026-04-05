@@ -58,7 +58,7 @@ export const ProblemOrder = ({ problemOrder, onChange }: Props) => {
             </div>
             <div
               className={cn(
-                'bg-surface-nav/50 min-w-35 rounded-r-lg border border-l-0 px-4 py-2 text-xs font-bold transition-colors',
+                'bg-surface-raised min-w-35 rounded-r-lg border border-l-0 px-4 py-2 text-xs font-bold transition-colors',
                 isModified ? 'border-orange-500/50 text-orange-500' : 'border-surface-border text-slate-400',
               )}
             >

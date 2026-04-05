@@ -102,7 +102,7 @@ const MediaUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
           'group relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition-all duration-300',
           isDragActive
             ? 'border-brand bg-brand/5'
-            : 'border-surface-border bg-surface-nav/30 hover:border-brand/50 hover:bg-surface-nav/50',
+            : 'border-surface-border bg-surface-raised hover:border-brand/50 hover:bg-surface-raised-hover',
           isConverting && 'pointer-events-none cursor-wait opacity-50',
         )}
       >
@@ -189,7 +189,7 @@ const MediaUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
                     />
                   </div>
 
-                  <div className='bg-surface-nav/30 border-surface-border/50 flex items-center justify-between rounded-lg border p-2.5'>
+                  <div className='bg-surface-raised border-surface-border/50 flex items-center justify-between rounded-lg border p-2.5'>
                     <span className={cn('flex items-center gap-2', designContract.typography.label)}>
                       <Camera size={12} /> Trivia
                     </span>

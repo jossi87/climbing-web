@@ -144,14 +144,14 @@ const ToggleLabel = ({ label, checked, onChange }: { label: string; checked: boo
       className={cn(
         'relative inline-flex h-4 w-8 shrink-0 cursor-pointer items-center rounded-full border p-0.5 transition-colors duration-200 ease-in-out focus:outline-none',
         checked
-          ? 'border-white/25 bg-white/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]'
-          : 'bg-surface-nav/50 group-hover:bg-surface-nav/70 border-white/10 group-hover:border-white/15',
+          ? 'border-brand/45 bg-surface-hover shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]'
+          : 'border-surface-border bg-surface-raised group-hover:border-surface-border group-hover:bg-surface-raised-hover',
       )}
     >
       <span
         aria-hidden='true'
         className={cn(
-          'pointer-events-none inline-block h-3 w-3 transform rounded-full bg-white/95 shadow-sm ring-0 transition duration-200 ease-in-out',
+          'pointer-events-none inline-block h-3 w-3 transform rounded-full bg-slate-200 shadow-sm ring-0 transition duration-200 ease-in-out',
           checked ? 'translate-x-3.5' : 'translate-x-0',
         )}
       />
@@ -279,11 +279,11 @@ const ToolbarDropdown = <T extends string>({
           fullWidth && !compact ? 'w-full md:w-auto' : fullWidth && compact ? 'w-full' : '',
           variant === 'ghost'
             ? isOpen
-              ? 'bg-white/[0.08] text-slate-100'
-              : 'border-0 bg-transparent text-slate-300 hover:bg-white/[0.06] hover:text-slate-100'
+              ? 'bg-surface-raised-hover text-slate-100'
+              : 'hover:bg-surface-raised-hover border-0 bg-transparent text-slate-300 hover:text-slate-100'
             : isOpen
-              ? 'bg-surface-hover/55 border-white/18 text-slate-100'
-              : 'bg-surface-nav/28 hover:bg-surface-nav/42 border-white/10 text-slate-300 hover:border-white/12 hover:text-slate-200',
+              ? 'border-surface-border bg-surface-hover text-slate-100'
+              : 'border-surface-border bg-surface-raised hover:border-surface-border hover:bg-surface-raised-hover text-slate-300 hover:text-slate-200',
         )}
       >
         {Icon ? (
@@ -304,7 +304,7 @@ const ToolbarDropdown = <T extends string>({
         ? createPortal(
             <div
               ref={menuRef}
-              className='bg-surface-card/98 fixed z-[220] overflow-hidden overflow-y-auto rounded-xl py-1 shadow-[0_16px_48px_-12px_rgba(0,0,0,0.65)] ring-1 ring-white/[0.12] backdrop-blur-md'
+              className='bg-surface-card border-surface-border/50 ring-surface-border/40 fixed z-[220] overflow-hidden overflow-y-auto rounded-xl border py-1 shadow-[0_16px_48px_-12px_rgba(0,0,0,0.65)] ring-1'
               style={{
                 top: menuPosition.top,
                 left: menuPosition.left,
@@ -312,7 +312,7 @@ const ToolbarDropdown = <T extends string>({
                 maxHeight: menuPosition.maxHeight,
               }}
             >
-              <div className='divide-y divide-white/[0.07]'>
+              <div className='divide-surface-border/40 divide-y'>
                 {options.map((opt) => (
                   <button
                     ref={opt.value === value ? selectedOptionRef : null}
@@ -325,8 +325,8 @@ const ToolbarDropdown = <T extends string>({
                     className={cn(
                       'w-full px-3 py-2.5 text-left text-[11px] leading-snug transition-colors sm:px-3.5 sm:text-[12px]',
                       opt.value === value
-                        ? 'bg-white/[0.09] font-medium text-slate-50'
-                        : 'text-slate-300 hover:bg-white/[0.06] hover:text-slate-50',
+                        ? 'bg-surface-raised-hover font-medium text-slate-50'
+                        : 'hover:bg-surface-raised-hover text-slate-300 hover:text-slate-50',
                     )}
                   >
                     {opt.text}
@@ -528,8 +528,8 @@ export const ProblemList = ({
                 className={cn(
                   'inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg border px-3 text-[11px] font-medium whitespace-nowrap transition-colors sm:text-[12px] md:h-8 md:gap-1.5 md:px-3',
                   showFilter
-                    ? 'border-white/18 bg-white/[0.07] text-slate-100 ring-1 ring-white/10'
-                    : 'border-white/10 bg-transparent text-slate-400 hover:border-white/14 hover:bg-white/[0.04] hover:text-slate-100',
+                    ? 'border-surface-border bg-surface-hover ring-surface-border/50 text-slate-100 ring-1'
+                    : 'border-surface-border/60 hover:border-surface-border hover:bg-surface-raised bg-transparent text-slate-400 hover:text-slate-100',
                 )}
               >
                 <Filter size={11} className='shrink-0 opacity-90' />

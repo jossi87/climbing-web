@@ -13,7 +13,7 @@ export default function AvatarModal({
 }) {
   return (
     <div
-      className='bg-surface-dark/95 animate-in fade-in fixed inset-0 z-9999 flex h-screen w-screen flex-col items-center justify-center p-4 transition-all duration-200'
+      className='bg-surface-dark animate-in fade-in fixed inset-0 z-9999 flex h-screen w-screen flex-col items-center justify-center p-4 transition-all duration-200'
       onClick={onClose}
     >
       <div className='relative flex max-h-[85vh] max-w-5xl flex-col items-center' onClick={(e) => e.stopPropagation()}>

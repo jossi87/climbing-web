@@ -24,15 +24,15 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
     return (
       <Card flush className={cardShellClass}>
         <div className={mediaFrameClass}>
-          <div className='bg-surface-hover/50 absolute inset-0 animate-pulse' />
+          <div className='bg-surface-raised absolute inset-0 animate-pulse' />
         </div>
         <div className={desktopCopyMin}>
           <div className='space-y-3'>
             <div className='flex flex-wrap items-baseline gap-x-2 gap-y-1'>
               <div className='bg-surface-hover h-[1.125rem] max-w-[min(100%,14rem)] flex-1 animate-pulse rounded sm:h-5' />
-              <div className='bg-surface-hover/60 h-3.5 w-10 shrink-0 animate-pulse rounded md:h-4 md:w-11' />
+              <div className='bg-surface-hover h-3.5 w-10 shrink-0 animate-pulse rounded md:h-4 md:w-11' />
             </div>
-            <div className='bg-surface-hover/45 h-3 w-full max-w-[18rem] animate-pulse rounded md:h-[0.875rem]' />
+            <div className='bg-surface-hover h-3 w-full max-w-[18rem] animate-pulse rounded md:h-[0.875rem]' />
           </div>
         </div>
       </Card>
@@ -108,7 +108,7 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
           </div>
 
           {(taggedUsers.length > 0 || photographer) && (
-            <div className='mt-5 flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-white/10 pt-5'>
+            <div className='border-surface-border/45 mt-5 flex flex-wrap items-center gap-x-4 gap-y-3 border-t pt-5'>
               {taggedUsers.length > 0 && (
                 <div className='flex items-center gap-2'>
                   <AvatarGroup

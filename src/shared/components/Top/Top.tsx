@@ -36,7 +36,7 @@ const Top = ({ idArea, idSector }: TopProps) => {
         </thead>
         <tbody>
           {top.rows?.map((t) => (
-            <tr key={t.percentage} className='transition-colors hover:bg-white/[0.02]'>
+            <tr key={t.percentage} className='hover:bg-surface-raised-hover transition-colors'>
               <td className={cn(cellPad, rowType, 'font-mono text-slate-100 tabular-nums')}>{t.rank}</td>
               <td className={cn(cellPad, rowType, 'text-slate-100 tabular-nums')}>{t.percentage}%</td>
               <td className={cn(cellPad, rowType)}>

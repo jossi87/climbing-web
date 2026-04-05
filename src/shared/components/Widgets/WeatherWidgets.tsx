@@ -96,7 +96,7 @@ export const YrLink = ({ lat, lng }: { lat: number; lng: number }) => {
       </a>
       {isOpen && !isLoading && next1Hours && next6Hours && next12Hours && anchorRect && (
         <div
-          className='bg-surface-card/98 border-surface-border fixed z-[9999] min-w-[13rem] rounded-lg border p-3 shadow-2xl backdrop-blur-sm'
+          className='bg-surface-card border-surface-border fixed z-[9999] min-w-[13rem] rounded-lg border p-3 shadow-2xl'
           style={{
             left: Math.max(
               8,

@@ -27,7 +27,7 @@ function joinDates(dates: (string | undefined | null)[]) {
 }
 
 /** Room between rows; light vertical padding so body + note + stars read as one unit. */
-const rowShell = 'group px-3 py-1.5 transition-colors hover:bg-white/[0.015] sm:px-4 sm:py-2';
+const rowShell = 'group px-3 py-1.5 transition-colors hover:bg-surface-raised-hover sm:px-4 sm:py-2';
 
 const quoteBlock = cn(
   tickCommentSmall,

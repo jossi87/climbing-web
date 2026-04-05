@@ -171,7 +171,7 @@ const Media = ({
                 />
                 {x.idType === 2 && (
                   <div className='pointer-events-none absolute inset-0 flex items-center justify-center bg-black/10 transition-colors group-hover:bg-black/20'>
-                    <div className='relative flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/5 shadow-[0_4px_12px_rgba(0,0,0,0.5)] backdrop-blur-[4px] transition-transform duration-300 group-hover:scale-105'>
+                    <div className='bg-surface-card border-surface-border relative flex h-8 w-8 items-center justify-center rounded-full border shadow-[0_4px_12px_rgba(0,0,0,0.5)] transition-transform duration-300 group-hover:scale-105'>
                       <Play
                         size={17}
                         fill='currentColor'

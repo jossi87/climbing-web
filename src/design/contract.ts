@@ -81,29 +81,38 @@ export const designContract = {
     card: 'bg-surface-card border-surface-border rounded-2xl border shadow-sm',
     subtle: 'bg-surface-nav border-surface-border border',
     /**
+     * Inset cells (frontpage stats tiles, activity rows): opaque fill on a `surface-card` shell — same pattern everywhere.
+     * See `--color-surface-raised*` in `index.css`.
+     */
+    raised: 'bg-surface-raised',
+    raisedHover: 'hover:bg-surface-raised-hover',
+    /** Selected / “on” compact controls (filter grade, active chip) — opaque, no `bg-white/xx`. */
+    controlActive: 'border-white/15 bg-surface-raised-hover text-slate-100',
+    /**
      * Inline stat/meta chips — same language as Area sector pills & Sector type rows.
      * Use `inlineChipInteractive` for links/buttons (hover border).
      */
     inlineChip:
-      'inline-flex max-w-full min-w-0 items-center gap-1.5 rounded-md border border-white/12 bg-white/[0.04] px-2.5 py-1 text-xs text-slate-200',
+      'inline-flex max-w-full min-w-0 items-center gap-1.5 rounded-md border border-white/12 bg-surface-raised px-2.5 py-1 text-xs text-slate-200',
     inlineChipInteractive:
-      'inline-flex max-w-full min-w-0 items-center gap-1.5 rounded-md border border-white/12 bg-white/[0.04] px-2.5 py-1 text-xs text-slate-200 transition-colors hover:border-white/22',
+      'inline-flex max-w-full min-w-0 items-center gap-1.5 rounded-md border border-white/12 bg-surface-raised px-2.5 py-1 text-xs text-slate-200 transition-colors hover:border-white/22 hover:bg-surface-raised-hover',
     /**
      * Hover affordance for {@link Badge} used inside links (weather, webcams, external URLs).
      * Static info chips omit this — only interactive targets get the brand ring.
      */
     badgeLinkHover:
-      'cursor-pointer transition-colors duration-150 hover:bg-brand/[0.08] hover:text-slate-100 hover:ring-brand/35',
+      'cursor-pointer transition-colors duration-150 hover:bg-surface-raised-hover hover:text-slate-100 hover:ring-1 hover:ring-brand/35',
     /**
      * Ring chip for downloads, map links, and other meta actions — matches {@link DownloadButton}.
      */
     metaChipInteractive:
-      'inline-flex max-w-full cursor-pointer items-center gap-1 rounded-md bg-white/[0.05] px-2 py-0.5 text-[11px] font-medium text-slate-300 ring-1 ring-white/[0.1] transition-colors duration-150 hover:bg-brand/[0.08] hover:text-slate-100 hover:ring-brand/35 sm:text-[12px]',
+      'inline-flex max-w-full cursor-pointer items-center gap-1 rounded-md bg-surface-raised px-2 py-0.5 text-[11px] font-medium text-slate-300 ring-1 ring-white/10 transition-colors duration-150 hover:bg-surface-raised-hover hover:text-slate-100 hover:ring-brand/35 sm:text-[12px]',
   },
   controls: {
     chipButton: 'btn-glass',
     chipButtonActive: 'btn-glass-active',
-    listRow: 'group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-white/5',
+    listRow:
+      'group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-surface-raised-hover',
     /**
      * Round icon buttons in the page header breadcrumb row (Problem, Area, Sector).
      * One size token everywhere; glyph scales slightly from `sm` up.

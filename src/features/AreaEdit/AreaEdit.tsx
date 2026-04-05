@@ -307,7 +307,7 @@ export const AreaEdit = () => {
                 <button
                   type='button'
                   onClick={() => setShowSectorOrder(!showSectorOrder)}
-                  className='bg-surface-nav/10 type-label flex w-full items-center justify-between rounded-lg p-3 sm:p-4'
+                  className='bg-surface-card type-label flex w-full items-center justify-between rounded-lg p-3 sm:p-4'
                 >
                   <span className='flex items-center gap-2'>
                     <Hash size={14} className='text-brand' />

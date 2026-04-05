@@ -19,8 +19,8 @@ export const UserCard = ({ user, variant = 'default', metaAction }: UserCardProp
     className={cn(
       'group flex items-center gap-3 transition-all duration-300 sm:gap-4',
       variant === 'minimal'
-        ? 'rounded-lg px-1.5 py-2 hover:bg-white/2'
-        : 'border-surface-border/50 hover:border-brand/40 rounded-xl border p-3 hover:bg-white/2 sm:p-4',
+        ? 'hover:bg-surface-raised-hover rounded-lg px-1.5 py-2'
+        : 'border-surface-border/50 hover:border-brand/40 hover:bg-surface-raised-hover rounded-xl border p-3 sm:p-4',
     )}
   >
     <ClickableAvatar

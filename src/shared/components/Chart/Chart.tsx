@@ -92,7 +92,7 @@ function Chart({ ticks: data }: Props) {
             const total = g.fa + g.tick;
 
             return (
-              <tr key={[g.grade, g.fa, g.tick].join('/')} className='hover:bg-surface-hover/20 transition-colors'>
+              <tr key={[g.grade, g.fa, g.tick].join('/')} className='hover:bg-surface-raised-hover transition-colors'>
                 <td className='px-1 py-0.5 text-[11px] leading-none font-medium whitespace-nowrap text-slate-400 sm:px-1.5 sm:py-0.5 sm:text-[12px]'>
                   {g.grade}
                 </td>

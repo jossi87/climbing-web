@@ -99,10 +99,10 @@ const ChartGradeDistribution = ({
                     embedded
                       ? isActive
                         ? 'ring-1 ring-white/15'
-                        : 'bg-surface-nav/[0.07] group-hover:bg-surface-nav/15'
+                        : 'bg-surface-card group-hover:bg-surface-raised'
                       : isActive
                         ? 'bg-surface-hover ring-1 ring-red-300/35'
-                        : 'bg-surface-nav/15 group-hover:bg-surface-nav/35',
+                        : 'bg-surface-raised group-hover:bg-surface-raised-hover',
                   )}
                   style={{ height: '100%' }}
                 >

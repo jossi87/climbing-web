@@ -52,7 +52,7 @@ const Trash = () => {
               return (
                 <div
                   key={key}
-                  className='flex min-w-0 items-center justify-between gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-white/3 sm:px-4'
+                  className='hover:bg-surface-raised-hover flex min-w-0 items-center justify-between gap-3 rounded-lg px-3 py-2 transition-colors sm:px-4'
                 >
                   <div className='flex min-w-0 items-center gap-3'>
                     {!!t.idMedia && (
@@ -100,7 +100,7 @@ const Trash = () => {
                         });
                       }
                     }}
-                    className='bg-surface-nav/55 border-surface-border/60 hover:bg-surface-hover/80 inline-flex shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[10px] font-semibold text-slate-300 transition-colors'
+                    className='border-surface-border/60 bg-surface-raised hover:bg-surface-hover inline-flex shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[10px] font-semibold text-slate-300 transition-colors'
                   >
                     <RotateCcw size={12} />
                     Restore

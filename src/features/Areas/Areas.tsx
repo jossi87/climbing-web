@@ -103,7 +103,7 @@ const Areas = () => {
           <SectionHeader title='Areas' icon={MapIcon} subheader={`${filteredData.length} areas`} />
 
           <div className='mb-3 flex flex-wrap items-center gap-2'>
-            <div className='bg-surface-nav/20 inline-flex h-8 items-center gap-1 rounded-full border border-white/25 p-0.5 pl-2 shadow-sm'>
+            <div className='bg-surface-raised border-surface-border/60 inline-flex h-8 items-center gap-1 rounded-full border p-0.5 pl-2 shadow-sm'>
               <span className='type-micro shrink-0 text-slate-300'>Dataset:</span>
               <button
                 type='button'
@@ -126,7 +126,7 @@ const Areas = () => {
                 Developers
               </button>
             </div>
-            <div className='bg-surface-nav/20 inline-flex h-8 items-center gap-1 rounded-full border border-white/25 p-0.5 pl-2 shadow-sm'>
+            <div className='bg-surface-raised border-surface-border/60 inline-flex h-8 items-center gap-1 rounded-full border p-0.5 pl-2 shadow-sm'>
               <span className='type-micro shrink-0 text-slate-300'>Sun on wall info:</span>
               <button
                 type='button'
@@ -177,7 +177,7 @@ const Areas = () => {
           {showRegionGrouping ? (
             <div className='space-y-4'>
               {groupedRegions.map(([regionName, areasInRegion]) => (
-                <div key={regionName} className='bg-surface-nav/10 rounded-lg px-2 py-1.5 sm:px-2.5 sm:py-2'>
+                <div key={regionName} className='bg-surface-card rounded-lg px-2 py-1.5 sm:px-2.5 sm:py-2'>
                   <div className='mb-1.5 text-[12px] font-semibold text-slate-200 sm:text-[13px]'>{regionName}</div>
                   <div className='type-micro text-slate-400'>
                     {areasInRegion.map((area, index) => (
@@ -189,7 +189,7 @@ const Areas = () => {
                           </Link>
                           <LockSymbol lockedAdmin={!!area.lockedAdmin} lockedSuperadmin={!!area.lockedSuperadmin} />
                           {getSunLabel(area.sunFromHour ?? 0, area.sunToHour ?? 0) ? (
-                            <span className='bg-surface-nav/26 inline-flex items-center gap-0.5 rounded-full border border-white/10 px-1.5 py-0.5 text-[10px] leading-none text-slate-300/90 sm:text-[11px]'>
+                            <span className='bg-surface-raised inline-flex items-center gap-0.5 rounded-full border border-white/10 px-1.5 py-0.5 text-[10px] leading-none text-slate-300 sm:text-[11px]'>
                               <Sun size={9} className='text-slate-400/90' />
                               {getSunLabel(area.sunFromHour ?? 0, area.sunToHour ?? 0)}
                             </span>
@@ -212,7 +212,7 @@ const Areas = () => {
                     </Link>
                     <LockSymbol lockedAdmin={!!area.lockedAdmin} lockedSuperadmin={!!area.lockedSuperadmin} />
                     {getSunLabel(area.sunFromHour ?? 0, area.sunToHour ?? 0) ? (
-                      <span className='bg-surface-nav/26 inline-flex items-center gap-0.5 rounded-full border border-white/10 px-1.5 py-0.5 text-[10px] leading-none text-slate-300/90 sm:text-[11px]'>
+                      <span className='bg-surface-raised inline-flex items-center gap-0.5 rounded-full border border-white/10 px-1.5 py-0.5 text-[10px] leading-none text-slate-300 sm:text-[11px]'>
                         <Sun size={9} className='text-slate-400/90' />
                         {getSunLabel(area.sunFromHour ?? 0, area.sunToHour ?? 0)}
                       </span>

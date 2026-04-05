@@ -110,7 +110,7 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
     const metaMuted = tickFlags;
     /** Route type: reads as a label, not buried in gray meta. */
     const metaTypeClass =
-      'inline-flex max-w-full items-center rounded-md border border-white/12 bg-white/[0.06] px-1.5 py-0.5 text-[10px] font-medium text-slate-100 antialiased shadow-sm sm:text-[11px]';
+      'inline-flex max-w-full items-center rounded-md border border-white/12 bg-surface-raised px-1.5 py-0.5 text-[10px] font-medium text-slate-100 antialiased shadow-sm sm:text-[11px]';
 
     return (
       <>
@@ -513,7 +513,7 @@ const Sector = () => {
                     </button>
                     {sectorPickerOpen && (
                       <ul
-                        className='border-surface-border bg-surface-card/98 absolute top-[calc(100%+0.35rem)] left-0 z-50 max-h-64 min-w-[min(100vw-2rem,18rem)] overflow-auto rounded-2xl border py-1 shadow-2xl ring-1 ring-white/10 backdrop-blur-md'
+                        className='border-surface-border bg-surface-card ring-surface-border/50 absolute top-[calc(100%+0.35rem)] left-0 z-50 max-h-64 min-w-[min(100vw-2rem,18rem)] overflow-auto rounded-2xl border py-1 shadow-2xl ring-1'
                         role='listbox'
                       >
                         {(data.sectors ?? []).map((s) => {
@@ -525,8 +525,8 @@ const Sector = () => {
                                 className={cn(
                                   'flex min-w-0 items-center gap-2 px-3 py-2 text-sm transition-colors',
                                   current
-                                    ? 'bg-white/[0.08] font-medium text-slate-100'
-                                    : 'text-slate-400 hover:bg-white/[0.05] hover:text-slate-200',
+                                    ? 'bg-surface-raised-hover font-medium text-slate-100'
+                                    : 'hover:bg-surface-raised-hover text-slate-400 hover:text-slate-200',
                                 )}
                                 onClick={() => setSectorPickerOpen(false)}
                               >

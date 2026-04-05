@@ -15,7 +15,7 @@ export const StatItem = ({
   value: string | number;
   icon: ElementType;
 }) => (
-  <div className='bg-surface-card group flex h-full w-full flex-col items-center justify-center p-5 text-center transition-all duration-300 hover:bg-white/3'>
+  <div className='bg-surface-card group hover:bg-surface-raised flex h-full w-full flex-col items-center justify-center p-5 text-center transition-all duration-300'>
     <div className='group-hover:text-brand/80 mb-2 text-slate-500 transition-colors'>
       <Icon size={18} />
     </div>

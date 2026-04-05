@@ -195,8 +195,8 @@ export const Problems = ({ filterOpen }: Props) => {
                 onClick={() => dispatch({ action: 'toggle-filter' })}
                 className={
                   visible
-                    ? 'bg-surface-hover/55 inline-flex h-8 items-center gap-1.5 rounded-full border border-white/18 px-2.5 text-[11px] leading-none font-medium text-slate-100 transition-colors sm:text-[12px]'
-                    : 'bg-surface-nav/25 hover:bg-surface-nav/40 inline-flex h-8 items-center gap-1.5 rounded-full border border-white/10 px-2.5 text-[11px] leading-none font-medium text-slate-300 transition-colors hover:text-slate-200 sm:text-[12px]'
+                    ? 'bg-surface-hover border-surface-border inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[11px] leading-none font-medium text-slate-100 transition-colors sm:text-[12px]'
+                    : 'border-surface-border bg-surface-raised hover:bg-surface-raised-hover inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[11px] leading-none font-medium text-slate-300 transition-colors hover:text-slate-200 sm:text-[12px]'
                 }
               >
                 <Filter size={11} /> Filter
@@ -209,7 +209,7 @@ export const Problems = ({ filterOpen }: Props) => {
                   });
                 }}
                 disabled={isSaving}
-                className='bg-surface-nav/25 hover:bg-surface-nav/40 inline-flex h-8 items-center gap-1.5 rounded-full border border-white/10 px-2.5 text-[11px] leading-none font-medium text-slate-300 transition-colors hover:text-slate-200 disabled:cursor-wait disabled:opacity-50 sm:text-[12px]'
+                className='border-surface-border bg-surface-raised hover:bg-surface-raised-hover inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[11px] leading-none font-medium text-slate-300 transition-colors hover:text-slate-200 disabled:cursor-wait disabled:opacity-50 sm:text-[12px]'
               >
                 <Download size={11} /> {isSaving ? 'Downloading...' : 'Download'}
               </button>
@@ -218,7 +218,7 @@ export const Problems = ({ filterOpen }: Props) => {
 
           {visible && (
             <div className='px-4 pb-2 sm:px-5'>
-              <div className='bg-surface-nav/14 rounded-lg p-4'>
+              <div className='bg-surface-card rounded-lg p-4'>
                 <FilterForm />
               </div>
             </div>
@@ -240,7 +240,7 @@ export const Problems = ({ filterOpen }: Props) => {
                   </button>
                   <button
                     onClick={() => dispatch({ action: 'reset', section: 'all' })}
-                    className='bg-surface-nav/25 hover:bg-surface-nav/40 inline-flex h-8 items-center gap-1.5 rounded-full border border-white/10 px-2.5 text-[11px] leading-none font-medium text-slate-300 transition-colors hover:text-slate-200 sm:text-[12px]'
+                    className='border-surface-border bg-surface-raised hover:bg-surface-raised-hover inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[11px] leading-none font-medium text-slate-300 transition-colors hover:text-slate-200 sm:text-[12px]'
                   >
                     <Trash2 size={11} /> Clear
                   </button>

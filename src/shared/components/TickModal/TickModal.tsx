@@ -153,7 +153,7 @@ const TickModal = ({
       aria-labelledby='tick-modal-title'
     >
       <div className={modalPanelClass}>
-        <div className='border-surface-border bg-surface-nav/30 flex shrink-0 items-center justify-between border-b px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-6 sm:py-4 sm:pt-4'>
+        <div className='border-surface-border bg-surface-raised flex shrink-0 items-center justify-between border-b px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-6 sm:py-4 sm:pt-4'>
           <h3 id='tick-modal-title' className='type-label flex min-w-0 items-center gap-2 text-slate-200'>
             <Check size={18} className='shrink-0 text-emerald-400' />
             <span className='truncate'>{isClimbing ? 'Tick route' : 'Tick problem'}</span>
@@ -161,7 +161,7 @@ const TickModal = ({
           <button
             type='button'
             onClick={onClose}
-            className='-mr-1 shrink-0 rounded-lg p-1.5 opacity-70 transition-colors hover:bg-white/5 hover:opacity-100'
+            className='hover:bg-surface-raised-hover -mr-1 shrink-0 rounded-lg p-1.5 opacity-70 transition-colors hover:opacity-100'
             aria-label='Close'
           >
             <X size={20} />
@@ -170,7 +170,7 @@ const TickModal = ({
 
         <div className={modalBodyClass}>
           {apiError && (
-            <div className='flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/10 p-4'>
+            <div className='bg-surface-raised flex items-start gap-3 rounded-xl border border-red-500/35 p-4'>
               <AlertCircle className='shrink-0 text-red-500' size={18} />
               <div className={cn(designContract.typography.label, 'text-red-500')}>
                 <span className='opacity-70'>Error:</span> {apiError}
@@ -240,7 +240,7 @@ const TickModal = ({
               <span className='sr-only'> (required)</span>
             </label>
             <div
-              className='border-surface-border bg-surface-nav/80 flex min-h-[3rem] w-full min-w-0 flex-nowrap divide-x divide-white/12 overflow-hidden rounded-xl border shadow-sm'
+              className='border-surface-border bg-surface-raised divide-surface-border/50 flex min-h-[3rem] w-full min-w-0 flex-nowrap divide-x overflow-hidden rounded-xl border shadow-sm'
               role='radiogroup'
               aria-labelledby='tick-rating-label'
             >
@@ -252,8 +252,8 @@ const TickModal = ({
                 className={cn(
                   'flex min-w-0 flex-1 items-center justify-center px-1 py-2.5 text-center text-[10px] leading-tight font-semibold tracking-wide uppercase transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-emerald-400/50 focus-visible:ring-offset-0 focus-visible:outline-none sm:px-2 sm:text-xs',
                   stars === -1
-                    ? 'bg-emerald-500/35 text-slate-50 shadow-[inset_0_0_0_1px_rgba(52,211,153,0.55)]'
-                    : 'text-slate-400 hover:bg-white/[0.07] hover:text-slate-200',
+                    ? 'bg-emerald-950 text-slate-50 shadow-none ring-1 ring-emerald-400/50'
+                    : 'hover:bg-surface-raised-hover text-slate-400 hover:text-slate-200',
                 )}
               >
                 No rating
@@ -269,8 +269,8 @@ const TickModal = ({
                   className={cn(
                     'flex min-w-0 flex-1 items-center justify-center px-1 py-2.5 transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-amber-400/55 focus-visible:ring-offset-0 focus-visible:outline-none sm:px-2',
                     stars === s
-                      ? 'bg-amber-400/20 text-amber-50 shadow-[inset_0_0_0_1px_rgba(251,191,36,0.55)]'
-                      : 'text-slate-500 hover:bg-white/[0.07]',
+                      ? 'bg-amber-950 text-amber-50 shadow-none ring-1 ring-amber-400/55'
+                      : 'hover:bg-surface-raised-hover text-slate-500',
                   )}
                 >
                   <span className='inline-flex items-center justify-center gap-px'>
@@ -316,16 +316,16 @@ const TickModal = ({
           {enableTickRepeats && (
             <div className='border-surface-border/50 space-y-2 border-t pt-3'>
               <label className={cn('ml-1 block', fieldLabelClass)}>Repeats</label>
-              <div className='border-surface-border/60 bg-surface-nav/25 overflow-hidden rounded-xl border shadow-sm'>
+              <div className='border-surface-border/60 bg-surface-card overflow-hidden rounded-xl border shadow-sm'>
                 {repeats.length > 0 ? (
-                  <ol className='m-0 list-none divide-y divide-white/[0.08] p-0'>
+                  <ol className='divide-surface-border/40 m-0 list-none divide-y p-0'>
                     {repeats.map((r, index) => (
                       <li
                         key={index}
                         className='animate-in slide-in-from-left-2 flex gap-2 p-2.5 duration-150 sm:gap-3 sm:p-3'
                       >
                         <div
-                          className='bg-surface-nav/80 border-surface-border/80 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-[10px] font-semibold text-slate-400 tabular-nums sm:h-8 sm:w-8 sm:text-[11px]'
+                          className='bg-surface-raised border-surface-border/80 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-[10px] font-semibold text-slate-400 tabular-nums sm:h-8 sm:w-8 sm:text-[11px]'
                           aria-hidden
                         >
                           {index + 1}
@@ -337,12 +337,12 @@ const TickModal = ({
                               dateFormat='dd-MM-yyyy'
                               selected={r.date ? convertFromStringToDate(r.date) : undefined}
                               onChange={(date: Date | null) => handleUpdateRepeat(index, 'date', date)}
-                              className='bg-surface-dark/80 border-surface-border type-small min-w-0 flex-1 rounded-lg border px-2.5 py-1.5 focus:border-white/20 focus:outline-none sm:max-w-[10.5rem] sm:py-2'
+                              className='bg-surface-raised border-surface-border type-small min-w-0 flex-1 rounded-lg border px-2.5 py-1.5 focus:border-white/20 focus:outline-none sm:max-w-[10.5rem] sm:py-2'
                             />
                             <button
                               type='button'
                               onClick={() => handleDeleteRepeatAt(index)}
-                              className='shrink-0 rounded-lg border border-red-400/45 bg-red-500/15 p-2 text-red-300 shadow-sm transition-colors hover:border-red-400/65 hover:bg-red-500/25 hover:text-red-200 focus-visible:ring-2 focus-visible:ring-red-400/45 focus-visible:ring-offset-0 focus-visible:outline-none active:scale-[0.98] sm:p-2'
+                              className='bg-surface-raised shrink-0 rounded-lg border border-red-500/50 p-2 text-red-300 shadow-sm transition-colors hover:border-red-400 hover:bg-red-950 hover:text-red-200 focus-visible:ring-2 focus-visible:ring-red-400/45 focus-visible:ring-offset-0 focus-visible:outline-none active:scale-[0.98] sm:p-2'
                               aria-label={`Remove repeat ${index + 1}`}
                             >
                               <Minus size={15} strokeWidth={2.35} />
@@ -351,7 +351,7 @@ const TickModal = ({
                           <textarea
                             placeholder='Optional — conditions, partners, how it felt…'
                             rows={3}
-                            className='bg-surface-dark/80 border-surface-border type-small max-h-40 min-h-[4.25rem] w-full resize-y rounded-lg border px-2.5 py-2 leading-snug focus:border-white/20 focus:outline-none sm:min-h-[4.5rem]'
+                            className='bg-surface-raised border-surface-border type-small max-h-40 min-h-[4.25rem] w-full resize-y rounded-lg border px-2.5 py-2 leading-snug focus:border-white/20 focus:outline-none sm:min-h-[4.5rem]'
                             value={r.comment ?? ''}
                             onChange={(e) => handleUpdateRepeat(index, 'comment', e.target.value)}
                           />
@@ -360,11 +360,11 @@ const TickModal = ({
                     ))}
                   </ol>
                 ) : null}
-                <div className={cn('bg-surface-nav/35', repeats.length > 0 ? 'border-surface-border/50 border-t' : '')}>
+                <div className={cn('bg-surface-raised', repeats.length > 0 ? 'border-surface-border/50 border-t' : '')}>
                   <button
                     type='button'
                     onClick={handleAddRepeat}
-                    className='type-label flex w-full items-center justify-center gap-2 px-3 py-2.5 text-slate-200 transition-colors hover:bg-white/4 sm:px-4 sm:py-2.5'
+                    className='type-label hover:bg-surface-raised-hover flex w-full items-center justify-center gap-2 px-3 py-2.5 text-slate-200 transition-colors sm:px-4 sm:py-2.5'
                   >
                     <Plus size={14} className='text-emerald-400/90' /> Add repeat ascent
                   </button>
@@ -376,7 +376,7 @@ const TickModal = ({
 
         <div
           className={cn(
-            'bg-surface-nav/30 border-surface-border flex shrink-0 flex-nowrap items-center gap-2 border-t px-3 py-2.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:gap-3 sm:px-4 sm:py-4 sm:pb-4',
+            'bg-surface-raised border-surface-border flex shrink-0 flex-nowrap items-center gap-2 border-t px-3 py-2.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:gap-3 sm:px-4 sm:py-4 sm:pb-4',
             idTick > 1 ? 'justify-between' : 'justify-end',
           )}
         >
@@ -391,7 +391,7 @@ const TickModal = ({
               }}
               className={cn(
                 designContract.typography.uiCompact,
-                'inline-flex min-w-0 shrink-0 items-center gap-1 rounded-lg px-2 py-1.5 text-red-500 uppercase transition-all hover:bg-red-500/10 disabled:opacity-50 sm:gap-2 sm:rounded-xl sm:px-3 sm:py-2',
+                'hover:bg-surface-hover inline-flex min-w-0 shrink-0 items-center gap-1 rounded-lg px-2 py-1.5 text-red-500 uppercase transition-all hover:ring-1 hover:ring-red-500/35 disabled:opacity-50 sm:gap-2 sm:rounded-xl sm:px-3 sm:py-2',
               )}
             >
               <Trash2 size={14} className='shrink-0 sm:h-4 sm:w-4' />
@@ -415,7 +415,7 @@ const TickModal = ({
               disabled={stars === null || !validDate || isSaving}
               className={cn(
                 designContract.controls.savePrimaryModal,
-                'shadow-sm disabled:bg-slate-700/80 disabled:opacity-50 max-sm:px-3 max-sm:py-2 max-sm:text-[9px] max-sm:tracking-wide',
+                'disabled:bg-surface-hover shadow-sm disabled:opacity-50 max-sm:px-3 max-sm:py-2 max-sm:text-[9px] max-sm:tracking-wide',
               )}
             >
               {isSaving ? <RefreshCw size={14} className='animate-spin' /> : <Check size={14} />}

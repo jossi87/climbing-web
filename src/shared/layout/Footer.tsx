@@ -37,7 +37,7 @@ const Footer = () => {
       <>
         <div
           className={cn(
-            'group-hover:border-brand/40 group-hover:text-brand flex h-8 w-8 shrink-0 items-center justify-center rounded border border-white/10 bg-white/5 text-slate-400 transition-colors sm:h-9 sm:w-9',
+            'group-hover:border-brand/40 group-hover:text-brand border-surface-border/60 bg-surface-raised flex h-8 w-8 shrink-0 items-center justify-center rounded border text-slate-400 transition-colors sm:h-9 sm:w-9',
             className,
           )}
         >
@@ -117,7 +117,7 @@ const Footer = () => {
               target='_blank'
               className='group flex items-center gap-3 text-slate-400 transition-colors hover:text-slate-200'
             >
-              <div className='group-hover:border-brand/40 flex h-8 w-8 shrink-0 items-center justify-center rounded border border-white/10 bg-white/5 transition-colors sm:h-9 sm:w-9'>
+              <div className='group-hover:border-brand/40 border-surface-border/60 bg-surface-raised flex h-8 w-8 shrink-0 items-center justify-center rounded border transition-colors sm:h-9 sm:w-9'>
                 <img
                   src='/png/brv.png'
                   alt='BRV'

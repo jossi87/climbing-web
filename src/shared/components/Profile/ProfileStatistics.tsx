@@ -117,7 +117,7 @@ type OverviewStatItemProps = {
 };
 
 const OverviewStatItem = ({ icon: Icon, label, value, className }: OverviewStatItemProps) => (
-  <div className='bg-surface-card/90 group relative flex h-full w-full min-w-0 flex-col items-center justify-center overflow-hidden border border-transparent p-2 text-center transition-all duration-300 sm:p-3'>
+  <div className='bg-surface-card group relative flex h-full w-full min-w-0 flex-col items-center justify-center overflow-hidden border border-transparent p-2 text-center transition-all duration-300 sm:p-3'>
     <div className={cn('mb-1 transition-colors sm:mb-2', className)}>
       <Icon size={12} strokeWidth={2} />
     </div>
@@ -256,7 +256,7 @@ const ProfileStatistics = ({ userId, view }: ProfileStatisticsProps) => {
 
   return (
     <div className='space-y-4'>
-      <div className='bg-surface-nav/20 grid grid-cols-7 gap-px overflow-hidden rounded-xl'>
+      <div className='bg-surface-border grid grid-cols-7 gap-px overflow-hidden rounded-xl'>
         <OverviewStatItem
           icon={Check}
           label='Ascents'

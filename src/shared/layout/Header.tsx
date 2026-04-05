@@ -92,7 +92,9 @@ const Header = () => {
         onClick={onClick}
         className={cn(
           'mx-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[12px] leading-snug font-medium transition-colors sm:text-[13px]',
-          isActive ? 'bg-brand/14 text-slate-50' : 'text-slate-300 hover:bg-white/[0.09] hover:text-slate-50',
+          isActive
+            ? 'bg-surface-raised-hover ring-brand/40 text-slate-50 ring-1'
+            : 'hover:bg-surface-raised-hover text-slate-300 hover:text-slate-50',
           className,
         )}
       >
@@ -139,7 +141,7 @@ const Header = () => {
                   downloadUsersTicks(accessToken).finally(() => setIsDownloadingTicks(false));
                   setIsAccountOpen(false);
                 }}
-                className='mx-1 flex w-[calc(100%-0.5rem)] items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[12px] leading-snug font-medium text-slate-300 transition-colors hover:bg-white/[0.09] hover:text-slate-50 sm:text-[13px]'
+                className='hover:bg-surface-raised-hover mx-1 flex w-[calc(100%-0.5rem)] items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[12px] leading-snug font-medium text-slate-300 transition-colors hover:text-slate-50 sm:text-[13px]'
               >
                 {isDownloadingTicks ? (
                   <Loader2 size={16} className='shrink-0 animate-spin text-slate-400' />
@@ -155,7 +157,7 @@ const Header = () => {
                 href='/pdf/20230525_administrator_doc.pdf'
                 target='_blank'
                 rel='noopener noreferrer'
-                className='mx-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[12px] leading-snug font-medium text-slate-300 transition-colors hover:bg-white/[0.09] hover:text-slate-50 sm:text-[13px]'
+                className='hover:bg-surface-raised-hover mx-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[12px] leading-snug font-medium text-slate-300 transition-colors hover:text-slate-50 sm:text-[13px]'
               >
                 <HelpCircle size={16} strokeWidth={2} className='shrink-0 text-slate-400' /> Help
               </a>
@@ -199,7 +201,7 @@ const Header = () => {
   return (
     <nav
       className={cn(
-        'border-surface-border/70 bg-surface-card/55 z-50 w-full border-b backdrop-blur-xl transition-[transform,background-color] duration-300',
+        'border-surface-border/70 bg-surface-card z-50 w-full border-b transition-[transform,background-color] duration-300',
         shouldStickHeader ? 'sticky top-0' : 'relative',
         !isVisible && '-translate-y-full lg:translate-y-0',
       )}

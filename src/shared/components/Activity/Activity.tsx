@@ -22,15 +22,22 @@ type ActivityLayoutDensity = 'default' | 'frontpage';
 const ActivitySkeleton = ({ density = 'default' }: { density?: ActivityLayoutDensity }) => (
   <div
     className={cn(
-      'min-h-14 animate-pulse border-b border-slate-800/50 px-3 py-2.5 last:border-b-0 last:border-transparent',
-      density === 'frontpage' ? 'md:min-h-[3.5rem] md:px-4 md:py-3' : 'sm:min-h-[3.25rem] sm:px-4 sm:py-2.5',
+      'border-surface-border/40 bg-surface-raised min-h-[3.25rem] animate-pulse border-b px-4 py-2.5 last:border-b-0 last:border-transparent',
+      density === 'frontpage' ? 'md:min-h-[4rem] md:px-5 md:py-3' : 'sm:min-h-[3.25rem] sm:px-4 sm:py-2.5',
     )}
   >
     <div className={cn('flex items-start', density === 'frontpage' ? 'gap-2.5 md:gap-3' : 'gap-2.5 sm:gap-3')}>
-      <div className='bg-surface-nav h-8 w-8 rounded-full' />
-      <div className='flex-1 space-y-1.5'>
-        <div className='bg-surface-nav h-3 w-2/3 rounded' />
-        <div className='bg-surface-nav h-2 w-1/3 rounded' />
+      <div
+        className={cn(
+          'bg-surface-hover rounded-full',
+          density === 'frontpage' ? 'h-10 w-10 md:h-10 md:w-10' : 'h-8 w-8',
+        )}
+      />
+      <div className='min-w-0 flex-1 space-y-2 pt-0.5'>
+        <div
+          className={cn('bg-surface-hover rounded', density === 'frontpage' ? 'h-3.5 w-[85%] md:w-2/3' : 'h-3 w-2/3')}
+        />
+        <div className='bg-surface-hover h-2.5 w-1/3 rounded' />
       </div>
     </div>
   </div>
@@ -162,8 +169,8 @@ const Activity = ({
                         designContract.typography.menuItem,
                         'flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left transition-colors',
                         g.id === lowerGradeId
-                          ? 'bg-white/[0.1] font-semibold text-slate-100'
-                          : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-200',
+                          ? cn(designContract.surfaces.controlActive, 'font-semibold')
+                          : 'hover:bg-surface-raised text-slate-400 hover:text-slate-200',
                       )}
                       onClick={() => {
                         setLowerGradeId(g.id);
@@ -208,7 +215,7 @@ const Activity = ({
       </div>
 
       {embedded ? (
-        <div className='border-surface-border/45 bg-surface-nav/20 divide-y divide-slate-800/50 overflow-hidden rounded-xl border'>
+        <div className='border-surface-border bg-surface-card divide-surface-border/45 divide-y overflow-hidden rounded-xl border'>
           {isPending
             ? [...Array(10)].map((_, i) => <ActivitySkeleton key={i} density={layoutDensity} />)
             : activity?.map((a) => (
@@ -221,7 +228,13 @@ const Activity = ({
               ))}
         </div>
       ) : (
-        <Card flush className='divide-y divide-slate-800/50'>
+        <Card
+          flush
+          className={cn(
+            'divide-surface-border/45 divide-y',
+            layoutDensity === 'frontpage' && 'sm:divide-surface-border/55',
+          )}
+        >
           {isPending
             ? [...Array(10)].map((_, i) => <ActivitySkeleton key={i} density={layoutDensity} />)
             : activity?.map((a) => (
@@ -247,28 +260,36 @@ type FilterButtonProps = {
 
 /** Roomier pills on `sm+`; keep phones compact so one row still fits. */
 const activityChipBase = cn(
-  'inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full border px-2.5 leading-none transition-[color,transform,border-color] duration-200 active:scale-95 sm:h-8 sm:gap-2 sm:px-4',
+  'inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full border px-2.5 leading-none transition-[background-color,color,transform,border-color] duration-200 active:scale-95 sm:h-8 sm:gap-2 sm:px-4',
   designContract.typography.uiCompact,
 );
 const activityChipIdle =
-  'border-white/10 bg-surface-nav/50 text-slate-400 hover:border-brand/45 hover:bg-surface-nav hover:text-slate-200';
-const activityChipActive = 'border-transparent bg-white/[0.12] text-slate-100 shadow-sm hover:border-brand/50';
+  'border-white/10 bg-surface-raised text-slate-400 hover:border-brand/45 hover:bg-surface-raised-hover hover:text-slate-200';
+const activityChipActive = cn(
+  designContract.surfaces.controlActive,
+  'border-transparent shadow-sm transition-[background-color,border-color] hover:border-brand/50',
+);
 
 /** Slightly larger + relaxed than profile todo/ascent rows so the feed reads cleanly on phones. */
 const activityRowRootClass =
   'm-0 text-[12px] font-normal leading-[1.45] tracking-normal sm:text-[13px] sm:leading-snug';
 
+/** Home feed: one step up in size for scanning; still compact vs body text. */
+const activityRowFrontpageClass =
+  'm-0 text-[13px] font-normal leading-snug tracking-normal md:text-[14px] md:leading-snug';
+
 /** Verbs, subtype, relative time — muted vs names/route, still readable on dark feed bg. */
 const activityMetaClass = 'font-normal text-slate-300 antialiased';
 
+/** Match `actionClass` (“commented on”, “in”, …); italic differentiates quote/caption from verbs. */
 const activityCommentBlock = cn(
-  'mt-1 text-pretty break-words antialiased not-italic',
-  'text-[11px] leading-relaxed text-slate-200 sm:text-[12px] sm:leading-relaxed',
+  'text-pretty break-words antialiased italic',
+  'text-[11px] leading-snug text-slate-300 sm:text-[12px] sm:leading-snug',
 );
-/** Home: secondary story line; still legible next to compact hero layout. */
+/** Home: same mute as frontpage `actionClass` (slate-400). */
 const activityCommentFrontpage = cn(
-  'mt-1.5 text-pretty break-words antialiased italic',
-  'text-[11px] leading-relaxed text-slate-400 sm:text-[12px] sm:leading-relaxed',
+  'text-pretty break-words antialiased italic',
+  'text-[12px] leading-snug text-slate-400 md:text-[13px]',
 );
 
 const FilterButton = ({ active, onClick, icon: Icon, label }: FilterButtonProps) => (
@@ -303,87 +324,129 @@ const ActivityItem = ({ a, isBouldering, layoutDensity = 'default' }: ActivityIt
           }))
         : [{ name: a.name, mediaId: undefined, mediaVersionStamp: undefined }];
 
+  const isFrontpage = layoutDensity === 'frontpage';
   const statusIconGlyph = 'shrink-0 text-white';
+  const statusIconSize = isFrontpage ? 9 : 8;
   const statusIcon = (() => {
-    if (a.users) return <Plus size={8} className={statusIconGlyph} strokeWidth={2} />;
-    if (a.message) return <MessageSquare size={8} className={statusIconGlyph} strokeWidth={2} />;
-    if (a.media && !a.name) return <Camera size={8} className={statusIconGlyph} strokeWidth={2} />;
-    return <Check size={8} className={statusIconGlyph} strokeWidth={2} />;
+    if (a.users) return <Plus size={statusIconSize} className={statusIconGlyph} strokeWidth={2} />;
+    if (a.message) return <MessageSquare size={statusIconSize} className={statusIconGlyph} strokeWidth={2} />;
+    if (a.media && !a.name) return <Camera size={statusIconSize} className={statusIconGlyph} strokeWidth={2} />;
+    return <Check size={statusIconSize} className={statusIconGlyph} strokeWidth={2} />;
   })();
 
-  const pad = layoutDensity === 'frontpage' ? 'px-3 py-2.5 md:px-4 md:py-3' : 'px-3 py-2 sm:px-4 sm:py-2.5';
-  const gap = layoutDensity === 'frontpage' ? 'gap-2.5 md:gap-3' : 'gap-2.5 sm:gap-3';
-  const mediaMt = layoutDensity === 'frontpage' ? 'mt-1.5 md:mt-2' : 'mt-1.5 sm:mt-2';
-  const faRowMt = layoutDensity === 'frontpage' ? 'mt-1.5 md:mt-2' : 'mt-1.5 sm:mt-2';
+  const pad = isFrontpage ? 'px-4 py-2.5 md:px-5 md:py-3' : 'px-3 py-2 sm:px-4 sm:py-2.5';
+  const gap = isFrontpage ? 'gap-2.5 md:gap-3' : 'gap-2.5 sm:gap-3';
 
-  const isFrontpage = layoutDensity === 'frontpage';
-  /** Home: slightly softer than default feed meta. */
+  const rowTypography = isFrontpage ? activityRowFrontpageClass : activityRowRootClass;
   const actionClass = cn(activityMetaClass, isFrontpage && 'text-slate-400');
   const commentClass = isFrontpage ? activityCommentFrontpage : activityCommentBlock;
-  const cragLeadClass = cn(tickCrag, 'font-medium', isFrontpage && 'text-slate-300');
-  const userLinkClass = cn(tickProblemLink, isFrontpage && 'font-semibold text-slate-100');
+  const cragLeadClass = cn(tickCrag, 'font-medium');
+  const userLinkClass = cn(tickProblemLink, isFrontpage && 'font-semibold text-slate-50');
   const problemLinkTone = isFrontpage ? 'soft' : 'default';
   const faNameHoverClass = isFrontpage ? 'group-hover/user:text-slate-200' : 'group-hover/user:text-slate-100';
 
+  const hasStars = a.stars !== undefined && a.stars !== -1;
+  const hasComment = !!a.message;
+  const hasDescription = !hasComment && !!a.description;
+  const hasText = hasComment || hasDescription;
+  const hasFaUsers = !!(a.users && a.users.length > 0);
+  /** FA authors are inlined in `ActivityFeedMetaRow` for new route/boulder rows. */
+  const faAuthorsInHeadline = !!(a.users && a.users.length > 0 && !a.repeat);
+  /** Line 2: stars + comment. Optional line: FA authors (only when not already in headline). */
+  const hasStarsCommentLine = hasStars || hasText;
+  const hasSecondaryBlock = hasStarsCommentLine || (hasFaUsers && !faAuthorsInHeadline);
+  const gapAfterHeadline = isFrontpage ? 'mt-1.5' : 'mt-1';
+  const faLineGap = isFrontpage ? 'mt-1 md:mt-1.5' : 'mt-0.5 sm:mt-1';
+  const gapAfterBlock = hasSecondaryBlock
+    ? isFrontpage
+      ? 'mt-2 md:mt-2.5'
+      : 'mt-1.5 sm:mt-2'
+    : isFrontpage
+      ? 'mt-1.5'
+      : 'mt-1 sm:mt-1.5';
+  const commentCellClass = cn(commentClass, hasText && 'w-fit max-w-full min-w-0');
+
   return (
-    <div className={cn('group transition-colors hover:bg-white/1.5', pad)}>
+    <div
+      className={cn(
+        'group transition-[background-color] duration-150',
+        'bg-surface-raised hover:bg-surface-raised-hover',
+        pad,
+      )}
+    >
       <div className={cn('flex items-start', gap)}>
         <div className='shrink-0 pt-0.5'>
-          <AvatarGroup items={avatarItems} size='tiny' statusIcon={statusIcon} max={2} />
+          <AvatarGroup items={avatarItems} size={isFrontpage ? 'small' : 'tiny'} statusIcon={statusIcon} max={2} />
         </div>
 
         <div className='min-w-0 flex-1'>
           <ActivityFeedMetaRow
             a={a}
-            activityRowRootClass={activityRowRootClass}
+            activityRowRootClass={rowTypography}
             actionClass={actionClass}
             cragLeadClass={cragLeadClass}
             isBouldering={isBouldering}
             problemLinkTone={problemLinkTone}
             userLinkClass={userLinkClass}
+            layoutDensity={layoutDensity}
           />
 
-          {a.message ? (
-            <div className={commentClass}>
-              <Linkify>{a.message}</Linkify>
+          {hasStarsCommentLine ? (
+            <div
+              className={cn(
+                'flex w-full min-w-0 flex-wrap items-baseline justify-start gap-x-2 gap-y-1',
+                gapAfterHeadline,
+              )}
+            >
+              {hasStars ? (
+                <span className='inline-flex shrink-0 items-center leading-none'>
+                  <Stars numStars={a.stars!} includeStarOutlines={true} size={isFrontpage ? 12 : 11} />
+                </span>
+              ) : null}
+              {hasComment ? (
+                <div className={commentCellClass}>
+                  <Linkify>{a.message}</Linkify>
+                </div>
+              ) : hasDescription ? (
+                <div className={commentCellClass}>{a.description}</div>
+              ) : null}
             </div>
-          ) : a.description ? (
-            <div className={cn(commentClass, 'mt-1.5')}>{a.description}</div>
           ) : null}
 
-          {a.stars !== undefined && a.stars !== -1 && (
-            <div className='mt-1.5 self-start'>
-              <Stars numStars={a.stars} includeStarOutlines={true} size={12} />
+          {hasFaUsers && !faAuthorsInHeadline ? (
+            <div className={cn('w-full min-w-0', hasStarsCommentLine ? faLineGap : gapAfterHeadline)}>
+              <span
+                className={cn(
+                  rowTypography,
+                  'inline-flex max-w-full min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5 sm:gap-x-2',
+                )}
+              >
+                {a.users!.map((u) => (
+                  <Link
+                    key={u.id}
+                    to={`/user/${u.id}`}
+                    className={cn(
+                      actionClass,
+                      'group/user hover:text-brand inline-flex max-w-full min-w-0 items-center gap-1 leading-snug transition-colors',
+                    )}
+                  >
+                    <Avatar
+                      name={u.name}
+                      mediaId={u.mediaId}
+                      mediaVersionStamp={u.mediaVersionStamp}
+                      size='micro'
+                      className='group-hover/user:ring-brand/55 ring-surface-dark shrink-0 ring-2 transition-all'
+                    />
+                    <span className={cn('min-w-0', faNameHoverClass)}>{u.name}</span>
+                  </Link>
+                ))}
+              </span>
             </div>
-          )}
+          ) : null}
 
           {a.media && (
-            <div className={mediaMt}>
+            <div className={gapAfterBlock}>
               <LazyMedia media={a.media} problemId={a.problemId} />
-            </div>
-          )}
-
-          {a.users && a.users.length > 0 && (
-            <div className={cn(activityRowRootClass, 'flex flex-wrap gap-x-2 gap-y-1', faRowMt)}>
-              {a.users.map((u) => (
-                <Link
-                  key={u.id}
-                  to={`/user/${u.id}`}
-                  className={cn(
-                    actionClass,
-                    'group/user hover:text-brand inline-flex max-w-full min-w-0 items-center gap-1.5 leading-snug transition-colors',
-                  )}
-                >
-                  <Avatar
-                    name={u.name}
-                    mediaId={u.mediaId}
-                    mediaVersionStamp={u.mediaVersionStamp}
-                    size='micro'
-                    className='group-hover/user:ring-brand/55 ring-surface-dark shrink-0 ring-2 transition-all'
-                  />
-                  <span className={cn('min-w-0', faNameHoverClass)}>{u.name}</span>
-                </Link>
-              ))}
             </div>
           )}
         </div>

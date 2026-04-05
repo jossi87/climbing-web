@@ -607,7 +607,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                   Tap to set the marker, type coordinates below, or clear to remove it. Toggle whether other{' '}
                   {meta.isBouldering ? 'problems' : 'routes'} in this sector appear on the map.
                 </p>
-                <div className='border-surface-border bg-surface-nav/15 overflow-hidden rounded-lg border'>
+                <div className='border-surface-border bg-surface-raised overflow-hidden rounded-lg border'>
                   <div className='border-surface-border flex flex-col gap-2.5 border-b px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4'>
                     <div className='flex items-center gap-3'>
                       <button

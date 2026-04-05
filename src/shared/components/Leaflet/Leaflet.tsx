@@ -415,7 +415,7 @@ const Leaflet = ({
                 'inline-flex h-8 w-8 items-center justify-center rounded-md border p-0 leading-none shadow-md transition-colors',
                 showElevation
                   ? 'bg-brand/12 border-brand/45 text-slate-100'
-                  : 'bg-surface-nav/90 border-white/14 text-slate-400 hover:text-slate-200',
+                  : 'border-surface-border/60 bg-surface-card text-slate-400 hover:text-slate-200',
               )}
               aria-label={showElevation ? 'Hide elevation labels' : 'Show elevation labels'}
               title={showElevation ? 'Hide elevation labels' : 'Show elevation labels'}

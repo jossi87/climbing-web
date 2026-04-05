@@ -416,7 +416,7 @@ export const Problem = () => {
                       designContract.controls.pageHeaderIconButton,
                       optimisticTodo
                         ? 'border-blue-400/50 bg-blue-500/22 text-blue-200 hover:bg-blue-500/32'
-                        : 'border-white/12 bg-white/[0.06] text-slate-300 hover:border-white/18 hover:bg-white/[0.1]',
+                        : 'bg-surface-raised hover:bg-surface-raised-hover border-white/12 text-slate-300 hover:border-white/18',
                     )}
                   >
                     <Bookmark
@@ -434,7 +434,7 @@ export const Problem = () => {
                     designContract.controls.pageHeaderIconButton,
                     isTicked
                       ? 'border-green-400/45 bg-green-500/20 text-green-300 hover:bg-green-500/28'
-                      : 'border-white/12 bg-white/[0.06] text-slate-300 hover:border-white/18 hover:bg-white/[0.1]',
+                      : 'bg-surface-raised hover:bg-surface-raised-hover border-white/12 text-slate-300 hover:border-white/18',
                   )}
                 >
                   <Check className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
@@ -445,7 +445,7 @@ export const Problem = () => {
                   onClick={() => setShowCommentModal({ id: -1, danger: false, resolved: false })}
                   className={cn(
                     designContract.controls.pageHeaderIconButton,
-                    'border-white/12 bg-white/[0.06] text-slate-300 hover:border-white/18 hover:bg-white/[0.1]',
+                    'bg-surface-raised hover:bg-surface-raised-hover border-white/12 text-slate-300 hover:border-white/18',
                   )}
                 >
                   <MessageSquare className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.25} />
@@ -459,7 +459,7 @@ export const Problem = () => {
                       designContract.controls.pageHeaderIconButton,
                       showHiddenMedia
                         ? 'border-sky-400/45 bg-sky-500/20 text-sky-200 hover:bg-sky-500/28'
-                        : 'border-white/12 bg-white/[0.06] text-slate-300 hover:border-white/18 hover:bg-white/[0.1]',
+                        : 'bg-surface-raised hover:bg-surface-raised-hover border-white/12 text-slate-300 hover:border-white/18',
                     )}
                   >
                     <Eye className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.25} />

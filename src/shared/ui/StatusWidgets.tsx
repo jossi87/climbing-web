@@ -62,7 +62,7 @@ export const InsufficientPrivileges = () => (
         <p className='mt-1 text-sm text-slate-500'>You don't have access to this page</p>
       </div>
     </div>
-    <div className='bg-surface-nav/50 border-surface-border/50 rounded-lg border p-4'>
+    <div className='bg-surface-raised border-surface-border/50 rounded-lg border p-4'>
       <p className='text-sm leading-relaxed text-slate-400'>
         Contact{' '}
         <a

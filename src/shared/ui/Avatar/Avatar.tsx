@@ -91,7 +91,7 @@ export function AvatarGroup({
         ))}
         {items.length > max && (
           <div
-            className='flex items-center justify-center rounded-full border border-white/10 bg-slate-700/85 text-[8px] font-bold text-slate-200 ring-2 ring-slate-800/80'
+            className='flex items-center justify-center rounded-full border border-white/10 bg-slate-700 text-[8px] font-bold text-slate-200 ring-2 ring-slate-900'
             style={{ width: SIZE_MAP[size], height: SIZE_MAP[size] }}
           >
             +{items.length - max}
