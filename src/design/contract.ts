@@ -2,7 +2,7 @@
  * Rail kicker: “Latest activity”, breadcrumb crumbs (matches `SectionLabel`).
  * Form field captions use `typography.label` (`type-label`, 11px).
  *
- * Brand (#c6a15b): primary **text, links, tab ink**. For **borders/rings** on dark panels prefer `brand-border`
+ * Brand (`--color-brand` in `index.css`): primary **text, links, tab ink**. On dark panels prefer `brand-border`
  * (`index.css`) — gold mixed into `surface-border`, less “mustard frame”.
  *
  * A11y baseline: global `input`/`textarea` placeholders and `:focus-visible` live in `index.css`. On `surface-card`
@@ -210,11 +210,11 @@ export const designContract = {
     /** Content-sized tab pairs (e.g. Sectors | Routes): extra air between tabs */
     tabBarStripGapInline: 'gap-x-6 gap-y-1 sm:gap-x-10',
     tabBarButton:
-      'relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 border-b-2 border-transparent px-1 py-2.5 text-[12px] leading-none font-medium transition-colors sm:flex-row sm:gap-1.5 sm:px-3 sm:py-3 sm:text-[13px]',
-    /** Capped-width bar reads better on 2-tab rows than a full-cell underline */
+      'group relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 border-b-2 border-transparent px-1 py-2.5 text-[12px] leading-none font-medium transition-colors sm:flex-row sm:gap-1.5 sm:px-3 sm:py-3 sm:text-[13px]',
+    /** Capped-width bar reads better on 2-tab rows than a full-cell underline; active ink is brighter than idle. */
     tabBarButtonActive:
-      'text-slate-300 after:pointer-events-none after:absolute after:bottom-0 after:left-1/2 after:h-[3px] after:w-[min(5.75rem,calc(100%-0.75rem))] after:max-w-[11rem] after:-translate-x-1/2 after:rounded-full after:bg-brand',
-    tabBarButtonInactive: 'text-slate-400 hover:text-slate-300',
+      'text-slate-50 after:pointer-events-none after:absolute after:bottom-0 after:left-1/2 after:h-[3px] after:w-[min(5.75rem,calc(100%-0.75rem))] after:max-w-[11rem] after:-translate-x-1/2 after:rounded-full after:bg-brand',
+    tabBarButtonInactive: 'text-slate-200 hover:text-slate-100',
     tabButton:
       'flex items-center gap-2 border-b-2 px-6 py-3 text-[10px] font-semibold tracking-[0.16em] uppercase transition-colors',
     navPill:

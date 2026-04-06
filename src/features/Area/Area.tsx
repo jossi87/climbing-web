@@ -21,6 +21,7 @@ import type { components } from '../../@types/buldreinfo/swagger';
 import { DownloadButton } from '../../shared/ui/DownloadButton';
 import { Card, PageCardBreadcrumbRow } from '../../shared/ui';
 import {
+  Check,
   ChevronRight,
   Plus,
   Edit,
@@ -56,20 +57,6 @@ import {
   tickProblemLink,
   tickWhenGrade,
 } from '../../shared/components/Profile/profileRowTypography';
-
-/** Project / Projects subtype chips — no green “complete” border (not ticked like graded lines). */
-function isProjectSubtypeChip(typeLabel: string | undefined): boolean {
-  const t = (typeLabel ?? '').trim().toLowerCase();
-  return t === 'project' || t === 'projects';
-}
-
-/** Per-type completion for area sector stat chips: user has ticked every line of this subtype in the sector. */
-function isTypeChipFullyTicked(x: components['schemas']['TypeNumTickedTodo']): boolean {
-  if (isProjectSubtypeChip(x.type)) return false;
-  const n = x.num ?? 0;
-  const t = x.ticked ?? 0;
-  return n > 0 && t === n;
-}
 
 type Props = {
   sectorId: number;
@@ -772,25 +759,48 @@ const Area = () => {
                             </span>
                           </div>
                           {sector.typeNumTickedTodo && sector.typeNumTickedTodo.length > 0 && (
-                            <div className='mt-1.5 flex flex-wrap items-center gap-1 sm:mt-2'>
-                              {sector.typeNumTickedTodo.map((x) => {
-                                const tickTodo = [x.ticked && `${x.ticked} ticked`, x.todo && `${x.todo} todo`]
-                                  .filter(Boolean)
-                                  .join(', ');
-                                const greenBorderOnly = isTypeChipFullyTicked(x);
+                            <div className='mt-1 flex min-w-0 flex-col gap-y-0.5 text-[8px] leading-none text-slate-400 sm:mt-1.5 sm:text-[9px]'>
+                              {sector.typeNumTickedTodo.map((x, i) => {
+                                const n = x.num ?? 0;
+                                const nt = x.ticked ?? 0;
+                                const nd = x.todo ?? 0;
                                 return (
                                   <div
-                                    key={x.type}
-                                    title={[x.type, `${x.num}`, tickTodo].filter(Boolean).join(' · ')}
-                                    className={cn(
-                                      'bg-surface-raised inline-flex max-w-[min(100%,11rem)] min-w-0 items-center gap-x-0.5 rounded-full border border-white/15 px-1.5 py-px text-[7px] leading-tight text-slate-200 shadow-sm sm:text-[8px]',
-                                      greenBorderOnly && 'border-emerald-500/50',
-                                    )}
+                                    key={`${sector.id}-${i}-${x.type ?? ''}`}
+                                    className='inline-flex min-w-0 items-center gap-x-0.5'
                                   >
-                                    <span className='min-w-0 truncate font-medium text-slate-300'>{x.type}</span>
-                                    <span className='shrink-0 font-semibold text-slate-50 tabular-nums'>{x.num}</span>
-                                    {tickTodo ? (
-                                      <span className='min-w-0 truncate text-slate-400'>· {tickTodo}</span>
+                                    <span className='font-medium'>{x.type}</span>
+                                    <span aria-hidden>:</span>
+                                    <span className='tabular-nums'>{n}</span>
+                                    {nt > 0 ? (
+                                      <span className='inline-flex items-center gap-px'>
+                                        <Check
+                                          size={9}
+                                          strokeWidth={2.5}
+                                          className={cn('shrink-0', designContract.ascentStatus.ticked)}
+                                          aria-hidden
+                                        />
+                                        <span
+                                          className={cn('font-medium tabular-nums', designContract.ascentStatus.ticked)}
+                                        >
+                                          {nt}
+                                        </span>
+                                      </span>
+                                    ) : null}
+                                    {nd > 0 ? (
+                                      <span className='inline-flex items-center gap-px'>
+                                        <Bookmark
+                                          size={9}
+                                          strokeWidth={2.5}
+                                          className={cn('shrink-0', designContract.ascentStatus.todo)}
+                                          aria-hidden
+                                        />
+                                        <span
+                                          className={cn('font-medium tabular-nums', designContract.ascentStatus.todo)}
+                                        >
+                                          {nd}
+                                        </span>
+                                      </span>
                                     ) : null}
                                   </div>
                                 );

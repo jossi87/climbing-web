@@ -85,7 +85,7 @@ export const SlopeProfile = ({
   const icon = compact ? 10 : 12;
   const statText = compact ? 'text-[11px] leading-snug' : 'text-[12px] leading-snug';
   const lineColor =
-    variant === 'approach' ? SLOPE_APPROACH_COLOR : variant === 'descent' ? SLOPE_DESCENT_COLOR : '#c6a15b';
+    variant === 'approach' ? SLOPE_APPROACH_COLOR : variant === 'descent' ? SLOPE_DESCENT_COLOR : '#c9ac62';
   const chartStroke = lineColor;
   const chartFillTop = lineColor;
   const chartFillBot = lineColor;

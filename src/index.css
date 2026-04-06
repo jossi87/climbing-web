@@ -1,24 +1,25 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-brand: #c6a15b;
+  /* Slightly cleaner than legacy #c6a15b — less olive on dark panels, still clearly “site gold”. */
+  --color-brand: #c9ac62;
   /** Problem / topo status: ticked (green), todo (blue), dangerous (red) — same semantics as SVG route labels. */
   --color-status-ticked: #34d399;
   --color-status-todo: #38bdf8;
   --color-status-danger: #f87171;
   /*
-   * Surfaces: **neutral charcoal** (R≈G≈B — no blue-gray cast). **Canvas** is deepest; **nav/card** sit clearly
-   * above it (large-enough Δ for bright rooms / glossy screens). Raised/hover steps stay evenly spaced above card.
-   * Edge definition for main panels: `--shadow-app-card` adds ambient depth + a hairline rim (not a layout border).
+   * Surfaces: **graphite** neutrals — channels stay close (not a blue UI), with a hair more **B** than **R** so
+   * large fills don’t pick up a cardboard / brown cast on warm displays. **Canvas** deepest; **nav/card** lifted;
+   * raised/hover step evenly. `--shadow-app-card`: ambient + hairline rim.
    */
-  --color-surface-dark: #050506;
-  /* Header, footer, and main panels — one shared face, visibly lighter than the canvas */
-  --color-surface-nav: #181818;
-  --color-surface-card: #181818;
+  --color-surface-dark: #060709;
+  /* Header, footer, main panels — one face, clearly above canvas */
+  --color-surface-nav: #13151a;
+  --color-surface-card: #13151a;
   /** Solid “lift” between card and hover — chips, rows, trays */
-  --color-surface-raised: #222222;
-  --color-surface-raised-hover: #2d2d2d;
-  --color-surface-hover: #383838;
+  --color-surface-raised: #1c1e24;
+  --color-surface-raised-hover: #27292f;
+  --color-surface-hover: #33353d;
   /**
    * Hairline edges: derived from `surface-card` + a whisper of white — avoids a separate “stripe gray” that fights
    * the charcoal base (reads more Linear / Apple settings than boxed wireframes).
@@ -30,11 +31,11 @@
   --color-surface-skeleton: color-mix(in srgb, var(--color-surface-raised) 68%, var(--color-surface-hover) 32%);
   --color-surface-skeleton-muted: color-mix(in srgb, var(--color-surface-raised) 82%, var(--color-surface-hover) 18%);
   /**
-   * Gold mixed into `surface-border` — chips / hovers; stays subtle as border softens.
+   * Gold mixed into neutral border — lower brand % so rims/chips stay crisp, not muddy brown on charcoal.
    */
-  --color-brand-border: color-mix(in srgb, var(--color-brand) 40%, var(--color-surface-border));
+  --color-brand-border: color-mix(in srgb, var(--color-brand) 30%, var(--color-surface-border));
   --color-white: #e2e8f0;
-  --shadow-brand: 0 0 10px rgba(198, 161, 91, 0.14);
+  --shadow-brand: 0 0 10px rgba(201, 172, 98, 0.14);
   /**
    * Main content panels (`.app-card`): soft drop shadow + **rim** (`0 0 0 1px …`) so edges stay visible in daylight
    * where ambient shadow washes out — reads as material edge, not a boxed border frame.
