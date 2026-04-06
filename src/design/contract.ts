@@ -40,8 +40,8 @@ export const designContract = {
     /** Inline emphasis in tables/lists — prefer medium weight so rows don’t all feel “bold UI”. */
     listEmphasis: 'font-medium text-slate-300',
     /**
-     * Dense dark feeds: **problem name** is the hero ({@link feed.routeTitle}); **grade** matches its ink but thinner
-     * ({@link feed.gradeHighlight}); area/sector share glue-tone ({@link feed.locationLink} = same ink as {@link feed.action}).
+     * Dense dark feeds: **problem** ({@link feed.routeTitle}) + **grade/type** ({@link feed.gradeHighlight}) vs glue
+     * ({@link feed.action} / {@link feed.locationLink}). Weights tuned so one baseline reads like a sentence.
      */
     feed: {
       /** Default line color on dark panels — bright enough for small body text (WCAG-friendly vs `surface-card`). */
