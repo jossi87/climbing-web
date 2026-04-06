@@ -254,15 +254,9 @@ const filterTypeChipOn = cn(
 );
 
 /** Single rhythm + {@link designContract.typography.feed} body tone (calm on dark `surface-card`). */
-const activityRowClass = cn(
-  'm-0 text-[12px] font-normal leading-snug tracking-normal md:text-[13px] md:leading-snug',
-  designContract.typography.feed.sentence,
-);
+const activityRowClass = cn(designContract.typography.listBody, designContract.typography.feed.sentence);
 
-const activityCommentClass = cn(
-  'text-pretty break-words antialiased italic',
-  'text-[12px] leading-snug text-slate-400 md:text-[13px]',
-);
+const activityCommentClass = cn(designContract.typography.listBody, 'break-words italic text-slate-400 antialiased');
 
 const FilterButton = ({ active, onClick, icon: Icon, label, labelNarrow }: FilterButtonProps) => (
   <button

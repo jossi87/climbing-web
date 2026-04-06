@@ -222,9 +222,16 @@ export const TableOfContents = ({ areas, header, subHeader, compact = false, sho
                                 : 'hover:bg-surface-raised-hover border-transparent',
                         )}
                       >
-                        <div className='w-6 shrink-0 pt-0.5 text-[11px] text-slate-500'>#{problem.nr}</div>
+                        <div className='w-6 shrink-0 pt-0.5 text-[12px] text-slate-500 md:text-[13px]'>
+                          #{problem.nr}
+                        </div>
 
-                        <div className='flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] leading-relaxed sm:text-[12px]'>
+                        <div
+                          className={cn(
+                            'flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-0.5 leading-relaxed',
+                            designContract.typography.listBody,
+                          )}
+                        >
                           <div className='flex min-w-0 flex-wrap items-center gap-2'>
                             <Link
                               to={`/problem/${problem.id}`}
@@ -251,10 +258,10 @@ export const TableOfContents = ({ areas, header, subHeader, compact = false, sho
                             )}
                           </div>
                           {problem.subText && (
-                            <span className='text-[10px] text-slate-500 sm:text-[11px]'>{problem.subText}</span>
+                            <span className='text-[12px] text-slate-500 sm:text-[13px]'>{problem.subText}</span>
                           )}
                           {problem.text && (
-                            <span className='text-[10px] text-slate-400 italic sm:text-[11px]'>{problem.text}</span>
+                            <span className='text-[12px] text-slate-400 italic sm:text-[13px]'>{problem.text}</span>
                           )}
                         </div>
                       </div>

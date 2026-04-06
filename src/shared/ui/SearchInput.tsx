@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { Search as SearchIcon, Loader2, X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -7,7 +8,10 @@ type SearchInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   onClear?: () => void;
 };
 
-export const SearchInput = ({ isPending, className, onClear, ...props }: SearchInputProps) => {
+export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(function SearchInput(
+  { isPending, className, onClear, ...props },
+  ref,
+) {
   const hasValue = String(props.value ?? '').length > 0;
   const showClear = Boolean(onClear && hasValue && !props.disabled);
 
@@ -22,6 +26,7 @@ export const SearchInput = ({ isPending, className, onClear, ...props }: SearchI
         </span>
       ) : null}
       <input
+        ref={ref}
         {...props}
         placeholder=''
         className={cn('search-input w-full pl-9', showClear ? 'pr-10' : null, className)}
@@ -41,4 +46,6 @@ export const SearchInput = ({ isPending, className, onClear, ...props }: SearchI
       ) : null}
     </div>
   );
-};
+});
+
+SearchInput.displayName = 'SearchInput';

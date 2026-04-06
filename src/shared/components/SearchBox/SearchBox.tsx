@@ -81,6 +81,7 @@ const SearchBox = () => {
   const [isMobile, setIsMobile] = useState(isNarrowSearchViewport);
   const [activeIndex, setActiveIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   /** When true, the next `pathname` change came from picking a search result — keep the query for more picks. */
   const skipClearOnNextPathnameRef = useRef(false);
   const results = (data ?? []) as SearchResult[];
@@ -136,6 +137,8 @@ const SearchBox = () => {
   }, []);
 
   const handleSelect = (result: SearchResult) => {
+    /** Dismiss mobile keyboard; query text stays (see `skipClearOnNextPathnameRef` + pathname effect). */
+    inputRef.current?.blur();
     setIsOpen(false);
     setActiveIndex(-1);
     if (result.externalUrl) {
@@ -149,6 +152,7 @@ const SearchBox = () => {
   return (
     <div ref={containerRef} className='relative w-full'>
       <SearchInput
+        ref={inputRef}
         placeholder={isMobile ? 'Search...' : 'Search areas, sectors, problems or users...'}
         value={value}
         isPending={isPending}
@@ -214,7 +218,8 @@ const SearchBox = () => {
                   onClick={() => handleSelect(result)}
                   className={cn(
                     designContract.controls.listRow,
-                    idx === activeIndex && 'border-surface-border bg-surface-raised-hover border',
+                    'border border-transparent',
+                    idx === activeIndex && 'border-brand-border bg-surface-raised-hover shadow-sm',
                   )}
                 >
                   <div

@@ -1,4 +1,4 @@
-import { useState, useOptimistic, useTransition, type ComponentProps } from 'react';
+import { useState, useOptimistic, useTransition, type ComponentProps, type ElementType } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
 import { getDistanceWithUnit } from '../../shared/components/Leaflet/geo-utils';
@@ -47,6 +47,34 @@ import {
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
+
+/** Shared header for ticks / comments: icon + title + count as quiet typography (no badge chrome). */
+function ProblemSocialCardHeader({
+  title,
+  count,
+  icon: Icon,
+  iconClassName,
+}: {
+  title: string;
+  count: number;
+  icon: ElementType;
+  iconClassName: string;
+}) {
+  return (
+    <div className='border-surface-border/50 flex items-center gap-2.5 border-b px-3 py-3 sm:px-4'>
+      <Icon size={15} strokeWidth={2.25} className={cn('shrink-0', iconClassName)} aria-hidden />
+      <div className='flex min-w-0 items-baseline gap-2'>
+        <span className='text-sm font-semibold tracking-tight text-slate-100'>{title}</span>
+        <span
+          className='text-sm font-medium text-slate-400 tabular-nums'
+          aria-label={`${count} ${title.toLowerCase()}`}
+        >
+          {count}
+        </span>
+      </div>
+    </div>
+  );
+}
 
 type MediaItem = components['schemas']['Media'];
 type ProblemComment = components['schemas']['ProblemComment'];
@@ -185,7 +213,12 @@ export const Problem = () => {
   const showOverviewContent = !showMapTab || activeTab === 'overview';
 
   const overviewChipsRow = (
-    <div className='flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1.5 text-[11px] leading-snug [overflow-wrap:anywhere] sm:gap-x-2 sm:gap-y-2 sm:text-[12px]'>
+    <div
+      className={cn(
+        'flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1.5 leading-snug [overflow-wrap:anywhere] sm:gap-x-2 sm:gap-y-2',
+        designContract.typography.detailBody,
+      )}
+    >
       <ConditionLabels
         lat={conditionLat > 0 ? conditionLat : undefined}
         lng={conditionLng > 0 ? conditionLng : undefined}
@@ -238,7 +271,7 @@ export const Problem = () => {
     data.areaNoDogsAllowed ||
     data.areaAccessInfo ||
     data.sectorAccessInfo ? (
-      <div className='min-w-0 space-y-2 text-[12px] leading-relaxed sm:text-[13px]'>
+      <div className={cn('min-w-0 space-y-2', designContract.typography.detailBody)}>
         {data.broken && (
           <p className='text-pretty text-red-300/90'>
             <span className='font-medium'>{meta.isBouldering ? 'Problem' : 'Route'} broken:</span> {data.broken}
@@ -331,7 +364,10 @@ export const Problem = () => {
           breadcrumb={
             <nav
               aria-label='Breadcrumb'
-              className='block min-w-0 text-[11px] leading-snug break-normal sm:text-[13px] sm:leading-relaxed [&>*+*]:ml-1 sm:[&>*+*]:ml-1.5'
+              className={cn(
+                'block min-w-0 leading-snug break-normal sm:leading-relaxed [&>*+*]:ml-1 sm:[&>*+*]:ml-1.5',
+                designContract.typography.detailBody,
+              )}
             >
               <Link
                 to='/areas'
@@ -522,7 +558,7 @@ export const Problem = () => {
                   strokeWidth={activeTab === 'overview' ? 2.3 : 2}
                   className={tabBarIconClassName(activeTab === 'overview')}
                 />
-                <span className='type-small block min-w-0 truncate leading-none sm:text-[12px]'>Overview</span>
+                <span className='type-small block min-w-0 truncate leading-none sm:text-[13px]'>Overview</span>
               </button>
               <button
                 type='button'
@@ -536,7 +572,7 @@ export const Problem = () => {
                   strokeWidth={activeTab === 'map' ? 2.3 : 2}
                   className={tabBarIconClassName(activeTab === 'map')}
                 />
-                <span className='type-small block min-w-0 truncate leading-none sm:text-[12px]'>Map</span>
+                <span className='type-small block min-w-0 truncate leading-none sm:text-[13px]'>Map</span>
               </button>
             </div>
             {activeTab === 'overview' ? (
@@ -674,32 +710,26 @@ export const Problem = () => {
         >
           {hasTicks && (
             <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm'>
-              <div className='border-surface-border/40 flex flex-nowrap items-center gap-x-2 border-b px-4 py-2.5 sm:px-5'>
-                <Check size={12} className={cn('shrink-0', designContract.ascentStatus.ticked)} strokeWidth={2.25} />
-                <span className='inline-flex min-w-0 flex-nowrap items-center gap-x-1.5'>
-                  <span className='type-label'>Ticks</span>
-                  <span className={cn(designContract.typography.meta, 'shrink-0 text-slate-400 tabular-nums')}>
-                    {data.ticks?.length ?? 0}
-                  </span>
-                </span>
-              </div>
-              <div className='pb-4 sm:pb-5'>
+              <ProblemSocialCardHeader
+                title='Ticks'
+                count={data.ticks?.length ?? 0}
+                icon={Check}
+                iconClassName={designContract.ascentStatus.ticked}
+              />
+              <div className='pt-1 pb-4 sm:pb-5'>
                 <ProblemTicks ticks={data.ticks || []} />
               </div>
             </Card>
           )}
           {hasComments && (
             <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm'>
-              <div className='border-surface-border/40 flex flex-nowrap items-center gap-x-2 border-b px-4 py-2.5 sm:px-5'>
-                <MessageSquare size={12} className='text-brand shrink-0' strokeWidth={2.25} />
-                <span className='inline-flex min-w-0 flex-nowrap items-center gap-x-1.5'>
-                  <span className='type-label'>Comments</span>
-                  <span className={cn(designContract.typography.meta, 'shrink-0 text-slate-400 tabular-nums')}>
-                    {data.comments?.length ?? 0}
-                  </span>
-                </span>
-              </div>
-              <div className='pb-4 sm:pb-5'>
+              <ProblemSocialCardHeader
+                title='Comments'
+                count={data.comments?.length ?? 0}
+                icon={MessageSquare}
+                iconClassName='text-brand'
+              />
+              <div className='pt-1 pb-4 sm:pb-5'>
                 <ProblemComments
                   onShowCommentModal={setShowCommentModal}
                   problemId={+problemId}

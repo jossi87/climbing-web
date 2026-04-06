@@ -12,6 +12,7 @@ import { Loading } from '../../shared/ui/StatusWidgets';
 import { Stars, LockSymbol } from '../../shared/ui/Indicators';
 import { ConditionLabels } from '../../shared/components/Widgets/ConditionLabels';
 import { ExternalLinkLabels } from '../../shared/components/Widgets/ExternalLinkLabels';
+import { NoDogsAllowed } from '../../shared/components/Widgets/NoDogsAllowed';
 import { useMeta } from '../../shared/components/Meta/context';
 import { getMediaFileUrl, useArea } from '../../api';
 import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
@@ -119,15 +120,15 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
     if (segments.length === 0) return null;
 
     const metaMuted = tickFlags;
-    const metaTypeClass =
-      'inline-flex max-w-full items-center rounded-md border border-white/12 bg-surface-raised px-1.5 py-0.5 text-[10px] font-medium text-slate-100 antialiased shadow-sm sm:text-[11px]';
+    /** Route type — same line as FA meta but reads as primary (no chip chrome). */
+    const metaTypeEmphasis = 'font-medium text-slate-100 antialiased';
 
     return (
       <>
         {segments.map((seg, i) => (
           <Fragment key={seg.key}>
-            {i > 0 ? segments[i - 1]!.key === 'subtype' || seg.key === 'subtype' ? ' ' : <ProfileRowTextSep /> : null}
-            <span className={seg.key === 'subtype' ? metaTypeClass : metaMuted}>{seg.node}</span>
+            {i > 0 ? <ProfileRowTextSep /> : null}
+            <span className={seg.key === 'subtype' ? metaTypeEmphasis : metaMuted}>{seg.node}</span>
           </Fragment>
         ))}
       </>
@@ -196,7 +197,7 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
   const faMetaLead = sectorName || !iconRunBeforeSector ? <ProfileRowTextSep /> : ' ';
 
   return (
-    <div className={cn(profileRowRootClass, 'min-w-0 py-1 text-pretty [overflow-wrap:anywhere] sm:py-1.5')}>
+    <div className={cn(profileRowRootClass, 'min-w-0 py-1 sm:py-1.5')}>
       <div className='min-w-0 leading-snug'>
         {problem.danger ? (
           <AlertTriangle
@@ -462,11 +463,11 @@ const Area = () => {
 
   const areaAccessRestrictions =
     data.accessClosed || data.noDogsAllowed || data.accessInfo ? (
-      <div className='min-w-0 space-y-2 text-[12px] leading-relaxed sm:text-[13px]'>
+      <div className={cn('min-w-0 space-y-2', designContract.typography.detailBody)}>
         {data.accessClosed && <p className='text-pretty text-red-300/90'>{data.accessClosed}</p>}
         {(data.noDogsAllowed || data.accessInfo) && (
           <div className='space-y-1.5 text-orange-300/90'>
-            {data.noDogsAllowed && <p className='text-pretty'>No dogs allowed (landowner request).</p>}
+            {data.noDogsAllowed && <NoDogsAllowed />}
             {data.accessInfo && <p className='text-pretty'>{data.accessInfo}</p>}
           </div>
         )}
@@ -482,7 +483,13 @@ const Area = () => {
         <PageCardBreadcrumbRow
           className='mb-0'
           breadcrumb={
-            <nav className='block min-w-0 text-[12px] leading-relaxed text-pretty break-words sm:text-[13px] [&>*+*]:ml-1.5'>
+            <nav
+              className={cn(
+                'block min-w-0 text-pretty break-words',
+                designContract.typography.detailBody,
+                '[&>*+*]:ml-1.5',
+              )}
+            >
               <Link to='/areas' className='inline align-middle text-slate-400 transition-colors hover:text-slate-200'>
                 Areas
               </Link>
@@ -550,7 +557,7 @@ const Area = () => {
                       strokeWidth={isActive ? 2.3 : 2}
                       className={tabBarIconClassName(isActive)}
                     />
-                    <span className='type-small block min-w-0 truncate leading-none sm:text-[12px]'>{t.label}</span>
+                    <span className='type-small block min-w-0 truncate leading-none sm:text-[13px]'>{t.label}</span>
                   </button>
                 );
               })}

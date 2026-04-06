@@ -18,6 +18,10 @@ import { SectionLabel } from '../ui';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 
+/** Footer grid column titles — a step brighter and larger than default {@link SectionLabel} for `bg-surface-nav`. */
+const footerColumnHeadingClass =
+  'text-[11px] font-semibold tracking-[0.12em] text-slate-400 uppercase sm:text-[12px] sm:tracking-[0.1em] sm:text-slate-300';
+
 type NavCardProps = {
   to?: string;
   href?: string;
@@ -78,7 +82,7 @@ const Footer = () => {
       <div className='max-w-container mx-auto px-4 sm:px-6'>
         <div className='mb-7 grid grid-cols-2 gap-4 sm:mb-12 sm:gap-8 lg:grid-cols-4'>
           <div className='space-y-2.5 sm:space-y-4'>
-            <SectionLabel className='text-slate-500'>Navigation</SectionLabel>
+            <SectionLabel className={footerColumnHeadingClass}>Navigation</SectionLabel>
             <div className='flex flex-col gap-2 sm:gap-3'>
               <NavCard to='/about' icon={Info} title='About' />
               {!isBouldering && <NavCard to='/dangerous' icon={AlertTriangle} title='Dangerous' />}
@@ -88,7 +92,7 @@ const Footer = () => {
           </div>
 
           <div className='space-y-2.5 sm:space-y-4'>
-            <SectionLabel className='text-slate-500'>Open Source Stack</SectionLabel>
+            <SectionLabel className={footerColumnHeadingClass}>Open Source Stack</SectionLabel>
             <div className='flex flex-col gap-2 sm:gap-3'>
               <NavCard
                 href='https://github.com/jossi87/climbing-web'
@@ -112,7 +116,7 @@ const Footer = () => {
           </div>
 
           <div className='space-y-2.5 sm:space-y-4'>
-            <SectionLabel className='text-slate-500'>Affiliation</SectionLabel>
+            <SectionLabel className={footerColumnHeadingClass}>Affiliation</SectionLabel>
             <a
               href='https://brv.no'
               rel='noreferrer noopener'
@@ -138,7 +142,7 @@ const Footer = () => {
           </div>
 
           <div className='space-y-2.5 sm:space-y-4'>
-            <SectionLabel className='text-slate-500'>Community</SectionLabel>
+            <SectionLabel className={footerColumnHeadingClass}>Community</SectionLabel>
             <NavCard
               href='https://www.facebook.com/groups/brattelinjer'
               fallbackText='f'

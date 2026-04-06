@@ -272,10 +272,10 @@ const ToolbarDropdown = <T extends string>({
         title={selected?.text ? `${label}: ${selected.text}` : label}
         className={cn(
           variant === 'ghost'
-            ? 'inline-flex h-8 w-full min-w-0 items-center justify-between gap-1 rounded-lg px-2 text-[11px] leading-none font-medium transition-colors sm:px-2.5 sm:text-[12px]'
+            ? 'inline-flex h-8 w-full min-w-0 items-center justify-between gap-1 rounded-lg px-2 text-[12px] leading-none font-medium transition-colors sm:px-2.5 sm:text-[13px]'
             : compact
-              ? 'inline-flex h-7 w-full min-w-0 items-center justify-between gap-0.5 rounded-md border px-1.5 text-[10px] leading-none font-medium transition-colors sm:gap-1 sm:px-2 sm:text-[11px] md:h-7'
-              : 'inline-flex h-9 w-full max-w-full min-w-0 items-center justify-between gap-1.5 rounded-md border px-3 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[12px] md:h-8 md:w-auto md:max-w-[22rem] md:gap-1 md:px-2.5',
+              ? 'inline-flex h-7 w-full min-w-0 items-center justify-between gap-0.5 rounded-md border px-1.5 text-[11px] leading-none font-medium transition-colors sm:gap-1 sm:px-2 sm:text-[12px] md:h-7'
+              : 'inline-flex h-9 w-full max-w-full min-w-0 items-center justify-between gap-1.5 rounded-md border px-3 text-[12px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[13px] md:h-8 md:w-auto md:max-w-[22rem] md:gap-1 md:px-2.5',
           fullWidth && !compact ? 'w-full md:w-auto' : fullWidth && compact ? 'w-full' : '',
           variant === 'ghost'
             ? isOpen
@@ -323,7 +323,7 @@ const ToolbarDropdown = <T extends string>({
                       setIsOpen(false);
                     }}
                     className={cn(
-                      'w-full px-3 py-2.5 text-left text-[11px] leading-snug transition-colors sm:px-3.5 sm:text-[12px]',
+                      'w-full px-3 py-2.5 text-left text-[12px] leading-snug transition-colors sm:px-3.5 sm:text-[13px]',
                       opt.value === value
                         ? 'bg-surface-raised-hover font-medium text-slate-50'
                         : 'hover:bg-surface-raised-hover text-slate-300 hover:text-slate-50',
@@ -444,7 +444,7 @@ export const ProblemList = ({
 
   const list = (() => {
     if (filtered.length === 0) {
-      return <div className='py-6 text-[11px] text-slate-500 sm:text-[12px]'>Empty list.</div>;
+      return <div className='py-6 text-[12px] text-slate-500 md:text-[13px]'>Empty list.</div>;
     }
 
     if (groupBy && groupBy !== 'none') {
@@ -527,7 +527,7 @@ export const ProblemList = ({
                 onClick={() => setFilterShowing((v) => !v)}
                 className={cn(
                   // Match {@link ToolbarDropdown} default triggers: same radius, fill, and open/closed pattern.
-                  'inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-md border px-3 text-[11px] font-medium whitespace-nowrap transition-colors sm:text-[12px] md:h-8 md:gap-1.5 md:px-3',
+                  'inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-md border px-3 text-[12px] font-medium whitespace-nowrap transition-colors sm:text-[13px] md:h-8 md:gap-1.5 md:px-3',
                   showFilter
                     ? 'border-surface-border bg-surface-hover text-slate-100'
                     : 'border-surface-border bg-surface-raised hover:border-surface-border hover:bg-surface-raised-hover text-slate-300 hover:text-slate-200',

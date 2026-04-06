@@ -21,8 +21,8 @@ export const SectionHeader = ({ title, icon: Icon, subheader, description, detai
     <div className='min-w-0 flex-1'>
       <h3 className={cn(designContract.typography.title, 'leading-none')}>{title}</h3>
       {subheader && <p className={cn('mt-2 leading-none', designContract.typography.label)}>{subheader}</p>}
-      {description && <p className='mt-2 text-[12px] leading-relaxed text-slate-400 sm:text-[13px]'>{description}</p>}
-      {detail && <div className='mt-3 min-w-0 space-y-2 text-[12px] leading-relaxed sm:text-[13px]'>{detail}</div>}
+      {description && <p className={cn('mt-2 text-slate-400', designContract.typography.detailBody)}>{description}</p>}
+      {detail && <div className={cn('mt-3 min-w-0 space-y-2', designContract.typography.detailBody)}>{detail}</div>}
     </div>
   </div>
 );

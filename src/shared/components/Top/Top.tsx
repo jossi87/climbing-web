@@ -18,7 +18,7 @@ const Top = ({ idArea, idSector }: TopProps) => {
 
   const cellPad = 'px-2 py-1.5 align-top sm:px-3 sm:py-2';
   /** Matches dense list scale (profile rows); bright text for this table only. */
-  const rowType = 'text-[11px] leading-snug tracking-tight text-slate-100 sm:text-[12px]';
+  const rowType = 'text-[12px] leading-snug tracking-tight text-slate-100 md:text-[13px]';
   const headerType = cn(rowType, 'font-bold text-slate-50');
 
   return (

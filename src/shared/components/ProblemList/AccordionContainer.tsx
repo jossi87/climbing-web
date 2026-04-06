@@ -33,7 +33,7 @@ const AccordionContainer = ({ accordionRows }: Props) => {
                 isActive ? 'bg-surface-raised' : 'hover:bg-surface-raised-hover',
               )}
             >
-              <span className='text-[11px] font-medium tracking-tight text-slate-400 sm:text-[12px]'>{d.label}</span>
+              <span className='text-[12px] font-medium tracking-tight text-slate-400 md:text-[13px]'>{d.label}</span>
               <ChevronDown
                 size={14}
                 strokeWidth={2}
@@ -50,7 +50,7 @@ const AccordionContainer = ({ accordionRows }: Props) => {
               )}
             >
               <div className='px-2.5 pb-2.5 pl-3 sm:px-3 sm:pb-3'>
-                {hasData ? d.content : <i className='text-[11px] text-slate-400 sm:text-[12px]'>No data</i>}
+                {hasData ? d.content : <i className='text-[12px] text-slate-400 md:text-[13px]'>No data</i>}
               </div>
             </div>
           </div>

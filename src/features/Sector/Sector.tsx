@@ -33,6 +33,7 @@ import {
 import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
 import {
   AlertTriangle,
+  Check,
   ChevronDown,
   ChevronRight,
   Edit,
@@ -50,7 +51,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
-import { ProfileRowTextSep, profileRowMiddleDotClass } from '../../shared/components/Profile/ProfileRowTextSep';
+import { ProfileRowTextSep } from '../../shared/components/Profile/ProfileRowTextSep';
 import {
   profileRowRootClass,
   tickCommentSmall,
@@ -108,16 +109,15 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
     if (segments.length === 0) return null;
 
     const metaMuted = tickFlags;
-    /** Route type: reads as a label, not buried in gray meta. */
-    const metaTypeClass =
-      'inline-flex max-w-full items-center rounded-md border border-white/12 bg-surface-raised px-1.5 py-0.5 text-[10px] font-medium text-slate-100 antialiased shadow-sm sm:text-[11px]';
+    /** Route type — same line as FA meta but reads as primary (no chip chrome). */
+    const metaTypeEmphasis = 'font-medium text-slate-100 antialiased';
 
     return (
       <>
         {segments.map((seg, i) => (
           <Fragment key={seg.key}>
-            {i > 0 ? segments[i - 1]!.key === 'subtype' || seg.key === 'subtype' ? ' ' : <ProfileRowTextSep /> : null}
-            <span className={seg.key === 'subtype' ? metaTypeClass : metaMuted}>{seg.node}</span>
+            {i > 0 ? <ProfileRowTextSep /> : null}
+            <span className={seg.key === 'subtype' ? metaTypeEmphasis : metaMuted}>{seg.node}</span>
           </Fragment>
         ))}
       </>
@@ -184,7 +184,7 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
   const hasIconRunBeforeFa = !!(lockAndMedia || (problem.stars && problem.stars > 0));
 
   return (
-    <div className={cn(profileRowRootClass, 'min-w-0 py-1 text-pretty [overflow-wrap:anywhere] sm:py-1.5')}>
+    <div className={cn(profileRowRootClass, 'min-w-0 py-1 sm:py-1.5')}>
       <div className='min-w-0 leading-snug'>
         {problem.danger ? (
           <AlertTriangle
@@ -440,8 +440,7 @@ const Sector = () => {
             (p.t?.subType === subType && p.gradeNumber !== 0),
         ) ?? [];
       const numTicked = problemsOfType.filter((p) => p.ticked).length;
-      const txt = numTicked === 0 ? String(problemsOfType.length) : `${problemsOfType.length} (${numTicked} ticked)`;
-      return { key: header, header, txt, count: problemsOfType.length };
+      return { key: header, header, count: problemsOfType.length, numTicked };
     })
     .filter((s) => s.count > 0);
 
@@ -466,7 +465,7 @@ const Sector = () => {
 
   const sectorAccessRestrictions =
     data.areaAccessClosed || data.accessClosed || data.areaAccessInfo || data.accessInfo || data.areaNoDogsAllowed ? (
-      <div className='min-w-0 space-y-2 text-[12px] leading-relaxed sm:text-[13px]'>
+      <div className={cn('min-w-0 space-y-2', designContract.typography.detailBody)}>
         {(data.areaAccessClosed || data.accessClosed) && (
           <p className='text-pretty text-red-300/90'>
             {(data.areaAccessClosed ? 'Area' : 'Sector') + ' closed: '}
@@ -493,7 +492,12 @@ const Sector = () => {
           className='mb-0'
           breadcrumb={
             <>
-              <nav className='flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-2 text-[12px] leading-relaxed text-pretty break-words sm:text-[13px]'>
+              <nav
+                className={cn(
+                  'flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-2 text-pretty break-words',
+                  designContract.typography.detailBody,
+                )}
+              >
                 <Link to='/areas' className='inline align-middle text-slate-400 transition-colors hover:text-slate-200'>
                   Areas
                 </Link>
@@ -515,7 +519,8 @@ const Sector = () => {
                       aria-label={`Sector: ${data.name}. Open list of sectors in this area.`}
                       onClick={() => setSectorPickerOpen((o) => !o)}
                       className={cn(
-                        'group inline-flex max-w-full min-w-0 items-center gap-1 border-0 bg-transparent p-0 text-left text-[12px] font-semibold text-slate-50 transition-colors sm:text-[13px]',
+                        'group inline-flex max-w-full min-w-0 items-center gap-1 border-0 bg-transparent p-0 text-left font-semibold text-slate-50 transition-colors',
+                        designContract.typography.detailBody,
                         'hover:text-slate-100',
                         'focus-visible:ring-brand-border/70 focus-visible:rounded-sm focus-visible:ring-2 focus-visible:outline-none',
                       )}
@@ -561,7 +566,12 @@ const Sector = () => {
                     )}
                   </div>
                 ) : (
-                  <span className='inline-flex max-w-full min-w-0 items-center gap-1 align-middle text-[12px] font-semibold text-slate-50 sm:text-[13px]'>
+                  <span
+                    className={cn(
+                      'inline-flex max-w-full min-w-0 items-center gap-1 align-middle font-semibold text-slate-50',
+                      designContract.typography.detailBody,
+                    )}
+                  >
                     <span className='min-w-0 truncate'>{data.name}</span>
                     <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
                   </span>
@@ -626,7 +636,7 @@ const Sector = () => {
                       strokeWidth={isActive ? 2.3 : 2}
                       className={tabBarIconClassName(isActive)}
                     />
-                    <span className='type-small block min-w-0 truncate leading-none sm:text-[12px]'>{t.label}</span>
+                    <span className='type-small block min-w-0 truncate leading-none sm:text-[13px]'>{t.label}</span>
                   </button>
                 );
               })}
@@ -795,21 +805,50 @@ const Sector = () => {
               rows={sectorProblemListRows}
               contentBeforeList={
                 sectorTypeSummaries.length > 1 ? (
-                  <div className='min-w-0'>
-                    <p
-                      className='min-w-0 text-[13px] leading-relaxed text-pretty [overflow-wrap:anywhere] text-slate-300 sm:text-sm'
-                      aria-label='Route counts by type in this sector'
-                    >
+                  <div
+                    className='min-w-0'
+                    role='status'
+                    aria-label={sectorTypeSummaries
+                      .map((s) =>
+                        s.numTicked > 0
+                          ? `${s.header}: ${s.count} routes, ${s.numTicked} ticked`
+                          : `${s.header}: ${s.count} routes`,
+                      )
+                      .join('. ')}
+                  >
+                    <div className='flex flex-wrap items-center gap-x-4 gap-y-2.5 text-[13px] leading-snug sm:gap-x-6 sm:text-sm'>
                       {sectorTypeSummaries.map((s, i) => (
-                        <Fragment key={s.key}>
-                          {i > 0 ? <span className={profileRowMiddleDotClass}> · </span> : null}
-                          <span title={`${s.header}: ${s.txt}`}>
-                            <span className='font-semibold text-slate-200'>{s.header}:</span>{' '}
-                            <span className='font-normal text-slate-300'>{s.txt}</span>
-                          </span>
-                        </Fragment>
+                        <div
+                          key={s.key}
+                          className={cn(
+                            'inline-flex max-w-full min-w-0 items-center gap-x-2 sm:whitespace-nowrap',
+                            i > 0 && 'border-surface-border border-l pl-3 sm:pl-4',
+                          )}
+                          title={
+                            s.numTicked > 0
+                              ? `${s.header}: ${s.count} routes, ${s.numTicked} ticked`
+                              : `${s.header}: ${s.count} routes`
+                          }
+                        >
+                          <span className='font-semibold text-slate-200'>{s.header}</span>
+                          <span className='text-slate-300 tabular-nums'>{s.count}</span>
+                          {s.numTicked > 0 ? (
+                            <span className='inline-flex items-center gap-0.5 tabular-nums'>
+                              <Check
+                                size={12}
+                                strokeWidth={2.5}
+                                className={cn('shrink-0', designContract.ascentStatus.ticked)}
+                                aria-hidden
+                              />
+                              <span className={cn('font-medium', designContract.ascentStatus.ticked)}>
+                                {s.numTicked}
+                              </span>
+                              <span className='sr-only'> ticked</span>
+                            </span>
+                          ) : null}
+                        </div>
                       ))}
-                    </p>
+                    </div>
                   </div>
                 ) : null
               }

@@ -184,7 +184,7 @@
   }
 
   .type-micro {
-    @apply text-[11px] leading-[1.35] font-medium text-slate-400 sm:text-[12px];
+    @apply text-[12px] leading-[1.35] font-medium text-slate-400 sm:text-[13px];
   }
 
   /** Saturated buttons / toggles — use instead of raw `text-white` (eslint typography rule). */
@@ -193,7 +193,7 @@
   }
 
   .badge-micro {
-    @apply inline-flex h-4 items-center rounded border border-white/16 px-1.5 text-[11px] leading-none font-medium text-slate-400 sm:text-[12px];
+    @apply inline-flex h-4 items-center rounded border border-white/16 px-1.5 text-[12px] leading-none font-medium text-slate-400 sm:text-[13px];
   }
 
   /*
