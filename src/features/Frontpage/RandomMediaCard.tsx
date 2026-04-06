@@ -57,10 +57,11 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
   const photographerAlsoTagged = photographerId != null && taggedUsers.some((u) => u.id === photographerId);
   /** Separate “By …” block only when the photographer isn’t already listed as tagged (avoids duplicate names). */
   const showPhotographerByRow = Boolean(photographer && !photographerAlsoTagged);
-  const problemTitleClass = 'text-[15px] leading-snug font-semibold text-slate-300 md:text-[16px]';
+  const problemTitleClass = 'text-[15px] font-semibold leading-tight text-slate-300 md:text-[16px] md:leading-snug';
   const gradeClass = 'text-[13px] leading-none font-light tabular-nums tracking-tight text-slate-300 md:text-[14px]';
   /** Brighter on image overlay (mobile); on card body `slate-400` matches mid-band secondary text */
-  const locationClass = 'text-[11px] leading-snug font-normal text-slate-300 md:text-[12px] md:text-slate-400';
+  const locationClass =
+    'text-[11px] font-normal leading-tight text-slate-300 md:text-[12px] md:leading-snug md:text-slate-400';
   const metaTextClass = 'text-[11px] leading-snug text-slate-400 md:text-[12px]';
   const interactiveLinkClass =
     'rounded-sm transition-colors duration-150 hover:text-brand hover:underline hover:decoration-brand/50 underline-offset-[3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-border/70';
@@ -93,15 +94,15 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
         </Link>
         <div className='pointer-events-none absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-100 transition-opacity duration-500 group-hover:opacity-100 md:opacity-0' />
 
-        <div className='absolute right-0 bottom-0 left-0 p-4 md:hidden'>
+        <div className='absolute inset-x-0 bottom-0 px-3 pt-0.5 pb-1.5 md:hidden'>
           <Link
             to={`/problem/${randomMedia.idProblem}`}
-            className={`${interactiveLinkClass} flex items-baseline gap-2`}
+            className={`${interactiveLinkClass} flex items-baseline gap-1.5`}
           >
             <h3 className={problemTitleClass}>{randomMedia.problem}</h3>
             <span className={gradeClass}>{randomMedia.grade}</span>
           </Link>
-          <div className='mt-3 mb-0 leading-snug'>
+          <div className='mt-1 leading-none'>
             <Link to={`/area/${randomMedia.idArea}`} className={interactiveLinkClass}>
               <span className={locationClass}>{randomMedia.area}</span>
             </Link>
@@ -114,7 +115,7 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
           </div>
 
           {(taggedUsers.length > 0 || showPhotographerByRow) && (
-            <div className='border-surface-border/45 mt-5 flex flex-wrap items-center gap-x-4 gap-y-3 border-t pt-5'>
+            <div className='border-surface-border/45 mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t pt-2'>
               {taggedUsers.length > 0 && (
                 <div className='flex items-center gap-2'>
                   <AvatarGroup

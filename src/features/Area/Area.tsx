@@ -485,9 +485,8 @@ const Area = () => {
           breadcrumb={
             <nav
               className={cn(
-                'block min-w-0 text-pretty break-words',
+                'flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-2 text-pretty break-words',
                 designContract.typography.detailBody,
-                '[&>*+*]:ml-1.5',
               )}
             >
               <Link to='/areas' className='inline align-middle text-slate-400 transition-colors hover:text-slate-200'>

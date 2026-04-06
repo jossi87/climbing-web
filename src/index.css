@@ -7,17 +7,18 @@
   --color-status-todo: #38bdf8;
   --color-status-danger: #f87171;
   /*
-   * Surfaces: **neutral charcoal** (minimal blue in the paint), not slate-blue — reads as “dark mode”
-   * rather than midnight-navy. Steps stay close so panels feel like one material with subtle lift.
+   * Surfaces: **neutral charcoal** (R≈G≈B — no blue-gray cast). **Canvas** is deepest; **nav/card** sit clearly
+   * above it (large-enough Δ for bright rooms / glossy screens). Raised/hover steps stay evenly spaced above card.
+   * Edge definition for main panels: `--shadow-app-card` adds ambient depth + a hairline rim (not a layout border).
    */
-  --color-surface-dark: #0c0c0d;
-  --color-surface-nav: #131316;
-  /* Same as nav/footer chrome — panels read as part of the page, not a brighter lift */
-  --color-surface-card: #131316;
+  --color-surface-dark: #050506;
+  /* Header, footer, and main panels — one shared face, visibly lighter than the canvas */
+  --color-surface-nav: #181818;
+  --color-surface-card: #181818;
   /** Solid “lift” between card and hover — chips, rows, trays */
-  --color-surface-raised: #1c1c20;
-  --color-surface-raised-hover: #26262b;
-  --color-surface-hover: #303036;
+  --color-surface-raised: #222222;
+  --color-surface-raised-hover: #2d2d2d;
+  --color-surface-hover: #383838;
   /**
    * Hairline edges: derived from `surface-card` + a whisper of white — avoids a separate “stripe gray” that fights
    * the charcoal base (reads more Linear / Apple settings than boxed wireframes).
@@ -35,9 +36,10 @@
   --color-white: #e2e8f0;
   --shadow-brand: 0 0 10px rgba(198, 161, 91, 0.14);
   /**
-   * Borderless card lift — **ambient shadow only** (no inset highlight: that read as a hairline “border” under toolbars).
+   * Main content panels (`.app-card`): soft drop shadow + **rim** (`0 0 0 1px …`) so edges stay visible in daylight
+   * where ambient shadow washes out — reads as material edge, not a boxed border frame.
    */
-  --shadow-app-card: 0 20px 56px -24px rgba(0, 0, 0, 0.72);
+  --shadow-app-card: 0 28px 64px -22px rgba(0, 0, 0, 0.78), 0 0 0 1px rgba(255, 255, 255, 0.055);
   --spacing-container: 1400px;
   --spacing-thumbnail-w: 85px;
   --spacing-thumbnail-h: 80px;
@@ -206,7 +208,7 @@
 
   .app-card {
     @apply bg-surface-card overflow-hidden border-0 sm:rounded-xl;
-    /* Separation from `surface-dark` via ambient shadow only — no inset rim (avoids a visible top line). */
+    /* Separation from canvas: ambient shadow + subtle rim (see `--shadow-app-card`). */
     box-shadow: var(--shadow-app-card);
 
     box-sizing: border-box;

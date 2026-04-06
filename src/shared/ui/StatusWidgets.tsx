@@ -1,6 +1,5 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { Lock, LogIn, AlertTriangle, RefreshCw } from 'lucide-react';
-import { designContract } from '../../design/contract';
 import { Card } from './Card';
 
 type LoadingProps = {
@@ -9,12 +8,12 @@ type LoadingProps = {
 
 const LoadingContent = () => (
   <div className='flex min-h-[160px] w-full min-w-0 flex-1 flex-col items-center justify-center gap-4 sm:min-h-[220px]'>
-    <div className='bg-surface-raised border-surface-border rounded-full border p-3'>
-      <RefreshCw className='h-7 w-7 animate-spin text-slate-400' />
+    <div className='bg-surface-raised border-surface-border ring-brand-border/35 rounded-full border p-3 ring-1'>
+      <RefreshCw className='h-7 w-7 animate-spin text-slate-100' strokeWidth={2.25} aria-hidden />
     </div>
     <div className='text-center'>
-      <h3 className={designContract.typography.label}>Loading</h3>
-      <p className='type-small mt-1 opacity-70'>Fetching data...</p>
+      <h3 className='text-sm font-medium tracking-tight text-slate-100'>Loading</h3>
+      <p className='type-small mt-1 text-slate-500'>Fetching data…</p>
     </div>
   </div>
 );

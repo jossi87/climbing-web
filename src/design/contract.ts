@@ -6,7 +6,7 @@
  * (`index.css`) — gold mixed into `surface-border`, less “mustard frame”.
  *
  * A11y baseline: global `input`/`textarea` placeholders and `:focus-visible` live in `index.css`. On `surface-card`
- * (`#131316`), prefer **`slate-400`+** for readable secondary copy; reserve **`slate-500`** for non-essential hints.
+ * (`surface-card`), prefer **`slate-400`+** for readable secondary copy; reserve **`slate-500`** for non-essential hints.
  */
 export const SECTION_EYEBROW = 'text-[10px] font-semibold tracking-[0.16em] text-slate-400 uppercase';
 

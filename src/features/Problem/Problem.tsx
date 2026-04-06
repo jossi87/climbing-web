@@ -365,7 +365,7 @@ export const Problem = () => {
             <nav
               aria-label='Breadcrumb'
               className={cn(
-                'block min-w-0 leading-snug break-normal sm:leading-relaxed [&>*+*]:ml-1 sm:[&>*+*]:ml-1.5',
+                'flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-2 text-pretty break-words',
                 designContract.typography.detailBody,
               )}
             >
@@ -378,7 +378,7 @@ export const Problem = () => {
               <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
               <Link
                 to={`/area/${data.areaId}`}
-                className='inline min-w-0 align-middle tracking-tight text-slate-300 transition-colors hover:text-slate-100'
+                className='inline min-w-0 align-middle tracking-tight text-slate-400 transition-colors hover:text-slate-200'
               >
                 {data.areaName}
               </Link>
@@ -386,7 +386,7 @@ export const Problem = () => {
               <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
               <Link
                 to={`/sector/${data.sectorId}`}
-                className='inline min-w-0 align-middle tracking-tight text-slate-300 transition-colors hover:text-slate-100'
+                className='inline min-w-0 align-middle tracking-tight text-slate-400 transition-colors hover:text-slate-200'
               >
                 {data.sectorName}
               </Link>
