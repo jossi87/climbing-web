@@ -40,21 +40,24 @@ export const designContract = {
     /** Inline emphasis in tables/lists — prefer medium weight so rows don’t all feel “bold UI”. */
     listEmphasis: 'font-medium text-slate-300',
     /**
-     * Dense dark feeds: route title and grade share the same ink (`text-slate-100`); grade is **lighter weight** +
-     * tighter tabular nums so it reads as a thin suffix, not a second headline.
+     * Dense dark feeds: **problem name** is the hero ({@link feed.routeTitle}); **grade** matches its ink but thinner
+     * ({@link feed.gradeHighlight}); area/sector share glue-tone ({@link feed.locationLink} = same ink as {@link feed.action}).
      */
     feed: {
       /** Default line color on dark panels — bright enough for small body text (WCAG-friendly vs `surface-card`). */
-      sentence: 'text-slate-400 antialiased',
-      /** Glue words (“ticked”, “in”) — same step as {@link sentence}, never dimmer (old `slate-500` failed on charcoal). */
-      action: 'text-slate-400 antialiased',
-      emphasis: 'font-normal text-slate-300 antialiased transition-colors hover:text-brand',
-      /** Route / problem name — semibold; same color as {@link feed.gradeHighlight}. */
-      routeTitle: 'font-semibold text-slate-100 antialiased transition-colors hover:text-brand',
-      locationLink: 'font-normal text-slate-300 antialiased transition-colors hover:text-brand',
-      /** Same color as {@link feed.routeTitle}; thin weight + tracking so it stays secondary to the name. */
-      gradeHighlight: 'font-light tabular-nums tracking-tight text-slate-100 antialiased',
-      lead: 'font-medium text-slate-300 antialiased',
+      sentence: 'text-slate-400 antialiased align-baseline',
+      /** Glue words (“ticked”, “in”), trailing type — one quiet meta layer with {@link feed.locationLink}. */
+      action: 'text-slate-400 antialiased align-baseline',
+      emphasis: 'font-normal text-slate-300 antialiased align-baseline transition-colors hover:text-brand',
+      /** Problem / route name — `font-medium` keeps metrics closer to glue copy than `font-semibold`. */
+      routeTitle: 'font-medium text-slate-50 antialiased align-baseline transition-colors hover:text-brand',
+      /** Area + sector links — same color as glue ({@link feed.action}); brand on hover so they still read as links. */
+      locationLink: 'font-normal text-slate-400 antialiased align-baseline transition-colors hover:text-brand',
+      /** Middle dot — strong enough to read as a boundary; `font-semibold` thickens the interpunct. */
+      metaSep: 'text-slate-300 font-semibold antialiased align-baseline',
+      /** Grade + subtype beside the name — normal weight + no `tabular-nums` so digits don’t shift the line box. */
+      gradeHighlight: 'font-normal tracking-tight text-slate-50 antialiased align-baseline',
+      lead: 'font-medium text-slate-300 antialiased align-baseline',
     },
     /** Grade tokens (no brackets): mono + muted */
     grade: 'type-small font-mono tabular-nums text-slate-400',

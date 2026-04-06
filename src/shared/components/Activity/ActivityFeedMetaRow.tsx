@@ -33,8 +33,6 @@ export function ActivityFeedMetaRow({
 
   const story = newFaUsers ? (
     <>
-      <span className={cragLeadClass}>New {isBouldering ? 'boulder' : 'route'}</span>{' '}
-      <span className={actionClass}>by</span>{' '}
       {newFaUsers.map((u, i) => (
         <Fragment key={u.id}>
           {i > 0 ? (i === newFaUsers.length - 1 ? ' and ' : ', ') : null}
@@ -44,8 +42,8 @@ export function ActivityFeedMetaRow({
         </Fragment>
       ))}
       {' '}
-      <span className={actionClass}>in</span>{' '}
-      <ProblemLink a={a} compactEnd flagsClassName={actionClass} tone={problemLinkTone} />
+      <span className={actionClass}>{isBouldering ? 'opened' : 'first ascended'}</span>{' '}
+      <ProblemLink a={a} compactEnd flagsClassName={actionClass} problemFirst tone={problemLinkTone} />
     </>
   ) : a.message ? (
     <>
@@ -53,7 +51,7 @@ export function ActivityFeedMetaRow({
         {a.name}
       </Link>{' '}
       <span className={actionClass}>commented on</span>{' '}
-      <ProblemLink a={a} compactEnd flagsClassName={actionClass} tone={problemLinkTone} />
+      <ProblemLink a={a} compactEnd flagsClassName={actionClass} problemFirst tone={problemLinkTone} />
     </>
   ) : (
     <>
@@ -74,21 +72,21 @@ export function ActivityFeedMetaRow({
           <span className={actionClass}>on</span>{' '}
         </>
       ) : null}
-      <ProblemLink a={a} compactEnd flagsClassName={actionClass} tone={problemLinkTone} />
+      <ProblemLink a={a} compactEnd flagsClassName={actionClass} problemFirst tone={problemLinkTone} />
     </>
   );
 
+  /** Same font size / line-height as the row (`activityRowRootClass`) so the stamp sits on the sentence baseline. */
   const timeClass =
-    'shrink-0 text-[11px] leading-none whitespace-nowrap tabular-nums tracking-tight text-slate-400 md:text-[12px]';
+    'shrink-0 align-baseline font-normal whitespace-nowrap tabular-nums tracking-tight text-slate-400';
 
   return (
     <div className={cn(activityRowRootClass, 'text-pretty [overflow-wrap:anywhere]')}>
-      <div className='flex min-w-0 w-full flex-row items-start justify-between gap-3 sm:gap-4 md:gap-6'>
-        <div className='min-w-0 flex-1'>
-          {/* Normal inline flow so long route names break mid-line; avoid flex-wrap (whole links jump as one unit). */}
-          <div className='min-w-0 max-w-full break-words'>{story}</div>
-        </div>
-        <span className={cn(timeClass, 'text-right max-md:leading-snug self-start pt-0.5')}>{a.timeAgo}</span>
+      <div className='flex min-w-0 w-full flex-row items-baseline justify-between gap-3 sm:gap-4 md:gap-6'>
+        <p className='m-0 min-w-0 flex-1 text-pretty break-words [overflow-wrap:anywhere] [&_*]:align-baseline'>
+          {story}
+        </p>
+        <span className={cn(timeClass, 'text-right')}>{a.timeAgo}</span>
       </div>
     </div>
   );

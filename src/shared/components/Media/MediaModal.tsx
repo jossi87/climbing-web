@@ -372,6 +372,13 @@ const MediaModal = ({
 
   const attachCarouselSwipeHandlers = isMobile && carouselSize > 1 && visualViewportScale <= 1.05;
 
+  /** “More” (⋮) menu — same label + icon tone for every row; delete keeps destructive red. */
+  const mediaMenuItemClass =
+    'hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 text-left text-xs font-semibold text-slate-200 transition-colors';
+  const mediaMenuIconClass = 'shrink-0 text-slate-300';
+  const mediaMenuDeleteClass =
+    'flex w-full items-center gap-3 px-4 py-2.5 text-left text-xs font-semibold text-red-400 transition-colors hover:bg-red-500/10';
+
   return (
     <div
       className='fixed inset-0 z-150 flex h-[100dvh] min-h-[100dvh] w-full max-w-[100vw] overflow-hidden bg-black select-none'
@@ -519,72 +526,49 @@ const MediaModal = ({
                   <button
                     type='button'
                     onClick={() => navigate(`/problem/svg-edit/${optProblemId}/${pitch || 0}/${m.id}`)}
-                    className='type-small hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 opacity-85 transition-colors hover:opacity-100'
+                    className={mediaMenuItemClass}
                   >
-                    <Paintbrush size={14} className='text-brand' /> Draw topo line
+                    <Paintbrush size={14} className={mediaMenuIconClass} strokeWidth={2} /> Draw topo line
                   </button>
                 )}
                 {canDrawMedia && (
                   <button
                     type='button'
                     onClick={() => navigate(`/media/svg-edit/${m.id}`)}
-                    className='type-small hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 opacity-85 transition-colors hover:opacity-100'
+                    className={mediaMenuItemClass}
                   >
-                    <Paintbrush size={14} className='text-brand' /> Draw on image
+                    <Paintbrush size={14} className={mediaMenuIconClass} strokeWidth={2} /> Draw on image
                   </button>
                 )}
                 {canOrder && (
-                  <button
-                    type='button'
-                    onClick={onMoveImageLeft}
-                    className='type-small hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 opacity-85 transition-colors hover:opacity-100'
-                  >
-                    <ArrowLeft size={14} /> Move image left
+                  <button type='button' onClick={onMoveImageLeft} className={mediaMenuItemClass}>
+                    <ArrowLeft size={14} className={mediaMenuIconClass} strokeWidth={2} /> Move image left
                   </button>
                 )}
                 {canOrder && (
-                  <button
-                    type='button'
-                    onClick={onMoveImageRight}
-                    className='type-small hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 opacity-85 transition-colors hover:opacity-100'
-                  >
-                    <ArrowRight size={14} /> Move image right
+                  <button type='button' onClick={onMoveImageRight} className={mediaMenuItemClass}>
+                    <ArrowRight size={14} className={mediaMenuIconClass} strokeWidth={2} /> Move image right
                   </button>
                 )}
                 {canMove && (m.enableMoveToIdArea ?? 0) > 0 && (
-                  <button
-                    type='button'
-                    onClick={onMoveImageToArea}
-                    className='hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
-                  >
-                    <Move size={14} /> Move image to area
+                  <button type='button' onClick={onMoveImageToArea} className={mediaMenuItemClass}>
+                    <Move size={14} className={mediaMenuIconClass} strokeWidth={2} /> Move image to area
                   </button>
                 )}
                 {canMove && (m.enableMoveToIdSector ?? 0) > 0 && (
-                  <button
-                    type='button'
-                    onClick={onMoveImageToSector}
-                    className='hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
-                  >
-                    <Move size={14} /> Move image to sector
+                  <button type='button' onClick={onMoveImageToSector} className={mediaMenuItemClass}>
+                    <Move size={14} className={mediaMenuIconClass} strokeWidth={2} /> Move image to sector
                   </button>
                 )}
                 {canMove && (m.enableMoveToIdProblem ?? 0) > 0 && (
-                  <button
-                    type='button'
-                    onClick={onMoveImageToProblem}
-                    className='hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
-                  >
-                    <Move size={14} /> Move image to {isBouldering ? 'problem' : 'route'}
+                  <button type='button' onClick={onMoveImageToProblem} className={mediaMenuItemClass}>
+                    <Move size={14} className={mediaMenuIconClass} strokeWidth={2} /> Move image to{' '}
+                    {isBouldering ? 'problem' : 'route'}
                   </button>
                 )}
                 {canSetMediaAsAvatar && (
-                  <button
-                    type='button'
-                    onClick={onSetMediaAsAvatar}
-                    className='hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
-                  >
-                    <UserIcon size={14} /> Set as avatar
+                  <button type='button' onClick={onSetMediaAsAvatar} className={mediaMenuItemClass}>
+                    <UserIcon size={14} className={mediaMenuIconClass} strokeWidth={2} /> Set as avatar
                   </button>
                 )}
 
@@ -599,52 +583,32 @@ const MediaModal = ({
                         getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, m.idType !== 1, { original: true }),
                       )
                     }
-                    className='hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
+                    className={mediaMenuItemClass}
                   >
-                    <Download size={14} /> Download Original
+                    <Download size={14} className={mediaMenuIconClass} strokeWidth={2} /> Download Original
                   </button>
                 )}
                 {canRotate && (
                   <>
-                    <button
-                      type='button'
-                      onClick={() => onRotate(90)}
-                      className='hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
-                    >
-                      <RotateCw size={14} /> Rotate 90° CW
+                    <button type='button' onClick={() => onRotate(90)} className={mediaMenuItemClass}>
+                      <RotateCw size={14} className={mediaMenuIconClass} strokeWidth={2} /> Rotate 90° CW
                     </button>
-                    <button
-                      type='button'
-                      onClick={() => onRotate(270)}
-                      className='hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
-                    >
-                      <RotateCcw size={14} /> Rotate 90° CCW
+                    <button type='button' onClick={() => onRotate(270)} className={mediaMenuItemClass}>
+                      <RotateCcw size={14} className={mediaMenuIconClass} strokeWidth={2} /> Rotate 90° CCW
                     </button>
-                    <button
-                      type='button'
-                      onClick={() => onRotate(180)}
-                      className='hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
-                    >
-                      <RefreshCw size={14} /> Rotate 180°
+                    <button type='button' onClick={() => onRotate(180)} className={mediaMenuItemClass}>
+                      <RefreshCw size={14} className={mediaMenuIconClass} strokeWidth={2} /> Rotate 180°
                     </button>
                   </>
                 )}
                 {canEdit && (
-                  <button
-                    type='button'
-                    onClick={onEdit}
-                    className='hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-300 transition-colors'
-                  >
-                    <Edit size={14} /> Edit Information
+                  <button type='button' onClick={onEdit} className={mediaMenuItemClass}>
+                    <Edit size={14} className={mediaMenuIconClass} strokeWidth={2} /> Edit Information
                   </button>
                 )}
                 {canDelete && (
-                  <button
-                    type='button'
-                    onClick={onDelete}
-                    className='flex w-full items-center gap-3 px-4 py-2.5 text-xs font-bold text-red-400 transition-colors hover:bg-red-500/10'
-                  >
-                    <Trash2 size={14} /> Delete {isImage ? 'Image' : 'Video'}
+                  <button type='button' onClick={onDelete} className={mediaMenuDeleteClass}>
+                    <Trash2 size={14} className='shrink-0' strokeWidth={2} /> Delete {isImage ? 'Image' : 'Video'}
                   </button>
                 )}
               </div>

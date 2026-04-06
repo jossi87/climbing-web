@@ -8,15 +8,30 @@ import { cn } from '../../../../lib/utils';
 
 const feed = designContract.typography.feed;
 
+/** Middle dot + spaces as plain inline text (one baseline, no `inline-block` box). */
+function FeedRowSep({ soft }: { soft: boolean }) {
+  if (soft) {
+    return (
+      <span className={feed.metaSep} aria-hidden>
+        {' · '}
+      </span>
+    );
+  }
+  return <ProfileRowTextSep />;
+}
+
 type Props = {
   a: components['schemas']['Activity'];
+  /** Optional label (e.g. API type); after **grade**, middle-dot separated, same type as grade. */
   type?: string;
-  /** Activity sentence meta (“in”, “ticked”, …): when set, used alone for optional `type` + subtype so typography matches those words ({@link tickFlags} otherwise). */
+  /** Activity sentence meta (“in”, “ticked”, …): when set, used for glue words + trailing type/subtype ({@link tickFlags} otherwise). */
   flagsClassName?: string;
   /** Home feed: one step down from pure `slate-50`/`100` so the block sits calmer in the hero. */
   tone?: 'default' | 'soft';
   /** Activity row: tighter margin before lock so “· Today” doesn’t sit in a huge gap. */
   compactEnd?: boolean;
+  /** Activity feed (soft tone): **problem + grade · type/subtype**, then `in`, then area · sector (`FeedRowSep` middle dots). */
+  problemFirst?: boolean;
 };
 
 /** Activity feed — see {@link designContract.typography.feed}. */
@@ -25,8 +40,15 @@ const softProblemLink = cn(feed.routeTitle, 'inline');
 const softGradeBesideProblem = feed.gradeHighlight;
 const defaultGradeBesideProblem = 'font-normal text-slate-50 antialiased';
 
-/** Same hierarchy as profile ascents / todo: crag → problem + grade + type (no badge box). */
-export const ProblemLink = ({ a, type, flagsClassName, tone = 'default', compactEnd = false }: Props) => {
+/** Default: crag → problem + grade · type/subtype; with soft + problemFirst, that block then `in` → location. */
+export const ProblemLink = ({
+  a,
+  type,
+  flagsClassName,
+  tone = 'default',
+  compactEnd = false,
+  problemFirst = false,
+}: Props) => {
   const crag = tone === 'soft' ? softCragLink : tickCragLink;
   const problem = tone === 'soft' ? softProblemLink : tickProblemLink;
   const gradeBesideProblem = tone === 'soft' ? softGradeBesideProblem : defaultGradeBesideProblem;
@@ -43,44 +65,69 @@ export const ProblemLink = ({ a, type, flagsClassName, tone = 'default', compact
     a.problemLockedSuperadmin
   );
 
-  return (
-    <>
-      {type ? <span className={cn(metaSpanClass, 'mr-1.5')}>{type}</span> : null}
+  const soft = tone === 'soft';
 
+  const locationPair = (
+    <>
       <Link to={`/area/${a.areaId}`} className={crag}>
         {a.areaName?.trim()}
       </Link>
-
-      <ProfileRowTextSep />
-
+      <FeedRowSep soft={soft} />
       <Link to={`/sector/${a.sectorId}`} className={crag}>
         {a.sectorName?.trim()}
       </Link>
+    </>
+  );
 
-      <ProfileRowTextSep />
+  /** Same classes as the grade span (second read after the problem title). */
+  const typeBesideGrade = gradeBesideProblem;
 
+  const routeWithGrade = (
+    <>
       <Link to={`/problem/${a.problemId}`} className={cn(problem, '[overflow-wrap:anywhere] break-words')}>
         {a.problemName?.trim()}
       </Link>
-      {showGrade ? (
-        <span className={cn(gradeBesideProblem, 'ml-1 whitespace-nowrap tabular-nums')}>{a.grade}</span>
-      ) : null}
-
-      {showSubtype ? (
+      {showGrade ? <span className={cn(gradeBesideProblem, 'ml-1 whitespace-nowrap')}>{a.grade}</span> : null}
+      {type || showSubtype ? (
         <>
-          {showGrade ? <ProfileRowTextSep /> : null}
-          <span className={cn(metaSpanClass, !showGrade && 'ml-1')}>{a.problemSubtype}</span>
+          {!showGrade ? <FeedRowSep soft={soft} /> : ' '}
+          {type ? <span className={cn(typeBesideGrade, showGrade && 'ml-1')}>{type}</span> : null}
+          {type && showSubtype ? <FeedRowSep soft={soft} /> : null}
+          {showSubtype ? (
+            <span className={cn(typeBesideGrade, showGrade && !type && 'ml-1')}>{a.problemSubtype}</span>
+          ) : null}
         </>
       ) : null}
+    </>
+  );
 
-      {hasLock ? (
-        <span className={cn(compactEnd ? 'ml-1' : 'ml-1.5', 'inline-block align-middle')}>
-          <LockSymbol
-            lockedAdmin={!!(a.areaLockedAdmin || a.sectorLockedAdmin || a.problemLockedAdmin)}
-            lockedSuperadmin={!!(a.areaLockedSuperadmin || a.sectorLockedSuperadmin || a.problemLockedSuperadmin)}
-          />
-        </span>
-      ) : null}
+  const useProblemFirst = tone === 'soft' && problemFirst;
+
+  const lockBlock = hasLock ? (
+    <span className={cn(compactEnd ? 'ml-1' : 'ml-1.5', 'inline')}>
+      <LockSymbol
+        lockedAdmin={!!(a.areaLockedAdmin || a.sectorLockedAdmin || a.problemLockedAdmin)}
+        lockedSuperadmin={!!(a.areaLockedSuperadmin || a.sectorLockedSuperadmin || a.problemLockedSuperadmin)}
+      />
+    </span>
+  ) : null;
+
+  /** Inline phrasing — one typographic baseline (like a written line). */
+  return (
+    <>
+      {useProblemFirst ? (
+        <>
+          {routeWithGrade}
+          <span className={cn(metaSpanClass, 'ms-1.5')}>in</span> {locationPair}
+        </>
+      ) : (
+        <>
+          {locationPair}
+          <FeedRowSep soft={soft} />
+          {routeWithGrade}
+        </>
+      )}
+      {lockBlock}
     </>
   );
 };

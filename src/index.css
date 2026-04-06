@@ -24,7 +24,8 @@
    * Hairline edges: derived from `surface-card` + a whisper of white — avoids a separate “stripe gray” that fights
    * the charcoal base (reads more Linear / Apple settings than boxed wireframes).
    */
-  --color-surface-border: color-mix(in srgb, var(--color-surface-card) 88%, rgb(255 255 255) 12%);
+  /* One step brighter than 88/12 so `border-surface-border` stays legible on #13151a without a second gray token */
+  --color-surface-border: color-mix(in srgb, var(--color-surface-card) 87%, rgb(255 255 255) 13%);
   /**
    * Loading placeholders — between `raised` and `hover`, never as bright as real hover (keeps semantics clear).
    */
@@ -40,7 +41,7 @@
    * Main content panels (`.app-card`): soft drop shadow + **rim** (`0 0 0 1px …`) so edges stay visible in daylight
    * where ambient shadow washes out — reads as material edge, not a boxed border frame.
    */
-  --shadow-app-card: 0 28px 64px -22px rgba(0, 0, 0, 0.78), 0 0 0 1px rgba(255, 255, 255, 0.055);
+  --shadow-app-card: 0 28px 64px -22px rgba(0, 0, 0, 0.78), 0 0 0 1px rgba(255, 255, 255, 0.058);
   --spacing-container: 1400px;
   --spacing-thumbnail-w: 85px;
   --spacing-thumbnail-h: 80px;
