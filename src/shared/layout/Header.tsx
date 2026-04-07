@@ -228,6 +228,8 @@ const Header = () => {
                 <img
                   src='/png/logo_70x62.png'
                   alt=''
+                  width={70}
+                  height={62}
                   className='header-logo h-auto w-7 transition-[transform,filter] duration-300 ease-out will-change-transform group-hover:scale-[1.06] group-active:scale-100'
                 />
                 <span className='sr-only'>Home</span>

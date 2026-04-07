@@ -202,7 +202,6 @@ html[data-theme='light']
     font-family: var(--font-ui);
     font-size: 14px;
     letter-spacing: -0.005em;
-    font-display: swap;
     background-color: var(--color-surface-dark);
   }
 
