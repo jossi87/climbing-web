@@ -183,7 +183,7 @@ const Media = ({
                 m={x}
                 optProblemId={optProblemId}
                 showText={false}
-                className='absolute inset-0 h-full min-h-full w-full min-w-full object-cover'
+                className='absolute inset-0 h-full w-full'
               />
             ) : x.idType === 2 ? (
               <MediaVideoTile key={`${x.id}-${x.versionStamp ?? 0}`} x={x} triviaTiles={!!triviaTiles} />

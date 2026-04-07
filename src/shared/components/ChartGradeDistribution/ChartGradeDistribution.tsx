@@ -54,6 +54,9 @@ const ChartGradeDistribution = ({
     activeGrade?.rows?.some((row) => ((row[cat.key as keyof typeof row] as number) ?? 0) > 0),
   );
 
+  /** One type column === same as row sum — hide redundant Total; keep Total for 0 (fallback) or 2+ types. */
+  const showTotalColumn = activeCategories.length !== 1;
+
   const body = (
     <>
       {header}
@@ -189,14 +192,16 @@ const ChartGradeDistribution = ({
                   >
                     {idArea > 0 || idSector > 0 ? 'Sector' : 'Region'}
                   </th>
-                  <th
-                    className={cn(
-                      designContract.typography.menuItem,
-                      'px-1.5 py-0.5 text-left font-bold whitespace-nowrap text-slate-400',
-                    )}
-                  >
-                    Total
-                  </th>
+                  {showTotalColumn ? (
+                    <th
+                      className={cn(
+                        designContract.typography.menuItem,
+                        'px-1.5 py-0.5 text-left font-bold whitespace-nowrap text-slate-400',
+                      )}
+                    >
+                      Total
+                    </th>
+                  ) : null}
                   {activeCategories.map((cat) => (
                     <th
                       key={cat.key}
@@ -226,14 +231,16 @@ const ChartGradeDistribution = ({
                       >
                         {row.name}
                       </td>
-                      <td
-                        className={cn(
-                          designContract.typography.menuItem,
-                          'px-1.5 py-1 text-left font-normal whitespace-nowrap text-slate-400 tabular-nums',
-                        )}
-                      >
-                        {total}
-                      </td>
+                      {showTotalColumn ? (
+                        <td
+                          className={cn(
+                            designContract.typography.menuItem,
+                            'px-1.5 py-1 text-left font-normal whitespace-nowrap text-slate-400 tabular-nums',
+                          )}
+                        >
+                          {total}
+                        </td>
+                      ) : null}
                       {activeCategories.map((cat) => {
                         const value = ((row[cat.key as keyof typeof row] as number) ?? 0) || 0;
                         return (

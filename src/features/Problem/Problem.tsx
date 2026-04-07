@@ -24,6 +24,7 @@ import { ProblemTicks } from './ProblemTicks';
 import { ProblemComments } from './ProblemComments';
 import { ProblemAscentOverview } from './ProblemAscentOverview';
 import { ProblemNeighboursRow } from './ProblemNeighboursRow';
+import { ProblemBoulderRockOrNeighboursRow } from './ProblemBoulderRockOrNeighboursRow';
 import { DownloadButton } from '../../shared/ui/DownloadButton';
 import { Card, PageCardBreadcrumbRow } from '../../shared/ui';
 import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
@@ -204,7 +205,8 @@ export const Problem = () => {
   const hasComments = data.comments && data.comments.length > 0;
   const hasPitches = (data.sections?.length ?? 0) > 0;
   const hasRockBlock = !!data.rock;
-  const hasMetaCard = hasRockBlock;
+  /** Full “Rock” card with chip list — climbing only; boulder uses inline row in overview. */
+  const hasMetaCard = hasRockBlock && meta.isClimbing;
 
   const hasApproach = (data.sectorApproach?.coordinates?.length ?? 0) > 1;
   const hasDescent = (data.sectorDescent?.coordinates?.length ?? 0) > 1;
@@ -310,7 +312,17 @@ export const Problem = () => {
         />
       )}
       <div className='space-y-3 sm:space-y-3.5'>
-        <ProblemNeighboursRow neighbourPrev={data.neighbourPrev} neighbourNext={data.neighbourNext} />
+        {meta.isClimbing ? (
+          <ProblemNeighboursRow neighbourPrev={data.neighbourPrev} neighbourNext={data.neighbourNext} />
+        ) : (
+          <ProblemBoulderRockOrNeighboursRow
+            sectorId={data.sectorId}
+            problemId={+problemId}
+            rock={data.rock}
+            neighbourPrev={data.neighbourPrev}
+            neighbourNext={data.neighbourNext}
+          />
+        )}
         <ProblemAscentOverview
           data={data}
           meta={{ isClimbing: meta.isClimbing, isIce: meta.isIce }}

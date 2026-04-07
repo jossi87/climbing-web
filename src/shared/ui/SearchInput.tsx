@@ -46,7 +46,12 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(functi
         )}
       </div>
       {!String(props.value ?? '').length && props.placeholder ? (
-        <span className='header-meta-text pointer-events-none absolute inset-y-0 left-9 z-10 flex items-center tracking-[0.04em] text-current'>
+        <span
+          className={cn(
+            'pointer-events-none absolute inset-y-0 left-9 z-10 flex items-center leading-none normal-case',
+            shell ? 'shell-search-placeholder' : 'header-meta-text tracking-[0.04em] text-current',
+          )}
+        >
           {props.placeholder}
         </span>
       ) : null}

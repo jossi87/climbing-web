@@ -1,16 +1,9 @@
-import { useSector } from '../../../api';
 import { LockSymbol, Stars } from '../../../shared/ui/Indicators';
 import { Link } from 'react-router-dom';
 import { MapPin, Spline, Camera, Film, Check, Bookmark } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
-
-const useProblemsOnRock = ({ sectorId, rock }: { sectorId: number | undefined; rock: string | undefined }) => {
-  const { data } = useSector(sectorId);
-  return data?.problems
-    ?.filter((problem) => problem.rock && problem.rock === rock)
-    .sort((a, b) => (a.nr ?? 0) - (b.nr ?? 0));
-};
+import { useProblemsOnRock } from './useProblemsOnRock';
 
 export const ProblemsOnRock = ({
   sectorId,

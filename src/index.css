@@ -723,6 +723,21 @@ html[data-theme='light']
     @apply text-[11px] leading-none font-medium tracking-[0.04em] normal-case sm:text-[12px];
   }
 
+  /**
+   * Header search faux placeholder (`SearchInput` shell — softer than chrome label ink).
+   */
+  .app-shell-header .shell-search-placeholder {
+    color: rgba(226, 232, 240, 0.38);
+    font-size: 0.6875rem;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+  }
+  @media (min-width: 640px) {
+    .app-shell-header .shell-search-placeholder {
+      font-size: 0.75rem;
+    }
+  }
+
   .btn-glass {
     @apply flex h-8 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[11px] font-semibold tracking-wide uppercase transition-colors duration-200 active:scale-95 sm:px-3;
     background-color: var(--color-surface-raised);

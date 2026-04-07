@@ -177,7 +177,8 @@ export const SvgViewer = ({
           thumb ? 'touch-none' : 'touch-pan-pinch',
         )}
         viewBox={`0 0 ${imgW} ${imgH}`}
-        preserveAspectRatio={thumb ? 'xMidYMid slice' : 'xMidYMid meet'}
+        /** Thumbs: `meet` (like `object-contain`) so portrait SVG topos aren’t cropped; full view keeps `slice`. */
+        preserveAspectRatio='xMidYMid meet'
         onClick={(e: MouseEvent<SVGSVGElement>) => {
           if (e.target === e.currentTarget && close) close();
         }}

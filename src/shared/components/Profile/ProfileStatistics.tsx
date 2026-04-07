@@ -37,6 +37,7 @@ type TickListItemProps = {
 const TickListItem = ({ tick }: TickListItemProps) => <TickListItemInner tick={tick} />;
 
 const TickListItemInner = ({ tick }: TickListItemProps) => {
+  const { isClimbing } = useMeta();
   const areaId = tick.areaId;
   const sectorId = tick.sectorId;
   const hasSector =
@@ -91,7 +92,7 @@ const TickListItemInner = ({ tick }: TickListItemProps) => {
           <span className={tickFa}>FA</span>
         </>
       ) : null}
-      {tick.idTickRepeat ? (
+      {isClimbing && tick.idTickRepeat ? (
         <>
           {' '}
           <span className={tickFlags}>repeat</span>
@@ -136,8 +137,8 @@ type OverviewStatItemProps = {
 /** Neutrals only: `text-slate-*` remaps under `html[data-theme="light"]` for ink on white cards. */
 const OverviewStatItem = ({ icon: Icon, label, value }: OverviewStatItemProps) => (
   <div className='bg-surface-card group relative flex h-full w-full min-w-0 flex-col items-center justify-center overflow-hidden border border-transparent p-2 text-center transition-all duration-300 sm:p-3'>
-    <div className='mb-1 text-slate-400 sm:mb-2'>
-      <Icon size={12} strokeWidth={2} />
+    <div className='light:text-slate-600 mb-1 text-slate-300 sm:mb-2'>
+      <Icon size={14} strokeWidth={2.25} aria-hidden />
     </div>
     <div className='mb-1 flex h-5 items-center justify-center'>
       <span className='text-[14px] leading-none font-semibold text-slate-100 tabular-nums sm:text-[15px]'>
@@ -149,7 +150,7 @@ const OverviewStatItem = ({ icon: Icon, label, value }: OverviewStatItemProps) =
 );
 
 const ProfileStatistics = ({ userId, view }: ProfileStatisticsProps) => {
-  const { defaultCenter, defaultZoom } = useMeta();
+  const { defaultCenter, defaultZoom, isClimbing } = useMeta();
   const { data, isLoading, error } = useProfileStatistics(userId);
 
   const stats = useMemo(() => {
@@ -274,10 +275,15 @@ const ProfileStatistics = ({ userId, view }: ProfileStatisticsProps) => {
 
   return (
     <div className='space-y-4'>
-      <div className='bg-surface-border grid grid-cols-7 gap-px overflow-hidden rounded-xl'>
+      <div
+        className={cn(
+          'bg-surface-border grid gap-px overflow-hidden rounded-xl',
+          isClimbing ? 'grid-cols-7' : 'grid-cols-6',
+        )}
+      >
         <OverviewStatItem icon={Check} label='Ascents' value={stats.numTicks + stats.numFas} />
         <OverviewStatItem icon={Plus} label='FAs' value={stats.numFas} />
-        <OverviewStatItem icon={Repeat} label='Repeats' value={stats.numTickRepeats} />
+        {isClimbing ? <OverviewStatItem icon={Repeat} label='Repeats' value={stats.numTickRepeats} /> : null}
         <OverviewStatItem icon={Camera} label='Tags' value={data.numImageTags ?? 0} />
         <OverviewStatItem icon={Camera} label='Captured' value={data.numImagesCreated ?? 0} />
         <OverviewStatItem icon={Video} label='Tags' value={data.numVideoTags ?? 0} />
