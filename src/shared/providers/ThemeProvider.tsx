@@ -1,29 +1,38 @@
 import { useCallback, useLayoutEffect, useMemo, useState, type ReactNode } from 'react';
 import { ThemeContext } from './themeContext';
-import { applyDomTheme, readStoredTheme, THEME_STORAGE_KEY, type ThemePreference } from './themeStorage';
+import {
+  applyDomTheme,
+  readStoredTheme,
+  resolveThemeFromSystem,
+  THEME_STORAGE_KEY,
+  type ThemePreference,
+} from './themeStorage';
 
 export type { ThemePreference };
-
-function systemPrefersDark(): boolean {
-  return window.matchMedia('(prefers-color-scheme: dark)').matches;
-}
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [stored, setStoredState] = useState<ThemePreference | null>(() =>
     typeof window === 'undefined' ? null : readStoredTheme(),
   );
-  const [systemDark, setSystemDark] = useState(() => (typeof window === 'undefined' ? true : systemPrefersDark()));
+  const [systemTheme, setSystemTheme] = useState<ThemePreference>(() =>
+    typeof window === 'undefined' ? 'dark' : resolveThemeFromSystem(),
+  );
 
   const resolved = useMemo((): ThemePreference => {
     if (stored === 'light' || stored === 'dark') return stored;
-    return systemDark ? 'dark' : 'light';
-  }, [stored, systemDark]);
+    return systemTheme;
+  }, [stored, systemTheme]);
 
   useLayoutEffect(() => {
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const onChange = () => setSystemDark(mq.matches);
-    mq.addEventListener('change', onChange);
-    return () => mq.removeEventListener('change', onChange);
+    const mqDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const mqLight = window.matchMedia('(prefers-color-scheme: light)');
+    const onChange = () => setSystemTheme(resolveThemeFromSystem());
+    mqDark.addEventListener('change', onChange);
+    mqLight.addEventListener('change', onChange);
+    return () => {
+      mqDark.removeEventListener('change', onChange);
+      mqLight.removeEventListener('change', onChange);
+    };
   }, []);
 
   useLayoutEffect(() => {

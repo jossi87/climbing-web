@@ -13,6 +13,7 @@
     <meta name="author" content="Jostein Øygarden" />
     <meta name="theme-color" content="#060709" />
     <script>
+      /* Theme order: saved `theme_preference` → OS light/dark → default dark (keep in sync with `themeStorage.ts`). */
       (function () {
         try {
           var k = 'theme_preference';
@@ -22,16 +23,27 @@
             var v = JSON.parse(raw);
             if (v === 'light' || v === 'dark') stored = v;
           }
-          var dark = stored ? stored === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolved;
+          if (stored === 'light' || stored === 'dark') {
+            resolved = stored;
+          } else {
+            var mqDark = window.matchMedia('(prefers-color-scheme: dark)');
+            var mqLight = window.matchMedia('(prefers-color-scheme: light)');
+            if (mqDark.matches) resolved = 'dark';
+            else if (mqLight.matches) resolved = 'light';
+            else resolved = 'dark';
+          }
           var el = document.documentElement;
-          el.dataset.theme = dark ? 'dark' : 'light';
-          el.style.colorScheme = dark ? 'dark' : 'light';
-          el.style.backgroundColor = dark ? '#060709' : '#e2e8f0';
+          el.dataset.theme = resolved;
+          el.style.colorScheme = resolved === 'dark' ? 'dark' : 'light';
+          el.style.backgroundColor = resolved === 'dark' ? '#060709' : '#e2e8f0';
           var meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) meta.setAttribute('content', dark ? '#060709' : '#13151a');
+          if (meta) meta.setAttribute('content', resolved === 'dark' ? '#060709' : '#13151a');
         } catch (e) {
-          document.documentElement.dataset.theme = 'dark';
-          document.documentElement.style.backgroundColor = '#060709';
+          var root = document.documentElement;
+          root.dataset.theme = 'dark';
+          root.style.colorScheme = 'dark';
+          root.style.backgroundColor = '#060709';
         }
       })();
     </script>

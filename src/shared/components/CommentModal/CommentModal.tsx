@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { invalidateProblemQueries, postComment, useAccessToken } from '../../../api';
 import MediaUpload, { type UploadedMedia } from '../MediaUpload/MediaUpload';
@@ -51,7 +52,8 @@ const CommentModal = ({
   const modalBodyClass =
     'min-h-0 space-y-4 overflow-y-auto overscroll-contain px-4 py-3.5 text-left max-sm:flex-1 sm:max-h-[calc(min(94dvh,56rem)-9.5rem)] sm:flex-none sm:space-y-5 sm:px-6 sm:py-4';
 
-  return (
+  /** Portaled to `document.body` — avoids stacking under the sticky header (see `App.tsx` `main` + `Header`). */
+  return createPortal(
     <div
       className='animate-in fade-in fixed inset-0 z-200 flex h-dvh min-h-dvh w-full bg-black/80 backdrop-blur-sm duration-200 max-sm:flex-col max-sm:p-0 sm:items-center sm:justify-center sm:p-4'
       role='dialog'
@@ -210,7 +212,8 @@ const CommentModal = ({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };
 

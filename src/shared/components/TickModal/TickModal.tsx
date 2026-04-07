@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   convertFromDateToString,
@@ -139,13 +140,14 @@ const TickModal = ({
 
   if (!open) return null;
 
+  /** Portaled to `document.body` so the overlay isn’t trapped under the sticky header (`main` uses `z-[46]`, header `z-50`). */
   /** Mobile: panel is flex-1 inside min-h-dvh overlay (no max-h cap — avoids a strip under the sheet). Desktop: capped card, body scrolls inside. */
   const modalPanelClass =
     'bg-surface-card border-surface-border flex min-h-0 w-full min-w-0 flex-col overflow-hidden shadow-2xl max-sm:flex-1 max-sm:rounded-none max-sm:border-0 sm:max-h-[min(94dvh,56rem)] sm:max-w-2xl sm:rounded-2xl sm:border';
   const modalBodyClass =
     'min-h-0 space-y-4 overflow-y-auto overscroll-contain px-4 py-3.5 text-left max-sm:flex-1 sm:max-h-[calc(min(94dvh,56rem)-10.5rem)] sm:flex-none sm:space-y-5 sm:px-6 sm:py-4';
 
-  return (
+  return createPortal(
     <div
       className='animate-in fade-in fixed inset-0 z-200 flex h-dvh min-h-dvh w-full bg-black/80 backdrop-blur-sm duration-200 max-sm:flex-col max-sm:p-0 sm:items-center sm:justify-center sm:p-4'
       role='dialog'
@@ -420,7 +422,8 @@ const TickModal = ({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };
 

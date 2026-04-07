@@ -14,8 +14,18 @@ export function readStoredTheme(): ThemePreference | null {
   }
 }
 
-function systemPrefersDark(): boolean {
-  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+/**
+ * No saved preference yet: match OS when it reports light or dark; otherwise default **dark**
+ * (`prefers-color-scheme: no-preference`, broken `matchMedia`, etc.).
+ */
+export function resolveThemeFromSystem(): ThemePreference {
+  try {
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
+    if (window.matchMedia('(prefers-color-scheme: light)').matches) return 'light';
+    return 'dark';
+  } catch {
+    return 'dark';
+  }
 }
 
 export function applyDomTheme(resolved: ThemePreference) {
@@ -31,6 +41,6 @@ export function applyDomTheme(resolved: ThemePreference) {
 /** Sync `<html>` + meta from `localStorage` + system preference (see `index.html` inline script — keep in sync). */
 export function applyThemeFromStorage() {
   const stored = readStoredTheme();
-  const resolved = stored ?? (systemPrefersDark() ? 'dark' : 'light');
+  const resolved = stored ?? resolveThemeFromSystem();
   applyDomTheme(resolved);
 }

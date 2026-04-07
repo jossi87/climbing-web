@@ -26,6 +26,8 @@ export const twInk = {
 /**
  * Light theme only: full-width graphite band under the sticky header so `backdrop-filter` samples charcoal,
  * not the pale page canvas (`App.tsx`). Z-index between body and `main`; same tint as header glass base.
+ * Scrolling white cards (`bg-surface-card`) are dimmed globally via `--header-glass-backdrop-brightness` on
+ * `.app-shell-header-glass-blur` in `index.css`.
  */
 export const appShellLightBackdropStripClass =
   'pointer-events-none fixed top-0 right-0 left-0 z-[45] hidden h-13 bg-[rgb(19_21_26)] light:block';

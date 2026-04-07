@@ -60,6 +60,12 @@
   --spacing-thumbnail-h: 80px;
   --spacing-footer-stack: 280px;
   --z-index-9999: 9999;
+  /**
+   * Header glass (`.app-shell-header-glass-blur`): dims the **live** backdrop before blur/tint so pale page surfaces
+   * don’t punch through. Tracks the same roles as `bg-surface-dark` / `bg-surface-card` — dark theme surfaces are
+   * already deep so this stays close to 1; light theme overrides below.
+   */
+  --header-glass-backdrop-brightness: 0.94;
 }
 
 /*
@@ -106,6 +112,8 @@ html[data-theme='light'] {
    * (not near-black). Paired with opaque mixes for `/80` `/90` utilities — transparency on white looked washed out.
    */
   --color-brand-hover: #9a7d32;
+  /** Pull canvas + white cards toward charcoal under the sticky header (see `appShellLightBackdropStripClass` for canvas-only strip). */
+  --header-glass-backdrop-brightness: 0.72;
 }
 
 /*
@@ -1094,8 +1102,10 @@ html[data-theme='light'] .divide-white\/7 > :not([hidden]) ~ :not([hidden]) {
 
 /**
  * Sticky header — **outside** `@layer` (theme `bg-surface-*` on the nav would be white in light mode).
- * Two layers in `Header.tsx`: blur plane (transparent) + tint on top. If light-mode tint α is ~0.9, you see almost no
- * frost — same as one opaque layer. Light needs **lower** tint α + **stronger** blur so bleed-through reads like dark.
+ * Two layers in `Header.tsx`: blur plane (transparent) + tint on top. Tint α is high enough that scroll content
+ * doesn’t read as noisy ghost text; light mode keeps a bit more blur than dark for the same charcoal read.
+ * `brightness(var(--header-glass-backdrop-brightness))` tames pale `surface-dark` / `surface-card` lift in the frosted
+ * sample (the light-mode graphite strip under the bar only covers the canvas band, not scrolling cards).
  */
 .app-shell-header {
   isolation: isolate;
@@ -1103,22 +1113,22 @@ html[data-theme='light'] .divide-white\/7 > :not([hidden]) ~ :not([hidden]) {
 }
 
 .app-shell-header-glass-blur {
-  backdrop-filter: blur(24px) saturate(1.12);
-  -webkit-backdrop-filter: blur(24px) saturate(1.12);
+  backdrop-filter: blur(24px) saturate(1.12) brightness(var(--header-glass-backdrop-brightness, 1));
+  -webkit-backdrop-filter: blur(24px) saturate(1.12) brightness(var(--header-glass-backdrop-brightness, 1));
   background-color: transparent;
 }
 
 .app-shell-header-glass-tint {
-  background-color: rgba(19, 21, 26, 0.64);
+  background-color: rgba(19, 21, 26, 0.8);
 }
 
 html[data-theme='light'] .app-shell-header-glass-blur {
-  backdrop-filter: blur(52px) saturate(1.45);
-  -webkit-backdrop-filter: blur(52px) saturate(1.45);
+  backdrop-filter: blur(44px) saturate(1.22) brightness(var(--header-glass-backdrop-brightness, 1));
+  -webkit-backdrop-filter: blur(44px) saturate(1.22) brightness(var(--header-glass-backdrop-brightness, 1));
 }
 
 html[data-theme='light'] .app-shell-header-glass-tint {
-  background-color: rgba(19, 21, 26, 0.55);
+  background-color: rgba(19, 21, 26, 0.72);
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
