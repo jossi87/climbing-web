@@ -40,7 +40,8 @@ function NeighbourLink({ direction, problem }: { direction: 'prev' | 'next'; pro
       aria-label={ariaLabel}
       className={cn(
         factClass,
-        'inline-flex max-w-[min(100%,15rem)] min-w-0 items-baseline gap-1 transition-colors hover:text-slate-100 sm:max-w-[18rem]',
+        designContract.typography.listLink,
+        'inline-flex max-w-[min(100%,15rem)] min-w-0 items-baseline gap-1 sm:max-w-[18rem]',
       )}
     >
       <span className={cn(designContract.typography.meta, 'shrink-0 font-mono text-slate-400 tabular-nums')}>

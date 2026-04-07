@@ -1,14 +1,16 @@
-/** Middle-dot color for area · sector · problem — lighter than body meta, softer than `tickCragLink` (slate-100). */
-export const profileRowMiddleDotClass = 'text-slate-300/95';
+import { cn } from '../../../lib/utils';
 
-/** Separates adjacent text in the same profile/activity row (middle dot, not between icons). */
+/** Middle dot: dark panels use soft sep; light mode uses solid slate-500 so `·` isn’t washed out (opacity + remap bugs). */
+export const profileRowMiddleDotClass = 'text-slate-300/95 light:text-slate-500';
+
+/**
+ * Separates adjacent text in the same profile/activity row (middle dot).
+ * Uses horizontal margin only — avoids `{' '}` + lock wrappers stacking into uneven gaps before `·`.
+ */
 export function ProfileRowTextSep() {
   return (
-    <>
-      {' '}
-      <span className={profileRowMiddleDotClass} aria-hidden>
-        ·
-      </span>{' '}
-    </>
+    <span className={cn(profileRowMiddleDotClass, 'mx-0.5 inline')} aria-hidden>
+      ·
+    </span>
   );
 }

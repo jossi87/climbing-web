@@ -1,11 +1,22 @@
 @import 'tailwindcss';
 
+/* App theme is `html[data-theme]` (not OS `prefers-color-scheme`) — use `light:*` utilities alongside dark defaults */
+@custom-variant light (&:where([data-theme='light'] *));
+
 @theme {
   /* Slightly cleaner than legacy #c6a15b — less olive on dark panels, still clearly “site gold”. */
   --color-brand: #c9ac62;
+  /** Ink on solid `bg-brand` — not white (fails contrast on gold in dark UI). Use with {@link .btn-brand-solid}. */
+  --color-brand-foreground: #0f172a;
   /** Problem / topo status: ticked (green), todo (blue), dangerous (red) — same semantics as SVG route labels. */
   --color-status-ticked: #34d399;
   --color-status-todo: #38bdf8;
+  /**
+   * Same hues as `--color-status-ticked` / `--color-status-todo` here — **not** remapped in light mode.
+   * Use on photos / dark scrims (e.g. Area sector cards) so tick/todo match dark UI; body copy uses muted `--color-status-*` in light.
+   */
+  --color-status-ticked-imagery: #34d399;
+  --color-status-todo-imagery: #38bdf8;
   --color-status-danger: #f87171;
   /*
    * Surfaces: **graphite** neutrals — channels stay close (not a blue UI), with a hair more **B** than **R** so
@@ -35,6 +46,8 @@
    * Gold mixed into neutral border — lower brand % so rims/chips stay crisp, not muddy brown on charcoal.
    */
   --color-brand-border: color-mix(in srgb, var(--color-brand) 30%, var(--color-surface-border));
+  /** iOS-style switches: “off” track (avoid raw `bg-slate-700` — too heavy on light pages). */
+  --color-switch-track-off: #3b3e45;
   --color-white: #e2e8f0;
   --shadow-brand: 0 0 10px rgba(201, 172, 98, 0.14);
   /**
@@ -49,10 +62,128 @@
   --z-index-9999: 9999;
 }
 
+/*
+ * Light theme: same surface ramp + token names as dark — components using `surface-*` / borders stay coherent.
+ * `--color-white` is legacy “primary ink on panels” (Leaflet popups, etc.), not literal white.
+ */
+html[data-theme='light'] {
+  color-scheme: light;
+  /* Canvas a touch cooler/darker than pure white cards so panels read as “lifted”, not one white field */
+  --color-surface-dark: #e2e8f0;
+  --color-surface-nav: #f8fafc;
+  --color-surface-card: #ffffff;
+  --color-surface-raised: #f1f5f9;
+  --color-surface-raised-hover: #e2e8f0;
+  --color-surface-hover: #cbd5e1;
+  --color-surface-border: color-mix(in srgb, var(--color-surface-card) 72%, rgb(15 23 42) 28%);
+  --color-surface-skeleton: color-mix(in srgb, var(--color-surface-raised) 70%, var(--color-surface-hover) 30%);
+  --color-surface-skeleton-muted: color-mix(in srgb, var(--color-surface-raised) 84%, var(--color-surface-hover) 16%);
+  --color-brand-border: color-mix(in srgb, var(--color-brand) 32%, var(--color-surface-border));
+  --color-white: #0f172a;
+  --shadow-app-card: 0 24px 52px -18px rgba(15, 23, 42, 0.14), 0 0 0 1px rgba(15, 23, 42, 0.09);
+  --shadow-brand: 0 0 12px rgba(160, 130, 60, 0.2);
+  --color-datepicker-text: rgb(30 41 59);
+  --color-datepicker-muted: rgb(71 85 105);
+  --color-datepicker-disabled: rgb(148 163 184);
+  --color-datepicker-nav: rgb(100 116 139);
+  --color-datepicker-nav-hover: rgb(30 41 59);
+  --color-muted-ink: rgb(100 116 139);
+  --color-leaflet-link-strong: rgb(15 23 42);
+  --color-leaflet-link-strong-hover: rgb(30 41 59);
+  /**
+   * Ticked/todo (light): saturated green/blue so lists scan vs slate-900 body — still not dark-mode neon.
+   * Paired with `html[data-theme='light']` rules on `.text-status-*` for semibold — dark theme keeps normal weight.
+   */
+  --color-status-ticked: #059669;
+  --color-status-todo: #0284c7;
+  --color-status-danger: #b91c1c;
+  /* iOS-style switch “off” track — darker than page chrome so rim + thumb read on white cards */
+  --color-switch-track-off: #cbd5e1;
+  /* Same ink on gold in light mode — do not use page `--color-white` (dark text for body). */
+  --color-brand-foreground: #0f172a;
+  /**
+   * Inline link / icon hover on pale surfaces: same hue family as `--color-brand`, with enough chroma to read as gold
+   * (not near-black). Paired with opaque mixes for `/80` `/90` utilities — transparency on white looked washed out.
+   */
+  --color-brand-hover: #9a7d32;
+}
+
+/*
+ * Light mode: tick/todo — semibold so route numbers and labels scan as status ink, not neutral body text.
+ * (Includes Activity filter opacity utilities: `text-status-ticked/80`, `/85`.)
+ */
+html[data-theme='light'] .text-status-ticked,
+html[data-theme='light'] .text-status-todo,
+html[data-theme='light'] .text-status-ticked\/80,
+html[data-theme='light'] .text-status-ticked\/85 {
+  font-weight: 600;
+}
+
+/*
+ * Light mode: breadcrumb icon actions (`data-ph-action` — reliable vs class purge).
+ * Add/Edit/Todo-on/Tick-on on `surface-raised` need opaque fills + 2px rim so Lucide strokes read.
+ */
+html[data-theme='light'] [data-ph-action='add'] {
+  border-color: rgb(2 132 199) !important;
+  background-color: rgb(224 242 254) !important;
+  color: rgb(12 74 110) !important;
+}
+html[data-theme='light'] [data-ph-action='add']:hover {
+  border-color: rgb(3 105 161) !important;
+  background-color: rgb(186 230 253) !important;
+  color: rgb(2 82 120) !important;
+}
+
+html[data-theme='light'] [data-ph-action='edit'] {
+  border-color: rgb(217 119 6) !important;
+  background-color: rgb(254 243 199) !important;
+  color: rgb(120 53 15) !important;
+}
+html[data-theme='light'] [data-ph-action='edit']:hover {
+  border-color: rgb(180 83 9) !important;
+  background-color: rgb(253 230 138) !important;
+  color: rgb(92 34 6) !important;
+}
+
+html[data-theme='light'] [data-ph-action='todo-on'] {
+  border-color: rgb(3 105 161) !important;
+  background-color: rgb(224 242 254) !important;
+  color: rgb(12 74 110) !important;
+}
+html[data-theme='light'] [data-ph-action='todo-on']:hover {
+  background-color: rgb(186 230 253) !important;
+  color: rgb(2 82 120) !important;
+}
+
+html[data-theme='light'] [data-ph-action='tick-on'] {
+  border-color: rgb(5 150 105) !important;
+  background-color: rgb(209 250 229) !important;
+  color: rgb(6 78 59) !important;
+}
+html[data-theme='light'] [data-ph-action='tick-on']:hover {
+  background-color: rgb(167 243 208) !important;
+  color: rgb(4 120 87) !important;
+}
+
+html[data-theme='light']
+  :is([data-ph-action='add'], [data-ph-action='edit'], [data-ph-action='todo-on'], [data-ph-action='tick-on']) {
+  border-width: 2px !important;
+  border-style: solid !important;
+  box-shadow: 0 1px 3px rgb(15 23 42 / 0.12);
+}
+
 @layer base {
   :root {
     --font-ui:
       'Inter', 'Segoe UI', 'Avenir Next', 'Helvetica Neue', 'Noto Sans', Arial, ui-sans-serif, system-ui, sans-serif;
+    --color-datepicker-text: rgb(226 232 240);
+    --color-datepicker-muted: rgb(203 213 225);
+    --color-datepicker-disabled: rgb(71 85 105);
+    --color-datepicker-nav: rgb(148 163 184);
+    --color-datepicker-nav-hover: rgb(226 232 240);
+    --color-muted-ink: rgb(148 163 184);
+    --color-leaflet-link-strong: rgb(248 250 252);
+    --color-leaflet-link-strong-hover: rgb(255 255 255);
   }
 
   html {
@@ -65,6 +196,10 @@
     letter-spacing: -0.005em;
     font-display: swap;
     background-color: var(--color-surface-dark);
+  }
+
+  html[data-theme='light'] {
+    @apply font-sans text-slate-600 antialiased selection:bg-slate-200 selection:text-slate-900;
   }
 
   #root {
@@ -89,6 +224,17 @@
   strong {
     @apply font-medium text-slate-300;
   }
+
+  html[data-theme='light'] h1,
+  html[data-theme='light'] h2,
+  html[data-theme='light'] h3,
+  html[data-theme='light'] h4,
+  html[data-theme='light'] h5,
+  html[data-theme='light'] h6,
+  html[data-theme='light'] b,
+  html[data-theme='light'] strong {
+    @apply text-slate-800;
+  }
   input,
   button,
   select,
@@ -109,12 +255,21 @@
     opacity: 1;
   }
 
+  html[data-theme='light'] input::placeholder,
+  html[data-theme='light'] textarea::placeholder {
+    color: rgb(100 116 139);
+  }
+
   /*
    * Focus: neutral ring — visible on charcoal (≥3:1 against adjacent UI for keyboard users).
    * Components that need brand accent (tabs, search) override with `focus-visible:ring-brand-border`.
    */
   :focus-visible {
     @apply ring-offset-surface-dark ring-2 ring-slate-300/55 ring-offset-2 outline-none;
+  }
+
+  html[data-theme='light'] :focus-visible {
+    @apply ring-offset-surface-dark ring-slate-400/80;
   }
 
   /*
@@ -196,6 +351,25 @@
     @apply text-white;
   }
 
+  /**
+   * Primary **filled brand** (gold) control — dark text on `--color-brand`.
+   * Do **not** pair `type-on-accent` with `bg-brand` (white on gold is low-contrast on dark panels).
+   */
+  .btn-brand-solid {
+    background-color: var(--color-brand);
+    color: var(--color-brand-foreground);
+  }
+  /** `type-label` + light-theme slate remaps can override — keep ink on gold. */
+  .btn-brand-solid .type-label {
+    color: var(--color-brand-foreground) !important;
+  }
+  .btn-brand-solid:hover:enabled {
+    filter: brightness(1.06);
+  }
+  .btn-brand-solid:disabled {
+    cursor: not-allowed;
+  }
+
   .badge-micro {
     @apply inline-flex h-4 items-center rounded border border-white/16 px-1.5 text-[12px] leading-none font-medium text-slate-400 sm:text-[13px];
   }
@@ -232,6 +406,309 @@
   .search-input:focus-visible {
     @apply border-brand-border bg-surface-raised-hover ring-0 outline-none;
     box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-brand) 42%, transparent);
+  }
+
+  /* react-select (UserSelector): remove nested browser focus box around the caret input. */
+  .user-select__input input,
+  .user-select__input-container input,
+  .user-select__input input:focus,
+  .user-select__input-container input:focus,
+  .user-select__input input:focus-visible,
+  .user-select__input-container input:focus-visible {
+    outline: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+
+  /* Edit Problem fields: keep a single focus border (no extra browser ring/inner shadow). */
+  .problem-edit-field:focus,
+  .problem-edit-field:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  /*
+   * `.search-input` bakes in text color — `html[data-theme="light"] .text-slate-300` does not apply.
+   * Default light body: dark ink. **Exception:** `.app-shell-header` uses dark chrome in light mode (see below).
+   */
+  html[data-theme='light'] .search-input {
+    color: rgb(15 23 42);
+  }
+  html[data-theme='light'] .search-input::placeholder {
+    color: rgb(100 116 139);
+  }
+
+  /**
+   * Light mode: hairline + shadow on the bar (fill + blur: global `.app-shell-header` unlayered rule).
+   */
+  html[data-theme='light'] .app-shell-header {
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+  }
+
+  html[data-theme='light'] .app-shell-header .search-input {
+    background-color: rgba(28, 30, 36, 0.96) !important;
+    color: rgb(248 250 252) !important;
+    border-color: transparent !important;
+  }
+  html[data-theme='light'] .app-shell-header .search-input::placeholder {
+    color: rgb(148 163 184) !important;
+  }
+  html[data-theme='light'] .app-shell-header .search-input:focus,
+  html[data-theme='light'] .app-shell-header .search-input:focus-visible {
+    background-color: rgba(39, 41, 47, 0.98) !important;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-brand) 48%, transparent) !important;
+  }
+
+  /*
+   * Header search row: `SearchInput variant="shell"` uses explicit `text-[rgb(...)]` classes so
+   * `html[data-theme="light"] .text-slate-*` body remaps never paint dark ink on the dark bar.
+   */
+
+  /**
+   * Star rating: Lucide star paths default to `fill="none"` — use `currentColor` on the `<svg>` and force
+   * `path { fill: currentColor }` so global light theme gets dark ink on white cards.
+   */
+  .stars-rating .stars-rating-filled {
+    color: rgb(241 245 249);
+  }
+  html[data-theme='light'] .stars-rating .stars-rating-filled {
+    color: rgb(15 23 42);
+  }
+  .stars-rating .stars-rating-filled path {
+    fill: currentColor !important;
+    stroke: currentColor !important;
+  }
+  .stars-rating .stars-rating-empty {
+    color: rgb(255 255 255 / 0.72);
+  }
+  html[data-theme='light'] .stars-rating .stars-rating-empty {
+    color: rgb(148 163 184);
+  }
+  .stars-rating .stars-rating-empty path {
+    fill: none !important;
+    stroke: currentColor !important;
+  }
+
+  /* Passive-gear marker chip (`TradGearMarker`): monochrome fill + shadow; horizontal padding only (aligns with stars). */
+  .trad-gear-marker-wrap {
+    border-radius: 0.25rem;
+    padding: 0 5px;
+  }
+  html[data-theme='light'] .trad-gear-marker-wrap {
+    background-color: rgb(15 23 42 / 0.095);
+    box-shadow: 0 1px 3px rgb(15 23 42 / 0.12);
+  }
+  html:not([data-theme='light']) .trad-gear-marker-wrap {
+    background-color: rgb(248 250 252 / 0.13);
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.3);
+  }
+
+  /* `public/svg/wire.svg` — light: as drawn; dark: invert for contrast. */
+  .trad-gear-wire-icon {
+    height: 1.08em;
+    width: auto;
+    max-width: 1.02em;
+    aspect-ratio: 992 / 1024;
+    object-fit: contain;
+    display: inline-block;
+    vertical-align: 0;
+    -webkit-user-drag: none;
+    user-select: none;
+  }
+  html[data-theme='light'] .trad-gear-wire-icon {
+    filter: contrast(1.08);
+  }
+  html:not([data-theme='light']) .trad-gear-wire-icon {
+    filter: brightness(0) invert(1) contrast(1.08);
+  }
+
+  /**
+   * Media modal (sidebar + stage): always dark chrome. Global light theme remaps `text-slate-*` and
+   * `.type-*` to dark ink — restore light-on-dark for toolbar, footer chip, and carousel affordances.
+   */
+  html[data-theme='light'] .media-modal-dark-chrome .text-slate-50 {
+    color: rgb(248 250 252) !important;
+  }
+  html[data-theme='light'] .media-modal-dark-chrome .text-slate-100 {
+    color: rgb(241 245 249) !important;
+  }
+  html[data-theme='light'] .media-modal-dark-chrome .text-slate-200 {
+    color: rgb(226 232 240) !important;
+  }
+  html[data-theme='light'] .media-modal-dark-chrome .text-slate-300 {
+    color: rgb(203 213 225) !important;
+  }
+  html[data-theme='light'] .media-modal-dark-chrome .text-slate-400 {
+    color: rgb(148 163 184) !important;
+  }
+  html[data-theme='light'] .media-modal-dark-chrome .text-slate-500 {
+    color: rgb(100 116 139) !important;
+  }
+  html[data-theme='light'] .media-modal-dark-chrome .type-h1,
+  html[data-theme='light'] .media-modal-dark-chrome .type-h2 {
+    color: rgb(248 250 252) !important;
+  }
+  html[data-theme='light'] .media-modal-dark-chrome .type-body {
+    color: rgb(203 213 225) !important;
+  }
+  html[data-theme='light'] .media-modal-dark-chrome .type-small,
+  html[data-theme='light'] .media-modal-dark-chrome .type-label,
+  html[data-theme='light'] .media-modal-dark-chrome .type-micro {
+    color: rgb(148 163 184) !important;
+  }
+  html[data-theme='light'] .media-modal-dark-chrome .hover\:text-slate-50:hover {
+    color: rgb(248 250 252) !important;
+  }
+  html[data-theme='light'] .media-modal-dark-chrome .hover\:text-slate-100:hover {
+    color: rgb(241 245 249) !important;
+  }
+  html[data-theme='light'] .media-modal-dark-chrome .hover\:text-slate-200:hover {
+    color: rgb(226 232 240) !important;
+  }
+  html[data-theme='light'] .media-modal-dark-chrome .hover\:text-slate-300:hover {
+    color: rgb(203 213 225) !important;
+  }
+  html[data-theme='light'] .media-modal-dark-chrome .group:hover .group-hover\:text-slate-100 {
+    color: rgb(241 245 249) !important;
+  }
+
+  html[data-theme='light'] .app-shell-header .header-sign-in-btn {
+    background-color: rgba(28, 30, 36, 0.92) !important;
+    border-color: color-mix(in srgb, var(--color-brand) 45%, rgba(255, 255, 255, 0.12)) !important;
+  }
+  html[data-theme='light'] .app-shell-header .header-sign-in-btn:hover {
+    background-color: rgba(51, 53, 61, 0.95) !important;
+  }
+
+  /* Keyboard focus rings: offset matches dark chrome when the shell is dark in light mode */
+  html[data-theme='light'] .app-shell-header .focus-visible\:ring-offset-surface-card {
+    --tw-ring-offset-color: #13151a;
+  }
+  html[data-theme='light'] .app-shell-header .focus-visible\:ring-offset-surface-dark {
+    --tw-ring-offset-color: #13151a;
+  }
+
+  /**
+   * RandomMediaCard **mobile** text on imagery: do not use `text-slate-*` — light mode remaps those to dark ink.
+   */
+  .photo-overlay-fg {
+    color: rgb(248 250 252);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.88);
+  }
+  .photo-overlay-fg-muted {
+    color: rgb(226 232 240);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+  }
+  .photo-overlay-sep {
+    color: rgba(255, 255, 255, 0.45);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.75);
+  }
+  .photo-overlay-link {
+    color: rgb(248 250 252);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+  }
+  .photo-overlay-link:hover {
+    color: var(--color-brand);
+    text-shadow: none;
+  }
+
+  /**
+   * Access callouts (restrictions, closed, broken) — pastel on dark panels; saturated on white (light mode).
+   */
+  .text-access-danger {
+    color: rgb(252 165 165);
+  }
+  html[data-theme='light'] .text-access-danger {
+    color: rgb(185 28 28);
+  }
+  .text-access-caution {
+    color: rgb(253 186 116);
+  }
+  html[data-theme='light'] .text-access-caution {
+    color: rgb(154 52 18);
+  }
+  .access-no-dogs-icon {
+    color: rgb(251 191 36);
+  }
+  html[data-theme='light'] .access-no-dogs-icon {
+    color: rgb(180 83 9);
+  }
+  .access-no-dogs-title {
+    color: rgb(255 237 213);
+  }
+  html[data-theme='light'] .access-no-dogs-title {
+    color: rgb(124 45 18);
+  }
+  .access-no-dogs-sub {
+    color: rgb(254 215 170);
+  }
+  html[data-theme='light'] .access-no-dogs-sub {
+    color: rgb(154 52 18);
+  }
+
+  /** Modal / dialog secondary actions — avoid faded `opacity-*` + slate remaps in light mode */
+  .modal-action-cancel {
+    @apply shrink-0 px-2 py-1.5 text-[11px] font-semibold tracking-[0.1em] text-slate-400 uppercase transition-colors sm:px-4 sm:py-2;
+    color: rgb(203 213 225);
+  }
+  .modal-action-cancel:hover {
+    color: rgb(248 250 252);
+  }
+  html[data-theme='light'] .modal-action-cancel {
+    color: rgb(71 85 105);
+  }
+  html[data-theme='light'] .modal-action-cancel:hover {
+    color: rgb(15 23 42);
+  }
+
+  .form-footer-cancel,
+  .form-footer-secondary {
+    @apply border-surface-border bg-surface-nav rounded-lg border px-6 py-2.5 text-[11px] font-semibold tracking-[0.1em] text-slate-400 uppercase transition-all;
+    color: rgb(203 213 225);
+  }
+  .form-footer-cancel:hover,
+  .form-footer-secondary:hover {
+    background-color: var(--color-surface-hover);
+    color: rgb(248 250 252);
+  }
+  html[data-theme='light'] .form-footer-cancel,
+  html[data-theme='light'] .form-footer-secondary {
+    color: rgb(71 85 105);
+    background-color: var(--color-surface-raised);
+  }
+  html[data-theme='light'] .form-footer-cancel:hover,
+  html[data-theme='light'] .form-footer-secondary:hover {
+    color: rgb(15 23 42);
+    background-color: var(--color-surface-raised-hover);
+  }
+
+  /** BRV mark in footer: white on dark nav; black on light nav */
+  .footer-brv-logo {
+    opacity: 0.4;
+    filter: brightness(0) invert(1);
+  }
+  .group:hover .footer-brv-logo {
+    opacity: 1;
+  }
+  html[data-theme='light'] .footer-brv-logo {
+    opacity: 0.72;
+    filter: brightness(0);
+  }
+  html[data-theme='light'] .group:hover .footer-brv-logo {
+    opacity: 1;
+  }
+
+  /** Logo: white glyph on dark header in **both** themes (light page + dark bar uses same treatment). */
+  .app-shell-header .header-logo {
+    filter: brightness(0) invert(1);
+  }
+  html[data-theme='dark'] .app-shell-header .group:hover .header-logo {
+    filter: brightness(0) invert(1) drop-shadow(0 0 12px rgba(226, 232, 240, 0.22));
+  }
+  html[data-theme='light'] .app-shell-header .group:hover .header-logo {
+    filter: brightness(0) invert(1) drop-shadow(0 0 14px rgba(226, 232, 240, 0.18));
   }
 
   .header-meta-text {
@@ -300,6 +777,133 @@
       line-height: 1.4;
     }
   }
+
+  /*
+   * Light theme: slate + component-type remaps — must live in **`@layer utilities`**, not `components`.
+   * Tailwind’s `text-slate-*` utilities live in this layer; a rule in an earlier layer **never overrides** them
+   * (cascade layer order beats specificity), so light mode kept the dark-UI slate steps → illegible gray on white.
+   * `:where(.class)` keeps class specificity at zero so `hover:text-brand` / `group-hover:*` still win here in the same layer.
+   */
+  html[data-theme='light'] :where(.text-slate-50) {
+    color: rgb(15 23 42);
+  }
+  html[data-theme='light'] :where(.text-slate-100) {
+    color: rgb(15 23 42);
+  }
+  html[data-theme='light'] :where(.text-slate-200) {
+    color: rgb(30 41 59);
+  }
+  html[data-theme='light'] :where(.text-slate-300) {
+    color: rgb(51 65 85);
+  }
+  html[data-theme='light'] :where(.text-slate-400) {
+    color: rgb(71 85 105);
+  }
+  html[data-theme='light'] :where(.text-slate-500) {
+    color: rgb(100 116 139);
+  }
+  html[data-theme='light'] :where(.hover\:text-slate-50):hover {
+    color: rgb(15 23 42);
+  }
+  html[data-theme='light'] :where(.hover\:text-slate-200):hover {
+    color: rgb(30 41 59);
+  }
+  html[data-theme='light'] :where(.hover\:text-slate-300):hover {
+    color: rgb(51 65 85);
+  }
+
+  /*
+   * Light theme: `text-status-*` must follow remapped `--color-status-*` tokens (same layer/signature as slate remaps).
+   * Ensures tick/todo list markers are deep green/blue on white, not dark-mode neon.
+   */
+  html[data-theme='light'] :where(.text-status-ticked) {
+    color: var(--color-status-ticked);
+  }
+  html[data-theme='light'] :where(.text-status-todo) {
+    color: var(--color-status-todo);
+  }
+  html[data-theme='light'] :where(.text-status-ticked\/80) {
+    color: color-mix(in srgb, var(--color-status-ticked) 80%, transparent);
+  }
+  html[data-theme='light'] :where(.text-status-ticked\/85) {
+    color: color-mix(in srgb, var(--color-status-ticked) 85%, transparent);
+  }
+  html[data-theme='light'] :where(.text-status-ticked\/90) {
+    color: color-mix(in srgb, var(--color-status-ticked) 90%, transparent);
+  }
+
+  /*
+   * Light theme: brand as *hover affordance* on canvas — keep hue, deepen ink (yellow on gray was low-contrast).
+   * Dark theme unchanged (still uses `--color-brand`). Exclusions: scrim links (`.photo-overlay-link`) overridden below.
+   */
+  html[data-theme='light'] :where(.hover\:text-brand):hover,
+  html[data-theme='light'] :where(.hover\:text-brand):focus-visible {
+    color: var(--color-brand-hover);
+  }
+  html[data-theme='light'] :where(.hover\:text-brand\/90):hover {
+    color: color-mix(in srgb, var(--color-brand-hover) 58%, var(--color-brand) 42%);
+  }
+  html[data-theme='light'] :where(.active\:text-brand):active,
+  html[data-theme='light'] :where(.focus-visible\:text-brand):focus-visible {
+    color: var(--color-brand-hover);
+  }
+  html[data-theme='light'] :is(.group:hover) :where(.group-hover\:text-brand),
+  html[data-theme='light'] :is(.group\/mail:hover) :where(.group-hover\/mail\:text-brand) {
+    color: var(--color-brand-hover);
+  }
+  html[data-theme='light'] :is(.group:hover) :where(.group-hover\:text-brand\/80) {
+    color: color-mix(in srgb, var(--color-brand-hover) 52%, var(--color-brand) 48%);
+  }
+  /**
+   * Light: `group-hover:text-slate-{200,300,400}` otherwise keep Tailwind’s pale grays → icons fade on white cards.
+   * Scoped to `main` so header/footer dark chrome (NavItem, theme toggle, etc.) is unchanged.
+   */
+  html[data-theme='light'] main :is(.group:hover) :where(.group-hover\:text-slate-200) {
+    color: rgb(30 41 59);
+  }
+  html[data-theme='light'] main :is(.group:hover) :where(.group-hover\:text-slate-300) {
+    color: rgb(51 65 85);
+  }
+  html[data-theme='light'] main :is(.group:hover) :where(.group-hover\:text-slate-400) {
+    color: rgb(71 85 105);
+  }
+  /** RandomMediaCard mobile scrim: keep bright gold; rule after `hover:text-brand` remap so it wins in this layer. */
+  html[data-theme='light'] .photo-overlay-link:hover {
+    color: var(--color-brand);
+    text-shadow: none;
+  }
+
+  html[data-theme='light'] :where(.btn-glass) {
+    color: rgb(71 85 105);
+  }
+  html[data-theme='light'] :where(.btn-glass):hover {
+    border-color: rgb(148 163 184 / 0.45);
+    color: rgb(15 23 42);
+  }
+  html[data-theme='light'] :where(.btn-glass-active) {
+    border-color: rgb(148 163 184 / 0.35);
+    color: rgb(15 23 42);
+  }
+
+  html[data-theme='light'] :where(.type-h1),
+  html[data-theme='light'] :where(.type-h2) {
+    color: rgb(15 23 42);
+  }
+  html[data-theme='light'] :where(.type-body) {
+    color: rgb(51 65 85);
+  }
+  html[data-theme='light'] :where(.type-small),
+  html[data-theme='light'] :where(.type-label),
+  html[data-theme='light'] :where(.type-micro) {
+    color: rgb(71 85 105);
+  }
+  /** `type-micro` remap is broader than `.text-access-*` — restore closed/restriction ink on cards + body. */
+  html[data-theme='light'] :where(.type-micro).text-access-danger {
+    color: rgb(185 28 28);
+  }
+  html[data-theme='light'] :where(.type-micro).text-access-caution {
+    color: rgb(154 52 18);
+  }
 }
 
 @keyframes fadeIn {
@@ -336,10 +940,16 @@ html .react-datepicker {
   font-family: var(--font-ui), ui-sans-serif, system-ui, sans-serif;
   font-size: 0.8125rem;
   background-color: var(--color-surface-card) !important;
-  color: rgb(226 232 240) !important;
+  color: var(--color-datepicker-text) !important;
   border: 1px solid var(--color-surface-border) !important;
   border-radius: 0.75rem;
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+html[data-theme='light'] .react-datepicker {
+  box-shadow:
+    0 18px 44px rgba(15, 23, 42, 0.12),
+    0 0 0 1px rgba(15, 23, 42, 0.06);
 }
 
 html .react-datepicker__header {
@@ -350,19 +960,19 @@ html .react-datepicker__header {
 html .react-datepicker__current-month,
 html .react-datepicker-time__header,
 html .react-datepicker-year-header {
-  color: rgb(226 232 240) !important;
+  color: var(--color-datepicker-text) !important;
 }
 
 html .react-datepicker__day-name,
 html .react-datepicker__day,
 html .react-datepicker__time-name {
-  color: rgb(203 213 225) !important;
+  color: var(--color-datepicker-muted) !important;
 }
 
 html .react-datepicker__day-name--disabled,
 html .react-datepicker__day--disabled,
 html .react-datepicker__time-name--disabled {
-  color: rgb(71 85 105) !important;
+  color: var(--color-datepicker-disabled) !important;
 }
 
 html .react-datepicker__day:not([aria-disabled='true']):hover,
@@ -394,15 +1004,15 @@ html .react-datepicker__month-text--keyboard-selected,
 html .react-datepicker__quarter-text--keyboard-selected,
 html .react-datepicker__year-text--keyboard-selected {
   background-color: color-mix(in srgb, var(--color-brand) 45%, var(--color-surface-hover)) !important;
-  color: rgb(226 232 240) !important;
+  color: var(--color-datepicker-text) !important;
 }
 
 html .react-datepicker__navigation-icon::before {
-  border-color: rgb(148 163 184) !important;
+  border-color: var(--color-datepicker-nav) !important;
 }
 
 html .react-datepicker__navigation:hover *::before {
-  border-color: rgb(226 232 240) !important;
+  border-color: var(--color-datepicker-nav-hover) !important;
 }
 
 html .react-datepicker-popper[data-placement^='bottom'] .react-datepicker__triangle {
@@ -421,17 +1031,101 @@ html .react-datepicker__year-select,
 html .react-datepicker__month-year-select {
   background-color: var(--color-surface-nav) !important;
   border: 1px solid var(--color-surface-border) !important;
-  color: rgb(226 232 240) !important;
+  color: var(--color-datepicker-text) !important;
 }
 
 html .react-datepicker__input-container input {
   background-color: var(--color-surface-nav) !important;
-  color: rgb(226 232 240) !important;
+  color: var(--color-datepicker-text) !important;
   border-color: var(--color-surface-border) !important;
 }
 
 html .react-datepicker__input-container input:focus {
   outline: none;
   border-color: color-mix(in srgb, var(--color-brand) 55%, transparent) !important;
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-brand) 35%, transparent);
+  box-shadow: none !important;
+}
+
+/**
+ * Profile header `mailto`: underline + brand on hover (inherit matches meta row; no `text-slate-*` on the `<a>`).
+ */
+a.profile-meta-email {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+  text-underline-offset: 3px;
+  transition:
+    color 150ms ease,
+    text-decoration-color 150ms ease;
+}
+a.profile-meta-email:hover {
+  color: var(--color-brand);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--color-brand) 50%, transparent);
+}
+a.profile-meta-email:active {
+  color: color-mix(in srgb, var(--color-brand) 85%, rgb(15 23 42) 15%);
+}
+a.profile-meta-email svg {
+  color: inherit;
+}
+
+html[data-theme='light'] .border-white\/10 {
+  border-color: rgb(15 23 42 / 0.09);
+}
+html[data-theme='light'] .border-white\/12 {
+  border-color: rgb(15 23 42 / 0.1);
+}
+html[data-theme='light'] .border-white\/15 {
+  border-color: rgb(15 23 42 / 0.12);
+}
+html[data-theme='light'] .border-white\/16 {
+  border-color: rgb(15 23 42 / 0.12);
+}
+html[data-theme='light'] .ring-white\/10 {
+  --tw-ring-color: rgb(15 23 42 / 0.09);
+}
+html[data-theme='light'] .ring-white\/20 {
+  --tw-ring-color: rgb(15 23 42 / 0.14);
+}
+html[data-theme='light'] .divide-white\/7 > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgb(15 23 42 / 0.08);
+}
+
+/**
+ * Sticky header — **outside** `@layer` (theme `bg-surface-*` on the nav would be white in light mode).
+ * Two layers in `Header.tsx`: blur plane (transparent) + tint on top. If light-mode tint α is ~0.9, you see almost no
+ * frost — same as one opaque layer. Light needs **lower** tint α + **stronger** blur so bleed-through reads like dark.
+ */
+.app-shell-header {
+  isolation: isolate;
+  background-color: transparent;
+}
+
+.app-shell-header-glass-blur {
+  backdrop-filter: blur(24px) saturate(1.12);
+  -webkit-backdrop-filter: blur(24px) saturate(1.12);
+  background-color: transparent;
+}
+
+.app-shell-header-glass-tint {
+  background-color: rgba(19, 21, 26, 0.64);
+}
+
+html[data-theme='light'] .app-shell-header-glass-blur {
+  backdrop-filter: blur(52px) saturate(1.45);
+  -webkit-backdrop-filter: blur(52px) saturate(1.45);
+}
+
+html[data-theme='light'] .app-shell-header-glass-tint {
+  background-color: rgba(19, 21, 26, 0.55);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .app-shell-header-glass-tint {
+    background-color: rgba(19, 21, 26, 0.92);
+  }
+  html[data-theme='light'] .app-shell-header-glass-tint {
+    background-color: rgba(19, 21, 26, 0.96);
+  }
 }

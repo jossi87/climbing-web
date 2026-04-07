@@ -31,8 +31,7 @@ type EditableSvg = SvgType & {
 const pageActionIconBtn =
   'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-colors disabled:pointer-events-none disabled:opacity-40';
 const pageActionIconBtnGreen = 'border-green-400/45 bg-green-500/20 text-green-300 hover:bg-green-500/28';
-const pageActionIconBtnBrand =
-  'border-brand-border bg-brand text-white shadow-sm hover:border-brand-border hover:brightness-110';
+const pageActionIconBtnBrand = 'border-brand-border btn-brand-solid shadow-sm hover:border-brand-border';
 
 const MediaSvgEdit = () => {
   const meta = useMeta();

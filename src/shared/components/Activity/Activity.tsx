@@ -9,6 +9,7 @@ import { Avatar, AvatarGroup, Card, SectionLabel } from '../../ui';
 import { Stars } from '../../ui/Indicators';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
+import { twInk } from '../../../design/twInk';
 import { ActivityFeedMetaRow } from './ActivityFeedMetaRow';
 import { LazyMedia } from './components/LazyMedia';
 import type { components } from '../../../@types/buldreinfo/swagger';
@@ -106,12 +107,7 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
           <div className='relative shrink-0' ref={filterRef}>
             <button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
-              className={cn(
-                activityChipBase,
-                activityChipActive,
-                'min-w-0 max-sm:max-w-[min(100%,8.5rem)]',
-                isFilterOpen && 'bg-surface-hover',
-              )}
+              className={cn(activityChipBase, filterTypeChipOn, 'min-w-0 max-sm:max-w-[min(100%,8.5rem)]')}
               aria-expanded={isFilterOpen}
               type='button'
             >
@@ -237,20 +233,15 @@ const activityChipBase = cn(
   'inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full border px-2.5 leading-none transition-[background-color,color,transform,border-color] duration-200 active:scale-95 sm:h-8 sm:gap-2 sm:px-4',
   designContract.typography.uiCompact,
 );
-/** Grade dropdown trigger — reads as the primary filter control (neutral hover, same family as type toggles). */
-const activityChipActive = cn(
-  designContract.surfaces.controlActive,
-  'border-transparent shadow-sm transition-[background-color,border-color] hover:border-white/25',
-);
-
 /**
- * Type toggles (FA / Ticks / Media / Com): same neutral “on” as before; “off” reads clearly recessed vs {@link activityChipActive}.
+ * Type toggles (FA / Ticks / Media / Com): same neutral “on” as before; “off” reads clearly recessed vs {@link filterTypeChipOn}.
  */
-const filterTypeChipOff =
-  'border border-white/8 bg-surface-raised text-slate-500 hover:border-white/14 hover:bg-surface-raised-hover hover:text-slate-400';
+const filterTypeChipOff = cn(
+  'border border-surface-border/70 bg-surface-raised/55 text-slate-500 hover:border-surface-border hover:bg-surface-raised hover:text-slate-300 light:border-slate-300/90 light:bg-slate-100/70 light:text-slate-600 light:hover:border-slate-400 light:hover:bg-slate-200',
+  twInk.lightHoverSlate800,
+);
 const filterTypeChipOn = cn(
-  designContract.surfaces.controlActive,
-  'border-transparent shadow-sm transition-[background-color,border-color] hover:border-white/25',
+  'border-surface-border bg-surface-card text-slate-100 shadow-sm transition-[background-color,border-color,color] hover:border-white/25 light:border-slate-400/75 light:bg-surface-card light:text-slate-950 light:hover:border-slate-500/80',
 );
 
 /** Single rhythm + {@link designContract.typography.feed} body tone (calm on dark `surface-card`). */
@@ -269,12 +260,15 @@ const FilterButton = ({ active, onClick, icon: Icon, label, labelNarrow }: Filte
     <Icon
       size={12}
       strokeWidth={2}
-      className={cn('shrink-0', active ? 'text-slate-300' : 'text-slate-500')}
+      className={cn('shrink-0', active ? 'light:text-slate-950 text-slate-100' : 'light:text-slate-600 text-slate-500')}
       aria-hidden
     />
     <span
       aria-hidden={!!labelNarrow}
-      className={cn(designContract.typography.uiCompact, active ? 'text-slate-300' : 'text-slate-500')}
+      className={cn(
+        designContract.typography.uiCompact,
+        active ? 'light:text-slate-950 text-slate-100' : 'light:text-slate-600 text-slate-500',
+      )}
     >
       {labelNarrow ? (
         <>

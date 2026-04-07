@@ -6,9 +6,9 @@ import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 import {
   profileRowRootClass,
-  tickCragLink,
+  tickCragLinkSector,
   tickFlags,
-  tickProblemLink,
+  tickProblemLinkWithStatus,
   tickWhenGrade,
 } from '../Profile/profileRowTypography';
 
@@ -31,7 +31,7 @@ const Todo = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
         <div key={sector.id} className='space-y-2.5'>
           {idArea > 0 && (
             <div className='border-surface-border flex flex-wrap items-center gap-x-2 gap-y-1 border-b pb-2'>
-              <Link to={`/sector/${sector.id}`} className={cn(tickCragLink, 'font-medium')}>
+              <Link to={`/sector/${sector.id}`} className={cn(tickCragLinkSector, 'font-medium')}>
                 {sector.name}
               </Link>
               <span className={lockInlineClass}>
@@ -43,10 +43,12 @@ const Todo = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
           <div className='flex flex-col gap-y-2'>
             {(sector.problems ?? []).map((problem) => (
               <div key={problem.id} className={cn(profileRowRootClass, 'min-w-0 text-pretty [overflow-wrap:anywhere]')}>
-                <span className={cn(tickFlags, 'font-mono tabular-nums', designContract.ascentStatus.todo)}>
+                <span
+                  className={cn('font-mono font-normal tabular-nums antialiased', designContract.ascentStatus.todo)}
+                >
                   #{problem.nr}
                 </span>{' '}
-                <Link to={`/problem/${problem.id}`} className={tickProblemLink}>
+                <Link to={`/problem/${problem.id}`} className={tickProblemLinkWithStatus({ todo: true })}>
                   {problem.name}
                 </Link>
                 {problem.grade ? (

@@ -11,15 +11,22 @@ import * as Sentry from '@sentry/react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { AlertCircle, Check, Camera, Video, Plus, Repeat, X, type LucideIcon } from 'lucide-react';
 import { cn } from '../../../lib/utils';
+import { TradGearMarker } from '../../ui/TradGearMarker';
+import {
+  climbingRouteUsesPassiveGear,
+  formatPassiveGearMarkerLine,
+  formatRouteTypeLabel,
+} from '../../../utils/routeTradGear';
 import { ProfileRowTextSep } from './ProfileRowTextSep';
 import {
   profileRowRootClass,
   tickCommentSmall,
   tickCrag,
-  tickCragLink,
+  tickCragLinkArea,
+  tickCragLinkSector,
   tickFa,
   tickFlags,
-  tickProblemLink,
+  tickProblemLinkWithStatus,
   tickWhenGrade,
 } from './profileRowTypography';
 
@@ -34,8 +41,11 @@ const TickListItemInner = ({ tick }: TickListItemProps) => {
   const sectorId = tick.sectorId;
   const hasSector =
     (sectorId != null && sectorId > 0) || (typeof tick.sectorName === 'string' && tick.sectorName.trim() !== '');
-  const pitchPart = (tick.numPitches ?? 0) > 1 ? ` ${tick.numPitches}p` : '';
-  const typePart = tick.subType != null && tick.subType !== '' ? `${tick.subType}${pitchPart}` : null;
+  const pitchCount = tick.numPitches ?? 0;
+  const multiPitch = pitchCount > 1;
+  const routeTypeLabel = formatRouteTypeLabel(undefined, tick.subType);
+  const showPassiveGear = routeTypeLabel !== '' && climbingRouteUsesPassiveGear(routeTypeLabel);
+  const passiveGearLine = showPassiveGear ? formatPassiveGearMarkerLine(routeTypeLabel, tick.numPitches) : '';
 
   return (
     <div className={profileRowRootClass}>
@@ -45,7 +55,7 @@ const TickListItemInner = ({ tick }: TickListItemProps) => {
         </>
       ) : null}
       {areaId ? (
-        <Link to={`/area/${areaId}`} className={tickCragLink}>
+        <Link to={`/area/${areaId}`} className={tickCragLinkArea}>
           {tick.areaName}
         </Link>
       ) : (
@@ -56,7 +66,7 @@ const TickListItemInner = ({ tick }: TickListItemProps) => {
         <>
           <ProfileRowTextSep />
           {sectorId ? (
-            <Link to={`/sector/${sectorId}`} className={tickCragLink}>
+            <Link to={`/sector/${sectorId}`} className={tickCragLinkSector}>
               {tick.sectorName}
             </Link>
           ) : (
@@ -66,10 +76,11 @@ const TickListItemInner = ({ tick }: TickListItemProps) => {
         </>
       ) : null}
       <ProfileRowTextSep />
-      <Link to={`/problem/${tick.idProblem}`} className={tickProblemLink}>
+      <Link to={`/problem/${tick.idProblem}`} className={tickProblemLinkWithStatus({ ticked: true })}>
         {tick.name}
       </Link>{' '}
       <span className={cn(tickWhenGrade, 'whitespace-nowrap tabular-nums')}>{tick.grade}</span>
+      {showPassiveGear ? <TradGearMarker line={passiveGearLine} /> : null}
       <LockSymbol lockedAdmin={!!tick.lockedAdmin} lockedSuperadmin={!!tick.lockedSuperadmin} />{' '}
       <span className='inline-flex align-middle'>
         <Stars numStars={tick.stars ?? 0} size={12} />
@@ -95,10 +106,10 @@ const TickListItemInner = ({ tick }: TickListItemProps) => {
           </span>
         </>
       ) : null}
-      {typePart ? (
+      {!showPassiveGear && multiPitch ? (
         <>
           {' '}
-          <span className={tickFlags}>{typePart}</span>
+          <span className={tickFlags}>{pitchCount}p</span>
         </>
       ) : null}
       {tick.comment ? (
@@ -120,20 +131,20 @@ type OverviewStatItemProps = {
   icon: LucideIcon;
   label: string;
   value: number;
-  className: string;
 };
 
-const OverviewStatItem = ({ icon: Icon, label, value, className }: OverviewStatItemProps) => (
+/** Neutrals only: `text-slate-*` remaps under `html[data-theme="light"]` for ink on white cards. */
+const OverviewStatItem = ({ icon: Icon, label, value }: OverviewStatItemProps) => (
   <div className='bg-surface-card group relative flex h-full w-full min-w-0 flex-col items-center justify-center overflow-hidden border border-transparent p-2 text-center transition-all duration-300 sm:p-3'>
-    <div className={cn('mb-1 transition-colors sm:mb-2', className)}>
+    <div className='mb-1 text-slate-400 sm:mb-2'>
       <Icon size={12} strokeWidth={2} />
     </div>
     <div className='mb-1 flex h-5 items-center justify-center'>
-      <span className='text-[14px] leading-none font-semibold tabular-nums sm:text-[15px]'>
+      <span className='text-[14px] leading-none font-semibold text-slate-100 tabular-nums sm:text-[15px]'>
         {numberWithCommas(value)}
       </span>
     </div>
-    <div className='type-small h-3 text-slate-300'>{label}</div>
+    <div className='type-small h-3 text-slate-400'>{label}</div>
   </div>
 );
 
@@ -264,28 +275,13 @@ const ProfileStatistics = ({ userId, view }: ProfileStatisticsProps) => {
   return (
     <div className='space-y-4'>
       <div className='bg-surface-border grid grid-cols-7 gap-px overflow-hidden rounded-xl'>
-        <OverviewStatItem
-          icon={Check}
-          label='Ascents'
-          value={stats.numTicks + stats.numFas}
-          className='text-emerald-300'
-        />
-        <OverviewStatItem icon={Plus} label='FAs' value={stats.numFas} className='text-brand/85' />
-        <OverviewStatItem icon={Repeat} label='Repeats' value={stats.numTickRepeats} className='text-amber-200/70' />
-        <OverviewStatItem icon={Camera} label='Tags' value={data.numImageTags ?? 0} className='text-red-300/85' />
-        <OverviewStatItem
-          icon={Camera}
-          label='Captured'
-          value={data.numImagesCreated ?? 0}
-          className='text-red-300/85'
-        />
-        <OverviewStatItem icon={Video} label='Tags' value={data.numVideoTags ?? 0} className='text-fuchsia-300/90' />
-        <OverviewStatItem
-          icon={Video}
-          label='Captured'
-          value={data.numVideosCreated ?? 0}
-          className='text-fuchsia-300/90'
-        />
+        <OverviewStatItem icon={Check} label='Ascents' value={stats.numTicks + stats.numFas} />
+        <OverviewStatItem icon={Plus} label='FAs' value={stats.numFas} />
+        <OverviewStatItem icon={Repeat} label='Repeats' value={stats.numTickRepeats} />
+        <OverviewStatItem icon={Camera} label='Tags' value={data.numImageTags ?? 0} />
+        <OverviewStatItem icon={Camera} label='Captured' value={data.numImagesCreated ?? 0} />
+        <OverviewStatItem icon={Video} label='Tags' value={data.numVideoTags ?? 0} />
+        <OverviewStatItem icon={Video} label='Captured' value={data.numVideosCreated ?? 0} />
       </div>
       <div className='overflow-hidden rounded-xl'>
         <Chart ticks={data.ticks as components['schemas']['ProfileStatisticsTick'][]} />

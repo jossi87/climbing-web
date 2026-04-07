@@ -101,13 +101,13 @@ const ProblemEditMedia = () => {
               </nav>
             }
           />
-          <div className='mt-4 border-t border-white/8 pt-4'>
+          <div className='mt-3 border-t border-white/8 pt-3 sm:mt-4 sm:pt-4'>
             <h1 className={cn(designContract.typography.subtitle, 'text-slate-100')}>Upload photos or video</h1>
             {problem?.name ? (
-              <p className={cn(designContract.typography.meta, 'mt-1 text-slate-500')}>{problem.name}</p>
+              <p className={cn(designContract.typography.meta, 'mt-0.5 text-slate-500 sm:mt-1')}>{problem.name}</p>
             ) : null}
           </div>
-          <form id='media-form' className='mt-4' onSubmit={save}>
+          <form id='media-form' className='mt-3 sm:mt-4' onSubmit={save}>
             <MediaUpload onMediaChanged={setMedia} isMultiPitch={(problem?.sections ?? []).length > 0} />
           </form>
         </div>

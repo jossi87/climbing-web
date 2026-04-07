@@ -3,6 +3,7 @@ import { Avatar } from '../../ui';
 import { Link } from 'react-router-dom';
 import { useTop } from '../../../api';
 import { cn } from '../../../lib/utils';
+import { tickOwnUserLink } from '../Profile/profileRowTypography';
 
 type TopProps = {
   idArea: number;
@@ -46,8 +47,8 @@ const Top = ({ idArea, idSector }: TopProps) => {
                       key={u.userId}
                       to={`/user/${u.userId}`}
                       className={cn(
-                        'inline-flex max-w-full min-w-0 items-center gap-1.5 leading-snug transition-colors',
-                        u.mine ? 'text-emerald-400/90 hover:text-emerald-300' : 'hover:text-brand text-slate-100',
+                        'inline-flex max-w-full min-w-0 items-center gap-1.5 leading-snug',
+                        u.mine ? tickOwnUserLink : 'hover:text-brand text-slate-100 transition-colors',
                       )}
                     >
                       <Avatar
@@ -55,7 +56,10 @@ const Top = ({ idArea, idSector }: TopProps) => {
                         mediaId={u.mediaId}
                         mediaVersionStamp={u.mediaVersionStamp}
                         size='micro'
-                        className={cn('shrink-0 ring-1 ring-white/10 transition-all', u.mine && 'ring-emerald-500/35')}
+                        className={cn(
+                          'shrink-0 ring-1 ring-white/10 transition-all',
+                          u.mine && 'ring-status-ticked/35',
+                        )}
                       />
                       <span className='min-w-0'>{u.name}</span>
                     </Link>

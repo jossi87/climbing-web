@@ -90,68 +90,44 @@ export const SlopeProfile = ({
   const chartFillTop = lineColor;
   const chartFillBot = lineColor;
 
-  const sep = (
-    <span className='text-slate-600 select-none' aria-hidden>
-      ·
-    </span>
-  );
-
   const statsInner = (
     <>
       <span className='inline-flex items-center gap-1 font-medium text-slate-100'>
-        <Ruler
-          size={icon}
-          className={cn('shrink-0', !variant && 'text-brand/90')}
-          style={variant ? { color: lineColor } : undefined}
-          aria-hidden
-        />
+        <Ruler size={icon} className='light:text-slate-600 shrink-0 text-slate-300' aria-hidden />
         <span>{getDistanceWithUnit(slope)}</span>
       </span>
-      {sep}
       <span className='inline-flex items-center gap-1 font-medium text-slate-100'>
-        <ArrowUpRight size={icon} className='shrink-0 text-emerald-400/90' aria-hidden />
+        <ArrowUpRight size={icon} className='light:text-slate-600 shrink-0 text-slate-300' aria-hidden />
         <span className='tabular-nums'>{slope.elevationGain ?? 0}m</span>
       </span>
-      {sep}
       <span className='inline-flex items-center gap-1 font-medium text-slate-100'>
-        <ArrowDownRight size={icon} className='shrink-0 text-rose-400/85' aria-hidden />
+        <ArrowDownRight size={icon} className='light:text-slate-600 shrink-0 text-slate-300' aria-hidden />
         <span className='tabular-nums'>{slope.elevationLoss ?? 0}m</span>
       </span>
-      {sep}
       <span className='inline-flex items-center gap-1 font-medium text-slate-100'>
-        <Clock size={icon} className='text-brand/80 shrink-0' aria-hidden />
+        <Clock size={icon} className='light:text-slate-600 shrink-0 text-slate-300' aria-hidden />
         <span className='tabular-nums'>{slope.calculatedDurationInMinutes ?? 0} min</span>
       </span>
       {sources ? (
         <>
-          {sep}
-          <span className='inline-flex max-w-full min-w-0 items-center gap-1 font-medium text-slate-500'>
-            <Database size={icon} className='shrink-0 text-slate-500' aria-hidden />
+          <span className='inline-flex max-w-full min-w-0 items-center gap-1 font-medium text-slate-100'>
+            <Database size={icon} className='light:text-slate-600 shrink-0 text-slate-300' aria-hidden />
             <span className='min-w-0 truncate' title={sources}>
               {sources}
             </span>
           </span>
         </>
       ) : null}
-      {sep}
       <button
         type='button'
         onClick={() => downloadGpxFile(areaName ?? '', sectorName ?? '', slope.coordinates ?? [])}
         className={cn(
-          'group -mx-0.5 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 font-semibold transition-colors hover:text-slate-100 focus-visible:outline-none',
-          'focus-visible:ring-2',
-          variant
-            ? 'hover:bg-surface-raised-hover focus-visible:ring-white/25'
-            : 'hover:bg-surface-raised-hover text-brand/95 hover:ring-brand-border/50 focus-visible:ring-brand-border/60 hover:ring-1',
+          'group inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-semibold transition-[background-color,border-color,color] focus-visible:ring-2 focus-visible:outline-none',
+          'border-brand-border/55 bg-brand/12 text-brand hover:border-brand-border hover:bg-brand/22 hover:text-brand',
+          'focus-visible:ring-brand-border/60 light:border-brand-border light:bg-brand light:text-[color:var(--color-brand-foreground)] light:hover:bg-[#d8bb70] light:hover:text-[color:var(--color-brand-foreground)]',
         )}
-        style={variant ? { color: lineColor } : undefined}
       >
-        <Download
-          size={icon}
-          className={cn('shrink-0 transition-colors group-hover:text-slate-100', !variant && 'text-brand/95')}
-          style={variant ? { color: lineColor } : undefined}
-          aria-hidden
-        />
+        <Download size={icon} className='shrink-0 text-inherit transition-colors' aria-hidden />
         GPX
       </button>
     </>
@@ -172,18 +148,11 @@ export const SlopeProfile = ({
         <div
           className={cn(
             'bg-surface-raised border-surface-border/50 border-b py-1.5',
-            variant && 'border-l-[3px]',
             compact ? 'px-2.5 sm:px-3.5' : 'px-3 sm:px-3.5',
           )}
-          style={variant ? { borderLeftColor: lineColor } : undefined}
         >
           <span
-            className={cn(
-              designContract.typography.micro,
-              'font-semibold tracking-[0.12em] uppercase',
-              !variant && 'text-slate-100',
-            )}
-            style={variant ? { color: lineColor } : undefined}
+            className={cn(designContract.typography.micro, 'font-semibold tracking-[0.12em] text-slate-200 uppercase')}
           >
             {title}
           </span>

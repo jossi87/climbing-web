@@ -26,7 +26,7 @@ import ExternalLink from '../../shared/ui/ExternalLinks';
 import { Calendar, Save, ChevronDown, AlertCircle, AlertTriangle, Edit, Loader2, RotateCcw } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
-import { Card, SectionHeader } from '../../shared/ui';
+import { Card, FormSwitch, MarkdownFieldLabel, SectionHeader } from '../../shared/ui';
 
 type Problem = components['schemas']['Problem'];
 
@@ -255,7 +255,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
     data.coordinates != null && (data.coordinates.latitude != null || data.coordinates.longitude != null);
 
   const inputClasses =
-    'w-full bg-surface-nav border border-surface-border rounded-lg px-3 py-2.5 text-sm text-white transition-colors focus:border-brand focus:outline-none';
+    'problem-edit-field w-full bg-surface-nav border border-surface-border rounded-lg px-3 py-2.5 text-sm text-white transition-colors focus:border-brand-border focus:outline-none focus:ring-0 focus-visible:ring-0';
   const labelClasses = 'ml-1 mb-1 block text-[11px] font-medium text-slate-400 sm:text-[12px]';
 
   return (
@@ -316,22 +316,13 @@ const ProblemEdit = ({ problem, sector }: Props) => {
 
                 <div className='space-y-2'>
                   <label className={labelClasses}>Move to trash</label>
-                  <button
-                    type='button'
+                  <FormSwitch
+                    checked={!!data.trash}
+                    onChange={() => setData((prev) => ({ ...prev, trash: !prev.trash }))}
                     disabled={!data.id || data.id <= 0}
-                    onClick={() => setData((prev) => ({ ...prev, trash: !prev.trash }))}
-                    className={cn(
-                      'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none disabled:opacity-30',
-                      data.trash ? 'bg-red-500' : 'bg-slate-700',
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                        data.trash ? 'translate-x-5' : 'translate-x-0',
-                      )}
-                    />
-                  </button>
+                    variant='danger'
+                    aria-label='Move to trash'
+                  />
                 </div>
               </div>
 
@@ -405,7 +396,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
               )}
 
               <div className='space-y-2'>
-                <label className={labelClasses}>Description (markdown)</label>
+                <MarkdownFieldLabel className={labelClasses}>Description</MarkdownFieldLabel>
                 <textarea
                   className={cn(inputClasses, 'min-h-30 resize-none')}
                   value={data.comment}
@@ -414,7 +405,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
               </div>
 
               <div className='space-y-2'>
-                <label className={labelClasses}>Trivia (markdown)</label>
+                <MarkdownFieldLabel className={labelClasses}>Trivia</MarkdownFieldLabel>
                 <textarea
                   className={cn(inputClasses, 'min-h-20 resize-none')}
                   value={data.trivia}
@@ -424,10 +415,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
 
               <div className='relative'>
                 <input
-                  className={cn(
-                    inputClasses,
-                    'border-red-500/25 pl-10 focus:border-red-400/45 focus:ring-1 focus:ring-red-400/15',
-                  )}
+                  className={cn(inputClasses, 'border-red-500/25 pl-10 focus:border-red-400/45')}
                   value={data.broken}
                   placeholder='Leave empty if not broken'
                   onChange={(e) => setData((prev) => ({ ...prev, broken: e.target.value }))}
@@ -576,7 +564,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                       </div>
                     </div>
                     <div className='space-y-2'>
-                      <label className={labelClasses}>First AID — notes (markdown)</label>
+                      <MarkdownFieldLabel className={labelClasses}>First AID — notes</MarkdownFieldLabel>
                       <textarea
                         className={cn(inputClasses, 'min-h-20 resize-none')}
                         value={data.faAid.description ?? ''}
@@ -606,30 +594,15 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                 <label className={labelClasses}>
                   {meta.isBouldering ? 'Mark problem on map' : 'Mark route on map'}
                 </label>
-                <p className='ml-1 max-w-prose text-[10px] leading-relaxed text-slate-500 sm:text-[11px]'>
-                  Tap to set the marker, type coordinates below, or clear to remove it. Toggle whether other{' '}
-                  {meta.isBouldering ? 'problems' : 'routes'} in this sector appear on the map.
-                </p>
                 <div className='border-surface-border bg-surface-raised overflow-hidden rounded-lg border'>
                   <div className='border-surface-border flex flex-col gap-2.5 border-b px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4'>
                     <div className='flex items-center gap-3'>
-                      <button
-                        type='button'
-                        role='switch'
-                        aria-checked={showSectorMarkers}
-                        onClick={() => setShowSectorMarkers(!showSectorMarkers)}
-                        className={cn(
-                          'focus-visible:ring-brand-border/70 relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2',
-                          showSectorMarkers ? 'bg-brand' : 'bg-slate-700',
-                        )}
-                      >
-                        <span
-                          className={cn(
-                            'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                            showSectorMarkers ? 'translate-x-5' : 'translate-x-0',
-                          )}
-                        />
-                      </button>
+                      <FormSwitch
+                        checked={showSectorMarkers}
+                        onChange={() => setShowSectorMarkers(!showSectorMarkers)}
+                        variant='brand'
+                        aria-label={`Show other ${meta.isBouldering ? 'problems' : 'routes'} in sector on map`}
+                      />
                       <span className='text-[11px] font-medium text-slate-300 sm:text-[12px]'>
                         Show other {meta.isBouldering ? 'problems' : 'routes'} in sector
                       </span>
@@ -702,7 +675,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                 onClick={() =>
                   problemId && problemId > 0 ? navigate(`/problem/${problemId}`) : navigate(`/sector/${sectorId}`)
                 }
-                className='bg-surface-nav border-surface-border hover:bg-surface-hover type-label rounded-lg border px-6 py-2.5 opacity-85 transition-all hover:opacity-100'
+                className='form-footer-cancel'
               >
                 Cancel
               </button>
@@ -711,7 +684,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                   type='button'
                   onClick={(e) => save(e, data).then((dest) => dest && navigate(0))}
                   disabled={!data.name || (meta.types.length > 1 && !data.t?.id) || saving}
-                  className='border-surface-border bg-surface-nav hover:bg-surface-hover type-label rounded-lg border px-6 py-2.5 opacity-90 transition-all hover:opacity-100 disabled:opacity-50'
+                  className='form-footer-secondary disabled:opacity-50'
                 >
                   Save &amp; add new
                 </button>

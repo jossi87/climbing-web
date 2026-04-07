@@ -10,6 +10,7 @@ import { StartingAltitudeSelect } from './StartingAltitudeSelect';
 import { ChevronDown, Trash2, X, Maximize2, Minimize2 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
+import { FormSwitch } from '../../ui';
 
 const CLIMBING_OPTIONS = [
   {
@@ -121,17 +122,16 @@ type CheckboxLabelProps = {
 };
 
 const CheckboxLabel = ({ label, checked, onChange, disabled = false }: CheckboxLabelProps) => (
-  <label className={cn('group flex cursor-pointer items-center gap-2', disabled && 'cursor-not-allowed opacity-50')}>
-    <div
-      className={cn(
-        'flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors',
-        checked ? 'border-brand bg-brand' : 'border-surface-border bg-surface-nav group-hover:border-slate-400',
-      )}
-    >
-      {checked && <div className='h-2 w-2 rounded-sm bg-white' />}
-    </div>
+  <label className={cn('group flex cursor-pointer items-center gap-2.5', disabled && 'cursor-not-allowed opacity-50')}>
+    <FormSwitch
+      checked={checked}
+      disabled={disabled}
+      onChange={() => {
+        if (disabled) return;
+        onChange({ target: { checked: !checked } } as ChangeEvent<HTMLInputElement>);
+      }}
+    />
     <span className='text-sm opacity-85 transition-colors select-none group-hover:opacity-100'>{label}</span>
-    <input type='checkbox' className='hidden' checked={checked} onChange={onChange} disabled={disabled} />
   </label>
 );
 

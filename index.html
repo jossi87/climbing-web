@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" style="color-scheme: dark; background-color: #060709;">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
@@ -12,6 +12,29 @@
     <meta name="description" content="Climbing guide for Norway, covering bouldering, route climbing, and ice climbing." />
     <meta name="author" content="Jostein Øygarden" />
     <meta name="theme-color" content="#060709" />
+    <script>
+      (function () {
+        try {
+          var k = 'theme_preference';
+          var raw = localStorage.getItem(k);
+          var stored = null;
+          if (raw != null) {
+            var v = JSON.parse(raw);
+            if (v === 'light' || v === 'dark') stored = v;
+          }
+          var dark = stored ? stored === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var el = document.documentElement;
+          el.dataset.theme = dark ? 'dark' : 'light';
+          el.style.colorScheme = dark ? 'dark' : 'light';
+          el.style.backgroundColor = dark ? '#060709' : '#e2e8f0';
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', dark ? '#060709' : '#13151a');
+        } catch (e) {
+          document.documentElement.dataset.theme = 'dark';
+          document.documentElement.style.backgroundColor = '#060709';
+        }
+      })();
+    </script>
     <title>Climbing Web</title>
   </head>
   <body>

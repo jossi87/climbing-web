@@ -1,7 +1,7 @@
 import { useState, type FC } from 'react';
 import { useProfile } from '../../../api';
 import { type DropzoneOptions, useDropzone } from 'react-dropzone';
-import { Save, X, Upload, Loader2, Globe } from 'lucide-react';
+import { Save, X, Upload, Loader2, Globe, Settings as SettingsIcon } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 import { Card, SectionHeader } from '../../ui';
@@ -59,6 +59,7 @@ const ProfileSettings = () => {
       <div className='space-y-6'>
         <Card flush className='border-0'>
           <section className='p-4 sm:p-6'>
+            <SectionHeader title='Settings' icon={SettingsIcon} subheader='Manage your account preferences' />
             <div className='mb-6 grid grid-cols-1 gap-6 sm:grid-cols-2'>
               <div className='space-y-2'>
                 <label className={cn('ml-1', designContract.typography.label)}>First Name</label>
@@ -153,17 +154,17 @@ const ProfileSettings = () => {
         <Card flush className='border-0'>
           <section className='p-4 sm:p-6'>
             <SectionHeader title='Display Regions' icon={Globe} subheader='Choose visible regions' />
-            <div className='border-surface-border divide-surface-border/60 bg-surface-card divide-y rounded-xl border'>
+            <div className='space-y-1'>
               {(d.userRegions ?? []).map((region) => {
                 const label = region.role ? `${region.name} (${region.role})` : region.name;
                 const id = `region-${region.id}`;
                 return (
-                  <div key={region.id} className='flex items-center gap-3 px-3 py-2.5 sm:px-4'>
+                  <div key={region.id} className='flex items-center gap-3 px-1 py-1.5 sm:px-2'>
                     <input
                       id={id}
                       type='checkbox'
                       disabled={region.readOnly}
-                      className='border-surface-border bg-surface-nav text-brand focus:ring-brand-border/60 h-4 w-4 rounded disabled:opacity-30'
+                      className='border-surface-border/80 bg-surface-nav text-brand focus:ring-brand-border/60 h-4 w-4 rounded-sm border shadow-[inset_0_0_0_1px_rgba(15,23,42,0.22)] disabled:cursor-not-allowed disabled:opacity-60'
                       checked={region.enabled}
                       onChange={(e) => setRegion({ region, del: !e.target.checked })}
                     />
@@ -172,7 +173,7 @@ const ProfileSettings = () => {
                       className={cn(
                         'cursor-pointer text-sm font-medium transition-colors',
                         region.enabled ? 'text-slate-200' : 'text-slate-500',
-                        region.readOnly && 'cursor-not-allowed italic',
+                        region.readOnly && 'cursor-not-allowed text-slate-400',
                       )}
                     >
                       {label}

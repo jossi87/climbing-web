@@ -13,10 +13,13 @@ import {
   profileRowRootClass,
   tickCommentSmall,
   tickFlags,
+  tickOwnUserLink,
   tickProblemLink,
 } from '../../../shared/components/Profile/profileRowTypography';
 
-const rowShell = 'px-3 py-1.5 sm:px-4 sm:py-2';
+/** Match activity feed rows in `Activity.tsx` — padding stack, not inter-row `gap`. */
+const activityRowPad = 'px-4 py-4 md:px-5 md:py-3.5';
+const activityAvatarGap = 'gap-3.5 md:gap-3.5';
 
 const actionIconBtn =
   'rounded-md p-1.5 text-slate-400 transition-colors hover:bg-surface-raised-hover hover:text-slate-200';
@@ -81,25 +84,25 @@ export const ProblemComments = ({
   if (comments.length === 0) return null;
 
   return (
-    <div className='flex flex-col gap-3 text-left sm:gap-3.5'>
+    <div className='flex flex-col text-left'>
       {comments.map((c) => {
         const isOwn = !!c.editable;
         const showFlagAction = !c.danger && !c.resolved && meta.isAuthenticated && meta.isClimbing;
 
         return (
-          <div key={c.id} className={rowShell}>
-            <div className='flex items-start gap-2 sm:gap-2.5'>
-              <div className='shrink-0'>
+          <div key={c.id} className={cn('group', designContract.surfaces.panelRow, activityRowPad)}>
+            <div className={cn('flex items-start', activityAvatarGap)}>
+              <div className='shrink-0 pt-0.5'>
                 <ClickableAvatar
                   name={c.name}
                   mediaId={c.mediaId}
                   mediaVersionStamp={c.mediaVersionStamp}
                   size='tiny'
-                  className={cn(isOwn && 'border-emerald-400/30 ring-1 ring-emerald-400/20')}
+                  className={cn(isOwn && 'border-status-ticked/40 ring-status-ticked/25 ring-1')}
                 />
               </div>
 
-              <div className='min-w-0 flex-1'>
+              <div className='flex min-w-0 flex-1 flex-col gap-0.5'>
                 <div className='flex min-w-0 flex-wrap items-start gap-x-2 gap-y-0.5'>
                   <div
                     className={cn(
@@ -107,10 +110,7 @@ export const ProblemComments = ({
                       'min-w-0 flex-1 leading-snug text-pretty [overflow-wrap:anywhere]',
                     )}
                   >
-                    <Link
-                      to={`/user/${c.idUser}`}
-                      className={cn(tickProblemLink, isOwn && 'text-emerald-400 hover:text-emerald-300')}
-                    >
+                    <Link to={`/user/${c.idUser}`} className={isOwn ? tickOwnUserLink : tickProblemLink}>
                       {c.name}
                     </Link>
                     <span className={cn(tickFlags, 'ml-1.5 inline text-slate-400 tabular-nums')}>{c.date}</span>
@@ -127,7 +127,7 @@ export const ProblemComments = ({
                       </span>
                     ) : c.resolved ? (
                       <span
-                        className='ml-1.5 inline-flex shrink-0 translate-y-px items-center text-emerald-400/90'
+                        className='text-status-ticked/90 ml-1.5 inline-flex shrink-0 translate-y-px items-center'
                         title='Flagged as safe'
                         aria-label='Comment flagged as safe'
                       >
@@ -173,14 +173,14 @@ export const ProblemComments = ({
                 <div
                   className={cn(
                     tickCommentSmall,
-                    'mt-0.5 leading-snug text-pretty break-words text-slate-50 not-italic sm:leading-relaxed',
+                    'leading-snug text-pretty break-words text-slate-50 not-italic sm:leading-relaxed',
                   )}
                 >
                   <Linkify>{c.message}</Linkify>
                 </div>
 
                 {(c.media ?? []).length > 0 && (
-                  <div className='mt-2'>
+                  <div className='mt-2.5 md:mt-3'>
                     <Media
                       pitches={sections}
                       media={c.media ?? []}

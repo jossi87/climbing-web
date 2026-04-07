@@ -24,6 +24,8 @@ import type { Slope } from '../../@types/buldreinfo';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { DownloadButton } from '../../shared/ui/DownloadButton';
 import { Card, PageCardBreadcrumbRow } from '../../shared/ui';
+import { TradGearMarker } from '../../shared/ui/TradGearMarker';
+import { climbingRouteUsesPassiveGear, formatRouteTypeLabel } from '../../utils/routeTradGear';
 import {
   tabBarButtonClassName,
   tabBarIconClassName,
@@ -51,12 +53,13 @@ import {
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
+import { twInk } from '../../design/twInk';
 import { ProfileRowTextSep } from '../../shared/components/Profile/ProfileRowTextSep';
 import {
   profileRowRootClass,
   tickCommentSmall,
   tickFlags,
-  tickProblemLink,
+  tickProblemLinkWithStatus,
   tickWhenGrade,
 } from '../../shared/components/Profile/profileRowTypography';
 
@@ -71,7 +74,16 @@ const lockInlineClass = 'ml-0.5 inline-block align-middle';
 export const SectorListItem = ({ problem }: SectorListItemProps) => {
   const { isClimbing, isBouldering } = useMeta();
 
-  /** FA · route type · pitch count · ascent count — middle-dot separators (no parentheses). */
+  const passiveGearAfterGrade =
+    isClimbing && problem.t
+      ? (() => {
+          const typeLabel = formatRouteTypeLabel(problem.t.type, problem.t.subType);
+          if (!typeLabel || !climbingRouteUsesPassiveGear(typeLabel)) return null;
+          return <TradGearMarker line={typeLabel} />;
+        })()
+      : null;
+
+  /** FA · pitch count · ascent count — middle dots between these segments only (trad nut sits after grade). */
   const faMetaBlock = (() => {
     const segments: { key: string; node: ReactNode }[] = [];
     const faText = (problem.fa ?? '').trim();
@@ -80,8 +92,7 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
     if (faLine) {
       segments.push({ key: 'fa', node: faLine });
     }
-    if (isClimbing && problem.t?.subType) {
-      segments.push({ key: 'subtype', node: problem.t.subType });
+    if (isClimbing) {
       if ((problem.numPitches ?? 1) > 1) {
         segments.push({
           key: 'pitches',
@@ -109,15 +120,12 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
     if (segments.length === 0) return null;
 
     const metaMuted = tickFlags;
-    /** Route type — same line as FA meta but reads as primary (no chip chrome). */
-    const metaTypeEmphasis = 'font-medium text-slate-100 antialiased';
-
     return (
       <>
         {segments.map((seg, i) => (
           <Fragment key={seg.key}>
             {i > 0 ? <ProfileRowTextSep /> : null}
-            <span className={seg.key === 'subtype' ? metaTypeEmphasis : metaMuted}>{seg.node}</span>
+            <span className={metaMuted}>{seg.node}</span>
           </Fragment>
         ))}
       </>
@@ -181,7 +189,7 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
       </>
     ) : null;
 
-  const hasIconRunBeforeFa = !!(lockAndMedia || (problem.stars && problem.stars > 0));
+  const hasIconRunBeforeFa = !!(passiveGearAfterGrade || lockAndMedia || (problem.stars && problem.stars > 0));
 
   return (
     <div className={cn(profileRowRootClass, 'min-w-0 py-1 sm:py-1.5')}>
@@ -195,13 +203,12 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
         ) : null}
         <span
           className={cn(
-            tickWhenGrade,
-            'mr-1.5 inline-block tabular-nums sm:mr-2',
+            'mr-1.5 inline-block font-normal tabular-nums antialiased sm:mr-2',
             problem.ticked
-              ? designContract.ascentStatus.ticked
+              ? cn(designContract.ascentStatus.ticked, 'font-semibold')
               : problem.todo
-                ? designContract.ascentStatus.todo
-                : null,
+                ? cn(designContract.ascentStatus.todo, 'font-semibold')
+                : tickWhenGrade,
           )}
           title={
             problem.ticked ? 'Ticked' : problem.todo ? 'On to-do list' : `${isBouldering ? 'Boulder' : 'Route'} number`
@@ -211,13 +218,18 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
         </span>
         <Link
           to={`/problem/${problem.id}`}
-          className={cn(tickProblemLink, problem.broken ? 'line-through opacity-60' : undefined)}
+          className={tickProblemLinkWithStatus({
+            ticked: !!problem.ticked,
+            todo: !!problem.todo,
+            broken: !!problem.broken,
+          })}
         >
           {problem.name}
         </Link>
         {problem.grade ? (
           <span className={cn(tickWhenGrade, 'ml-1 whitespace-nowrap tabular-nums')}>{problem.grade}</span>
         ) : null}
+        {passiveGearAfterGrade}
         {problem.stars ? (
           <span className='ml-1 inline-block align-[-0.15em] opacity-90'>
             <Stars numStars={problem.stars} size={11} />
@@ -467,13 +479,13 @@ const Sector = () => {
     data.areaAccessClosed || data.accessClosed || data.areaAccessInfo || data.accessInfo || data.areaNoDogsAllowed ? (
       <div className={cn('min-w-0 space-y-2', designContract.typography.detailBody)}>
         {(data.areaAccessClosed || data.accessClosed) && (
-          <p className='text-pretty text-red-300/90'>
+          <p className='text-access-danger text-pretty'>
             {(data.areaAccessClosed ? 'Area' : 'Sector') + ' closed: '}
             {(data.areaAccessClosed || '') + (data.accessClosed || '')}
           </p>
         )}
         {(data.areaNoDogsAllowed || data.areaAccessInfo || data.accessInfo) && (
-          <div className='space-y-1.5 text-orange-300/90'>
+          <div className='text-access-caution space-y-1.5'>
             {data.areaNoDogsAllowed && <NoDogsAllowed />}
             {data.areaAccessInfo && <p className='text-pretty'>{data.areaAccessInfo}</p>}
             {data.accessInfo && <p className='text-pretty'>{data.accessInfo}</p>}
@@ -494,24 +506,21 @@ const Sector = () => {
             <>
               <nav
                 className={cn(
-                  'flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-2 text-pretty break-words',
+                  'flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-2 text-pretty break-words',
                   designContract.typography.detailBody,
                 )}
               >
-                <Link to='/areas' className='inline align-middle text-slate-400 transition-colors hover:text-slate-200'>
+                <Link to='/areas' className={designContract.typography.breadcrumbLink}>
                   Areas
                 </Link>
-                <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
-                <Link
-                  to={`/area/${data.areaId}`}
-                  className='inline min-w-0 align-middle text-slate-400 transition-colors hover:text-slate-200'
-                >
+                <ChevronRight size={12} className='shrink-0 translate-y-px opacity-30' aria-hidden />
+                <Link to={`/area/${data.areaId}`} className={designContract.typography.breadcrumbLink}>
                   {data.areaName}
                 </Link>
                 <LockSymbol lockedAdmin={!!data.areaLockedAdmin} lockedSuperadmin={!!data.areaLockedSuperadmin} />
-                <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
+                <ChevronRight size={12} className='shrink-0 translate-y-px opacity-30' aria-hidden />
                 {(data.sectors ?? []).length > 1 ? (
-                  <div className='relative inline-flex max-w-full min-w-0 align-middle' ref={sectorPickerRef}>
+                  <div className='relative inline-flex max-w-full min-w-0' ref={sectorPickerRef}>
                     <button
                       type='button'
                       aria-expanded={sectorPickerOpen}
@@ -519,19 +528,26 @@ const Sector = () => {
                       aria-label={`Sector: ${data.name}. Open list of sectors in this area.`}
                       onClick={() => setSectorPickerOpen((o) => !o)}
                       className={cn(
-                        'group inline-flex max-w-full min-w-0 items-center gap-1 border-0 bg-transparent p-0 text-left font-semibold text-slate-50 transition-colors',
+                        'group inline-flex max-w-full min-w-0 items-baseline gap-1 rounded-md border-0 bg-transparent py-0.5 text-left font-semibold text-slate-50 transition-[color,background-color,box-shadow]',
+                        'light:text-slate-950 light:hover:text-slate-950 hover:text-slate-100',
+                        'hover:bg-surface-raised-hover/70',
+                        /* Light: stronger hover wash + hairline so it reads clearly on pale cards */
+                        'light:hover:bg-slate-300/85 light:hover:shadow-sm light:hover:ring-1 light:hover:ring-slate-500/25',
                         designContract.typography.detailBody,
-                        'hover:text-slate-100',
                         'focus-visible:ring-brand-border/70 focus-visible:rounded-sm focus-visible:ring-2 focus-visible:outline-none',
+                        sectorPickerOpen &&
+                          'bg-surface-raised-hover/70 light:bg-slate-300/85 light:shadow-sm light:ring-1 light:ring-slate-500/20',
                       )}
                     >
-                      <span className='min-w-0 truncate'>{data.name}</span>
+                      <span className='min-w-0 text-pretty break-words'>{data.name}</span>
                       <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
                       <ChevronDown
                         size={11}
                         strokeWidth={2.25}
                         className={cn(
-                          'shrink-0 text-slate-500 transition-transform group-hover:text-slate-400',
+                          'shrink-0 text-slate-500 transition-transform group-hover:text-slate-300',
+                          'light:text-slate-600',
+                          twInk.lightGroupHoverSlate900,
                           sectorPickerOpen && 'rotate-180',
                         )}
                         aria-hidden
@@ -551,8 +567,11 @@ const Sector = () => {
                                 className={cn(
                                   'flex min-w-0 items-center gap-2 px-3 py-2 text-sm transition-colors',
                                   current
-                                    ? 'bg-surface-raised-hover font-medium text-slate-100'
-                                    : 'hover:bg-surface-raised-hover text-slate-400 hover:text-slate-200',
+                                    ? 'bg-surface-raised-hover light:text-slate-950 font-medium text-slate-100'
+                                    : cn(
+                                        'hover:bg-surface-raised-hover text-slate-400 hover:text-slate-200',
+                                        twInk.lightHoverSlate900,
+                                      ),
                                 )}
                                 onClick={() => setSectorPickerOpen(false)}
                               >
@@ -568,11 +587,11 @@ const Sector = () => {
                 ) : (
                   <span
                     className={cn(
-                      'inline-flex max-w-full min-w-0 items-center gap-1 align-middle font-semibold text-slate-50',
+                      'light:text-slate-950 inline-flex max-w-full min-w-0 items-baseline gap-1 font-semibold text-slate-50',
                       designContract.typography.detailBody,
                     )}
                   >
-                    <span className='min-w-0 truncate'>{data.name}</span>
+                    <span className='min-w-0 text-pretty break-words'>{data.name}</span>
                     <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
                   </span>
                 )}
@@ -586,23 +605,25 @@ const Sector = () => {
                   to={`/problem/edit/${data.id}/0`}
                   title='Add problem'
                   aria-label='Add problem'
+                  data-ph-action='add'
                   className={cn(
                     designContract.controls.pageHeaderIconButton,
                     designContract.controls.pageHeaderIconButtonAdd,
                   )}
                 >
-                  <Plus className={designContract.controls.pageHeaderIconGlyph} />
+                  <Plus className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
                 </Link>
                 <Link
                   to={`/sector/edit/${data.areaId}/${data.id}`}
                   title='Edit sector'
                   aria-label='Edit sector'
+                  data-ph-action='edit'
                   className={cn(
                     designContract.controls.pageHeaderIconButton,
-                    'border-amber-300/45 bg-amber-400/18 text-amber-100 hover:bg-amber-400/28',
+                    designContract.controls.pageHeaderIconButtonEdit,
                   )}
                 >
-                  <Edit className={designContract.controls.pageHeaderIconGlyph} />
+                  <Edit className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
                 </Link>
               </>
             ) : null
@@ -636,7 +657,7 @@ const Sector = () => {
                       strokeWidth={isActive ? 2.3 : 2}
                       className={tabBarIconClassName(isActive)}
                     />
-                    <span className='type-small block min-w-0 truncate leading-none sm:text-[13px]'>{t.label}</span>
+                    <span className={designContract.controls.tabBarLabel}>{t.label}</span>
                   </button>
                 );
               })}

@@ -17,7 +17,7 @@ type UserCardProps = {
 export const UserCard = ({ user, variant = 'default', metaAction }: UserCardProps) => (
   <div
     className={cn(
-      'group flex items-center gap-3 transition-all duration-300 sm:gap-4',
+      'flex items-center gap-3 transition-all duration-300 sm:gap-4',
       variant === 'minimal'
         ? 'hover:bg-surface-raised-hover rounded-lg px-1.5 py-2'
         : 'border-surface-border/50 hover:bg-surface-raised-hover hover:border-brand-border rounded-xl border p-3 sm:p-4',
@@ -52,13 +52,19 @@ export const UserCard = ({ user, variant = 'default', metaAction }: UserCardProp
         <a
           href={`mailto:${user.emails[0]}`}
           className={cn(
-            'hover:text-brand mt-1 flex min-w-0 items-center gap-2 transition-colors',
+            'group/mail hover:text-brand active:text-brand focus-visible:text-brand focus-visible:ring-brand-border/55 focus-visible:ring-offset-surface-card mt-1 flex min-w-0 items-center gap-2 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
             designContract.typography.micro,
             'normal-case',
-            variant === 'minimal' ? 'text-slate-300 hover:text-slate-100' : 'text-slate-400 hover:text-slate-100',
+            variant === 'minimal' ? 'text-slate-300' : 'text-slate-400',
           )}
         >
-          <Mail size={12} className={cn('shrink-0', variant === 'minimal' ? 'text-slate-400' : 'text-slate-500')} />
+          <Mail
+            size={12}
+            className={cn(
+              'group-hover/mail:text-brand shrink-0 transition-colors',
+              variant === 'minimal' ? 'text-slate-400' : 'text-slate-500',
+            )}
+          />
           <span className='min-w-0 truncate'>{user.emails[0]}</span>
         </a>
       )}

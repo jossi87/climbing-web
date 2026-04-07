@@ -11,11 +11,12 @@ import {
   setMediaAsAvatar,
 } from '../../../api';
 import { useAuth0 } from '@auth0/auth0-react';
-import { Play } from 'lucide-react';
+import { Film } from 'lucide-react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 import SvgViewer from '../SvgViewer';
+import { VideoThumbnailPlayOverlay } from './VideoThumbnailPlayOverlay';
 import { Loading } from '../../ui/StatusWidgets';
 import MediaEditModal from './MediaEditModal';
 import MediaModal from './MediaModal';
@@ -36,6 +37,35 @@ const useIds = () => {
   return { mediaId: mediaId ? +mediaId : 0, pitch: pitch ? +pitch : 0 };
 };
 type MediaAction = (token: string) => Promise<unknown>;
+
+/** File videos: always request poster JPEG; only show placeholder when the image actually fails (e.g. not generated yet). */
+const MediaVideoTile = ({ x, triviaTiles }: { x: MediaItem; triviaTiles: boolean }) => {
+  const [imgError, setImgError] = useState(false);
+  const thumbUrl = getMediaFileUrl(Number(x.id ?? 0), Number(x.versionStamp ?? 0), false, {
+    minDimension: triviaTiles ? 160 : 205,
+  });
+
+  if (imgError) {
+    return (
+      <div className='absolute inset-0 flex flex-col items-center justify-center gap-1 bg-gradient-to-b from-slate-800 to-slate-950 px-2 text-center'>
+        <Film className='text-slate-500' size={28} aria-hidden />
+        <p className='text-[10px] font-medium text-slate-400'>No thumbnail</p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <img
+        src={thumbUrl}
+        alt=''
+        className='absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105'
+        onError={() => setImgError(true)}
+      />
+      <VideoThumbnailPlayOverlay />
+    </>
+  );
+};
 
 const Media = ({
   pitches,
@@ -155,33 +185,21 @@ const Media = ({
                 showText={false}
                 className='absolute inset-0 h-full min-h-full w-full min-w-full object-cover'
               />
+            ) : x.idType === 2 ? (
+              <MediaVideoTile key={`${x.id}-${x.versionStamp ?? 0}`} x={x} triviaTiles={!!triviaTiles} />
             ) : (
-              <>
-                <div
-                  role='img'
-                  aria-label={x.mediaMetadata?.description ?? 'Media thumbnail'}
-                  className='absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-105'
-                  style={{
-                    backgroundImage: `url(${JSON.stringify(
-                      getMediaFileUrl(Number(x.id ?? 0), Number(x.versionStamp ?? 0), false, {
-                        minDimension: triviaTiles ? 160 : 205,
-                      }),
-                    )})`,
-                  }}
-                />
-                {x.idType === 2 && (
-                  <div className='pointer-events-none absolute inset-0 flex items-center justify-center bg-black/10 transition-colors group-hover:bg-black/20'>
-                    <div className='bg-surface-card border-surface-border relative flex h-8 w-8 items-center justify-center rounded-full border shadow-[0_4px_12px_rgba(0,0,0,0.5)] transition-transform duration-300 group-hover:scale-105'>
-                      <Play
-                        size={17}
-                        fill='currentColor'
-                        className='ml-0.5'
-                        style={{ color: '#e2e8f0', stroke: '#0f172a', strokeWidth: 1.4 }}
-                      />
-                    </div>
-                  </div>
-                )}
-              </>
+              <div
+                role='img'
+                aria-label={x.mediaMetadata?.description ?? 'Media thumbnail'}
+                className='absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-105'
+                style={{
+                  backgroundImage: `url(${JSON.stringify(
+                    getMediaFileUrl(Number(x.id ?? 0), Number(x.versionStamp ?? 0), false, {
+                      minDimension: triviaTiles ? 160 : 205,
+                    }),
+                  )})`,
+                }}
+              />
             )
           ) : (
             <div className='skeleton-bar absolute inset-0 animate-pulse' />
@@ -202,13 +220,8 @@ const Media = ({
             <p className='type-body mb-6 opacity-70'>{confirmation.message}</p>{' '}
             <div className='flex justify-end gap-3'>
               {' '}
-              <button
-                type='button'
-                onClick={() => setConfirmation(null)}
-                className='type-label px-4 py-2 opacity-80 transition-colors hover:opacity-100'
-              >
-                {' '}
-                Cancel{' '}
+              <button type='button' onClick={() => setConfirmation(null)} className='modal-action-cancel px-4 py-2'>
+                Cancel
               </button>{' '}
               <button
                 type='button'

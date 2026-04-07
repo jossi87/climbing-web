@@ -31,7 +31,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
-import { Card, SectionHeader } from '../../shared/ui';
+import { Card, FormSwitch, MarkdownFieldLabel, SectionHeader } from '../../shared/ui';
 
 type Area = components['schemas']['Area'];
 type Sector = components['schemas']['Sector'];
@@ -431,22 +431,13 @@ export const SectorEdit = ({ sector, area }: Props) => {
 
                 <div className='space-y-2'>
                   <label className={labelClasses}>Move to trash</label>
-                  <button
-                    type='button'
+                  <FormSwitch
+                    checked={!!data.trash}
+                    onChange={() => setData((p) => ({ ...p, trash: !p.trash }))}
                     disabled={!data.id || data.id <= 0}
-                    onClick={() => setData((p) => ({ ...p, trash: !p.trash }))}
-                    className={cn(
-                      'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none disabled:opacity-30',
-                      data.trash ? 'bg-red-500' : 'bg-slate-700',
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                        data.trash ? 'translate-x-5' : 'translate-x-0',
-                      )}
-                    />
-                  </button>
+                    variant='danger'
+                    aria-label='Move to trash'
+                  />
                 </div>
               </div>
 
@@ -490,18 +481,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
               )}
 
               <div className='space-y-2'>
-                <label className={labelClasses}>
-                  Description (supports{' '}
-                  <a
-                    href='https://jonschlinkert.github.io/remarkable/demo/'
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='text-brand underline'
-                  >
-                    markdown
-                  </a>
-                  )
-                </label>
+                <MarkdownFieldLabel className={labelClasses}>Description</MarkdownFieldLabel>
                 <textarea
                   className={cn(inputClasses, 'min-h-30 resize-none')}
                   value={data.comment ?? ''}
@@ -620,11 +600,9 @@ export const SectorEdit = ({ sector, area }: Props) => {
                   </div>
 
                   <div className='border-surface-border flex items-center gap-3 border-t px-3 py-2.5'>
-                    <button
-                      type='button'
-                      role='switch'
-                      aria-checked={sectorMarkers != null && sectorMarkers.length > 0}
-                      onClick={() => {
+                    <FormSwitch
+                      checked={sectorMarkers != null && sectorMarkers.length > 0}
+                      onChange={() => {
                         if (sectorMarkers == null || sectorMarkers.length === 0) {
                           if (sectorId) {
                             setSectorMarkers(
@@ -637,18 +615,9 @@ export const SectorEdit = ({ sector, area }: Props) => {
                           setSectorMarkers([]);
                         }
                       }}
-                      className={cn(
-                        'focus-visible:ring-brand-border/70 relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2',
-                        sectorMarkers != null && sectorMarkers.length > 0 ? 'bg-brand' : 'bg-slate-700',
-                      )}
-                    >
-                      <span
-                        className={cn(
-                          'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                          sectorMarkers != null && sectorMarkers.length > 0 ? 'translate-x-5' : 'translate-x-0',
-                        )}
-                      />
-                    </button>
+                      variant='brand'
+                      aria-label='Include all markers in sector'
+                    />
                     <span className='text-[11px] font-medium text-slate-300 sm:text-[12px]'>
                       Include all markers in sector
                     </span>
@@ -731,7 +700,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
               <button
                 type='button'
                 onClick={() => navigate(sectorId ? `/sector/${sectorId}` : `/area/${areaId}`)}
-                className='bg-surface-nav border-surface-border hover:bg-surface-hover type-label rounded-lg border px-6 py-2.5 opacity-85 transition-all hover:opacity-100'
+                className='form-footer-cancel'
               >
                 Cancel
               </button>

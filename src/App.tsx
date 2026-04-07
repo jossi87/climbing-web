@@ -1,4 +1,5 @@
 import AppRoutes from './routes/AppRoutes';
+import { appShellLightBackdropStripClass } from './design/twInk';
 import { MetaProvider } from './shared/components/Meta';
 import Header from './shared/layout/Header';
 import Footer from './shared/layout/Footer';
@@ -15,10 +16,12 @@ const App = () => {
         >
           Skip to main content
         </a>
+        {/* Light: graphite band under sticky header — `appShellLightBackdropStripClass` in `design/twInk.ts`. */}
+        <div aria-hidden className={appShellLightBackdropStripClass} />
         <Header />
         <main
           id='main-content'
-          className='max-w-container mx-auto flex w-full min-w-0 grow flex-col px-4 pt-0 pb-10 sm:px-6 sm:pt-0 sm:pb-10 lg:px-8 lg:pt-4 lg:pb-6 xl:pt-5 xl:pb-8'
+          className='max-w-container relative z-[46] mx-auto flex w-full min-w-0 grow flex-col px-4 pt-0 pb-10 sm:px-6 sm:pt-0 sm:pb-10 lg:px-8 lg:pt-4 lg:pb-6 xl:pt-5 xl:pb-8'
         >
           <Suspense
             fallback={

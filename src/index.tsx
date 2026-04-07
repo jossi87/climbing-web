@@ -5,6 +5,7 @@ import { Auth0Provider } from '@auth0/auth0-react';
 import App from './App';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DataReloader } from './shared/providers/DataReloader';
+import { ThemeProvider } from './shared/providers/ThemeProvider';
 import { init, browserTracingIntegration, ErrorBoundary } from '@sentry/react';
 import { type ReactNode, lazy, Suspense } from 'react';
 
@@ -40,7 +41,7 @@ function ErrorFallback({ error, resetError }: { error: unknown; componentStack: 
         </div>
         <button
           onClick={resetError}
-          className='type-on-accent bg-brand mt-8 rounded-md px-6 py-2 text-[11px] font-semibold tracking-wide uppercase transition hover:brightness-110 active:scale-95'
+          className='btn-brand-solid mt-8 rounded-md px-6 py-2 text-[11px] font-semibold tracking-wide uppercase transition active:scale-95'
         >
           Try again
         </button>
@@ -80,13 +81,15 @@ const queryClient = new QueryClient({
 const Index = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
-      <ErrorBoundary fallback={ErrorFallback} onReset={() => window.location.reload()}>
-        <DataReloader>
-          <Auth0ProviderWithNavigate>
-            <App />
-          </Auth0ProviderWithNavigate>
-        </DataReloader>
-      </ErrorBoundary>
+      <ThemeProvider>
+        <ErrorBoundary fallback={ErrorFallback} onReset={() => window.location.reload()}>
+          <DataReloader>
+            <Auth0ProviderWithNavigate>
+              <App />
+            </Auth0ProviderWithNavigate>
+          </DataReloader>
+        </ErrorBoundary>
+      </ThemeProvider>
     </BrowserRouter>
     {APP_ENV === 'development' && (
       <Suspense fallback={null}>

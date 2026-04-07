@@ -9,6 +9,11 @@ import type { components } from '../../@types/buldreinfo/swagger';
 import { ProblemsMap } from '../../shared/components/TableOfContents/ProblemsMap';
 import { Filter, Download, Edit, Trash2, Database } from 'lucide-react';
 import { Card, SectionHeader } from '../../shared/ui';
+import {
+  climbingRouteUsesPassiveGear,
+  formatPassiveGearMarkerLine,
+  formatRouteTypeLabel,
+} from '../../utils/routeTradGear';
 
 type Props = { filterOpen?: boolean };
 
@@ -33,6 +38,7 @@ type FilterProblem = {
   todo?: boolean;
   text: string;
   subText?: string;
+  passiveGearTooltip?: string;
   lat?: number;
   lng?: number;
   faYear: number;
@@ -134,8 +140,12 @@ export const Problems = ({ filterOpen }: Props) => {
                       problems:
                         sector.problems?.map((problem) => {
                           const metaParts: string[] = [];
+                          let passiveGearTooltip: string | undefined;
                           if (meta.isClimbing) {
-                            if (problem.t?.subType) metaParts.push(problem.t.subType);
+                            const typeLine = formatRouteTypeLabel(problem.t?.type, problem.t?.subType);
+                            if (typeLine && climbingRouteUsesPassiveGear(typeLine)) {
+                              passiveGearTooltip = formatPassiveGearMarkerLine(typeLine, problem.numPitches);
+                            }
                             if ((problem.numPitches ?? 0) > 1) metaParts.push(`${problem.numPitches}p`);
                           }
                           if (problem.numTicks) {
@@ -172,6 +182,7 @@ export const Problems = ({ filterOpen }: Props) => {
                             subText: problem.description,
                             faYear: problem.faYear ?? 0,
                             mAsl: (problem.startingAltitude ?? 0) > 0 ? (problem.startingAltitude ?? 0) : (cElev ?? 0),
+                            passiveGearTooltip,
                           } satisfies FilterProblem;
                         }) ?? [],
                     }) satisfies FilterSector,
@@ -226,21 +237,21 @@ export const Problems = ({ filterOpen }: Props) => {
 
           {!visible && filteredProblems > 0 && (
             <div className='px-4 pb-2 sm:px-5'>
-              <div className='flex flex-col justify-between gap-3 rounded-lg border border-orange-500/20 bg-orange-500/10 p-3 sm:flex-row sm:items-center'>
-                <div className='text-[11px] text-orange-300 sm:text-[12px]'>
+              <div className='light:border-amber-600/35 light:bg-amber-100/65 flex flex-col justify-between gap-3 rounded-lg border border-orange-500/20 bg-orange-500/10 p-3 sm:flex-row sm:items-center'>
+                <div className='light:text-amber-900 text-[11px] text-orange-300 sm:text-[12px]'>
                   Active filter hides{' '}
                   {description(filteredRegions, filteredAreas, filteredSectors, filteredProblems, things)}.
                 </div>
                 <div className='flex shrink-0 flex-wrap items-center gap-2'>
                   <button
                     onClick={() => dispatch({ action: 'open-filter' })}
-                    className='inline-flex h-8 items-center gap-1.5 rounded-full border border-orange-400/35 bg-orange-500/15 px-2.5 text-[11px] leading-none font-medium text-orange-300 transition-colors hover:bg-orange-500/25 sm:text-[12px]'
+                    className='light:border-amber-600/55 light:bg-amber-200/85 light:text-amber-900 light:hover:bg-amber-300/85 inline-flex h-8 items-center gap-1.5 rounded-full border border-orange-400/35 bg-orange-500/15 px-2.5 text-[11px] leading-none font-medium text-orange-300 transition-colors hover:bg-orange-500/25 sm:text-[12px]'
                   >
                     <Edit size={11} /> Edit filter
                   </button>
                   <button
                     onClick={() => dispatch({ action: 'reset', section: 'all' })}
-                    className='border-surface-border bg-surface-raised hover:bg-surface-raised-hover inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[11px] leading-none font-medium text-slate-300 transition-colors hover:text-slate-200 sm:text-[12px]'
+                    className='border-surface-border bg-surface-raised hover:bg-surface-raised-hover light:border-slate-400/70 light:bg-slate-100 light:hover:bg-slate-200/80 inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[11px] leading-none font-medium text-slate-300 transition-colors hover:text-slate-200 sm:text-[12px]'
                   >
                     <Trash2 size={11} /> Clear
                   </button>

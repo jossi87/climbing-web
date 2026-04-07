@@ -27,4 +27,8 @@ export const tabBarButtonClassNameInline = (isActive: boolean) =>
   cn(tabBarButtonClassName(isActive), 'flex-none px-2 sm:px-3');
 
 export const tabBarIconClassName = (isActive: boolean) =>
-  cn(isActive ? 'text-slate-50' : 'text-slate-200 group-hover:text-slate-100');
+  cn(
+    isActive
+      ? 'text-slate-50 light:text-slate-950'
+      : 'text-slate-300 group-hover:text-slate-100 light:text-slate-500 light:group-hover:text-slate-900',
+  );

@@ -20,6 +20,8 @@ import ProblemList from '../../shared/components/ProblemList';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { DownloadButton } from '../../shared/ui/DownloadButton';
 import { Card, PageCardBreadcrumbRow } from '../../shared/ui';
+import { TradGearMarker } from '../../shared/ui/TradGearMarker';
+import { climbingRouteUsesPassiveGear, formatRouteTypeLabel } from '../../utils/routeTradGear';
 import {
   Check,
   ChevronRight,
@@ -42,6 +44,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
+import { twInk } from '../../design/twInk';
 import {
   tabBarButtonClassName,
   tabBarButtonClassNameInline,
@@ -54,7 +57,7 @@ import {
   profileRowRootClass,
   tickCommentSmall,
   tickFlags,
-  tickProblemLink,
+  tickProblemLinkWithStatus,
   tickWhenGrade,
 } from '../../shared/components/Profile/profileRowTypography';
 
@@ -70,6 +73,15 @@ const areaListLockInlineClass = 'ml-0.5 inline-block align-middle';
 const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
   const { isClimbing, isBouldering } = useMeta();
 
+  const passiveGearAfterGrade =
+    isClimbing && problem.t
+      ? (() => {
+          const typeLabel = formatRouteTypeLabel(problem.t.type, problem.t.subType);
+          if (!typeLabel || !climbingRouteUsesPassiveGear(typeLabel)) return null;
+          return <TradGearMarker line={typeLabel} />;
+        })()
+      : null;
+
   const faMetaBlock = (() => {
     const segments: { key: string; node: ReactNode }[] = [];
     const faText = (problem.fa ?? '').trim();
@@ -78,8 +90,7 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
     if (faLine) {
       segments.push({ key: 'fa', node: faLine });
     }
-    if (isClimbing && problem.t?.subType) {
-      segments.push({ key: 'subtype', node: problem.t.subType });
+    if (isClimbing) {
       if ((problem.numPitches ?? 1) > 1) {
         segments.push({
           key: 'pitches',
@@ -107,15 +118,13 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
     if (segments.length === 0) return null;
 
     const metaMuted = tickFlags;
-    /** Route type — same line as FA meta but reads as primary (no chip chrome). */
-    const metaTypeEmphasis = 'font-medium text-slate-100 antialiased';
 
     return (
       <>
         {segments.map((seg, i) => (
           <Fragment key={seg.key}>
             {i > 0 ? <ProfileRowTextSep /> : null}
-            <span className={seg.key === 'subtype' ? metaTypeEmphasis : metaMuted}>{seg.node}</span>
+            <span className={metaMuted}>{seg.node}</span>
           </Fragment>
         ))}
       </>
@@ -179,7 +188,7 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
       </>
     ) : null;
 
-  const iconRunBeforeSector = !!((problem.stars && problem.stars > 0) || lockAndMedia);
+  const iconRunBeforeSector = !!(passiveGearAfterGrade || (problem.stars && problem.stars > 0) || lockAndMedia);
   /** Middle dot only between text segments; plain space after star / lock / media icons. */
   const faMetaLead = sectorName || !iconRunBeforeSector ? <ProfileRowTextSep /> : ' ';
 
@@ -195,13 +204,12 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
         ) : null}
         <span
           className={cn(
-            tickWhenGrade,
-            'mr-1.5 inline-block tabular-nums sm:mr-2',
+            'mr-1.5 inline-block font-normal tabular-nums antialiased sm:mr-2',
             problem.ticked
-              ? designContract.ascentStatus.ticked
+              ? cn(designContract.ascentStatus.ticked, 'font-semibold')
               : problem.todo
-                ? designContract.ascentStatus.todo
-                : null,
+                ? cn(designContract.ascentStatus.todo, 'font-semibold')
+                : tickWhenGrade,
           )}
           title={
             problem.ticked ? 'Ticked' : problem.todo ? 'On to-do list' : `${isBouldering ? 'Boulder' : 'Route'} number`
@@ -211,13 +219,18 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
         </span>
         <Link
           to={`/problem/${problem.id}`}
-          className={cn(tickProblemLink, problem.broken ? 'line-through opacity-60' : undefined)}
+          className={tickProblemLinkWithStatus({
+            ticked: !!problem.ticked,
+            todo: !!problem.todo,
+            broken: !!problem.broken,
+          })}
         >
           {problem.name}
         </Link>
         {problem.grade ? (
           <span className={cn(tickWhenGrade, 'ml-1 whitespace-nowrap tabular-nums')}>{problem.grade}</span>
         ) : null}
+        {passiveGearAfterGrade}
         {problem.stars ? (
           <span className='ml-1 inline-block align-[-0.15em] opacity-90'>
             <Stars numStars={problem.stars} size={11} />
@@ -451,9 +464,9 @@ const Area = () => {
   const areaAccessRestrictions =
     data.accessClosed || data.noDogsAllowed || data.accessInfo ? (
       <div className={cn('min-w-0 space-y-2', designContract.typography.detailBody)}>
-        {data.accessClosed && <p className='text-pretty text-red-300/90'>{data.accessClosed}</p>}
+        {data.accessClosed && <p className='text-access-danger text-pretty'>{data.accessClosed}</p>}
         {(data.noDogsAllowed || data.accessInfo) && (
-          <div className='space-y-1.5 text-orange-300/90'>
+          <div className='text-access-caution space-y-1.5'>
             {data.noDogsAllowed && <NoDogsAllowed />}
             {data.accessInfo && <p className='text-pretty'>{data.accessInfo}</p>}
           </div>
@@ -472,16 +485,16 @@ const Area = () => {
           breadcrumb={
             <nav
               className={cn(
-                'flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-2 text-pretty break-words',
+                'flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-2 text-pretty break-words',
                 designContract.typography.detailBody,
               )}
             >
-              <Link to='/areas' className='inline align-middle text-slate-400 transition-colors hover:text-slate-200'>
+              <Link to='/areas' className={designContract.typography.breadcrumbLink}>
                 Areas
               </Link>
-              <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
-              <span className='inline-flex max-w-full min-w-0 items-center gap-1.5 align-middle'>
-                <span className='min-w-0 font-semibold text-slate-50'>{data.name}</span>
+              <ChevronRight size={12} className='shrink-0 translate-y-px opacity-30' aria-hidden />
+              <span className='inline-flex max-w-full min-w-0 items-baseline gap-1.5'>
+                <span className='light:text-slate-950 min-w-0 font-semibold text-slate-50'>{data.name}</span>
                 <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
               </span>
             </nav>
@@ -493,23 +506,25 @@ const Area = () => {
                   to={`/sector/edit/${data.id}/0`}
                   title='Add sector'
                   aria-label='Add sector'
+                  data-ph-action='add'
                   className={cn(
                     designContract.controls.pageHeaderIconButton,
                     designContract.controls.pageHeaderIconButtonAdd,
                   )}
                 >
-                  <Plus className={designContract.controls.pageHeaderIconGlyph} />
+                  <Plus className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
                 </Link>
                 <Link
                   to={`/area/edit/${data.id}`}
                   title='Edit area'
                   aria-label='Edit area'
+                  data-ph-action='edit'
                   className={cn(
                     designContract.controls.pageHeaderIconButton,
-                    'border-amber-300/45 bg-amber-400/18 text-amber-100 hover:bg-amber-400/28',
+                    designContract.controls.pageHeaderIconButtonEdit,
                   )}
                 >
-                  <Edit className={designContract.controls.pageHeaderIconGlyph} />
+                  <Edit className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
                 </Link>
               </>
             ) : null
@@ -543,7 +558,7 @@ const Area = () => {
                       strokeWidth={isActive ? 2.3 : 2}
                       className={tabBarIconClassName(isActive)}
                     />
-                    <span className='type-small block min-w-0 truncate leading-none sm:text-[13px]'>{t.label}</span>
+                    <span className={designContract.controls.tabBarLabel}>{t.label}</span>
                   </button>
                 );
               })}
@@ -671,7 +686,7 @@ const Area = () => {
                 strokeWidth={activeSectorTab === 'sectors' ? 2.3 : 2}
                 className={tabBarIconClassName(activeSectorTab === 'sectors')}
               />
-              <span className='type-small font-semibold whitespace-nowrap'>
+              <span className={designContract.controls.tabBarLabelInline}>
                 Sectors{' '}
                 <span className={cn(designContract.typography.micro, 'font-normal text-slate-500 tabular-nums')}>
                   ({data.sectors?.length ?? 0})
@@ -690,7 +705,7 @@ const Area = () => {
                 strokeWidth={activeSectorTab === 'problems' ? 2.3 : 2}
                 className={tabBarIconClassName(activeSectorTab === 'problems')}
               />
-              <span className='type-small font-semibold whitespace-nowrap'>
+              <span className={designContract.controls.tabBarLabelInline}>
                 {meta.isBouldering ? 'Problems' : 'Routes'}{' '}
                 <span className={cn(designContract.typography.micro, 'font-normal text-slate-500 tabular-nums')}>
                   ({problemRows.length})
@@ -703,6 +718,24 @@ const Area = () => {
               <div className={cn('min-w-0', designContract.layout.areaSectorCardGrid)}>
                 {data.sectors?.map((sector) => {
                   const sectorHasThumb = !!sector.randomMediaId;
+                  /** Thumbnails + dark placeholders: light ink remaps break `text-slate-*`; use overlay tokens or `light:` for empty tiles. */
+                  const sectorCardTitleClass = cn(
+                    'line-clamp-2 min-w-0 flex-1 font-medium tracking-tight text-[0.95rem] leading-tight sm:text-[1.1rem] md:text-[1.25rem]',
+                    sectorHasThumb
+                      ? 'photo-overlay-fg drop-shadow-md'
+                      : cn('text-slate-100 drop-shadow-md light:drop-shadow-none', twInk.lightTextSlate900),
+                  );
+                  const sectorCardMetaClass = cn(
+                    'mt-1 flex min-w-0 flex-col gap-y-0.5 text-[8px] leading-none sm:mt-1.5 sm:text-[9px]',
+                    sectorHasThumb ? 'photo-overlay-fg-muted' : 'text-slate-400 light:text-slate-600',
+                  );
+                  /** On photo scrims, use `--color-status-*-imagery` (same as dark defaults; light body uses muted status tokens). */
+                  const sectorCardTickedClass = sectorHasThumb
+                    ? 'text-[color:var(--color-status-ticked-imagery)]'
+                    : designContract.ascentStatus.ticked;
+                  const sectorCardTodoClass = sectorHasThumb
+                    ? 'text-[color:var(--color-status-todo-imagery)]'
+                    : designContract.ascentStatus.todo;
                   return (
                     <div
                       key={sector.id}
@@ -713,15 +746,21 @@ const Area = () => {
                         className='group relative block min-h-[12rem] overflow-hidden rounded-xl sm:min-h-[14rem] md:min-h-[15rem]'
                       >
                         <div
-                          className='absolute inset-0 bg-gradient-to-br from-slate-600 via-slate-800 to-slate-950'
+                          className={cn(
+                            'absolute inset-0 bg-gradient-to-br from-slate-600 via-slate-800 to-slate-950',
+                            'light:from-slate-200 light:via-slate-300 light:to-slate-400',
+                          )}
                           aria-hidden
                         />
                         <div
-                          className='pointer-events-none absolute inset-0 z-[1] flex items-center justify-center bg-[radial-gradient(ellipse_85%_70%_at_50%_42%,rgba(148,163,184,0.22),transparent_65%)]'
+                          className={cn(
+                            'pointer-events-none absolute inset-0 z-[1] flex items-center justify-center bg-[radial-gradient(ellipse_85%_70%_at_50%_42%,rgba(148,163,184,0.22),transparent_65%)]',
+                            'light:bg-[radial-gradient(ellipse_85%_70%_at_50%_42%,rgba(15,23,42,0.07),transparent_65%)]',
+                          )}
                           aria-hidden
                         >
                           <MapPinned
-                            className='h-[4.5rem] w-[4.5rem] text-slate-300/55 sm:h-[5.25rem] sm:w-[5.25rem] md:h-24 md:w-24'
+                            className='light:text-slate-600/40 h-[4.5rem] w-[4.5rem] text-slate-300/55 sm:h-[5.25rem] sm:w-[5.25rem] md:h-24 md:w-24'
                             strokeWidth={1.15}
                           />
                         </div>
@@ -741,16 +780,25 @@ const Area = () => {
                           className={cn(
                             'absolute inset-0 z-[3]',
                             sectorHasThumb
-                              ? 'bg-linear-to-t from-black/95 via-black/55 to-black/20'
-                              : 'bg-linear-to-t from-black/90 via-black/40 to-slate-800/25',
+                              ? cn(
+                                  'bg-linear-to-t from-black/72 via-black/32 to-transparent',
+                                  'light:from-black/52 light:via-black/18 light:to-transparent',
+                                )
+                              : cn(
+                                  'bg-linear-to-t from-black/90 via-black/40 to-slate-800/25',
+                                  'light:from-transparent light:via-transparent light:to-slate-950/10',
+                                ),
                           )}
                         />
-                        <div className='absolute inset-0 z-[3] bg-black/25 opacity-0 transition-opacity duration-300 group-hover:opacity-100' />
+                        <div
+                          className={cn(
+                            'absolute inset-0 z-[3] bg-black/16 opacity-0 transition-opacity duration-300 group-hover:opacity-100',
+                            'light:bg-slate-900/12',
+                          )}
+                        />
                         <div className='relative z-[4] flex min-h-[12rem] flex-col justify-end p-2.5 sm:min-h-[14rem] sm:p-3 md:min-h-[15rem] md:p-4'>
                           <div className='flex items-start justify-between gap-2'>
-                            <h4 className='type-h2 line-clamp-2 min-w-0 flex-1 text-[0.95rem] leading-tight text-slate-100 drop-shadow-md sm:text-[1.1rem] md:text-[1.25rem]'>
-                              {sector.name}
-                            </h4>
+                            <h4 className={sectorCardTitleClass}>{sector.name}</h4>
                             <span className='shrink-0 drop-shadow'>
                               <LockSymbol
                                 lockedAdmin={!!sector.lockedAdmin}
@@ -759,7 +807,7 @@ const Area = () => {
                             </span>
                           </div>
                           {sector.typeNumTickedTodo && sector.typeNumTickedTodo.length > 0 && (
-                            <div className='mt-1 flex min-w-0 flex-col gap-y-0.5 text-[8px] leading-none text-slate-400 sm:mt-1.5 sm:text-[9px]'>
+                            <div className={sectorCardMetaClass}>
                               {sector.typeNumTickedTodo.map((x, i) => {
                                 const n = x.num ?? 0;
                                 const nt = x.ticked ?? 0;
@@ -777,12 +825,10 @@ const Area = () => {
                                         <Check
                                           size={9}
                                           strokeWidth={2.5}
-                                          className={cn('shrink-0', designContract.ascentStatus.ticked)}
+                                          className={cn('shrink-0', sectorCardTickedClass)}
                                           aria-hidden
                                         />
-                                        <span
-                                          className={cn('font-medium tabular-nums', designContract.ascentStatus.ticked)}
-                                        >
+                                        <span className={cn('font-medium tabular-nums', sectorCardTickedClass)}>
                                           {nt}
                                         </span>
                                       </span>
@@ -792,12 +838,10 @@ const Area = () => {
                                         <Bookmark
                                           size={9}
                                           strokeWidth={2.5}
-                                          className={cn('shrink-0', designContract.ascentStatus.todo)}
+                                          className={cn('shrink-0', sectorCardTodoClass)}
                                           aria-hidden
                                         />
-                                        <span
-                                          className={cn('font-medium tabular-nums', designContract.ascentStatus.todo)}
-                                        >
+                                        <span className={cn('font-medium tabular-nums', sectorCardTodoClass)}>
                                           {nd}
                                         </span>
                                       </span>
@@ -808,7 +852,7 @@ const Area = () => {
                             </div>
                           )}
                           {sector.accessClosed && (
-                            <p className='type-micro mt-1 font-semibold text-red-300/95 drop-shadow'>
+                            <p className='type-micro text-access-danger mt-1 font-semibold drop-shadow'>
                               {sector.accessClosed}
                             </p>
                           )}

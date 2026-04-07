@@ -61,7 +61,7 @@ function ProblemSocialCardHeader({
   iconClassName: string;
 }) {
   return (
-    <div className='border-surface-border/50 flex items-center gap-2.5 border-b px-3 py-3 sm:px-4'>
+    <div className='border-surface-border/50 flex items-center gap-2.5 border-b px-3 py-2.5 sm:px-4 md:py-2'>
       <Icon size={15} strokeWidth={2.25} className={cn('shrink-0', iconClassName)} aria-hidden />
       <div className='flex min-w-0 items-baseline gap-2'>
         <span className='text-sm font-semibold tracking-tight text-slate-100'>{title}</span>
@@ -273,18 +273,18 @@ export const Problem = () => {
     data.sectorAccessInfo ? (
       <div className={cn('min-w-0 space-y-2', designContract.typography.detailBody)}>
         {data.broken && (
-          <p className='text-pretty text-red-300/90'>
+          <p className='text-access-danger text-pretty'>
             <span className='font-medium'>{meta.isBouldering ? 'Problem' : 'Route'} broken:</span> {data.broken}
           </p>
         )}
         {(data.areaAccessClosed || data.sectorAccessClosed) && (
-          <p className='text-pretty text-red-300/90'>
+          <p className='text-access-danger text-pretty'>
             {(data.areaAccessClosed ? 'Area' : 'Sector') + ' closed: '}
             {(data.areaAccessClosed || '') + (data.sectorAccessClosed || '')}
           </p>
         )}
         {(data.areaNoDogsAllowed || data.areaAccessInfo || data.sectorAccessInfo) && (
-          <div className='space-y-1.5 text-orange-300/90'>
+          <div className='text-access-caution space-y-1.5'>
             {data.areaNoDogsAllowed && <NoDogsAllowed />}
             <Linkify>
               {data.areaAccessInfo && <p className='text-pretty'>{data.areaAccessInfo}</p>}
@@ -365,40 +365,29 @@ export const Problem = () => {
             <nav
               aria-label='Breadcrumb'
               className={cn(
-                'flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-2 text-pretty break-words',
+                /* `items-baseline` keeps one text line with multi-part current crumb (mono # + title + grade). */
+                'flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-2 text-pretty break-words',
                 designContract.typography.detailBody,
               )}
             >
-              <Link
-                to='/areas'
-                className='inline align-middle tracking-tight text-slate-400 transition-colors hover:text-slate-200'
-              >
+              <Link to='/areas' className={designContract.typography.breadcrumbLinkTight}>
                 Areas
               </Link>
-              <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
-              <Link
-                to={`/area/${data.areaId}`}
-                className='inline min-w-0 align-middle tracking-tight text-slate-400 transition-colors hover:text-slate-200'
-              >
+              <ChevronRight size={12} className='shrink-0 translate-y-px opacity-30' aria-hidden />
+              <Link to={`/area/${data.areaId}`} className={designContract.typography.breadcrumbLinkTight}>
                 {data.areaName}
               </Link>
               <LockSymbol lockedAdmin={!!data.areaLockedAdmin} lockedSuperadmin={!!data.areaLockedSuperadmin} />
-              <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
-              <Link
-                to={`/sector/${data.sectorId}`}
-                className='inline min-w-0 align-middle tracking-tight text-slate-400 transition-colors hover:text-slate-200'
-              >
+              <ChevronRight size={12} className='shrink-0 translate-y-px opacity-30' aria-hidden />
+              <Link to={`/sector/${data.sectorId}`} className={designContract.typography.breadcrumbLinkTight}>
                 {data.sectorName}
               </Link>
               <LockSymbol lockedAdmin={!!data.sectorLockedAdmin} lockedSuperadmin={!!data.sectorLockedSuperadmin} />
-              <ChevronRight size={12} className='inline-block shrink-0 align-middle opacity-30' />
-              <span
-                className='inline-flex max-w-full min-w-0 flex-nowrap items-baseline gap-x-1.5 align-middle'
-                aria-current='page'
-              >
+              <ChevronRight size={12} className='shrink-0 translate-y-px opacity-30' aria-hidden />
+              <span className='inline-flex max-w-full min-w-0 flex-nowrap items-baseline gap-x-1.5' aria-current='page'>
                 {hasDanger ? (
                   <span
-                    className='inline-flex shrink-0'
+                    className='inline-flex shrink-0 items-baseline'
                     role='img'
                     aria-label='Danger reported for this route'
                     title='Danger reported for this route'
@@ -413,19 +402,22 @@ export const Problem = () => {
                 ) : null}
                 <span
                   className={cn(
-                    designContract.typography.meta,
+                    /* Inherit row `detailBody` size — `text-sm` here lifted the whole current crumb vs links. */
                     'shrink-0 font-mono tabular-nums',
                     isTicked
-                      ? designContract.ascentStatus.ticked
+                      ? cn(designContract.ascentStatus.ticked, 'font-semibold')
                       : optimisticTodo
-                        ? designContract.ascentStatus.todo
-                        : 'text-slate-300',
+                        ? cn(designContract.ascentStatus.todo, 'font-semibold')
+                        : 'font-medium text-slate-300',
                   )}
                 >
                   #{data.nr}
                 </span>
                 <span className='inline-flex max-w-[min(100%,24rem)] min-w-0 items-baseline gap-x-1.5 sm:max-w-[min(100%,36rem)]'>
-                  <span className='min-w-0 truncate font-semibold tracking-tight text-slate-50' title={data.name}>
+                  <span
+                    className='light:text-slate-950 min-w-0 truncate font-semibold tracking-tight text-slate-50'
+                    title={data.name}
+                  >
                     {data.name}
                   </span>
                   <span
@@ -437,7 +429,7 @@ export const Problem = () => {
                     {data.grade}
                   </span>
                 </span>
-                <span className='inline-flex shrink-0 items-center'>
+                <span className='inline-flex shrink-0 items-baseline'>
                   <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
                 </span>
               </span>
@@ -450,6 +442,7 @@ export const Problem = () => {
                   <button
                     type='button'
                     title='Todo'
+                    data-ph-action={optimisticTodo ? 'todo-on' : undefined}
                     onClick={handleToggleTodo}
                     disabled={isPending}
                     className={cn(
@@ -469,6 +462,7 @@ export const Problem = () => {
                 <button
                   type='button'
                   title={isTicked ? 'Edit tick' : 'Tick'}
+                  data-ph-action={isTicked ? 'tick-on' : undefined}
                   onClick={() => setShowTickModal(true)}
                   className={cn(
                     designContract.controls.pageHeaderIconButton,
@@ -510,12 +504,13 @@ export const Problem = () => {
                     to={`/problem/edit/${data.sectorId}/${data.id}`}
                     title='Edit problem'
                     aria-label='Edit problem'
+                    data-ph-action='edit'
                     className={cn(
                       designContract.controls.pageHeaderIconButton,
-                      'border-amber-300/45 bg-amber-400/18 text-amber-100 hover:bg-amber-400/28',
+                      designContract.controls.pageHeaderIconButtonEdit,
                     )}
                   >
-                    <Edit className={designContract.controls.pageHeaderIconGlyph} />
+                    <Edit className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
                   </Link>
                 )}
                 {!meta.isAdmin && !meta.isSuperAdmin && (
@@ -523,12 +518,13 @@ export const Problem = () => {
                     to={`/problem/edit/media/${data.id}`}
                     title='Add media'
                     aria-label='Add media'
+                    data-ph-action='add'
                     className={cn(
                       designContract.controls.pageHeaderIconButton,
                       designContract.controls.pageHeaderIconButtonAdd,
                     )}
                   >
-                    <Plus className={designContract.controls.pageHeaderIconGlyph} />
+                    <Plus className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
                   </Link>
                 )}
               </>
@@ -558,7 +554,7 @@ export const Problem = () => {
                   strokeWidth={activeTab === 'overview' ? 2.3 : 2}
                   className={tabBarIconClassName(activeTab === 'overview')}
                 />
-                <span className='type-small block min-w-0 truncate leading-none sm:text-[13px]'>Overview</span>
+                <span className={designContract.controls.tabBarLabel}>Overview</span>
               </button>
               <button
                 type='button'
@@ -572,7 +568,7 @@ export const Problem = () => {
                   strokeWidth={activeTab === 'map' ? 2.3 : 2}
                   className={tabBarIconClassName(activeTab === 'map')}
                 />
-                <span className='type-small block min-w-0 truncate leading-none sm:text-[13px]'>Map</span>
+                <span className={designContract.controls.tabBarLabel}>Map</span>
               </button>
             </div>
             {activeTab === 'overview' ? (
@@ -704,8 +700,8 @@ export const Problem = () => {
       {showOverviewContent && (hasTicks || hasComments) ? (
         <div
           className={cn(
-            'grid grid-cols-1 gap-4',
-            hasTicks && hasComments ? 'md:grid-cols-2 md:items-start md:gap-5 lg:gap-6' : '',
+            'grid grid-cols-1 gap-3',
+            hasTicks && hasComments ? 'md:grid-cols-2 md:items-start md:gap-2.5' : '',
           )}
         >
           {hasTicks && (
@@ -716,7 +712,7 @@ export const Problem = () => {
                 icon={Check}
                 iconClassName={designContract.ascentStatus.ticked}
               />
-              <div className='pt-1 pb-4 sm:pb-5'>
+              <div className='pt-0.5 pb-3 sm:pb-3.5 md:pb-3'>
                 <ProblemTicks ticks={data.ticks || []} />
               </div>
             </Card>
@@ -729,7 +725,7 @@ export const Problem = () => {
                 icon={MessageSquare}
                 iconClassName='text-brand'
               />
-              <div className='pt-1 pb-4 sm:pb-5'>
+              <div className='pt-0.5 pb-3 sm:pb-3.5 md:pb-3'>
                 <ProblemComments
                   onShowCommentModal={setShowCommentModal}
                   problemId={+problemId}

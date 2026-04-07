@@ -46,7 +46,7 @@ export const VisibilitySelector = ({
       <select
         disabled={disabled}
         className={cn(
-          'bg-surface-nav border-surface-border focus:border-brand h-10 w-full cursor-pointer appearance-none rounded-lg border px-10 text-sm transition-all focus:outline-none disabled:cursor-not-allowed disabled:opacity-50',
+          'bg-surface-nav border-surface-border focus:border-brand-border h-10 w-full cursor-pointer appearance-none rounded-lg border px-10 text-sm transition-colors focus:ring-0 focus:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50',
           selectClassName,
         )}
         value={currentValue}

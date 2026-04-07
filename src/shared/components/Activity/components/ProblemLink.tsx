@@ -2,9 +2,11 @@ import { Link } from 'react-router-dom';
 import type { components } from '../../../../@types/buldreinfo/swagger';
 import { LockSymbol } from '../../../ui/Indicators';
 import { ProfileRowTextSep } from '../../Profile/ProfileRowTextSep';
-import { tickCragLink, tickFlags, tickProblemLink } from '../../Profile/profileRowTypography';
+import { tickCragLinkArea, tickCragLinkSector, tickFlags, tickProblemLink } from '../../Profile/profileRowTypography';
 import { designContract } from '../../../../design/contract';
 import { cn } from '../../../../lib/utils';
+import { TradGearMarker } from '../../../ui/TradGearMarker';
+import { climbingRouteUsesPassiveGear, formatRouteTypeLabel } from '../../../../utils/routeTradGear';
 
 const feed = designContract.typography.feed;
 
@@ -49,13 +51,17 @@ export const ProblemLink = ({
   compactEnd = false,
   problemFirst = false,
 }: Props) => {
-  const crag = tone === 'soft' ? softCragLink : tickCragLink;
+  const cragArea = tone === 'soft' ? softCragLink : tickCragLinkArea;
+  const cragSector = tone === 'soft' ? softCragLink : tickCragLinkSector;
   const problem = tone === 'soft' ? softProblemLink : tickProblemLink;
   const gradeBesideProblem = tone === 'soft' ? softGradeBesideProblem : defaultGradeBesideProblem;
   /** One class stack for label-like spans (optional API type, subtype); avoids mixing with {@link tickFlags} in activity rows. */
   const metaSpanClass = flagsClassName ?? tickFlags;
   const showGrade = !!(a.grade && a.grade !== '.');
   const showSubtype = !!(a.problemSubtype && a.problemSubtype !== '.');
+  const subtypeForLabel = showSubtype ? a.problemSubtype : '';
+  const routeTypeLabel = formatRouteTypeLabel(type, subtypeForLabel);
+  const showPassiveGearIcon = climbingRouteUsesPassiveGear(routeTypeLabel);
   const hasLock = !!(
     a.areaLockedAdmin ||
     a.sectorLockedAdmin ||
@@ -69,11 +75,11 @@ export const ProblemLink = ({
 
   const locationPair = (
     <>
-      <Link to={`/area/${a.areaId}`} className={crag}>
+      <Link to={`/area/${a.areaId}`} className={cragArea}>
         {a.areaName?.trim()}
       </Link>
       <FeedRowSep soft={soft} />
-      <Link to={`/sector/${a.sectorId}`} className={crag}>
+      <Link to={`/sector/${a.sectorId}`} className={cragSector}>
         {a.sectorName?.trim()}
       </Link>
     </>
@@ -88,15 +94,12 @@ export const ProblemLink = ({
         {a.problemName?.trim()}
       </Link>
       {showGrade ? <span className={cn(gradeBesideProblem, 'ml-1 whitespace-nowrap')}>{a.grade}</span> : null}
-      {type || showSubtype ? (
-        <>
-          {!showGrade ? <FeedRowSep soft={soft} /> : ' '}
-          {type ? <span className={cn(typeBesideGrade, showGrade && 'ml-1')}>{type}</span> : null}
-          {type && showSubtype ? <FeedRowSep soft={soft} /> : null}
-          {showSubtype ? (
-            <span className={cn(typeBesideGrade, showGrade && !type && 'ml-1')}>{a.problemSubtype}</span>
-          ) : null}
-        </>
+      {showPassiveGearIcon ? (
+        <TradGearMarker
+          line={routeTypeLabel}
+          className={typeBesideGrade}
+          iconClassName={tone === 'soft' ? 'opacity-85 light:opacity-100' : undefined}
+        />
       ) : null}
     </>
   );

@@ -66,7 +66,7 @@ function UserFactLink({
   return (
     <Link
       to={`/user/${userId}`}
-      className={cn(factSegmentClass, 'max-w-full min-w-0 gap-1 transition-colors hover:text-slate-100')}
+      className={cn(factSegmentClass, 'hover:text-brand max-w-full min-w-0 gap-1 transition-colors')}
     >
       <Avatar
         name={name}
@@ -107,7 +107,7 @@ function todoUserList(todos: ProblemTodo[]) {
       {withUser.map((u, idx) => (
         <span key={u.idUser ?? idx}>
           {idx > 0 ? ', ' : null}
-          <Link to={`/user/${u.idUser}`} className='text-slate-300 transition-colors hover:text-slate-100'>
+          <Link to={`/user/${u.idUser}`} className='hover:text-brand text-slate-300 transition-colors'>
             {u.name}
           </Link>
         </span>

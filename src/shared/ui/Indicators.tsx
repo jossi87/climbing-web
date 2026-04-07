@@ -1,4 +1,4 @@
-import { Star, StarHalf, Lock, LockKeyhole } from 'lucide-react';
+import { Star, Lock, LockKeyhole } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 const lockIconStroke = 2.35;
@@ -41,6 +41,32 @@ export const LockSymbol = ({
   return null;
 };
 
+/** Lucide `StarHalf` is stroke-only for the left outline — clip a filled `Star` for a real half-fill. */
+function StarHalfFilled({
+  size,
+  filledClass,
+  outlineClass,
+}: {
+  size: number;
+  filledClass: string;
+  outlineClass: string;
+}) {
+  return (
+    <span className='relative inline-block shrink-0 align-[-0.125em]' style={{ width: size, height: size }} aria-hidden>
+      <Star
+        size={size}
+        strokeWidth={2.5}
+        fill='none'
+        stroke='currentColor'
+        className={cn('pointer-events-none absolute top-0 left-0', outlineClass)}
+      />
+      <span className='pointer-events-none absolute top-0 left-0 h-full w-[50%] overflow-hidden'>
+        <Star size={size} fill='currentColor' stroke='currentColor' className={cn(filledClass, 'min-w-0')} />
+      </span>
+    </span>
+  );
+}
+
 export const Stars = ({
   numStars = -1,
   includeStarOutlines = true,
@@ -55,14 +81,18 @@ export const Stars = ({
   const fullStars = Math.floor(numStars);
   const hasHalfStar = numStars % 1 !== 0;
   const stars = [];
-  const filledClass = 'fill-slate-100 text-slate-100';
-  /** Empty slots: white outline — strong stroke so empty stars read clearly on dark panels. */
-  const outlineClass = 'fill-none text-white/70';
+  const filledClass = 'stars-rating-filled';
+  const outlineClass = 'stars-rating-empty';
 
   for (let i = 0; i < 3; i++) {
-    if (i < fullStars) stars.push(<Star key={i} size={size} className={filledClass} />);
-    else if (i === fullStars && hasHalfStar) stars.push(<StarHalf key={i} size={size} className={filledClass} />);
-    else if (includeStarOutlines) stars.push(<Star key={i} size={size} strokeWidth={2.5} className={outlineClass} />);
+    if (i < fullStars)
+      stars.push(<Star key={i} size={size} fill='currentColor' stroke='currentColor' className={filledClass} />);
+    else if (i === fullStars && hasHalfStar)
+      stars.push(<StarHalfFilled key={i} size={size} filledClass={filledClass} outlineClass={outlineClass} />);
+    else if (includeStarOutlines)
+      stars.push(
+        <Star key={i} size={size} strokeWidth={2.5} fill='none' stroke='currentColor' className={outlineClass} />,
+      );
   }
-  return <div className='inline-flex items-center gap-0.5'>{stars}</div>;
+  return <div className='stars-rating inline-flex items-center gap-0.5'>{stars}</div>;
 };

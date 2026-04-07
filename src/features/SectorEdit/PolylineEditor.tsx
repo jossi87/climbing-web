@@ -171,10 +171,7 @@ export const PolylineEditor = ({ coordinates, parking, onChange, upload }: Props
                   Import paths from GPS watches, Strava, or Fitbit to generate the approach path automatically.
                 </p>
               </div>
-              <button
-                type='button'
-                className='type-label type-on-accent bg-brand mt-2 rounded-lg px-4 py-2 transition-all hover:brightness-110'
-              >
+              <button type='button' className='type-label btn-brand-solid mt-2 rounded-lg px-4 py-2 transition-all'>
                 Select File
               </button>
             </div>

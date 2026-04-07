@@ -81,6 +81,7 @@ const Areas = () => {
                 to={`/area/edit/-1`}
                 title='Add area'
                 aria-label='Add area'
+                data-ph-action='add'
                 className={cn(
                   designContract.controls.pageHeaderIconButton,
                   designContract.controls.pageHeaderIconButtonAdd,
@@ -135,7 +136,6 @@ const Areas = () => {
               showSatelliteImage={false}
               clusterMarkers={!showForDevelopers}
               flyToId={null}
-              mapBorderless
             />
           </div>
 

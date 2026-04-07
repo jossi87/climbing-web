@@ -7,6 +7,7 @@ import { ArrowUpCircle, Compass, Sun } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 import { profileRowMiddleDotClass } from '../Profile/ProfileRowTextSep';
+import { TradGearMarker } from '../../ui/TradGearMarker';
 
 const JumpToTop = ({ compact = false }: { compact?: boolean }) => (
   <button
@@ -50,6 +51,7 @@ export type Props = {
           Pick<components['schemas']['Problem'], 'stars' | 'ticked' | 'todo' | 'coordinates' | 'broken'> & {
             text?: string;
             subText?: string;
+            passiveGearTooltip?: string;
           })[];
       })[];
   })[];
@@ -244,7 +246,12 @@ export const TableOfContents = ({ areas, header, subHeader, compact = false, sho
                             >
                               {problem.name}
                             </Link>
-                            <span className='text-slate-400 normal-case'>{problem.grade}</span>
+                            <span className='inline-flex min-w-0 items-baseline gap-0.5'>
+                              <span className='text-slate-400 normal-case'>{problem.grade}</span>
+                              {problem.passiveGearTooltip ? (
+                                <TradGearMarker line={problem.passiveGearTooltip} className='ml-0 shrink-0' />
+                              ) : null}
+                            </span>
                             {problem.stars ? (
                               <div className='flex origin-left scale-75 items-center'>
                                 <Stars numStars={problem.stars} size={14} />

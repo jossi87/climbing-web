@@ -6,7 +6,9 @@ import { type GroupOption, type OrderOption, type State, useProblemListState } f
 import { ChevronDown, Filter, FolderTree, ArrowDownWideNarrow } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
+import { twInk } from '../../../design/twInk';
 import { useGrades } from '../Meta';
+import { FormSwitch } from '../../ui';
 
 type Props = {
   rows: Row[];
@@ -138,34 +140,20 @@ const GROUP_BY_OPTIONS: Record<GroupOption, GroupByOption> = {
   },
 };
 
+/** Dense filters: pill switch (`ios` variant) — gray off, white/gray/black on-state only; works in light and dark. */
 const ToggleLabel = ({ label, checked, onChange }: { label: string; checked: boolean; onChange: () => void }) => (
-  <label className='group inline-flex cursor-pointer items-center gap-2'>
-    <div
-      className={cn(
-        'relative inline-flex h-4 w-8 shrink-0 cursor-pointer items-center rounded-full border p-0.5 transition-colors duration-200 ease-in-out focus:outline-none',
-        checked
-          ? 'border-brand-border bg-surface-hover shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]'
-          : 'border-surface-border bg-surface-raised group-hover:border-surface-border group-hover:bg-surface-raised-hover',
-      )}
-    >
-      <span
-        aria-hidden='true'
-        className={cn(
-          'pointer-events-none inline-block h-3 w-3 transform rounded-full bg-slate-200 shadow-sm ring-0 transition duration-200 ease-in-out',
-          checked ? 'translate-x-3.5' : 'translate-x-0',
-        )}
-      />
-    </div>
+  <label className='group inline-flex cursor-pointer items-center gap-2.5'>
+    <FormSwitch checked={checked} onChange={onChange} size='compact' variant='ios' />
     <span
       className={cn(
         designContract.typography.meta,
-        'font-medium text-slate-400 transition-colors group-hover:text-slate-300',
-        checked && 'text-slate-200',
+        'light:group-hover:text-slate-950 font-medium text-slate-400 transition-colors group-hover:text-slate-300',
+        twInk.lightTextSlate800,
+        checked && 'light:text-slate-950 text-slate-200',
       )}
     >
       {label}
     </span>
-    <input type='checkbox' className='hidden' checked={checked} onChange={onChange} />
   </label>
 );
 
@@ -547,7 +535,15 @@ export const ProblemList = ({
       )}
 
       {showListControls && showFilter && (
-        <div className='border-surface-border/40 mt-2 flex flex-col gap-2.5 border-t pt-3 sm:gap-2'>
+        <div
+          className={cn(
+            'border-surface-border/55 bg-surface-raised/30 mt-2.5 flex flex-col gap-2.5 rounded-lg border-y border-r py-2.5 pr-3 pl-3 sm:gap-2.5 sm:py-3 sm:pr-4 sm:pl-4',
+            'border-l-[3px] border-l-[color:var(--color-brand)]',
+            'light:border-r-slate-300/65 light:border-t-slate-300/65 light:border-b-slate-300/65 light:bg-slate-100/80',
+          )}
+          role='region'
+          aria-label='List filters'
+        >
           <div className='flex flex-wrap items-center gap-x-3 gap-y-2'>
             <GradeRangeControl
               low={currentLow}

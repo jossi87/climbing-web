@@ -73,14 +73,14 @@ export const SvgRoute = ({
       groupColor = '#000000';
       break;
   }
-  /* Align with `@theme` status colors (ticked / todo / dangerous). */
+  /* Typography uses `text-status-*`; topo numbers use the same tokens via CSS vars (light theme remaps in `index.css`). */
   let textColor = '#FFFFFF';
   if (svg.ticked) {
-    textColor = '#34d399';
+    textColor = 'var(--color-status-ticked)';
   } else if (svg.todo) {
-    textColor = '#38bdf8';
+    textColor = 'var(--color-status-todo)';
   } else if (svg.dangerous) {
-    textColor = '#f87171';
+    textColor = 'var(--color-status-danger)';
   }
 
   let ixNr = 0;

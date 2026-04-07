@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
+import { FormSwitch } from '../../ui';
 import { MessageSquare, X, Check, RefreshCw } from 'lucide-react';
 
 type Media = components['schemas']['Media'];
@@ -74,34 +75,21 @@ const MediaEditModal = ({ save, onCloseWithoutReload, m, numPitches }: Props) =>
               <label className='type-body font-semibold'>Trivia-image?</label>
               <p className='type-small opacity-70'>Enable to mark as general trivia</p>
             </div>
-            <button
-              type='button'
-              onClick={() => {
+            <FormSwitch
+              checked={trivia}
+              onChange={() => {
                 const newTrivia = !trivia;
                 setTrivia(newTrivia);
                 if (newTrivia) setPitch(0);
               }}
-              className={cn(
-                'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none',
-                trivia ? 'bg-brand' : 'bg-slate-700',
-              )}
-            >
-              <span
-                className={cn(
-                  'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                  trivia ? 'translate-x-5' : 'translate-x-0',
-                )}
-              />
-            </button>
+              variant='brand'
+              aria-label='Trivia image'
+            />
           </div>
         </div>
 
         <div className='bg-surface-raised border-surface-border flex justify-end gap-3 border-t p-4'>
-          <button
-            type='button'
-            onClick={onCloseWithoutReload}
-            className='type-label px-4 py-2 opacity-80 transition-colors hover:opacity-100'
-          >
+          <button type='button' onClick={onCloseWithoutReload} className='modal-action-cancel px-4 py-2'>
             Cancel
           </button>
           <button

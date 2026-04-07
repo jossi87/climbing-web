@@ -49,16 +49,14 @@ const Regions = () => {
             ))}
           </div>
         </div>
-        <div className='border-surface-border/60 border-t'>
-          <div className='relative h-[68vh] overflow-hidden sm:h-[74vh] lg:h-[80vh]'>
-            <Leaflet
-              autoZoom
-              height='100%'
-              outlines={outlines}
-              defaultCenter={meta.defaultCenter}
-              defaultZoom={meta.defaultZoom}
-            />
-          </div>
+        <div className='relative h-[68vh] overflow-hidden sm:h-[74vh] lg:h-[80vh]'>
+          <Leaflet
+            autoZoom
+            height='100%'
+            outlines={outlines}
+            defaultCenter={meta.defaultCenter}
+            defaultZoom={meta.defaultZoom}
+          />
         </div>
       </Card>
     </div>

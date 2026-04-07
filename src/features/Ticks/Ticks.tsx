@@ -8,9 +8,10 @@ import { Card, SectionHeader } from '../../shared/ui';
 import {
   profileRowRootClass,
   tickCrag,
-  tickCragLink,
+  tickCragLinkArea,
+  tickCragLinkSector,
   tickFlags,
-  tickProblemLink,
+  tickProblemLinkWithStatus,
   tickWhenGrade,
 } from '../../shared/components/Profile/profileRowTypography';
 import { cn } from '../../lib/utils';
@@ -18,12 +19,14 @@ import { designContract } from '../../design/contract';
 import type { components } from '../../@types/buldreinfo/swagger';
 
 const PlaceholderFeed = () => {
+  const headlineWidths = ['w-[96%]', 'w-[88%]', 'w-[92%]', 'w-[84%]', 'w-[90%]'] as const;
+  const metaWidths = ['w-[58%]', 'w-[46%]', 'w-[52%]', 'w-[40%]', 'w-[50%]'] as const;
   return (
-    <div className='animate-pulse space-y-3'>
-      {Array.from({ length: 14 }, (_, i) => (
-        <div key={i}>
-          <div className='skeleton-bar h-3 w-[94%] rounded sm:h-3.5' />
-          <div className='skeleton-bar-muted mt-1.5 h-2.5 w-[52%] rounded' />
+    <div className='animate-pulse'>
+      {Array.from({ length: 12 }, (_, i) => (
+        <div key={i} className={cn(profileRowRootClass, 'space-y-2 py-2 sm:py-2.5')}>
+          <div className={cn('skeleton-bar h-3.5 rounded sm:h-4', headlineWidths[i % headlineWidths.length])} />
+          <div className={cn('skeleton-bar-muted h-2.5 rounded', metaWidths[i % metaWidths.length])} />
         </div>
       ))}
     </div>
@@ -31,8 +34,6 @@ const PlaceholderFeed = () => {
 };
 
 type PublicAscent = components['schemas']['PublicAscent'];
-
-const lockInlineClass = 'ml-1 inline-block align-middle';
 
 const TickRow = ({ t }: { t: PublicAscent }) => {
   const areaId = t.areaId;
@@ -42,35 +43,30 @@ const TickRow = ({ t }: { t: PublicAscent }) => {
     <div className={cn(profileRowRootClass, 'block min-w-0 py-2 text-pretty [overflow-wrap:anywhere] sm:py-2.5')}>
       {t.date ? <span className={cn(tickFlags, 'tabular-nums')}>{t.date} </span> : null}
       {areaId ? (
-        <Link to={`/area/${areaId}`} className={tickCragLink}>
+        <Link to={`/area/${areaId}`} className={tickCragLinkArea}>
           {t.areaName}
         </Link>
       ) : (
         <span className={tickCrag}>{t.areaName}</span>
       )}
-      <span className={lockInlineClass}>
-        <LockSymbol lockedAdmin={t.areaLockedAdmin} lockedSuperadmin={t.areaLockedSuperadmin} />
-      </span>
+      <LockSymbol lockedAdmin={t.areaLockedAdmin} lockedSuperadmin={t.areaLockedSuperadmin} />
       {t.areaLockedAdmin || t.areaLockedSuperadmin ? ' ' : <ProfileRowTextSep />}
       {sectorId ? (
-        <Link to={`/sector/${sectorId}`} className={tickCragLink}>
+        <Link to={`/sector/${sectorId}`} className={tickCragLinkSector}>
           {t.sectorName}
         </Link>
       ) : (
         <span className={tickCrag}>{t.sectorName}</span>
       )}
-      <span className={lockInlineClass}>
-        <LockSymbol lockedAdmin={t.sectorLockedAdmin} lockedSuperadmin={t.sectorLockedSuperadmin} />
-      </span>{' '}
-      <Link to={`/problem/${t.problemId}`} className={tickProblemLink}>
+      <LockSymbol lockedAdmin={t.sectorLockedAdmin} lockedSuperadmin={t.sectorLockedSuperadmin} />
+      {t.sectorLockedAdmin || t.sectorLockedSuperadmin ? ' ' : <ProfileRowTextSep />}
+      <Link to={`/problem/${t.problemId}`} className={tickProblemLinkWithStatus({ ticked: true })}>
         {t.problemName}
       </Link>
       {t.problemGrade ? (
         <span className={cn(tickWhenGrade, 'ml-1 whitespace-nowrap tabular-nums')}>{t.problemGrade}</span>
       ) : null}
-      <span className={lockInlineClass}>
-        <LockSymbol lockedAdmin={t.problemLockedAdmin} lockedSuperadmin={t.problemLockedSuperadmin} />
-      </span>
+      <LockSymbol lockedAdmin={t.problemLockedAdmin} lockedSuperadmin={t.problemLockedSuperadmin} />
       {t.problemLockedAdmin || t.problemLockedSuperadmin ? ' ' : <ProfileRowTextSep />}
       <span className={tickFlags}>{t.name}</span>
     </div>

@@ -178,13 +178,13 @@ const ChartGradeDistribution = ({
       {activeGrade && (
         <div className={embedded ? 'mt-2 pt-2' : 'border-surface-border/35 mt-2 border-t pt-2'}>
           <div className='overflow-x-auto'>
-            <table className='w-full table-auto text-left'>
+            <table className='w-auto min-w-max table-auto text-left'>
               <thead>
                 <tr>
                   <th
                     className={cn(
                       designContract.typography.menuItem,
-                      'px-2 py-0.5 font-semibold whitespace-nowrap text-slate-400',
+                      'px-1.5 py-0.5 font-bold whitespace-nowrap text-slate-400',
                     )}
                   >
                     {idArea > 0 || idSector > 0 ? 'Sector' : 'Region'}
@@ -192,7 +192,7 @@ const ChartGradeDistribution = ({
                   <th
                     className={cn(
                       designContract.typography.menuItem,
-                      'px-2 py-0.5 text-left font-semibold whitespace-nowrap text-slate-400',
+                      'px-1.5 py-0.5 text-left font-bold whitespace-nowrap text-slate-400',
                     )}
                   >
                     Total
@@ -202,7 +202,7 @@ const ChartGradeDistribution = ({
                       key={cat.key}
                       className={cn(
                         designContract.typography.menuItem,
-                        'px-2 py-0.5 text-left font-semibold whitespace-nowrap text-slate-400',
+                        'px-1.5 py-0.5 text-left font-bold whitespace-nowrap text-slate-400',
                       )}
                     >
                       {cat.label}
@@ -219,14 +219,17 @@ const ChartGradeDistribution = ({
                   return (
                     <tr key={idx} className='transition-colors'>
                       <td
-                        className={cn(designContract.typography.menuItem, 'px-2 py-1 whitespace-nowrap text-slate-400')}
+                        className={cn(
+                          designContract.typography.menuItem,
+                          'px-1.5 py-1 font-normal whitespace-nowrap text-slate-400',
+                        )}
                       >
                         {row.name}
                       </td>
                       <td
                         className={cn(
                           designContract.typography.menuItem,
-                          'px-2 py-1 text-left whitespace-nowrap text-slate-400 tabular-nums',
+                          'px-1.5 py-1 text-left font-normal whitespace-nowrap text-slate-400 tabular-nums',
                         )}
                       >
                         {total}
@@ -238,7 +241,7 @@ const ChartGradeDistribution = ({
                             key={cat.key}
                             className={cn(
                               designContract.typography.menuItem,
-                              'px-2 py-1 text-left whitespace-nowrap text-slate-400 tabular-nums',
+                              'px-1.5 py-1 text-left font-normal whitespace-nowrap text-slate-400 tabular-nums',
                             )}
                           >
                             {value > 0 ? value : '-'}

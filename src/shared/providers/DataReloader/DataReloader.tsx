@@ -4,9 +4,9 @@ import { useEffect, type ReactNode } from 'react';
 export const DATA_MUTATION_EVENT = 'brattelinjer/refetch';
 
 const HANDLERS = {
-  nop: async (..._args: unknown[]) => {
-    if (import.meta.env.REACT_APP_ENV === 'development') {
-      console.warn('DataReloader: stubbed-out reload', ..._args);
+  nop: async () => {
+    if (import.meta.env.DEV) {
+      console.warn('DataReloader: stubbed-out reload');
     }
   },
   invalidate: (client: ReturnType<typeof useQueryClient>) => client.invalidateQueries({ predicate: () => true }),
@@ -36,7 +36,11 @@ export const DataReloader = ({ children }: { children: ReactNode }) => {
       const ce = event as CustomEvent | undefined;
       const mode = ce?.detail?.mode ?? 'nop';
       const key = (mode in HANDLERS ? mode : 'nop') as keyof typeof HANDLERS;
-      HANDLERS[key]?.(client);
+      if (key === 'nop') {
+        void HANDLERS.nop();
+      } else {
+        HANDLERS[key](client);
+      }
     };
 
     window.addEventListener(DATA_MUTATION_EVENT, onEvent as EventListener);

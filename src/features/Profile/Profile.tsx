@@ -113,7 +113,7 @@ const Profile = () => {
               <h1 className='type-h1 truncate'>
                 {profile.firstname} {profile.lastname}
               </h1>
-              <div className='type-micro mt-2 grid min-w-0 grid-cols-1 gap-y-1.5 text-slate-400 sm:flex sm:flex-wrap sm:items-center sm:gap-x-3 sm:gap-y-1.5'>
+              <div className='type-micro mt-2 grid min-w-0 grid-cols-1 gap-y-1.5 font-normal text-slate-400 sm:flex sm:flex-wrap sm:items-center sm:gap-x-3 sm:gap-y-1.5'>
                 {regions.length > 0 && (
                   <span className='inline-flex max-w-full min-w-0 items-center gap-1.5'>
                     <Globe size={12} className='shrink-0 text-slate-500' aria-hidden />
@@ -125,14 +125,10 @@ const Profile = () => {
                     key={email}
                     href={`mailto:${email}`}
                     className={cn(
-                      'group hover:text-brand inline-flex max-w-full min-w-0 items-center gap-1.5 font-normal text-slate-400 transition-colors',
+                      'profile-meta-email focus-visible:ring-brand-border/55 focus-visible:ring-offset-surface-card inline-flex max-w-full min-w-0 items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
                     )}
                   >
-                    <Mail
-                      size={12}
-                      className='group-hover:text-brand shrink-0 text-slate-500 transition-colors'
-                      aria-hidden
-                    />
+                    <Mail size={12} className='shrink-0' aria-hidden />
                     <span className='min-w-0 break-all'>{email}</span>
                   </a>
                 ))}
@@ -165,7 +161,7 @@ const Profile = () => {
                   strokeWidth={isActive ? 2.3 : 2}
                   className={tabBarIconClassName(isActive)}
                 />
-                <span className='type-small block min-w-0 truncate leading-none sm:text-[12px]'>{item.label}</span>
+                <span className={designContract.controls.tabBarLabel}>{item.label}</span>
               </button>
             );
           })}

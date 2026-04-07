@@ -1,9 +1,14 @@
+import { twInk } from './twInk';
+
 /**
  * Rail kicker: “Latest activity”, breadcrumb crumbs (matches `SectionLabel`).
  * Form field captions use `typography.label` (`type-label`, 11px).
  *
  * Brand (`--color-brand` in `index.css`): primary **text, links, tab ink**. On dark panels prefer `brand-border`
  * (`index.css`) — gold mixed into `surface-border`, less “mustard frame”.
+ * Light theme: `hover:text-brand` remaps to `--color-brand-hover` (rich gold-brown) in `index.css` `@layer utilities`;
+ * `/80` `/90` variants mix with `--color-brand` so icons don’t wash out. Main-content `group-hover:text-slate-*` is
+ * remapped there too; dark scrim links use `.photo-overlay-link`.
  *
  * A11y baseline: global `input`/`textarea` placeholders and `:focus-visible` live in `index.css`. On `surface-card`
  * (`surface-card`), prefer **`slate-400`+** for readable secondary copy; reserve **`slate-500`** for non-essential hints.
@@ -35,8 +40,8 @@ export const designContract = {
     /** Dropdown / menu rows */
     menuItem: 'text-[12px] font-medium leading-snug sm:text-[13px]',
     /** Inline links in list/table content (Top, Todo, etc.) */
-    listLink: 'text-slate-300 transition-colors hover:text-slate-200',
-    listLinkMuted: 'text-slate-400 transition-colors hover:text-slate-300',
+    listLink: 'text-slate-300 transition-colors hover:text-brand',
+    listLinkMuted: 'text-slate-400 transition-colors hover:text-brand',
     /** Inline emphasis in tables/lists — prefer medium weight so rows don’t all feel “bold UI”. */
     listEmphasis: 'font-medium text-slate-300',
     /**
@@ -72,6 +77,12 @@ export const designContract = {
      * Paragraph blocks under titles (access restrictions, section intros) — one step above {@link listBody}.
      */
     detailBody: 'text-[13px] leading-relaxed sm:text-[14px]',
+    /**
+     * Breadcrumb / in-card tertiary links (Area, Sector, Problem). Light hover uses {@link twInk.lightHoverSlate900}.
+     */
+    breadcrumbLink: `inline min-w-0 text-slate-400 transition-colors hover:text-slate-200 ${twInk.lightHoverSlate900}`,
+    /** Same as {@link breadcrumbLink} with `tracking-tight` (Problem page crumb row). */
+    breadcrumbLinkTight: `inline min-w-0 tracking-tight text-slate-400 transition-colors hover:text-slate-200 ${twInk.lightHoverSlate900}`,
   },
   layout: {
     pageSection: 'w-full pb-0',
@@ -113,14 +124,12 @@ export const designContract = {
     /**
      * App shell: sticky header (glass) + page footer share the same hairline token so chrome matches.
      * Softer than `border-surface-border` at full opacity so it doesn’t fight backdrop blur.
+     *
+     * Header fill/blur: `Header.tsx` layers + unlayered `index.css` (`.app-shell-header-*`), not a Tailwind token here.
      */
     shellHairline: 'border-surface-border/40',
     /** Inner divider inside the footer (above legal row) — same family, lighter. */
     shellHairlineInner: 'border-surface-border/25',
-    /**
-     * Sticky top nav: translucent fill + blur; `supports` reduces opacity when blur is active (more “glass”).
-     */
-    shellHeaderBg: 'bg-surface-card/78 supports-[backdrop-filter]:bg-surface-card/60 backdrop-blur-xl',
     panel: 'bg-surface-card border-surface-border border',
     elevated: 'shadow-xl',
     divider: 'divide-y divide-white/7',
@@ -154,11 +163,10 @@ export const designContract = {
      */
     segmentSelected: 'bg-slate-200 text-slate-900 shadow-sm',
     /**
-     * **Selected** segment / radio-style control on dark UI — brand border + ring, neutral label (Areas, Regions,
-     * editors, pagination current page). Pair with {@link segmentInactiveInGroup} or {@link segmentIdleRaised}.
+     * **Selected** segment / radio-style control — crisp **1px `border-brand`** + solid `surface-nav` (no ring/shadow:
+     * those read muddy on charcoal and get clipped by `overflow-x-auto` toolbars).
      */
-    segmentActiveBrandBorder:
-      'border border-brand-border bg-surface-hover text-slate-200 shadow-sm ring-1 ring-brand-border/35',
+    segmentActiveBrandBorder: 'border border-brand bg-surface-nav font-semibold text-slate-50',
     /**
      * **Unselected** chip inside one continuous segment strip (dataset / sun filters on Areas) — transparent
      * border keeps width stable next to {@link segmentActiveBrandBorder}.
@@ -201,8 +209,12 @@ export const designContract = {
     pageHeaderIconButton:
       'inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-colors sm:h-8 sm:w-8',
     /** Add (+) — create entity; sky accent so it reads separately from gold **edit** actions. */
-    pageHeaderIconButtonAdd: 'border-sky-400/45 bg-sky-500/20 text-sky-300 hover:bg-sky-500/30 hover:text-sky-200',
-    pageHeaderIconGlyph: 'pointer-events-none h-3 w-3 sm:h-[14px] sm:w-[14px]',
+    pageHeaderIconButtonAdd:
+      'border-sky-400/45 bg-sky-500/20 text-sky-300 hover:bg-sky-500/30 hover:text-sky-200 light:border-2 light:border-sky-700 light:bg-sky-100 light:text-sky-950 light:shadow-sm light:hover:border-sky-800 light:hover:bg-sky-200 light:hover:text-sky-950',
+    /** Edit (pencil) — amber vs sky add; `light:*` matches `html[data-theme]` (see `index.css`). */
+    pageHeaderIconButtonEdit:
+      'border-amber-300/45 bg-amber-400/18 text-amber-100 hover:bg-amber-400/28 light:border-2 light:border-amber-700 light:bg-amber-100 light:text-amber-950 light:shadow-sm light:hover:border-amber-800 light:hover:bg-amber-200 light:hover:text-amber-950',
+    pageHeaderIconGlyph: 'pointer-events-none h-3.5 w-3.5 sm:h-4 sm:w-4',
     /** Full-width tab row (Profile, Area, etc.): active state via short bar — no full-width rules above/below */
     tabBarRow: 'flex w-full min-w-0 flex-wrap',
     /**
@@ -213,23 +225,32 @@ export const designContract = {
     /** Content-sized tab pairs (e.g. Sectors | Routes): extra air between tabs */
     tabBarStripGapInline: 'gap-x-6 gap-y-1 sm:gap-x-10',
     tabBarButton:
-      'group relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 border-b-2 border-transparent px-1 py-2.5 text-[12px] leading-none font-medium transition-colors sm:flex-row sm:gap-1.5 sm:px-3 sm:py-3 sm:text-[13px]',
+      'group relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-t-lg border-b-2 border-transparent px-1 py-2.5 text-[12px] leading-tight font-medium transition-[color,background-color] sm:flex-row sm:gap-1.5 sm:px-3 sm:py-3 sm:text-[13px]',
     /** Capped-width bar reads better on 2-tab rows than a full-cell underline; active ink is brighter than idle. */
     tabBarButtonActive:
-      'text-slate-50 after:pointer-events-none after:absolute after:bottom-0 after:left-1/2 after:h-[3px] after:w-[min(5.75rem,calc(100%-0.75rem))] after:max-w-[11rem] after:-translate-x-1/2 after:rounded-full after:bg-brand',
-    tabBarButtonInactive: 'text-slate-200 hover:text-slate-100',
+      'text-slate-50 after:pointer-events-none after:absolute after:bottom-0 after:left-1/2 after:h-[3px] after:w-[min(5.75rem,calc(100%-0.75rem))] after:max-w-[11rem] after:-translate-x-1/2 after:rounded-full after:bg-brand hover:bg-surface-raised-hover/35 light:text-slate-950 light:hover:bg-slate-200/65',
+    tabBarButtonInactive:
+      'text-slate-300 hover:bg-surface-raised-hover/50 hover:text-slate-100 light:text-slate-600 light:hover:bg-slate-200/80 light:hover:text-slate-900',
+    /** Tab caption — `text-inherit` so label + icon share {@link tabBarButtonActive} / {@link tabBarButtonInactive} hover ink. */
+    tabBarLabel: 'block min-w-0 truncate text-[12px] font-medium leading-tight text-inherit sm:text-[13px]',
+    /** Inline-width tab pair (e.g. Sectors | Routes) — semibold; counts keep their own muted classes. */
+    tabBarLabelInline: 'text-[12px] font-semibold leading-tight text-inherit whitespace-nowrap sm:text-[13px]',
     tabButton:
       'flex items-center gap-2 border-b-2 px-6 py-3 text-[10px] font-semibold tracking-[0.16em] uppercase transition-colors',
     navPill:
       'flex flex-col items-center gap-2 rounded-lg px-5 py-3 text-[10px] font-semibold tracking-[0.16em] uppercase transition-colors sm:flex-row',
     /** Show more / Show less under ExpandableMarkdown (Area overview) */
     expandableToggle: 'text-[13px] font-medium text-slate-400 transition-colors hover:text-slate-200 sm:text-[14px]',
+    /**
+     * Solid gold CTA (embed video Add, toolbars, etc.). Dark ink on `--color-brand` — never `type-on-accent` + `bg-brand`.
+     */
+    brandSolid: 'btn-brand-solid',
     /** Save / submit — always green (avoid brand yellow on primary actions) */
     savePrimary:
-      'inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-500/45 bg-emerald-600 px-4 py-2 text-[12px] font-semibold text-slate-100 shadow-sm transition-colors hover:border-emerald-400/55 hover:bg-emerald-500 disabled:pointer-events-none disabled:opacity-45 sm:text-[13px]',
+      'type-on-accent inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-500/45 bg-emerald-600 px-4 py-2 text-[12px] font-semibold shadow-sm transition-colors hover:border-emerald-400/55 hover:bg-emerald-500 disabled:pointer-events-none disabled:opacity-45 sm:text-[13px]',
     /** Modal footers — matches type-label weight with green fill */
     savePrimaryModal:
-      'inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-500/45 bg-emerald-600 px-6 py-2.5 text-[10px] font-bold tracking-widest text-slate-100 uppercase transition-colors hover:border-emerald-400/55 hover:bg-emerald-500 disabled:pointer-events-none disabled:opacity-45',
+      'type-on-accent inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-500/45 bg-emerald-600 px-6 py-2.5 text-[10px] font-bold tracking-widest uppercase transition-colors hover:border-emerald-400/55 hover:bg-emerald-500 disabled:pointer-events-none disabled:opacity-45',
   },
   /**
    * Ascent / problem row / topo number colors (global): **green** ticked, **blue** todo, **red** dangerous.
@@ -242,8 +263,10 @@ export const designContract = {
     rowBorderTicked: 'border-status-ticked/40',
     rowBorderTodo: 'border-status-todo/40',
     rowBorderDanger: 'border-status-danger/45',
-    todoButtonOn: 'border-status-todo/50 bg-status-todo/22 text-status-todo hover:bg-status-todo/32',
-    tickButtonOn: 'border-status-ticked/45 bg-status-ticked/20 text-status-ticked hover:bg-status-ticked/28',
+    todoButtonOn:
+      'border-status-todo/50 bg-status-todo/22 text-status-todo hover:bg-status-todo/32 light:border-2 light:border-sky-800 light:bg-sky-100 light:text-sky-950 light:shadow-sm light:hover:bg-sky-200 light:hover:text-sky-950',
+    tickButtonOn:
+      'border-status-ticked/45 bg-status-ticked/20 text-status-ticked hover:bg-status-ticked/28 light:border-2 light:border-emerald-800 light:bg-emerald-50 light:text-emerald-950 light:shadow-sm light:hover:bg-emerald-100 light:hover:text-emerald-950',
   },
   activityColors: {
     filter: {

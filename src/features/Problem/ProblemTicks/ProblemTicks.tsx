@@ -5,11 +5,13 @@ import { Stars } from '../../../shared/ui/Indicators';
 import Linkify from 'linkify-react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { cn } from '../../../lib/utils';
+import { designContract } from '../../../design/contract';
 import { X } from 'lucide-react';
 import {
   profileRowRootClass,
   tickCommentSmall,
   tickFlags,
+  tickOwnUserLink,
   tickProblemLink,
   tickWhenGrade,
 } from '../../../shared/components/Profile/profileRowTypography';
@@ -26,12 +28,13 @@ function joinDates(dates: (string | undefined | null)[]) {
   return dates.filter(nonEmptyDate).join(' · ');
 }
 
-/** Room between rows; light vertical padding so body + note + stars read as one unit. */
-const rowShell = 'px-3 py-1.5 sm:px-4 sm:py-2';
+/** Same inset + vertical rhythm as activity feed rows in `Activity.tsx` — spacing between ticks is stacked padding, not `gap`. */
+const activityRowPad = 'px-4 py-4 md:px-5 md:py-3.5';
+const activityAvatarGap = 'gap-3.5 md:gap-3.5';
 
 const quoteBlock = cn(
   tickCommentSmall,
-  'mt-0.5 leading-snug text-pretty break-words text-slate-50 not-italic sm:leading-relaxed',
+  'leading-snug text-pretty break-words text-slate-50 not-italic sm:leading-relaxed',
 );
 
 export const ProblemTicks = ({ ticks }: Props) => {
@@ -40,7 +43,7 @@ export const ProblemTicks = ({ ticks }: Props) => {
   if (safeTicks.length === 0) return null;
 
   return (
-    <div className='flex flex-col gap-3 sm:gap-3.5'>
+    <div className='flex flex-col'>
       {safeTicks.map((t, index) => {
         const repeats = t.repeats ?? [];
         const isSelf = !!t.writable;
@@ -49,8 +52,8 @@ export const ProblemTicks = ({ ticks }: Props) => {
 
         if (repeats.length > 0) {
           commentContent = (
-            <div className={cn(quoteBlock, 'space-y-0.5')}>
-              <div className='flex flex-wrap gap-x-2 gap-y-0.5'>
+            <div className={cn(quoteBlock, 'space-y-0')}>
+              <div className='flex flex-wrap gap-x-2 gap-y-0'>
                 {nonEmptyDate(t.date) ? (
                   <span className={cn(tickFlags, 'font-mono tabular-nums')}>{t.date}</span>
                 ) : null}
@@ -61,7 +64,7 @@ export const ProblemTicks = ({ ticks }: Props) => {
                 ) : null}
               </div>
               {repeats.map((r, idx) => (
-                <div key={idx} className='flex flex-wrap gap-x-2 gap-y-0.5'>
+                <div key={idx} className='flex flex-wrap gap-x-2 gap-y-0'>
                   {nonEmptyDate(r.date) ? (
                     <span className={cn(tickFlags, 'font-mono tabular-nums')}>{r.date}</span>
                   ) : null}
@@ -83,24 +86,24 @@ export const ProblemTicks = ({ ticks }: Props) => {
         }
 
         return (
-          <div key={t.id != null ? `tick-${t.id}` : `tick-${t.idUser}-${index}`} className={rowShell}>
-            <div className='flex items-start gap-2 sm:gap-2.5'>
-              <div className='shrink-0'>
+          <div
+            key={t.id != null ? `tick-${t.id}` : `tick-${t.idUser}-${index}`}
+            className={cn('group', designContract.surfaces.panelRow, activityRowPad)}
+          >
+            <div className={cn('flex items-start', activityAvatarGap)}>
+              <div className='shrink-0 pt-0.5'>
                 <ClickableAvatar
                   name={t.name}
                   mediaId={t.mediaId}
                   mediaVersionStamp={t.mediaVersionStamp}
                   size='tiny'
-                  className={cn(isSelf && 'border-emerald-400/30 ring-1 ring-emerald-400/20')}
+                  className={cn(isSelf && 'border-status-ticked/40 ring-status-ticked/25 ring-1')}
                 />
               </div>
 
-              <div className='min-w-0 flex-1'>
+              <div className='flex min-w-0 flex-1 flex-col gap-0.5'>
                 <div className={cn(profileRowRootClass, 'min-w-0 leading-snug text-pretty [overflow-wrap:anywhere]')}>
-                  <Link
-                    to={`/user/${t.idUser}`}
-                    className={cn(tickProblemLink, isSelf && 'text-emerald-400 hover:text-emerald-300')}
-                  >
+                  <Link to={`/user/${t.idUser}`} className={isSelf ? tickOwnUserLink : tickProblemLink}>
                     {t.name}
                   </Link>
                   {t.noPersonalGrade ? (
@@ -122,11 +125,11 @@ export const ProblemTicks = ({ ticks }: Props) => {
                   ) : null}
                 </div>
 
-                {t.stars !== -1 && (
-                  <div className='mt-0.5 self-start'>
-                    <Stars numStars={t.stars ?? 0} size={11} />
+                {t.stars !== -1 ? (
+                  <div className='flex items-center'>
+                    <Stars numStars={t.stars ?? 0} size={12} />
                   </div>
-                )}
+                ) : null}
 
                 {commentContent}
               </div>

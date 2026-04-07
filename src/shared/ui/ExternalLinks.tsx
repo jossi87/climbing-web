@@ -50,7 +50,7 @@ const ExternalLinks = ({ externalLinks, onExternalLinksUpdated, hideLabel = fals
   );
 
   const inputClasses =
-    'w-full bg-surface-nav border border-surface-border rounded-lg py-1.5 px-9 text-xs text-white focus:outline-none focus:border-brand transition-colors';
+    'w-full bg-surface-nav border border-surface-border rounded-lg px-9 py-1.5 text-xs text-white transition-colors focus:border-brand-border focus:outline-none focus:ring-0 focus-visible:ring-0';
   const labelClasses = 'ml-1 mb-1 block';
 
   return (
@@ -66,7 +66,7 @@ const ExternalLinks = ({ externalLinks, onExternalLinksUpdated, hideLabel = fals
           <select
             value={links.length}
             onChange={onNumberOfExternalLinksChange}
-            className='type-label text-brand cursor-pointer appearance-none bg-transparent pr-6 focus:outline-none'
+            className='type-label border-surface-border bg-surface-nav focus:border-brand-border cursor-pointer appearance-none rounded-lg border py-1 pr-7 pl-2.5 text-slate-200 transition-colors focus:ring-0 focus:outline-none focus-visible:ring-0'
           >
             <option value={0} className='bg-surface-card'>
               No external links
@@ -87,7 +87,10 @@ const ExternalLinks = ({ externalLinks, onExternalLinksUpdated, hideLabel = fals
               5 external links
             </option>
           </select>
-          <ChevronDown size={12} className='text-brand pointer-events-none absolute top-1/2 right-0 -translate-y-1/2' />
+          <ChevronDown
+            size={12}
+            className='pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 text-slate-500'
+          />
         </div>
       </div>
 

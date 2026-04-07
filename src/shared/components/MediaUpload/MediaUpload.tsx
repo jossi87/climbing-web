@@ -7,7 +7,8 @@ import { UsersSelector } from '../../ui/UserSelector';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { useMeta } from '../Meta/context';
 import { cn } from '../../../lib/utils';
-import { designContract } from '../../../design/contract';
+import { FormSwitch } from '../../ui';
+import { captureVideoPosterFrame } from '../../../utils/captureVideoPosterFrame';
 
 export type UploadedMedia = {
   file?: File;
@@ -17,13 +18,32 @@ export type UploadedMedia = {
 type Props = {
   onMediaChanged: (newMedia: UploadedMedia[]) => void;
   isMultiPitch: boolean;
+  /**
+   * `modal`: parent is narrow (e.g. comment modal). Avoid viewport-based `lg:grid-cols-4` — it squeezes cards
+   * when the modal is `max-w-2xl` but the viewport is wide. Use full-width rows + roomier selects.
+   */
+  variant?: 'default' | 'modal';
 };
 
 const different = (a: UploadedMedia, b: UploadedMedia) => {
   return a.preview !== b.preview || a.embedThumbnailUrl !== b.embedThumbnailUrl;
 };
 
-const MediaUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
+/** Icon-led fields: one visual rhythm for native inputs + react-select (compact). */
+const fieldIcon = 'pointer-events-none absolute top-1/2 left-2 -translate-y-1/2 text-slate-500';
+/** Single focus cue (border only) + placeholder fades while focused so it doesn’t stack with the caret. */
+const inputLeadClass =
+  'bg-surface-nav placeholder:text-slate-500/85 h-9 w-full rounded-lg border border-surface-border/80 py-0 pr-2 pl-8 text-[13px] leading-none outline-none transition-[color,background-color,border-color,opacity] duration-100 focus:border-brand focus:outline-none focus:ring-0 focus-visible:ring-0 placeholder:transition-opacity focus:placeholder:opacity-0 sm:pl-9 sm:text-sm';
+const timestampInputClass =
+  'placeholder:text-slate-500/85 min-w-0 flex-1 bg-transparent px-1.5 py-1.5 text-[13px] outline-none transition-[border-color,opacity] duration-100 focus:outline-none focus:ring-0 focus-visible:ring-0 placeholder:transition-opacity focus:placeholder:opacity-0 sm:px-2';
+
+const MediaUpload = ({ onMediaChanged, isMultiPitch, variant = 'default' }: Props) => {
+  const isModal = variant === 'modal';
+  const mediaGridClass = isModal
+    ? 'grid grid-cols-1 gap-3 pt-2 sm:gap-4 sm:pt-4'
+    : 'grid grid-cols-1 gap-3 pt-2 sm:grid-cols-2 sm:gap-4 sm:pt-4 lg:grid-cols-4';
+  /** In modals, `compact` react-select is too tight for typing names; full control height matches caption field. */
+  const userSelectCompact = !isModal;
   const meta = useMeta();
   const [media, setMedia] = useState<UploadedMedia[]>([]);
   const [isConverting, setIsConverting] = useState(false);
@@ -56,15 +76,24 @@ const MediaUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
           }),
         );
 
-        setMedia((existing) => [
-          ...existing,
-          ...processedFiles.map((file) => ({
-            file,
-            name: file.name,
-            preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
-            photographer: meta?.authenticatedName,
-          })),
-        ]);
+        const newItems = await Promise.all(
+          processedFiles.map(async (file) => {
+            let preview: string | undefined;
+            if (file.type.startsWith('image/')) {
+              preview = URL.createObjectURL(file);
+            } else if (file.type.startsWith('video/')) {
+              preview = (await captureVideoPosterFrame(file)) ?? undefined;
+            }
+            return {
+              file,
+              name: file.name,
+              preview,
+              photographer: meta?.authenticatedName,
+            };
+          }),
+        );
+
+        setMedia((existing) => [...existing, ...newItems]);
       } finally {
         setIsConverting(false);
       }
@@ -89,17 +118,25 @@ const MediaUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
 
   const addMedia = useCallback<ComponentProps<typeof VideoEmbedder>['addMedia']>(
     ({ embedVideoUrl, embedThumbnailUrl, embedMilliseconds }) => {
-      setMedia((old) => [...old, { embedVideoUrl, embedThumbnailUrl, embedMilliseconds }]);
+      setMedia((old) => [
+        ...old,
+        {
+          embedVideoUrl,
+          embedThumbnailUrl,
+          embedMilliseconds,
+          photographer: meta?.authenticatedName,
+        },
+      ]);
     },
-    [],
+    [meta],
   );
 
   return (
-    <div className='space-y-6 text-left'>
+    <div className='space-y-4 text-left sm:space-y-6'>
       <div
         {...getRootProps()}
         className={cn(
-          'group relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition-all duration-300',
+          'group relative flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-4 text-center transition-all duration-300 sm:rounded-2xl sm:p-8',
           isDragActive
             ? 'border-brand-border bg-surface-raised'
             : 'border-surface-border bg-surface-raised hover:border-brand-border hover:bg-surface-raised-hover',
@@ -109,20 +146,20 @@ const MediaUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
         <input {...getInputProps()} />
 
         {isConverting ? (
-          <div className='flex flex-col items-center gap-3'>
-            <Loader2 className='animate-spin text-slate-400' size={32} />
-            <p className='type-label'>Converting HEIC files...</p>
+          <div className='flex flex-col items-center gap-2 sm:gap-3'>
+            <Loader2 className='animate-spin text-slate-400' size={28} />
+            <p className='type-label'>Preparing media…</p>
           </div>
         ) : (
           <>
-            <div className='bg-surface-card border-surface-border mb-4 rounded-full border p-4 transition-transform group-hover:scale-110'>
-              <Upload className='text-brand' size={24} />
+            <div className='bg-surface-card border-surface-border mb-2 rounded-full border p-2.5 transition-transform group-hover:scale-105 sm:mb-4 sm:p-4 sm:group-hover:scale-110'>
+              <Upload className='text-brand' size={20} />
             </div>
-            <div className='space-y-1'>
-              <p className='type-body font-semibold'>
-                {isDragActive ? 'Drop files here...' : 'Click or drag files to upload'}
+            <div className='space-y-0.5 sm:space-y-1'>
+              <p className='text-[13px] leading-snug font-semibold text-slate-200 sm:text-base sm:leading-relaxed'>
+                {isDragActive ? 'Drop here' : 'Tap or drop to upload'}
               </p>
-              <p className='text-xs text-slate-500'>Supports JPG, PNG, HEIC and Videos</p>
+              <p className='text-[11px] leading-tight text-slate-500 sm:text-xs'>JPG, PNG, HEIC, MP4…</p>
             </div>
           </>
         )}
@@ -131,7 +168,7 @@ const MediaUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
       <VideoEmbedder addMedia={addMedia} />
 
       {media.length > 0 && (
-        <div className='grid grid-cols-1 gap-4 pt-4 sm:grid-cols-2 lg:grid-cols-4'>
+        <div className={mediaGridClass}>
           {media.map((m) => {
             const key = m.preview ?? m.embedThumbnailUrl ?? m.name;
 
@@ -148,73 +185,79 @@ const MediaUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
             return (
               <div
                 key={key}
-                className='bg-surface-card border-surface-border animate-in fade-in zoom-in-95 flex flex-col overflow-hidden rounded-2xl border shadow-xl duration-300'
+                className='bg-surface-card border-surface-border animate-in fade-in zoom-in-95 flex flex-col overflow-hidden rounded-xl border shadow-md duration-300 sm:rounded-2xl sm:shadow-xl'
               >
-                <div className='group relative flex aspect-video items-center justify-center bg-black'>
+                <div className='group relative aspect-video w-full overflow-hidden bg-black'>
                   {m.preview || m.embedThumbnailUrl ? (
                     <img src={m.preview ?? m.embedThumbnailUrl} className='h-full w-full object-cover' alt='' />
+                  ) : m.file?.type?.startsWith('video/') ? (
+                    <div className='flex h-full w-full flex-col items-center justify-center gap-1.5 bg-gradient-to-b from-slate-800 to-slate-950 px-3 text-center'>
+                      <Film className='text-slate-500' size={36} aria-hidden />
+                      <p className='text-[12px] font-medium text-slate-300'>Preview shortly</p>
+                      <p className='text-[11px] leading-snug text-slate-500'>
+                        Can’t preview this file — it will still upload, and a thumbnail will appear after processing.
+                      </p>
+                    </div>
                   ) : (
-                    <Film className='opacity-40' size={48} />
+                    <div className='flex h-full w-full flex-col items-center justify-center gap-1 bg-gradient-to-b from-slate-800 to-slate-950 px-3 text-center'>
+                      <Film className='text-slate-500 opacity-50' size={40} aria-hidden />
+                      <p className='text-[11px] text-slate-500'>No preview</p>
+                    </div>
                   )}
                   <button
+                    type='button'
                     onClick={() => setMedia((old) => old.filter((item) => different(m, item)))}
-                    className='absolute top-2 right-2 rounded-lg bg-black/60 p-1.5 opacity-0 backdrop-blur-md transition-all group-hover:opacity-100 hover:bg-red-500'
+                    className='type-on-accent absolute top-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-lg bg-red-600 shadow-md ring-1 ring-white/25 transition hover:bg-red-500 active:scale-95'
+                    aria-label='Remove this item'
                   >
-                    <X size={16} />
+                    <X size={16} strokeWidth={2.5} className='shrink-0' aria-hidden />
                   </button>
                 </div>
 
-                <div className='flex-1 space-y-4 p-4'>
+                <div className='flex-1 space-y-1.5 p-2.5 sm:space-y-2.5 sm:p-3'>
                   {isMultiPitch && (
-                    <div className='relative'>
-                      <Hash className='absolute top-1/2 left-3 -translate-y-1/2 text-slate-500' size={14} />
+                    <div className='relative min-w-0'>
+                      <Hash className={fieldIcon} size={13} aria-hidden />
                       <input
                         type='number'
-                        placeholder='Pitch'
-                        className='bg-surface-nav border-surface-border type-small focus:border-brand w-full rounded-lg border py-2 pr-3 pl-9 transition-colors focus:outline-none'
+                        placeholder='Pitch #'
+                        className={inputLeadClass}
                         value={m.pitch ?? ''}
                         onChange={(e) => updateItem({ pitch: +e.target.value })}
                       />
                     </div>
                   )}
 
-                  <div className='relative'>
-                    <MessageSquare className='absolute top-1/2 left-3 -translate-y-1/2 text-slate-500' size={14} />
+                  <div className='relative min-w-0'>
+                    <MessageSquare className={fieldIcon} size={13} aria-hidden />
                     <input
                       type='text'
-                      placeholder='Description'
-                      className='bg-surface-nav border-surface-border type-small focus:border-brand w-full rounded-lg border py-2 pr-3 pl-9 transition-colors focus:outline-none'
+                      placeholder='Caption (optional)'
+                      className={inputLeadClass}
                       value={m.description ?? ''}
                       onChange={(e) => updateItem({ description: e.target.value })}
                     />
                   </div>
 
-                  <div className='bg-surface-raised border-surface-border/50 flex items-center justify-between rounded-lg border p-2.5'>
-                    <span className={cn('flex items-center gap-2', designContract.typography.label)}>
-                      <Camera size={12} /> Trivia
-                    </span>
-                    <button
-                      onClick={() => updateItem({ trivia: !m.trivia })}
-                      className={cn(
-                        'relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none',
-                        m.trivia ? 'bg-brand' : 'bg-slate-700',
-                      )}
-                    >
-                      <span
-                        className={cn(
-                          'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white transition duration-200 ease-in-out',
-                          m.trivia ? 'translate-x-4' : 'translate-x-0',
-                        )}
-                      />
-                    </button>
+                  <div className='flex items-center justify-between gap-3 py-0.5'>
+                    <div className='flex min-w-0 flex-1 items-center gap-2'>
+                      <Camera size={14} className='mt-[1px] shrink-0 text-slate-500' aria-hidden />
+                      <p className='text-[13px] leading-tight font-medium text-slate-200'>Trivia</p>
+                    </div>
+                    <FormSwitch
+                      checked={!!m.trivia}
+                      onChange={() => updateItem({ trivia: !m.trivia })}
+                      variant='brand'
+                      aria-label={m.trivia ? 'Trivia on' : 'Trivia off'}
+                    />
                   </div>
 
-                  <div className='space-y-2'>
-                    <div className={cn('flex items-center gap-2', designContract.typography.label)}>
-                      <Users size={12} /> People
-                    </div>
+                  <div className='flex min-w-0 items-center gap-1.5'>
+                    <Users size={14} className='mt-[3px] shrink-0 self-start text-slate-500' aria-hidden />
                     <UsersSelector
-                      placeholder='In photo/video'
+                      compact={userSelectCompact}
+                      matchInputLeadStyle
+                      placeholder='People in shot'
                       users={m.inPhoto ?? []}
                       onUsersUpdated={(newUsers) => {
                         const inPhoto = newUsers.map((u) => ({
@@ -226,56 +269,47 @@ const MediaUpload = ({ onMediaChanged, isMultiPitch }: Props) => {
                     />
                   </div>
 
-                  <div className='space-y-2'>
-                    <div className={cn('flex items-center gap-2', designContract.typography.label)}>
-                      <UserIcon size={12} /> Photographer
-                    </div>
+                  <div className='flex min-w-0 items-center gap-1.5'>
+                    <UserIcon size={14} className='mt-[3px] shrink-0 self-start text-slate-500' aria-hidden />
                     <UserSelector
+                      compact={userSelectCompact}
+                      matchInputLeadStyle
                       placeholder='Photographer'
-                      defaultValue={m.photographer ?? ''}
+                      value={m.photographer}
                       onUserUpdated={(u) => updateItem({ photographer: u?.label })}
                     />
                   </div>
 
                   {m.embedThumbnailUrl && (
-                    <div className='border-surface-border/50 space-y-3 border-t pt-2'>
-                      <div className={cn('flex items-center gap-2', designContract.typography.label)}>
-                        <Clock size={12} /> Timestamp
-                      </div>
-                      <div className='grid grid-cols-2 gap-2'>
-                        <div className='bg-surface-nav border-surface-border flex items-center overflow-hidden rounded-lg border'>
-                          <span className='bg-surface-card border-surface-border border-r px-2 py-2 text-[9px] font-black tracking-widest text-slate-500 uppercase'>
-                            Min
-                          </span>
+                    <div className='border-surface-border/30 flex items-center gap-1.5 border-t border-dashed pt-1.5'>
+                      <Clock size={14} className='mt-[3px] shrink-0 self-start text-slate-500' aria-hidden />
+                      <div className='grid min-w-0 flex-1 grid-cols-2 gap-2'>
+                        <label className='bg-surface-nav border-surface-border/80 focus-within:border-brand flex min-h-0 min-w-0 items-center gap-1.5 overflow-hidden rounded-lg border px-1.5 py-0.5 transition-colors'>
+                          <span className='w-8 shrink-0 text-center text-[10px] font-semibold text-slate-500'>min</span>
                           <input
                             type='number'
-                            className='type-small w-full bg-transparent px-2 py-2 focus:outline-none'
+                            className={timestampInputClass}
+                            placeholder='0'
+                            aria-label='Minutes'
                             value={min}
                             onChange={(e) => updateItem({ embedMilliseconds: (+e.target.value * 60 + sec) * 1000 })}
                           />
-                        </div>
-                        <div className='bg-surface-nav border-surface-border flex items-center overflow-hidden rounded-lg border'>
-                          <span className='bg-surface-card border-surface-border border-r px-2 py-2 text-[9px] font-black tracking-widest text-slate-500 uppercase'>
-                            Sec
-                          </span>
+                        </label>
+                        <label className='bg-surface-nav border-surface-border/80 focus-within:border-brand flex min-h-0 min-w-0 items-center gap-1.5 overflow-hidden rounded-lg border px-1.5 py-0.5 transition-colors'>
+                          <span className='w-8 shrink-0 text-center text-[10px] font-semibold text-slate-500'>sec</span>
                           <input
                             type='number'
-                            className='type-small w-full bg-transparent px-2 py-2 focus:outline-none'
+                            className={timestampInputClass}
+                            placeholder='0'
+                            aria-label='Seconds'
                             value={sec}
                             onChange={(e) => updateItem({ embedMilliseconds: (min * 60 + +e.target.value) * 1000 })}
                           />
-                        </div>
+                        </label>
                       </div>
                     </div>
                   )}
                 </div>
-
-                <button
-                  onClick={() => setMedia((old) => old.filter((item) => different(m, item)))}
-                  className='type-label w-full border-t border-red-500/10 bg-red-500/5 py-3 text-red-500 transition-all hover:bg-red-500'
-                >
-                  Remove Item
-                </button>
               </div>
             );
           })}

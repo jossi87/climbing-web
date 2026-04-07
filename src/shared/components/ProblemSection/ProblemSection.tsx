@@ -61,9 +61,9 @@ const ProblemSection = ({ sections: initSections, onSectionsUpdated }: Props) =>
   };
 
   const inputClasses =
-    'w-full bg-surface-nav border border-surface-border rounded-lg py-1.5 px-9 text-xs text-white focus:outline-none focus:border-brand transition-colors';
+    'w-full bg-surface-nav border border-surface-border rounded-lg px-9 py-1.5 text-xs text-white transition-colors focus:border-brand-border focus:outline-none focus:ring-0 focus-visible:ring-0';
   const selectClasses =
-    'w-full appearance-none bg-surface-nav border border-surface-border rounded-lg py-1.5 px-3 text-xs text-white focus:outline-none focus:border-brand transition-colors cursor-pointer';
+    'w-full cursor-pointer appearance-none bg-surface-nav border border-surface-border rounded-lg px-3 py-1.5 text-xs text-white transition-colors focus:border-brand-border focus:outline-none focus:ring-0 focus-visible:ring-0';
 
   return (
     <div className='space-y-4'>

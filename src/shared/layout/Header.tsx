@@ -8,6 +8,7 @@ import { Avatar } from '../ui';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 import { downloadUsersTicks, useAccessToken } from '../../api';
+import { ThemeToggle } from '../components/ThemeToggle';
 
 type DropdownItemProps = {
   to: string;
@@ -116,8 +117,10 @@ const Header = () => {
           size='tiny'
           onClick={() => setIsAccountOpen(!isAccountOpen)}
           className={cn(
-            'cursor-pointer transition-all',
-            isAccountOpen ? 'ring-brand-border/80 ring-2' : 'ring-1 ring-white/10 hover:ring-white/20',
+            'cursor-pointer transition-[box-shadow,ring-color,border-color,transform] duration-200 active:scale-[0.98]',
+            isAccountOpen
+              ? 'bg-surface-raised-hover border-[color:var(--color-brand)] shadow-[0_0_0_1px_color-mix(in_srgb,var(--color-brand)_48%,transparent)] ring-0 hover:border-[color:var(--color-brand)]'
+              : 'light:ring-slate-400/45 light:hover:ring-slate-500/65 ring-1 ring-white/12 hover:ring-white/25',
           )}
         />
         {isAccountOpen && (
@@ -192,7 +195,7 @@ const Header = () => {
     ) : (
       <button
         onClick={() => loginWithRedirect()}
-        className='border-brand-border bg-surface-raised text-brand hover:border-brand-border hover:bg-surface-hover flex items-center gap-2 rounded border px-3 py-1.5 text-[10px] font-semibold tracking-[0.08em] normal-case transition-colors active:scale-95'
+        className='header-sign-in-btn border-brand-border bg-surface-raised text-brand hover:border-brand-border hover:bg-surface-hover flex items-center gap-2 rounded border px-3 py-1.5 text-[10px] font-semibold tracking-[0.08em] normal-case transition-colors active:scale-95'
       >
         <LogIn size={14} /> <span>Sign in</span>
       </button>
@@ -202,35 +205,43 @@ const Header = () => {
   return (
     <nav
       className={cn(
-        'z-50 w-full border-b transition-[transform,background-color,backdrop-filter] duration-300',
+        'app-shell-header relative z-50 w-full border-b transition-transform duration-300',
         designContract.surfaces.shellHairline,
-        designContract.surfaces.shellHeaderBg,
         shouldStickHeader ? 'sticky top-0' : 'relative',
         !isVisible && '-translate-y-full lg:translate-y-0',
       )}
     >
-      <div className='max-w-container mx-auto h-13 px-4'>
-        <div className='flex h-full items-center justify-between gap-x-4'>
-          <div className='flex h-full min-w-0 flex-1 items-center gap-4'>
-            <Link
-              to='/'
-              className='group focus-visible:ring-brand-border/70 focus-visible:ring-offset-surface-card relative flex h-full shrink-0 items-center rounded-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none'
-            >
-              <img
-                src='/png/logo_70x62.png'
-                alt=''
-                className='h-auto w-7 brightness-0 invert transition-[transform,filter] duration-300 ease-out will-change-transform group-hover:scale-[1.06] group-hover:drop-shadow-[0_0_12px_rgba(226,232,240,0.22)] group-active:scale-100'
-              />
-              <span className='sr-only'>Home</span>
-              {isHome && <div className='bg-brand absolute right-0 bottom-0 left-0 h-0.5 rounded-t' />}
-            </Link>
-            <div className='w-full min-w-0 flex-1 lg:max-w-sm xl:max-w-md'>
-              <SearchBox />
+      {/*
+        Two-layer glass: blur must sit in its own plane (transparent). A single high-α fill on top of backdrop-filter
+        hides the frost — especially on light pages. Tint is a separate layer so we keep charcoal + visible blur.
+      */}
+      <div className='app-shell-header-glass-blur pointer-events-none absolute inset-0 z-0' aria-hidden />
+      <div className='app-shell-header-glass-tint pointer-events-none absolute inset-0 z-0' aria-hidden />
+      <div className='relative z-10'>
+        <div className='max-w-container mx-auto h-13 px-4'>
+          <div className='flex h-full items-center justify-between gap-x-4'>
+            <div className='flex h-full min-w-0 flex-1 items-center gap-4'>
+              <Link
+                to='/'
+                className='group focus-visible:ring-brand-border/70 focus-visible:ring-offset-surface-card relative flex h-full shrink-0 items-center rounded-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none'
+              >
+                <img
+                  src='/png/logo_70x62.png'
+                  alt=''
+                  className='header-logo h-auto w-7 transition-[transform,filter] duration-300 ease-out will-change-transform group-hover:scale-[1.06] group-active:scale-100'
+                />
+                <span className='sr-only'>Home</span>
+                {isHome && <div className='bg-brand absolute right-0 bottom-0 left-0 h-0.5 rounded-t' />}
+              </Link>
+              <div className='w-full min-w-0 flex-1 lg:max-w-sm xl:max-w-md'>
+                <SearchBox />
+              </div>
             </div>
-          </div>
 
-          <div className='flex h-full items-center gap-3'>
-            <div className='my-auto flex h-6 items-center'>{renderUserMenu()}</div>
+            <div className='flex h-full items-center gap-2 sm:gap-3'>
+              <ThemeToggle />
+              <div className='my-auto flex h-6 items-center'>{renderUserMenu()}</div>
+            </div>
           </div>
         </div>
       </div>

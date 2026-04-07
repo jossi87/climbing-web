@@ -36,6 +36,7 @@ import { useMeta } from '../Meta';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { designContract } from '../../../design/contract';
 import { cn } from '../../../lib/utils';
+import { useTheme } from '../../providers/useTheme';
 
 /** Route index color (matches topo SVG number semantics; typography-only, no boxes). */
 function svgListNrColor(svg: components['schemas']['Svg']) {
@@ -232,6 +233,8 @@ const MediaModal = ({
   autoPlayVideo,
   optProblemId,
 }: Props) => {
+  const { resolved } = useTheme();
+  const isLight = resolved === 'light';
   const { isAuthenticated, isAdmin, isBouldering } = useMeta();
   const accessToken = useAccessToken();
   const navigate = useNavigate();
@@ -321,10 +324,9 @@ const MediaModal = ({
   }, [canShowSidebar, showSidebar, activeSidebarIndex, m.id]);
 
   const isImage = m?.idType === 1;
-  const isVideoFile = m?.idType === 2 && !m.embedUrl;
 
   /**
-   * When "Problems in View" is open, backdrop / empty-SVG clicks should dismiss the sidebar first.
+   * When the problem list sidebar is open, backdrop / empty-SVG clicks should dismiss it first.
    * {@link SvgViewer} calls `close` on SVG background clicks — that path must use this too (not raw `onClose`).
    */
   const closeSidebarOrModal = useCallback(() => {
@@ -336,14 +338,21 @@ const MediaModal = ({
   }, [canShowSidebar, showSidebar, onClose, setShowSidebar]);
 
   const handleDimmerClick = (e: MouseEvent) => {
+    if ((e.target as HTMLElement).closest('[data-modal-media-root]')) return;
     if (e.target !== e.currentTarget || wasSwiping.current || offsetX !== 0) return;
     closeSidebarOrModal();
   };
 
-  /** Letterboxed area around media: clicks hit this layer, not the full-screen root. */
+  /**
+   * Letterboxed area around media: dismiss when clicking the empty stage.
+   * `e.target === e.currentTarget` alone is wrong here — the flex layer is often the click target for
+   * letterboxing *around* a centered poster/video, which incorrectly closed the modal before `playVideo` ran.
+   */
   const handleBackdropClick = (e: MouseEvent<HTMLDivElement>) => {
-    if (e.target !== e.currentTarget) return;
     if (wasSwiping.current || offsetX !== 0) return;
+    const el = e.target as HTMLElement;
+    if (el.closest('[data-modal-media-root]')) return;
+    if (e.target !== e.currentTarget) return;
     closeSidebarOrModal();
   };
 
@@ -372,6 +381,15 @@ const MediaModal = ({
 
   const attachCarouselSwipeHandlers = isMobile && carouselSize > 1 && visualViewportScale <= 1.05;
 
+  /**
+   * Round toolbar controls sit on `bg-slate-900`. Do not use `text-slate-*` here — global light-theme remaps
+   * turn those into dark ink; Lucide icons then read as dark-on-dark. Hex keeps correct contrast in both themes.
+   */
+  const mediaModalToolbarIconBtnClass =
+    'ring-surface-border/50 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-900 text-[#e2e8f0] shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all hover:bg-slate-800 hover:text-[#f1f5f9] active:scale-95 sm:h-11 sm:w-11';
+  const mediaModalToolbarIconBtnCloseClass =
+    'ring-surface-border/50 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-900 text-[#e2e8f0] shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all hover:bg-red-700 hover:text-[#f8fafc] active:scale-95 sm:h-11 sm:w-11';
+
   /** “More” (⋮) menu — same label + icon tone for every row; delete keeps destructive red. */
   const mediaMenuItemClass =
     'hover:bg-surface-raised-hover flex w-full items-center gap-3 px-4 py-2.5 text-left text-xs font-semibold text-slate-200 transition-colors';
@@ -384,383 +402,414 @@ const MediaModal = ({
       className='fixed inset-0 z-150 flex h-[100dvh] min-h-[100dvh] w-full max-w-[100vw] overflow-hidden bg-black select-none'
       onClick={handleDimmerClick}
     >
-      {canShowSidebar && showSidebar && (
-        <div className='bg-surface-dark border-surface-border animate-in slide-in-from-left z-160 flex h-full w-80 flex-col border-r shadow-2xl duration-300'>
-          <div className='border-surface-border bg-surface-raised flex items-center justify-between border-b px-3 py-2 sm:px-3.5'>
-            <h3 className='type-label'>Problems in View</h3>
-            <button
-              type='button'
-              onClick={() => setShowSidebar(false)}
-              className='opacity-70 transition-colors hover:opacity-100'
-            >
-              <X size={18} />
-            </button>
-          </div>
-          <div className='custom-scrollbar divide-surface-border/30 flex-1 divide-y overflow-x-hidden overflow-y-auto text-left'>
-            {sidebarSvgs.map((svg, rowIndex) => {
-              const isRowActive = problemIdHovered === svg.problemId || optProblemId === svg.problemId;
-              const nrDisplay = svg.nr != null ? svg.nr : '—';
-              const statusHint = svg.ticked
-                ? 'Ticked'
-                : svg.todo
-                  ? 'In todo list'
-                  : svg.dangerous
-                    ? 'Flagged as dangerous'
-                    : undefined;
-              const rawGrade = svg.problemGrade?.trim();
-              const grade = rawGrade && rawGrade !== '.' ? rawGrade : null;
-              return (
-                <Link
-                  key={svg.problemId}
-                  ref={activeSidebarIndex === rowIndex ? activeSidebarRowRef : undefined}
-                  to={`/problem/${svg.problemId}/${m.id}`}
-                  onMouseEnter={() => setProblemIdHovered(svg.problemId ?? null)}
-                  onMouseLeave={() => setProblemIdHovered(null)}
-                  title={statusHint}
-                  aria-label={[svg.problemName, grade ?? undefined, statusHint].filter(Boolean).join('. ') || undefined}
-                  className={cn(
-                    'group block scroll-mt-1 border-l-2 border-transparent px-2 py-1.5 transition-colors sm:px-2.5',
-                    isRowActive ? 'border-brand-border bg-surface-raised-hover' : 'hover:bg-surface-raised-hover',
-                  )}
-                >
-                  <div
+      {/*
+        Dark chrome only (sidebar + stage). Info/help overlays are siblings so they keep global light surfaces.
+        Scoped styles in `index.css` neutralize light-theme `text-slate-*` / `.type-*` remaps here.
+      */}
+      <div className='media-modal-dark-chrome flex min-h-0 min-w-0 flex-1 flex-row'>
+        {canShowSidebar && showSidebar && (
+          <div className='animate-in slide-in-from-left z-160 flex h-full w-[min(11.75rem,42vw)] max-w-[62vw] flex-col border-r border-white/10 bg-slate-950 shadow-2xl duration-300 sm:w-80 sm:max-w-none'>
+            <div className='custom-scrollbar flex-1 divide-y divide-white/8 overflow-x-hidden overflow-y-auto pt-1 text-left sm:pt-1.5'>
+              {sidebarSvgs.map((svg, rowIndex) => {
+                const isRowActive = problemIdHovered === svg.problemId || optProblemId === svg.problemId;
+                const nrDisplay = svg.nr != null ? svg.nr : '—';
+                const statusHint = svg.ticked
+                  ? 'Ticked'
+                  : svg.todo
+                    ? 'In todo list'
+                    : svg.dangerous
+                      ? 'Flagged as dangerous'
+                      : undefined;
+                const rawGrade = svg.problemGrade?.trim();
+                const grade = rawGrade && rawGrade !== '.' ? rawGrade : null;
+                return (
+                  <Link
+                    key={svg.problemId}
+                    ref={activeSidebarIndex === rowIndex ? activeSidebarRowRef : undefined}
+                    to={`/problem/${svg.problemId}/${m.id}`}
+                    onMouseEnter={() => setProblemIdHovered(svg.problemId ?? null)}
+                    onMouseLeave={() => setProblemIdHovered(null)}
+                    title={statusHint}
+                    aria-label={
+                      [svg.problemName, grade ?? undefined, statusHint].filter(Boolean).join('. ') || undefined
+                    }
                     className={cn(
-                      designContract.typography.menuItem,
-                      'flex min-w-0 items-baseline gap-x-2 leading-snug',
+                      'group block scroll-mt-1 border-l-2 border-transparent px-1.5 py-1 transition-colors sm:px-2.5 sm:py-1.5',
+                      isRowActive ? 'border-brand-border bg-white/8' : 'hover:bg-white/6',
                     )}
                   >
-                    <span className={cn('min-w-[1.25rem] shrink-0 tabular-nums', svgListNrColor(svg))}>
-                      {nrDisplay}
-                    </span>
-                    <span
+                    <div
                       className={cn(
-                        'min-w-0 flex-1 truncate font-medium',
-                        isRowActive ? 'text-slate-50' : 'text-slate-200 group-hover:text-slate-100',
+                        'flex min-w-0 items-baseline gap-x-1.5 leading-tight sm:gap-x-2 sm:leading-snug',
+                        'text-[10px] font-medium sm:text-[12px] md:text-[13px]',
                       )}
                     >
-                      {svg.problemName}
-                    </span>
-                    {grade != null ? (
-                      <span className={cn(designContract.typography.grade, 'shrink-0')}>{grade}</span>
-                    ) : null}
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      <div
-        className='relative flex h-full min-h-0 w-full min-w-0 flex-1 items-center justify-center overflow-hidden'
-        {...(attachCarouselSwipeHandlers ? handlers : {})}
-      >
-        <div className='absolute top-3 right-3 z-170 flex max-w-[calc(100vw-1.5rem)] flex-wrap items-center justify-end gap-1.5 sm:top-4 sm:right-4 sm:gap-2'>
-          {m.url && (
-            <button
-              type='button'
-              onClick={() => window.open(m.url ?? '', '_blank')}
-              title='Open original'
-              className='ring-surface-border/50 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-900 text-slate-200 shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all hover:bg-slate-800 hover:text-slate-100 active:scale-95 sm:h-11 sm:w-11'
-            >
-              <ExternalLink size={17} strokeWidth={2} />
-            </button>
-          )}
-
-          {canShowSidebar && (
-            <button
-              type='button'
-              onClick={() => setShowSidebar(!showSidebar)}
-              title={showSidebar ? 'Hide problem list' : 'Show problem list'}
-              className={cn(
-                'flex h-10 w-10 shrink-0 items-center justify-center rounded-full shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all active:scale-95 sm:h-11 sm:w-11',
-                showSidebar
-                  ? 'type-on-accent bg-brand ring-1 ring-black/20 hover:brightness-110'
-                  : 'ring-surface-border/50 bg-slate-900 text-slate-200 hover:bg-slate-800 hover:text-slate-100',
-              )}
-            >
-              <ListIcon size={17} strokeWidth={2} />
-            </button>
-          )}
-
-          <button
-            type='button'
-            onClick={() => setShowInfo(true)}
-            title='Information'
-            aria-label='Information'
-            className='ring-surface-border/50 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-900 text-slate-200 shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all hover:bg-slate-800 hover:text-slate-100 active:scale-95 sm:h-11 sm:w-11'
-          >
-            <Info size={17} strokeWidth={2} />
-          </button>
-
-          {!isBouldering && svgs.length > 0 && (
-            <button
-              type='button'
-              onClick={() => setShowHelp(true)}
-              title='Topo legend'
-              aria-label='Topo legend'
-              className='ring-surface-border/50 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-900 text-slate-200 shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all hover:bg-slate-800 hover:text-slate-100 active:scale-95 sm:h-11 sm:w-11'
-            >
-              <HelpCircle size={17} strokeWidth={2} />
-            </button>
-          )}
-
-          <div className='relative inline-flex shrink-0'>
-            <button
-              type='button'
-              onClick={() => setShowMenu(!showMenu)}
-              title='More actions'
-              className={cn(
-                'flex h-10 w-10 items-center justify-center rounded-full shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all active:scale-95 sm:h-11 sm:w-11',
-                showMenu
-                  ? 'bg-surface-hover ring-surface-border/50 text-slate-100'
-                  : 'ring-surface-border/50 bg-slate-900 text-slate-200 hover:bg-slate-800 hover:text-slate-100',
-              )}
-            >
-              <MoreVertical size={17} strokeWidth={2} />
-            </button>
-            {showMenu && (
-              <div className='bg-surface-card border-surface-border animate-in fade-in zoom-in-95 absolute top-full right-0 z-180 mt-2 w-64 rounded-2xl border py-2 shadow-2xl duration-200'>
-                <div className='type-label border-surface-border/50 mb-1 border-b px-4 py-2'>Actions</div>
-                {canDrawTopo && (
-                  <button
-                    type='button'
-                    onClick={() => navigate(`/problem/svg-edit/${optProblemId}/${pitch || 0}/${m.id}`)}
-                    className={mediaMenuItemClass}
-                  >
-                    <Paintbrush size={14} className={mediaMenuIconClass} strokeWidth={2} /> Draw topo line
-                  </button>
-                )}
-                {canDrawMedia && (
-                  <button
-                    type='button'
-                    onClick={() => navigate(`/media/svg-edit/${m.id}`)}
-                    className={mediaMenuItemClass}
-                  >
-                    <Paintbrush size={14} className={mediaMenuIconClass} strokeWidth={2} /> Draw on image
-                  </button>
-                )}
-                {canOrder && (
-                  <button type='button' onClick={onMoveImageLeft} className={mediaMenuItemClass}>
-                    <ArrowLeft size={14} className={mediaMenuIconClass} strokeWidth={2} /> Move image left
-                  </button>
-                )}
-                {canOrder && (
-                  <button type='button' onClick={onMoveImageRight} className={mediaMenuItemClass}>
-                    <ArrowRight size={14} className={mediaMenuIconClass} strokeWidth={2} /> Move image right
-                  </button>
-                )}
-                {canMove && (m.enableMoveToIdArea ?? 0) > 0 && (
-                  <button type='button' onClick={onMoveImageToArea} className={mediaMenuItemClass}>
-                    <Move size={14} className={mediaMenuIconClass} strokeWidth={2} /> Move image to area
-                  </button>
-                )}
-                {canMove && (m.enableMoveToIdSector ?? 0) > 0 && (
-                  <button type='button' onClick={onMoveImageToSector} className={mediaMenuItemClass}>
-                    <Move size={14} className={mediaMenuIconClass} strokeWidth={2} /> Move image to sector
-                  </button>
-                )}
-                {canMove && (m.enableMoveToIdProblem ?? 0) > 0 && (
-                  <button type='button' onClick={onMoveImageToProblem} className={mediaMenuItemClass}>
-                    <Move size={14} className={mediaMenuIconClass} strokeWidth={2} /> Move image to{' '}
-                    {isBouldering ? 'problem' : 'route'}
-                  </button>
-                )}
-                {canSetMediaAsAvatar && (
-                  <button type='button' onClick={onSetMediaAsAvatar} className={mediaMenuItemClass}>
-                    <UserIcon size={14} className={mediaMenuIconClass} strokeWidth={2} /> Set as avatar
-                  </button>
-                )}
-
-                <div className='bg-surface-border/50 my-2 h-px' />
-
-                {!m.embedUrl && (
-                  <button
-                    type='button'
-                    onClick={() =>
-                      downloadFileWithProgress(
-                        accessToken,
-                        getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, m.idType !== 1, { original: true }),
-                      )
-                    }
-                    className={mediaMenuItemClass}
-                  >
-                    <Download size={14} className={mediaMenuIconClass} strokeWidth={2} /> Download Original
-                  </button>
-                )}
-                {canRotate && (
-                  <>
-                    <button type='button' onClick={() => onRotate(90)} className={mediaMenuItemClass}>
-                      <RotateCw size={14} className={mediaMenuIconClass} strokeWidth={2} /> Rotate 90° CW
-                    </button>
-                    <button type='button' onClick={() => onRotate(270)} className={mediaMenuItemClass}>
-                      <RotateCcw size={14} className={mediaMenuIconClass} strokeWidth={2} /> Rotate 90° CCW
-                    </button>
-                    <button type='button' onClick={() => onRotate(180)} className={mediaMenuItemClass}>
-                      <RefreshCw size={14} className={mediaMenuIconClass} strokeWidth={2} /> Rotate 180°
-                    </button>
-                  </>
-                )}
-                {canEdit && (
-                  <button type='button' onClick={onEdit} className={mediaMenuItemClass}>
-                    <Edit size={14} className={mediaMenuIconClass} strokeWidth={2} /> Edit Information
-                  </button>
-                )}
-                {canDelete && (
-                  <button type='button' onClick={onDelete} className={mediaMenuDeleteClass}>
-                    <Trash2 size={14} className='shrink-0' strokeWidth={2} /> Delete {isImage ? 'Image' : 'Video'}
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-
-          <button
-            type='button'
-            onClick={onClose}
-            title='Close'
-            aria-label='Close'
-            className='ring-surface-border/50 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-900 text-slate-200 shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all hover:bg-red-700 hover:text-slate-100 active:scale-95 sm:h-11 sm:w-11'
-          >
-            <X size={19} strokeWidth={2} />
-          </button>
-        </div>
-
-        <div
-          className='flex h-full w-full items-center justify-center transition-transform duration-300 ease-out'
-          style={{ transform: `translateX(${offsetX}px)` }}
-          onClick={handleBackdropClick}
-        >
-          {isImage ? (
-            svgs.length > 0 ? (
-              <div className='touch-pan-pinch h-full w-full' onClick={(e) => e.stopPropagation()}>
-                <SvgViewer
-                  m={m}
-                  pitch={pitch}
-                  thumb={false}
-                  close={closeSidebarOrModal}
-                  optProblemId={optProblemId}
-                  showText={canShowSidebar && !showSidebar}
-                  problemIdHovered={problemIdHovered}
-                  setProblemIdHovered={setProblemIdHovered}
-                  className='h-full w-full object-contain'
-                />
-              </div>
-            ) : (
-              <img
-                className='touch-pan-pinch max-h-screen max-w-full cursor-pointer object-contain select-none'
-                src={getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, false, {
-                  targetWidth: Math.min(1920, m.width ?? 1920),
-                })}
-                srcSet={getMediaFileUrlSrcSet(m.id ?? 0, m.versionStamp ?? 0, m.width ?? 0)}
-                alt=''
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (!wasSwiping.current && offsetX === 0) closeSidebarOrModal();
-                }}
-              />
-            )
-          ) : m.embedUrl ? (
-            <iframe
-              src={m.embedUrl}
-              className='aspect-video h-full w-full max-w-5xl rounded-2xl shadow-2xl'
-              allowFullScreen
-              title='Video Content'
-            />
-          ) : autoPlayVideo ? (
-            <VideoPlayer media={m} className='h-full max-h-screen w-full' />
-          ) : (
-            <div
-              className='group relative cursor-pointer'
-              onClick={(e) => {
-                e.stopPropagation();
-                playVideo();
-              }}
-            >
-              <img
-                className='max-h-screen max-w-full object-contain opacity-50 transition-opacity group-hover:opacity-70'
-                src={getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, isVideoFile, { targetWidth: 1080 })}
-                alt=''
-              />
-              <div className='absolute inset-0 flex items-center justify-center'>
-                <div className='bg-surface-card border-surface-border relative flex h-20 w-20 items-center justify-center rounded-full border shadow-[0_10px_28px_rgba(0,0,0,0.55)] transition-transform duration-300 group-hover:scale-110'>
-                  <Play
-                    size={44}
-                    fill='currentColor'
-                    className='ml-1'
-                    style={{ color: '#e2e8f0', stroke: '#0f172a', strokeWidth: 1.4 }}
-                  />
-                </div>
-              </div>
+                      <span
+                        className={cn('min-w-[1.05rem] shrink-0 tabular-nums sm:min-w-[1.25rem]', svgListNrColor(svg))}
+                      >
+                        {nrDisplay}
+                      </span>
+                      <span
+                        className={cn(
+                          'min-w-0 flex-1 truncate font-medium',
+                          isRowActive ? 'text-slate-50' : 'text-slate-200 group-hover:text-slate-100',
+                        )}
+                      >
+                        {svg.problemName}
+                      </span>
+                      {grade != null ? (
+                        <span className={cn(designContract.typography.grade, 'shrink-0 text-[10px] sm:text-[12px]')}>
+                          {grade}
+                        </span>
+                      ) : null}
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
-          )}
-        </div>
-
-        {carouselSize > 1 && !isMobile && (
-          <>
-            <button
-              type='button'
-              onClick={gotoPrev}
-              className='type-body absolute top-1/2 left-8 -translate-y-1/2 p-4 opacity-20 transition-all hover:scale-110 hover:opacity-100 active:scale-95'
-            >
-              <ChevronLeft size={80} strokeWidth={1} />
-            </button>
-            <button
-              type='button'
-              onClick={gotoNext}
-              className='type-body absolute top-1/2 right-8 -translate-y-1/2 p-4 opacity-20 transition-all hover:scale-110 hover:opacity-100 active:scale-95'
-            >
-              <ChevronRight size={80} strokeWidth={1} />
-            </button>
-          </>
+          </div>
         )}
 
-        <div className='pointer-events-none absolute right-4 bottom-4 left-4 z-170 flex items-end justify-between gap-3 sm:right-8 sm:bottom-8 sm:left-8'>
-          <div className='max-w-xl shrink-0 space-y-2.5'>
-            {showLocation && m.mediaMetadata?.location && (
-              <div className='type-label ring-surface-border/40 pointer-events-auto inline-flex items-center gap-2 rounded-full bg-slate-900 px-3 py-1.5 text-slate-100 shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1'>
-                <MapPin size={12} className='text-brand' /> {m.mediaMetadata.location}
-              </div>
+        <div
+          className='relative flex h-full min-h-0 w-full min-w-0 flex-1 items-center justify-center overflow-hidden'
+          {...(attachCarouselSwipeHandlers ? handlers : {})}
+        >
+          <div className='absolute top-3 right-3 z-170 flex max-w-[calc(100vw-1.5rem)] flex-wrap items-center justify-end gap-1.5 sm:top-4 sm:right-4 sm:gap-2'>
+            {m.url && (
+              <button
+                type='button'
+                onClick={() => window.open(m.url ?? '', '_blank')}
+                title='Open original'
+                className={mediaModalToolbarIconBtnClass}
+              >
+                <ExternalLink size={17} strokeWidth={2} />
+              </button>
             )}
-            {m.mediaMetadata?.description && (
-              <div className='type-body ring-surface-border/35 pointer-events-auto max-w-xl rounded-2xl bg-slate-900 p-3.5 leading-relaxed font-medium text-slate-100 shadow-[0_8px_32px_rgba(0,0,0,0.5)] ring-1 sm:p-4'>
-                {m.mediaMetadata.description}
+
+            {canShowSidebar && (
+              <button
+                type='button'
+                onClick={() => setShowSidebar(!showSidebar)}
+                title={showSidebar ? 'Hide problem list' : 'Show problem list'}
+                className={cn(
+                  'flex h-10 w-10 shrink-0 items-center justify-center rounded-full shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all active:scale-95 sm:h-11 sm:w-11',
+                  showSidebar
+                    ? 'btn-brand-solid ring-1 ring-black/20'
+                    : 'ring-surface-border/50 bg-slate-900 text-[#e2e8f0] hover:bg-slate-800 hover:text-[#f1f5f9]',
+                )}
+              >
+                <ListIcon size={17} strokeWidth={2} />
+              </button>
+            )}
+
+            <button
+              type='button'
+              onClick={() => setShowInfo(true)}
+              title='Information'
+              aria-label='Information'
+              className={mediaModalToolbarIconBtnClass}
+            >
+              <Info size={17} strokeWidth={2} />
+            </button>
+
+            {!isBouldering && svgs.length > 0 && (
+              <button
+                type='button'
+                onClick={() => setShowHelp(true)}
+                title='Topo legend'
+                aria-label='Topo legend'
+                className={mediaModalToolbarIconBtnClass}
+              >
+                <HelpCircle size={17} strokeWidth={2} />
+              </button>
+            )}
+
+            <div className='relative inline-flex shrink-0'>
+              <button
+                type='button'
+                onClick={() => setShowMenu(!showMenu)}
+                title='More actions'
+                className={cn(
+                  'flex h-10 w-10 items-center justify-center rounded-full shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all active:scale-95 sm:h-11 sm:w-11',
+                  showMenu
+                    ? 'bg-surface-hover ring-surface-border/50 text-[#f1f5f9]'
+                    : 'ring-surface-border/50 bg-slate-900 text-[#e2e8f0] hover:bg-slate-800 hover:text-[#f1f5f9]',
+                )}
+              >
+                <MoreVertical size={17} strokeWidth={2} />
+              </button>
+              {showMenu && (
+                <div className='bg-surface-card border-surface-border animate-in fade-in zoom-in-95 absolute top-full right-0 z-180 mt-2 w-64 rounded-2xl border py-2 shadow-2xl duration-200'>
+                  <div className='type-label border-surface-border/50 mb-1 border-b px-4 py-2'>Actions</div>
+                  {canDrawTopo && (
+                    <button
+                      type='button'
+                      onClick={() => navigate(`/problem/svg-edit/${optProblemId}/${pitch || 0}/${m.id}`)}
+                      className={mediaMenuItemClass}
+                    >
+                      <Paintbrush size={14} className={mediaMenuIconClass} strokeWidth={2} /> Draw topo line
+                    </button>
+                  )}
+                  {canDrawMedia && (
+                    <button
+                      type='button'
+                      onClick={() => navigate(`/media/svg-edit/${m.id}`)}
+                      className={mediaMenuItemClass}
+                    >
+                      <Paintbrush size={14} className={mediaMenuIconClass} strokeWidth={2} /> Draw on image
+                    </button>
+                  )}
+                  {canOrder && (
+                    <button type='button' onClick={onMoveImageLeft} className={mediaMenuItemClass}>
+                      <ArrowLeft size={14} className={mediaMenuIconClass} strokeWidth={2} /> Move image left
+                    </button>
+                  )}
+                  {canOrder && (
+                    <button type='button' onClick={onMoveImageRight} className={mediaMenuItemClass}>
+                      <ArrowRight size={14} className={mediaMenuIconClass} strokeWidth={2} /> Move image right
+                    </button>
+                  )}
+                  {canMove && (m.enableMoveToIdArea ?? 0) > 0 && (
+                    <button type='button' onClick={onMoveImageToArea} className={mediaMenuItemClass}>
+                      <Move size={14} className={mediaMenuIconClass} strokeWidth={2} /> Move image to area
+                    </button>
+                  )}
+                  {canMove && (m.enableMoveToIdSector ?? 0) > 0 && (
+                    <button type='button' onClick={onMoveImageToSector} className={mediaMenuItemClass}>
+                      <Move size={14} className={mediaMenuIconClass} strokeWidth={2} /> Move image to sector
+                    </button>
+                  )}
+                  {canMove && (m.enableMoveToIdProblem ?? 0) > 0 && (
+                    <button type='button' onClick={onMoveImageToProblem} className={mediaMenuItemClass}>
+                      <Move size={14} className={mediaMenuIconClass} strokeWidth={2} /> Move image to{' '}
+                      {isBouldering ? 'problem' : 'route'}
+                    </button>
+                  )}
+                  {canSetMediaAsAvatar && (
+                    <button type='button' onClick={onSetMediaAsAvatar} className={mediaMenuItemClass}>
+                      <UserIcon size={14} className={mediaMenuIconClass} strokeWidth={2} /> Set as avatar
+                    </button>
+                  )}
+
+                  <div className='bg-surface-border/50 my-2 h-px' />
+
+                  {!m.embedUrl && (
+                    <button
+                      type='button'
+                      onClick={() =>
+                        downloadFileWithProgress(
+                          accessToken,
+                          getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, m.idType !== 1, { original: true }),
+                        )
+                      }
+                      className={mediaMenuItemClass}
+                    >
+                      <Download size={14} className={mediaMenuIconClass} strokeWidth={2} /> Download Original
+                    </button>
+                  )}
+                  {canRotate && (
+                    <>
+                      <button type='button' onClick={() => onRotate(90)} className={mediaMenuItemClass}>
+                        <RotateCw size={14} className={mediaMenuIconClass} strokeWidth={2} /> Rotate 90° CW
+                      </button>
+                      <button type='button' onClick={() => onRotate(270)} className={mediaMenuItemClass}>
+                        <RotateCcw size={14} className={mediaMenuIconClass} strokeWidth={2} /> Rotate 90° CCW
+                      </button>
+                      <button type='button' onClick={() => onRotate(180)} className={mediaMenuItemClass}>
+                        <RefreshCw size={14} className={mediaMenuIconClass} strokeWidth={2} /> Rotate 180°
+                      </button>
+                    </>
+                  )}
+                  {canEdit && (
+                    <button type='button' onClick={onEdit} className={mediaMenuItemClass}>
+                      <Edit size={14} className={mediaMenuIconClass} strokeWidth={2} /> Edit Information
+                    </button>
+                  )}
+                  {canDelete && (
+                    <button type='button' onClick={onDelete} className={mediaMenuDeleteClass}>
+                      <Trash2 size={14} className='shrink-0' strokeWidth={2} /> Delete {isImage ? 'Image' : 'Video'}
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <button
+              type='button'
+              onClick={onClose}
+              title='Close'
+              aria-label='Close'
+              className={mediaModalToolbarIconBtnCloseClass}
+            >
+              <X size={19} strokeWidth={2} />
+            </button>
+          </div>
+
+          <div
+            className='flex h-full w-full items-center justify-center transition-transform duration-300 ease-out'
+            style={{ transform: `translateX(${offsetX}px)` }}
+            onClick={handleBackdropClick}
+          >
+            {isImage ? (
+              svgs.length > 0 ? (
+                <div
+                  className='touch-pan-pinch h-full w-full'
+                  data-modal-media-root
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <SvgViewer
+                    m={m}
+                    pitch={pitch}
+                    thumb={false}
+                    close={closeSidebarOrModal}
+                    optProblemId={optProblemId}
+                    showText={canShowSidebar && !showSidebar}
+                    problemIdHovered={problemIdHovered}
+                    setProblemIdHovered={setProblemIdHovered}
+                    className='h-full w-full object-contain'
+                  />
+                </div>
+              ) : (
+                <img
+                  data-modal-media-root
+                  className='touch-pan-pinch max-h-screen max-w-full cursor-pointer object-contain select-none'
+                  src={getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, false, {
+                    targetWidth: Math.min(1920, m.width ?? 1920),
+                  })}
+                  srcSet={getMediaFileUrlSrcSet(m.id ?? 0, m.versionStamp ?? 0, m.width ?? 0)}
+                  alt=''
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!wasSwiping.current && offsetX === 0) closeSidebarOrModal();
+                  }}
+                />
+              )
+            ) : m.embedUrl ? (
+              <iframe
+                data-modal-media-root
+                src={m.embedUrl}
+                className='aspect-video h-full w-full max-w-5xl rounded-2xl shadow-2xl'
+                allowFullScreen
+                title='Video Content'
+              />
+            ) : autoPlayVideo ? (
+              <div
+                data-modal-media-root
+                className='flex h-full min-h-0 w-full max-w-[100vw] items-center justify-center'
+                onClick={(e) => e.stopPropagation()}
+              >
+                <VideoPlayer media={m} className='h-full max-h-screen w-full' />
+              </div>
+            ) : (
+              <div
+                data-modal-media-root
+                className='group relative cursor-pointer'
+                onClick={(e) => {
+                  e.stopPropagation();
+                  playVideo();
+                }}
+              >
+                {/*
+                 * Third arg must be `isMovie: false` — that requests the server-generated JPEG poster.
+                 * `true` is for the video file (VideoPlayer) and breaks `<img src>` (black / no frame).
+                 */}
+                <img
+                  className='max-h-screen max-w-full object-contain opacity-90 transition-opacity group-hover:opacity-100'
+                  src={getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, false, { targetWidth: 1080 })}
+                  alt=''
+                />
+                <div className='pointer-events-none absolute inset-0 flex items-center justify-center'>
+                  <div
+                    className={cn(
+                      'flex h-12 w-12 shrink-0 items-center justify-center rounded-full ring-1 transition-transform duration-300 group-hover:scale-110',
+                      isLight
+                        ? 'bg-slate-950/90 shadow-[0_10px_28px_rgba(0,0,0,0.5)] ring-black/40'
+                        : 'bg-white/92 shadow-[0_10px_28px_rgba(0,0,0,0.48)] ring-white/30',
+                    )}
+                  >
+                    <Play
+                      size={28}
+                      fill='currentColor'
+                      stroke='currentColor'
+                      className='ml-0.5'
+                      style={{ color: isLight ? '#ffffff' : '#0f172a' }}
+                      aria-hidden
+                    />
+                  </div>
+                </div>
               </div>
             )}
           </div>
-          <div className='pointer-events-auto ms-2 min-w-0 flex-1 self-end text-end sm:ms-4'>
-            {(() => {
-              const chunks: { key: string; node: ReactNode }[] = [];
-              const desc = activePitch?.description?.trim();
-              if (desc) chunks.push({ key: 'desc', node: <span className='text-slate-200'>{desc}</span> });
-              if (activePitch?.grade)
-                chunks.push({
-                  key: 'grade',
-                  node: <span className='text-brand normal-case'>{activePitch.grade}</span>,
-                });
-              if ((m.pitch ?? 0) > 0)
-                chunks.push({ key: 'pitch', node: <span className='text-slate-200'>Pitch {m.pitch}</span> });
-              if (carouselSize > 1)
-                chunks.push({
-                  key: 'idx',
-                  node: (
-                    <span className='text-slate-300 tabular-nums'>
-                      {carouselIndex} / {carouselSize}
-                    </span>
-                  ),
-                });
-              if (chunks.length === 0) return null;
-              return (
-                <div className='ring-surface-border/40 ms-auto inline-block max-w-full rounded-2xl bg-slate-900 px-3 py-1.5 text-right text-[11px] leading-snug font-semibold tracking-normal text-pretty text-slate-100 normal-case shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1 sm:text-[12px]'>
-                  {chunks.map(({ key, node }, i) => (
-                    <Fragment key={key}>
-                      {i > 0 ? ' ' : null}
-                      {node}
-                    </Fragment>
-                  ))}
-                </div>
-              );
-            })()}
+
+          {carouselSize > 1 && !isMobile && (
+            <>
+              <button
+                type='button'
+                onClick={gotoPrev}
+                className='type-body absolute top-1/2 left-8 -translate-y-1/2 p-4 opacity-20 transition-all hover:scale-110 hover:opacity-100 active:scale-95'
+              >
+                <ChevronLeft size={80} strokeWidth={1} />
+              </button>
+              <button
+                type='button'
+                onClick={gotoNext}
+                className='type-body absolute top-1/2 right-8 -translate-y-1/2 p-4 opacity-20 transition-all hover:scale-110 hover:opacity-100 active:scale-95'
+              >
+                <ChevronRight size={80} strokeWidth={1} />
+              </button>
+            </>
+          )}
+
+          <div className='pointer-events-none absolute right-4 bottom-4 left-4 z-170 flex items-end justify-end sm:right-8 sm:bottom-8 sm:left-8'>
+            <div className='pointer-events-auto max-w-[min(42rem,calc(100vw-2rem))] min-w-0 text-end'>
+              {(() => {
+                const chunks: { key: string; node: ReactNode }[] = [];
+                if (showLocation && m.mediaMetadata?.location?.trim()) {
+                  chunks.push({
+                    key: 'loc',
+                    node: (
+                      <span className='inline-flex items-center gap-1'>
+                        <MapPin size={11} className='text-brand shrink-0' aria-hidden />
+                        {m.mediaMetadata!.location!.trim()}
+                      </span>
+                    ),
+                  });
+                }
+                const metaDesc = m.mediaMetadata?.description?.trim();
+                if (metaDesc)
+                  chunks.push({ key: 'metaDesc', node: <span className='text-[#e2e8f0]'>{metaDesc}</span> });
+                const pitchDesc = activePitch?.description?.trim();
+                if (pitchDesc)
+                  chunks.push({ key: 'pitchDesc', node: <span className='text-[#e2e8f0]'>{pitchDesc}</span> });
+                if (activePitch?.grade)
+                  chunks.push({
+                    key: 'grade',
+                    node: <span className='text-brand normal-case'>{activePitch.grade}</span>,
+                  });
+                if ((m.pitch ?? 0) > 0)
+                  chunks.push({ key: 'pitch', node: <span className='text-[#e2e8f0]'>Pitch {m.pitch}</span> });
+                if (carouselSize > 1)
+                  chunks.push({
+                    key: 'idx',
+                    node: (
+                      <span className='text-[#cbd5e1] tabular-nums'>
+                        {carouselIndex} / {carouselSize}
+                      </span>
+                    ),
+                  });
+                if (chunks.length === 0) return null;
+                return (
+                  <div className='ring-surface-border/40 inline-block rounded-2xl bg-slate-900 px-3 py-1.5 text-right text-[11px] leading-snug font-semibold tracking-normal text-pretty text-[#f1f5f9] normal-case shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1 sm:px-3.5 sm:py-2 sm:text-[12px]'>
+                    {chunks.map(({ key, node }, i) => (
+                      <Fragment key={key}>
+                        {i > 0 ? <span className='text-[#64748b]'> · </span> : null}
+                        {node}
+                      </Fragment>
+                    ))}
+                  </div>
+                );
+              })()}
+            </div>
           </div>
         </div>
       </div>
@@ -923,19 +972,37 @@ const MediaModal = ({
                   <h4 className='text-brand mb-4 text-[10px] font-black tracking-widest uppercase'>Number Colors</h4>
                   <ul className='space-y-3'>
                     <li className='flex items-center gap-3'>
-                      <div className='flex h-4 w-4 items-center justify-center rounded border border-green-500 text-[8px] font-black text-green-500'>
+                      <div
+                        className='flex h-4 w-4 items-center justify-center rounded border-2 text-[8px] font-black'
+                        style={{
+                          borderColor: 'var(--color-status-ticked)',
+                          color: 'var(--color-status-ticked)',
+                        }}
+                      >
                         1
                       </div>
                       <span className='text-xs font-bold text-slate-300'>Green: Ticked</span>
                     </li>
                     <li className='flex items-center gap-3'>
-                      <div className='flex h-4 w-4 items-center justify-center rounded border border-blue-500 text-[8px] font-black text-blue-500'>
+                      <div
+                        className='flex h-4 w-4 items-center justify-center rounded border-2 text-[8px] font-black'
+                        style={{
+                          borderColor: 'var(--color-status-todo)',
+                          color: 'var(--color-status-todo)',
+                        }}
+                      >
                         1
                       </div>
                       <span className='text-xs font-bold text-slate-300'>Blue: In Todo-list</span>
                     </li>
                     <li className='flex items-center gap-3'>
-                      <div className='flex h-4 w-4 items-center justify-center rounded border border-red-500 text-[8px] font-black text-red-500'>
+                      <div
+                        className='flex h-4 w-4 items-center justify-center rounded border-2 text-[8px] font-black'
+                        style={{
+                          borderColor: 'var(--color-status-danger)',
+                          color: 'var(--color-status-danger)',
+                        }}
+                      >
                         1
                       </div>
                       <span className='text-xs font-bold text-slate-300'>Red: Dangerous</span>

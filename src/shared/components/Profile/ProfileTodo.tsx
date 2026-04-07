@@ -6,7 +6,14 @@ import { useProfileTodo } from '../../../api';
 import { Loading } from '../../ui/StatusWidgets';
 import ProblemList from '../ProblemList';
 import { useMeta } from '../Meta';
-import { profileRowRootClass, tickCragLink, tickFlags, tickProblemLink, tickWhenGrade } from './profileRowTypography';
+import {
+  profileRowRootClass,
+  tickCragLinkArea,
+  tickCragLinkSector,
+  tickFlags,
+  tickProblemLinkWithStatus,
+  tickWhenGrade,
+} from './profileRowTypography';
 import { cn } from '../../../lib/utils';
 import { ProfileRowTextSep } from './ProfileRowTextSep';
 
@@ -44,17 +51,17 @@ type TodoItem = {
 
 const TodoListItem = ({ item }: { item: TodoItem }) => (
   <div className={cn(profileRowRootClass, 'text-pretty [overflow-wrap:anywhere]')}>
-    <Link to={`/area/${item.areaId}`} className={tickCragLink}>
+    <Link to={`/area/${item.areaId}`} className={tickCragLinkArea}>
       {item.areaName}
     </Link>
     <LockSymbol lockedAdmin={item.areaLockedAdmin} lockedSuperadmin={item.areaLockedSuperadmin} />
     {item.areaLockedAdmin || item.areaLockedSuperadmin ? ' ' : <ProfileRowTextSep />}
-    <Link to={`/sector/${item.sectorId}`} className={tickCragLink}>
+    <Link to={`/sector/${item.sectorId}`} className={tickCragLinkSector}>
       {item.sectorName}
     </Link>
     <LockSymbol lockedAdmin={item.sectorLockedAdmin} lockedSuperadmin={item.sectorLockedSuperadmin} />
     {item.sectorLockedAdmin || item.sectorLockedSuperadmin ? ' ' : <ProfileRowTextSep />}
-    <Link to={`/problem/${item.id}`} className={tickProblemLink}>
+    <Link to={`/problem/${item.id}`} className={tickProblemLinkWithStatus({ todo: true })}>
       {item.problemName}
     </Link>
     {item.grade ? (

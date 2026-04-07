@@ -12,7 +12,7 @@ import { hours } from '../../utils/hours';
 import ExternalLink from '../../shared/ui/ExternalLinks';
 import { Info, AlertTriangle, ChevronDown, ChevronRight, Hash, Edit, Save, Loader2 } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import { Card, SectionHeader } from '../../shared/ui';
+import { Card, FormSwitch, MarkdownFieldLabel, SectionHeader } from '../../shared/ui';
 
 const dummyEvent = {} as ChangeEvent<HTMLInputElement>;
 
@@ -185,18 +185,7 @@ export const AreaEdit = () => {
               )}
 
               <div className='space-y-2'>
-                <label className={labelClasses}>
-                  Description (supports{' '}
-                  <a
-                    href='https://jonschlinkert.github.io/remarkable/demo/'
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='text-brand underline'
-                  >
-                    markdown
-                  </a>
-                  )
-                </label>
+                <MarkdownFieldLabel className={labelClasses}>Description</MarkdownFieldLabel>
                 <textarea
                   className={cn(inputClasses, 'min-h-30 resize-none')}
                   placeholder='Enter description'
@@ -342,7 +331,7 @@ export const AreaEdit = () => {
               <button
                 type='button'
                 onClick={() => navigate(+(areaId ?? -1) > 0 ? `/area/${areaId}` : `/areas`)}
-                className='bg-surface-nav border-surface-border hover:bg-surface-hover type-label rounded-lg border px-6 py-2.5 opacity-85 transition-all hover:opacity-100'
+                className='form-footer-cancel'
               >
                 Cancel
               </button>
@@ -364,23 +353,7 @@ export const AreaEdit = () => {
 
 const Toggle = ({ label, checked, onChange, disabled }: ToggleProps) => (
   <div className={cn('flex items-center gap-3', disabled && 'cursor-not-allowed opacity-40')}>
-    <button
-      type='button'
-      disabled={disabled}
-      onClick={onChange}
-      className={cn(
-        'relative inline-flex h-5 w-10 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none disabled:cursor-not-allowed',
-        !disabled && 'cursor-pointer',
-        checked ? 'bg-brand' : 'bg-slate-700',
-      )}
-    >
-      <span
-        className={cn(
-          'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-          checked ? 'translate-x-5' : 'translate-x-0',
-        )}
-      />
-    </button>
+    <FormSwitch checked={checked} onChange={onChange} disabled={disabled} variant='brand' aria-label={label} />
     <span className='text-[11px] font-medium text-slate-300 sm:text-[12px]'>{label}</span>
   </div>
 );

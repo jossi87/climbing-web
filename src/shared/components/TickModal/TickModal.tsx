@@ -402,11 +402,7 @@ const TickModal = ({
             </button>
           ) : null}
           <div className='flex min-w-0 shrink-0 items-center gap-1.5 sm:gap-3'>
-            <button
-              type='button'
-              onClick={onClose}
-              className='type-label shrink-0 px-2 py-1.5 opacity-75 transition-colors hover:opacity-100 sm:px-4 sm:py-2'
-            >
+            <button type='button' onClick={onClose} className='modal-action-cancel'>
               Cancel
             </button>
             <button

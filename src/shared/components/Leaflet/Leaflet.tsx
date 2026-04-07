@@ -91,8 +91,6 @@ type Props = {
   showSatelliteImage?: boolean;
   /** Bottom-right elevation labels toggle; hide on embedded TOC maps so it is not mistaken for page chrome. */
   showElevationControl?: boolean;
-  /** No stroke on `.leaflet-container` — e.g. Areas list map where the frame reads as noise. */
-  mapBorderless?: boolean;
   children?: ReactNode | ((state: { showElevation: boolean }) => ReactNode);
 };
 
@@ -151,7 +149,6 @@ const Leaflet = ({
   rocks = [],
   showSatelliteImage,
   showElevationControl = true,
-  mapBorderless = false,
   children,
   onMouseClick = undefined,
   onMouseMove = undefined,
@@ -271,15 +268,25 @@ const Leaflet = ({
             type='button'
             onClick={() => setShowElevation((v) => !v)}
             className={cn(
-              'inline-flex h-8 w-8 items-center justify-center rounded-md border p-0 leading-none shadow-md transition-colors',
+              'inline-flex h-[34px] w-[34px] items-center justify-center rounded-lg border p-0 shadow-md transition-[background-color,border-color,box-shadow]',
+              /*
+               * Do not use `bg-surface-card` here: `.leaflet-bottom .bg-surface-card` frosts/blurs the “Group by rock”
+               * chip and also matched this button, which smeared the tiny Activity glyph into a dot.
+               */
               showElevation
-                ? 'border-brand-border bg-surface-hover text-slate-100'
-                : 'border-surface-border/60 bg-surface-card text-slate-400 hover:text-slate-200',
+                ? 'border-brand-border bg-surface-hover ring-brand/25 light:shadow-[0_4px_14px_rgba(15,23,42,0.12)] light:ring-brand/35 shadow-[0_4px_12px_rgba(0,0,0,0.5)] ring-1'
+                : 'border-surface-border/60 light:shadow-[0_4px_14px_rgba(15,23,42,0.1),0_0_0_1px_rgba(15,23,42,0.05)] bg-[var(--color-surface-card)] shadow-[0_4px_12px_rgba(0,0,0,0.5)]',
             )}
+            aria-pressed={showElevation}
             aria-label={showElevation ? 'Hide elevation labels' : 'Show elevation labels'}
             title={showElevation ? 'Hide elevation labels' : 'Show elevation labels'}
           >
-            <Activity size={13} strokeWidth={2.2} className='pointer-events-none block' />
+            <Activity
+              size={18}
+              strokeWidth={2.25}
+              className={cn('pointer-events-none block shrink-0 text-slate-200', 'light:type-body')}
+              aria-hidden
+            />
           </button>
         </UseControlWrapper>
       )}
@@ -352,13 +359,6 @@ const Leaflet = ({
         .leaflet-container {
           background-color: var(--color-surface-card) !important;
           font-family: inherit !important;
-          border: 1px solid var(--color-surface-border) !important;
-        }
-        /*
-         * Borderless maps: use a wrapper + descendant selector. react-leaflet's MapContainer only
-         * snapshots className/id/style in useState(initial) — putting the class on MapContainer is unreliable.
-         */
-        .buldreinfo-map-borderless .leaflet-container {
           border: none !important;
           outline: none !important;
         }
@@ -371,6 +371,9 @@ const Leaflet = ({
           border-radius: 12px !important;
           box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55) !important;
         }
+        html[data-theme='light'] .leaflet-container .leaflet-popup-content-wrapper {
+          box-shadow: 0 14px 36px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(15, 23, 42, 0.06) !important;
+        }
         .leaflet-container .leaflet-popup-tip {
           background: var(--color-surface-card) !important;
           border: 1px solid var(--color-surface-border) !important;
@@ -378,31 +381,31 @@ const Leaflet = ({
         }
         .leaflet-container .leaflet-popup-content {
           margin: 12px 14px !important;
-          color: rgb(226 232 240) !important;
+          color: var(--color-white) !important;
           line-height: 1.45 !important;
         }
         /* Popup links: override Leaflet default anchor color (#0078A8); Tailwind loses to that rule. */
         .leaflet-container .leaflet-popup-pane a:not(.leaflet-popup-close-button) {
-          color: rgb(148 163 184) !important;
+          color: var(--color-muted-ink) !important;
           text-decoration: none !important;
           -webkit-tap-highlight-color: transparent !important;
         }
         .leaflet-container .leaflet-popup-pane a:not(.leaflet-popup-close-button):hover {
-          color: rgb(226 232 240) !important;
+          color: var(--color-white) !important;
         }
         .leaflet-container .leaflet-popup-pane a.buldreinfo-popup-primary-link {
-          color: rgb(248 250 252) !important;
+          color: var(--color-leaflet-link-strong) !important;
           font-weight: 600 !important;
         }
         .leaflet-container .leaflet-popup-pane a.buldreinfo-popup-primary-link:hover {
-          color: rgb(255 255 255) !important;
+          color: var(--color-leaflet-link-strong-hover) !important;
         }
         .leaflet-container a.leaflet-popup-close-button {
-          color: rgb(148 163 184) !important;
+          color: var(--color-muted-ink) !important;
           padding: 8px 10px 0 0 !important;
         }
         .leaflet-container a.leaflet-popup-close-button:hover {
-          color: rgb(226 232 240) !important;
+          color: var(--color-white) !important;
         }
 
         .leaflet-bar, .leaflet-control-layers {
@@ -426,6 +429,11 @@ const Leaflet = ({
           color: transparent !important;
           transition: all 0.2s ease;
         }
+        html[data-theme='light'] .leaflet-bar a,
+        html[data-theme='light'] .leaflet-control-layers-toggle,
+        html[data-theme='light'] .leaflet-control-locate a {
+          box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1), 0 0 0 1px rgba(15, 23, 42, 0.05) !important;
+        }
 
         .leaflet-control-zoom-in { 
           background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='12' y1='5' x2='12' y2='19'/%3E%3Cline x1='5' y1='12' x2='19' y2='12'/%3E%3C/svg%3E") !important; 
@@ -447,9 +455,22 @@ const Leaflet = ({
           background-size: 20px 20px !important;
         }
 
+        html[data-theme='light'] .leaflet-control-zoom-in {
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230f172a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='12' y1='5' x2='12' y2='19'/%3E%3Cline x1='5' y1='12' x2='19' y2='12'/%3E%3C/svg%3E") !important;
+        }
+        html[data-theme='light'] .leaflet-control-zoom-out {
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230f172a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='5' y1='12' x2='19' y2='12'/%3E%3C/svg%3E") !important;
+        }
+        html[data-theme='light'] .leaflet-control-locate a {
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230f172a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3Cpath d='M12 2v2M12 20v2M2 12h2m16 0h2'/%3E%3C/svg%3E") !important;
+        }
+        html[data-theme='light'] .leaflet-control-layers-toggle {
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230f172a' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolygon points='12 2 2 7 12 12 22 7 12 2'/%3E%3Cpolyline points='2 17 12 22 22 17'/%3E%3Cpolyline points='2 12 12 17 22 12'/%3E%3C/svg%3E") !important;
+        }
+
         .leaflet-control-layers-expanded {
           background: var(--color-surface-nav) !important;
-          color: white !important;
+          color: var(--color-white) !important;
           border: 1px solid var(--color-surface-border) !important;
           padding: 10px !important;
           border-radius: 10px !important;
@@ -458,6 +479,9 @@ const Leaflet = ({
           box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.5) !important;
           min-width: 156px;
           line-height: 1.25 !important;
+        }
+        html[data-theme='light'] .leaflet-control-layers-expanded {
+          box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(15, 23, 42, 0.06) !important;
         }
 
         .leaflet-control-layers-expanded .leaflet-control-layers-list {
@@ -485,6 +509,9 @@ const Leaflet = ({
           margin: 12px !important;
           box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
         }
+        html[data-theme='light'] .leaflet-bottom .bg-surface-card {
+          box-shadow: 0 6px 16px rgba(15, 23, 42, 0.1), 0 0 0 1px rgba(15, 23, 42, 0.05) !important;
+        }
 
         .leaflet-control-scale {
           margin: 12px !important;
@@ -494,12 +521,15 @@ const Leaflet = ({
           background: color-mix(in srgb, var(--color-surface-card) 52%, transparent) !important;
           border: 1px solid var(--color-surface-border) !important;
           border-top: none !important;
-          color: white !important;
+          color: var(--color-white) !important;
           font-size: 9px !important;
           font-weight: bold;
           backdrop-filter: blur(4px);
           padding: 2px 5px !important;
           text-shadow: 0 1px 2px black;
+        }
+        html[data-theme='light'] .leaflet-control-scale-line {
+          text-shadow: 0 1px 1px rgba(255, 255, 255, 0.85);
         }
 
         .leaflet-control-attribution {
@@ -507,12 +537,18 @@ const Leaflet = ({
           color: rgba(255,255,255,0.2) !important;
           font-size: 8px !important;
         }
+        html[data-theme='light'] .leaflet-control-attribution {
+          color: rgba(15, 23, 42, 0.38) !important;
+        }
 
         .leaflet-container .leaflet-tooltip {
           background-color: var(--color-surface-nav) !important;
           border: 1px solid var(--color-surface-border) !important;
           color: var(--color-white) !important;
           box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45) !important;
+        }
+        html[data-theme='light'] .leaflet-container .leaflet-tooltip {
+          box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(15, 23, 42, 0.06) !important;
         }
         .leaflet-container .leaflet-tooltip-top:before {
           border-top-color: var(--color-surface-nav) !important;
@@ -547,6 +583,13 @@ const Leaflet = ({
           border-radius: 9999px !important;
           box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45) !important;
         }
+        html[data-theme='light'] .marker-cluster-small,
+        html[data-theme='light'] .marker-cluster-medium,
+        html[data-theme='light'] .marker-cluster-large {
+          background: rgba(148, 163, 184, 0.35) !important;
+          border: 1px solid rgba(15, 23, 42, 0.12) !important;
+          box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12) !important;
+        }
 
         .marker-cluster-small div,
         .marker-cluster-medium div,
@@ -566,13 +609,7 @@ const Leaflet = ({
           text-shadow: none !important;
         }
       `}</style>
-      {mapBorderless ? (
-        <div className={cn('buldreinfo-map-borderless min-h-0 w-full', height === '100%' && 'h-full')}>
-          {mapContainerEl}
-        </div>
-      ) : (
-        mapContainerEl
-      )}
+      {mapContainerEl}
     </>
   );
 };

@@ -42,7 +42,7 @@ export const NotLoggedIn = () => {
       </div>
       <button
         onClick={() => loginWithRedirect({ appState: { returnTo: window.location.pathname } })}
-        className='type-body type-on-accent bg-brand flex w-full items-center justify-center gap-3 rounded-xl px-6 py-3 font-semibold shadow-lg transition-all hover:brightness-110 active:scale-95'
+        className='type-body btn-brand-solid flex w-full items-center justify-center gap-3 rounded-xl px-6 py-3 font-semibold shadow-lg transition-all active:scale-95'
       >
         <LogIn size={18} /> Sign in
       </button>
@@ -66,7 +66,7 @@ export const InsufficientPrivileges = () => (
         Contact{' '}
         <a
           href='mailto:jostein.oygarden@gmail.com'
-          className='decoration-brand/30 hover:text-brand font-semibold text-slate-200 underline underline-offset-4 transition-colors'
+          className='decoration-brand/30 hover:text-brand active:text-brand focus-visible:text-brand focus-visible:ring-brand-border/55 focus-visible:ring-offset-surface-raised font-semibold text-slate-200 underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none'
         >
           Jostein Øygarden
         </a>{' '}

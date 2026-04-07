@@ -6,6 +6,8 @@ import { LockSymbol } from '../../ui/Indicators';
 import { cn } from '../../../lib/utils';
 import { SearchInput, Card, avatarFallbackColors, avatarInitialsFromName } from '../../ui';
 import { designContract } from '../../../design/contract';
+import { twInk } from '../../../design/twInk';
+import { useMeta } from '../Meta/context';
 
 type SearchResult = {
   title: string;
@@ -64,7 +66,7 @@ function getSearchFallbackMeta(kind: SearchEntityKind): { Icon: LucideIcon; labe
 const SEARCH_THUMB_PX = 44;
 
 const FALLBACK_THUMB_CLASS = 'border-white/5 bg-surface-nav transition-colors group-hover:border-brand-border';
-const FALLBACK_ICON_CLASS = 'shrink-0 text-slate-400 group-hover:text-slate-300';
+const FALLBACK_ICON_CLASS = cn('shrink-0 text-slate-400 group-hover:text-slate-300', twInk.lightGroupHoverSlate700);
 
 /** Matches `innerWidth < 640` (below Tailwind `sm`) — used synchronously so placeholder doesn’t flash long→short on load. */
 function isNarrowSearchViewport(): boolean {
@@ -75,7 +77,10 @@ function isNarrowSearchViewport(): boolean {
 const SearchBox = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isBouldering, isClimbing } = useMeta();
   const { search, isPending, data } = useSearch();
+  /** Bouldering → “problems”; climbing (sport/trad) → “routes”. */
+  const routesOrProblems = isBouldering ? 'problems' : isClimbing ? 'routes' : 'problems';
   const [value, setValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(isNarrowSearchViewport);
@@ -152,8 +157,9 @@ const SearchBox = () => {
   return (
     <div ref={containerRef} className='relative w-full'>
       <SearchInput
+        variant='shell'
         ref={inputRef}
-        placeholder={isMobile ? 'Search...' : 'Search areas, sectors, problems or users...'}
+        placeholder={isMobile ? 'Search...' : `Search areas, sectors, ${routesOrProblems} or users...`}
         value={value}
         isPending={isPending}
         onClear={() => {
@@ -288,7 +294,12 @@ const SearchBox = () => {
                       )}
                     </div>
                     {result.description && (
-                      <div className='truncate text-sm text-slate-400 group-hover:text-slate-300'>
+                      <div
+                        className={cn(
+                          'truncate text-sm text-slate-400 group-hover:text-slate-300',
+                          twInk.lightGroupHoverSlate700,
+                        )}
+                      >
                         {result.description}
                       </div>
                     )}

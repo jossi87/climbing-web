@@ -17,6 +17,7 @@ import { useMeta } from '../components/Meta/context';
 import { SectionLabel } from '../ui';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
+import { twInk } from '../../design/twInk';
 
 /** Footer grid column titles — a step brighter and larger than default {@link SectionLabel} for `bg-surface-nav`. */
 const footerColumnHeadingClass =
@@ -41,7 +42,8 @@ const Footer = () => {
       <>
         <div
           className={cn(
-            'bg-surface-raised flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-slate-600/45 text-slate-400 transition-colors group-hover:border-slate-500/55 group-hover:text-slate-200 sm:h-9 sm:w-9',
+            'bg-surface-raised group-hover:border-brand-border/50 light:border-slate-400/60 light:group-hover:border-slate-500/80 light:group-hover:shadow-none flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-slate-600/45 text-slate-400 transition-[color,border-color,box-shadow] duration-200 group-hover:text-slate-100 group-hover:shadow-[0_0_0_1px_color-mix(in_srgb,var(--color-brand)_12%,transparent)] sm:h-9 sm:w-9',
+            twInk.lightGroupHoverSlate800,
             className,
           )}
         >
@@ -52,7 +54,12 @@ const Footer = () => {
           )}
         </div>
         <div className='flex flex-col text-left'>
-          <span className='block text-[12px] font-semibold text-slate-200 transition-colors group-hover:text-slate-50 sm:text-[13px]'>
+          <span
+            className={cn(
+              'light:group-hover:text-slate-950 block text-[12px] font-semibold text-slate-200 transition-colors duration-200 sm:text-[13px]',
+              twInk.groupHoverChromeNearWhite,
+            )}
+          >
             {title}
           </span>
           {subtitle && (
@@ -62,7 +69,10 @@ const Footer = () => {
       </>
     );
 
-    const baseClass = 'flex items-center gap-3 text-slate-400 hover:text-slate-200 transition-colors group';
+    const baseClass = cn(
+      'group flex max-sm:-mx-1 max-sm:px-1.5 items-center gap-3 rounded-lg px-2 py-1.5 text-slate-400 transition-[color,background-color] duration-200 hover:bg-white/[0.07] hover:text-slate-100 light:hover:bg-slate-300/60',
+      twInk.lightHoverSlate900,
+    );
 
     return to ? (
       <Link to={to} onClick={() => window.scrollTo(0, 0)} className={baseClass}>
@@ -121,17 +131,30 @@ const Footer = () => {
               href='https://brv.no'
               rel='noreferrer noopener'
               target='_blank'
-              className='group flex items-center gap-3 text-slate-400 transition-colors hover:text-slate-200'
+              className={cn(
+                'group light:hover:bg-slate-300/60 flex items-center gap-3 rounded-lg px-2 py-1.5 text-slate-400 transition-[color,background-color] duration-200 hover:bg-white/[0.07] hover:text-slate-100 max-sm:-mx-1 max-sm:px-1.5',
+                twInk.lightHoverSlate900,
+              )}
             >
-              <div className='bg-surface-raised flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-slate-600/45 transition-colors group-hover:border-slate-500/55 sm:h-9 sm:w-9'>
+              <div
+                className={cn(
+                  'bg-surface-raised group-hover:border-brand-border/50 light:border-slate-400/60 light:group-hover:border-slate-500/80 light:group-hover:shadow-none flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-slate-600/45 text-slate-400 transition-[color,border-color,box-shadow] duration-200 group-hover:text-slate-100 group-hover:shadow-[0_0_0_1px_color-mix(in_srgb,var(--color-brand)_12%,transparent)] sm:h-9 sm:w-9',
+                  twInk.lightGroupHoverSlate800,
+                )}
+              >
                 <img
                   src='/png/brv.png'
                   alt='BRV'
-                  className='h-5 w-5 border-0 object-contain opacity-40 brightness-0 invert transition-all outline-none group-hover:opacity-100'
+                  className='footer-brv-logo h-5 w-5 border-0 object-contain transition-all outline-none'
                 />
               </div>
               <div className='flex flex-col items-start text-left'>
-                <span className='block text-[12px] font-semibold text-slate-200 transition-colors group-hover:text-slate-50 sm:text-[13px]'>
+                <span
+                  className={cn(
+                    'light:group-hover:text-slate-950 block text-[12px] font-semibold text-slate-200 transition-colors duration-200 sm:text-[13px]',
+                    twInk.groupHoverChromeNearWhite,
+                  )}
+                >
                   BRV
                 </span>
                 <span className={cn('block text-[9px] leading-tight', designContract.typography.label)}>
@@ -161,7 +184,7 @@ const Footer = () => {
           <div className={cn('flex flex-wrap justify-center gap-x-6 gap-y-3', designContract.typography.label)}>
             <a
               href='mailto:jostein.oygarden@gmail.com'
-              className='flex items-center gap-1.5 font-bold text-slate-300 underline decoration-white/18 underline-offset-4 transition-colors hover:text-slate-50 hover:decoration-white/30'
+              className='hover:text-brand hover:decoration-brand/55 light:text-slate-600 light:decoration-slate-400/55 light:hover:bg-slate-300/55 light:hover:decoration-brand/60 flex items-center gap-1.5 rounded-md px-1.5 py-0.5 font-bold text-slate-300 underline decoration-white/22 underline-offset-4 transition-[color,background-color,text-decoration-color] duration-200 hover:bg-white/[0.07]'
             >
               <Mail size={12} /> Contact
             </a>
@@ -169,19 +192,19 @@ const Footer = () => {
               href='/gpl-3.0.txt'
               target='_blank'
               rel='noreferrer'
-              className='flex items-center gap-1.5 font-bold text-slate-300 underline decoration-white/18 underline-offset-4 transition-colors hover:text-slate-50 hover:decoration-white/30'
+              className='hover:text-brand hover:decoration-brand/55 light:text-slate-600 light:decoration-slate-400/55 light:hover:bg-slate-300/55 light:hover:decoration-brand/60 flex items-center gap-1.5 rounded-md px-1.5 py-0.5 font-bold text-slate-300 underline decoration-white/22 underline-offset-4 transition-[color,background-color,text-decoration-color] duration-200 hover:bg-white/[0.07]'
             >
               <FileText size={12} /> License
             </a>
             <a
               href='/privacy-policy'
-              className='flex items-center gap-1.5 font-bold text-slate-300 underline decoration-white/18 underline-offset-4 transition-colors hover:text-slate-50 hover:decoration-white/30'
+              className='hover:text-brand hover:decoration-brand/55 light:text-slate-600 light:decoration-slate-400/55 light:hover:bg-slate-300/55 light:hover:decoration-brand/60 flex items-center gap-1.5 rounded-md px-1.5 py-0.5 font-bold text-slate-300 underline decoration-white/22 underline-offset-4 transition-[color,background-color,text-decoration-color] duration-200 hover:bg-white/[0.07]'
             >
               <ShieldCheck size={12} /> Privacy
             </a>
             <a
               href='/donate'
-              className='flex items-center gap-1.5 font-bold text-slate-300 underline decoration-white/18 underline-offset-4 transition-colors hover:text-slate-50 hover:decoration-white/30'
+              className='hover:text-brand hover:decoration-brand/55 light:text-slate-600 light:decoration-slate-400/55 light:hover:bg-slate-300/55 light:hover:decoration-brand/60 flex items-center gap-1.5 rounded-md px-1.5 py-0.5 font-bold text-slate-300 underline decoration-white/22 underline-offset-4 transition-[color,background-color,text-decoration-color] duration-200 hover:bg-white/[0.07]'
             >
               <Heart size={12} /> Donate
             </a>

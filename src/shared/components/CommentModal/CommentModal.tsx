@@ -101,7 +101,7 @@ const CommentModal = ({
 
           <div className='space-y-1.5'>
             <label className={cn('ml-1', fieldLabelClass)}>Media</label>
-            <MediaUpload onMediaChanged={(nm) => setMedia(nm)} isMultiPitch={false} />
+            <MediaUpload onMediaChanged={(nm) => setMedia(nm)} isMultiPitch={false} variant='modal' />
           </div>
 
           {showHse && (
@@ -173,12 +173,12 @@ const CommentModal = ({
           {danger && (
             <div
               className={cn(
-                'bg-surface-raised flex items-start gap-2.5 rounded-xl border border-red-500/35 p-3 leading-relaxed text-red-400 sm:gap-3 sm:p-3.5',
+                'bg-surface-raised light:border-red-700/35 light:bg-red-50/75 light:text-red-800 flex items-start gap-2.5 rounded-xl border border-red-500/35 p-3 leading-relaxed text-red-300 sm:gap-3 sm:p-3.5',
                 designContract.typography.micro,
               )}
             >
               <AlertTriangle className='mt-0.5 shrink-0' size={16} />
-              <p className='text-red-300/95'>
+              <p className='light:text-red-900 text-red-200/95'>
                 A loose hanger should not be flagged as dangerous. All climbers should carry a 17mm spanner (wrench),
                 and if you don't have it just tight the nut by hand. Be specific, is the bolt spinning freely in the
                 rock? Are there loose rocks/flakes that you were not able to safely remove by hand? What kind of tools
@@ -189,11 +189,7 @@ const CommentModal = ({
         </div>
 
         <div className='bg-surface-raised border-surface-border flex shrink-0 justify-end gap-1.5 border-t px-3 py-2.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:gap-3 sm:px-4 sm:py-4 sm:pb-4'>
-          <button
-            type='button'
-            onClick={onClose}
-            className='type-label shrink-0 px-2 py-1.5 opacity-75 transition-colors hover:opacity-100 sm:px-4 sm:py-2'
-          >
+          <button type='button' onClick={onClose} className='modal-action-cancel'>
             Cancel
           </button>
           <button

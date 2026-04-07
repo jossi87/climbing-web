@@ -35,8 +35,7 @@ const pageActionIconBtn =
 const pageActionIconBtnGlass =
   'border-white/12 bg-surface-raised text-slate-300 hover:border-white/18 hover:bg-surface-raised-hover';
 const pageActionIconBtnGreen = 'border-green-400/45 bg-green-500/20 text-green-300 hover:bg-green-500/28';
-const pageActionIconBtnBrand =
-  'border-brand-border bg-brand text-white shadow-sm hover:border-brand-border hover:brightness-110';
+const pageActionIconBtnBrand = 'border-brand-border btn-brand-solid shadow-sm hover:border-brand-border';
 
 const useIds = (): { problemId: number; pitch: number; mediaId: number } => {
   const { problemId, pitch, mediaId } = useParams();
