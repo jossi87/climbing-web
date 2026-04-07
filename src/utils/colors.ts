@@ -41,9 +41,5 @@ const hexToRGBArray = (color: string): [number, number, number] => {
     throw new Error('Invalid hex color: ' + color);
   }
 
-  return [
-    parseInt(color.slice(0, 2), 16),
-    parseInt(color.slice(2, 4), 16),
-    parseInt(color.slice(4, 6), 16),
-  ];
+  return [parseInt(color.slice(0, 2), 16), parseInt(color.slice(2, 4), 16), parseInt(color.slice(4, 6), 16)];
 };

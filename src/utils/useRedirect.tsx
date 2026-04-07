@@ -1,13 +1,15 @@
 import type { ReactNode } from 'react';
 import type { components } from '../@types/buldreinfo/swagger';
-import { Redirecting } from '../components/common/Redirecting';
+import { Redirecting } from '../shared/components/Redirecting';
 
 const isRedirect = (v: unknown): v is components['schemas']['Redirect'] => {
-  return (
-    !!v &&
-    typeof v === 'object' &&
-    typeof (v as components['schemas']['Redirect']).redirectUrl === 'string'
-  );
+  if (!v || typeof v !== 'object') return false;
+  const o = v as Record<string, unknown>;
+  if (typeof o.redirectUrl !== 'string' || !o.redirectUrl) return false;
+  /** Problem (and other entities) also declare `redirectUrl` in OpenAPI — do not treat full payloads as redirect-only. */
+  const keys = Object.keys(o).filter((k) => o[k] !== undefined && o[k] !== null);
+  const redirectKeys = new Set(['destination', 'redirectUrl', 'idArea', 'idSector']);
+  return keys.every((k) => redirectKeys.has(k));
 };
 
 export const useRedirect = (data: unknown): ReactNode | null => {

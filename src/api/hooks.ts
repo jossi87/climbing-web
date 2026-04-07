@@ -1,5 +1,6 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import {
+  type QueryClient,
   type UseMutationOptions,
   type MutationFunction,
   useMutation,
@@ -16,12 +17,7 @@ import type { FetchOptions } from './types';
 import { useCallback, useRef, useState } from 'react';
 import { postPermissions } from './operations';
 import { captureException } from '@sentry/react';
-import {
-  type MediaRegion,
-  calculateMediaRegion,
-  isPathVisible,
-  scalePath,
-} from '../utils/svg-scaler';
+import { type MediaRegion, calculateMediaRegion, isPathVisible, scalePath } from '../utils/svg-scaler';
 
 function useKey(customKey: readonly unknown[] | undefined, urlSuffix: string): readonly unknown[] {
   const { isAuthenticated } = useAuth0();
@@ -35,6 +31,19 @@ function useKey(customKey: readonly unknown[] | undefined, urlSuffix: string): r
     };
   }
   return key;
+}
+
+/** Call after tick/comment POSTs so `useProblem` refetches (cache is not updated automatically). */
+export function invalidateProblemQueries(client: QueryClient, problemId: number) {
+  return client.invalidateQueries({
+    predicate: (q) => {
+      const key = q.queryKey;
+      if (!Array.isArray(key) || key[0] !== '/problem') return false;
+      const meta = key[1];
+      if (meta == null || typeof meta !== 'object') return false;
+      return 'id' in meta && (meta as { id: number }).id === problemId;
+    },
+  });
 }
 
 export function usePostData<TVariables, TData = Response>(
@@ -87,9 +96,7 @@ export function useData<TQueryData = unknown, TData = TQueryData>(
   {
     queryKey: customQueryKey,
     ...options
-  }: Partial<
-    Omit<UseQueryOptions<TQueryData, unknown, TData>, 'queryFn' | 'structuralSharing'>
-  > = {},
+  }: Partial<Omit<UseQueryOptions<TQueryData, unknown, TData>, 'queryFn' | 'structuralSharing'>> = {},
 ) {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const queryKey = useKey(customQueryKey, urlSuffix);
@@ -110,10 +117,7 @@ export function useData<TQueryData = unknown, TData = TQueryData>(
 }
 
 export function useToc() {
-  const [cachedData, _, writeCachedData] = useLocalStorage<components['schemas']['Toc']>(
-    'cache/toc',
-    {},
-  );
+  const [cachedData, _, writeCachedData] = useLocalStorage<components['schemas']['Toc']>('cache/toc', {});
 
   return useData<components['schemas']['Toc']>('/toc', {
     placeholderData: cachedData,
@@ -180,13 +184,10 @@ export function useMediaSvg(idMedia: number) {
 
 export function useProblem(id: number, showHiddenMedia: boolean) {
   const client = useQueryClient();
-  const problem = useData<Success<'getProblem'>>(
-    `/problem?id=${id}&showHiddenMedia=${showHiddenMedia}`,
-    {
-      enabled: id > 0,
-      queryKey: [`/problem`, { id, showHiddenMedia }],
-    },
-  );
+  const problem = useData<Success<'getProblem'>>(`/problem?id=${id}&showHiddenMedia=${showHiddenMedia}`, {
+    enabled: id > 0,
+    queryKey: [`/problem`, { id, showHiddenMedia }],
+  });
   const { data: profile } = useProfile(-1);
   const toggleTodo = usePostData(`/todo?idProblem=${id}`, {
     mutationKey: [`/todo`, { id }],
@@ -296,27 +297,24 @@ export function useProfile(userId = -1) {
       consistencyAction: 'nop',
     },
     onMutate: ({ region, del }) => {
-      client.setQueryData<components['schemas']['Profile']>(
-        [`/profile`, { id: userId, isAuthenticated }],
-        (old) => {
-          if (old && typeof old === 'object') {
-            const next = {
-              ...old,
-              userRegions: old.userRegions?.map((oldRegion) => {
-                if (oldRegion.id !== region.id) {
-                  return oldRegion;
-                }
-                return {
-                  ...oldRegion,
-                  enabled: !del,
-                };
-              }),
-            };
-            return next;
-          }
-          return old;
-        },
-      );
+      client.setQueryData<components['schemas']['Profile']>([`/profile`, { id: userId, isAuthenticated }], (old) => {
+        if (old && typeof old === 'object') {
+          const next = {
+            ...old,
+            userRegions: old.userRegions?.map((oldRegion) => {
+              if (oldRegion.id !== region.id) {
+                return oldRegion;
+              }
+              return {
+                ...oldRegion,
+                enabled: !del,
+              };
+            }),
+          };
+          return next;
+        }
+        return old;
+      });
     },
     onError: () => {
       client.refetchQueries({
@@ -354,6 +352,7 @@ export function useProfileMedia({ userId, captured }: { userId: number; captured
 export function useProfileStatistics(id: number) {
   return useData<components['schemas']['ProfileStatistics']>(`/profile/statistics?id=${id}`, {
     queryKey: [`/profile/statistics`, { id }],
+    enabled: id > 0,
   });
 }
 
@@ -404,10 +403,7 @@ export function useTop({ idArea, idSector }: { idArea: number; idSector: number 
 }
 
 export function useSearch() {
-  const { mutateAsync, data, ...rest } = usePostData<
-    { value: string },
-    components['schemas']['Search'][]
-  >(`/search`, {
+  const { mutateAsync, data, ...rest } = usePostData<{ value: string }, components['schemas']['Search'][]>(`/search`, {
     select(response) {
       return response.json();
     },
@@ -500,14 +496,11 @@ export function useGradeDistribution(
   idSector: number,
   data: components['schemas']['GradeDistribution'][] | undefined,
 ) {
-  return useData<Success<'getGradeDistribution'>>(
-    `/grade/distribution?idArea=${idArea}&idSector=${idSector}`,
-    {
-      queryKey: [`/grade/distribution`, { idArea, idSector }],
-      enabled: !!idArea || !!idSector,
-      initialData: data,
-    },
-  );
+  return useData<Success<'getGradeDistribution'>>(`/grade/distribution?idArea=${idArea}&idSector=${idSector}`, {
+    queryKey: [`/grade/distribution`, { idArea, idSector }],
+    enabled: !!idArea || !!idSector,
+    initialData: data,
+  });
 }
 
 export function useUserSearch(value: string) {
@@ -561,12 +554,7 @@ export type EditableSvg = {
   > & { t: 'other' })[];
 };
 
-export function useSvgEdit(
-  problemId: number,
-  pitch: number,
-  mediaId: number,
-  mediaRegion: MediaRegion | null,
-) {
+export function useSvgEdit(problemId: number, pitch: number, mediaId: number, mediaRegion: MediaRegion | null) {
   const { data } = useProblem(problemId, true);
 
   if (!data) {
@@ -609,10 +597,7 @@ export function useSvgEdit(
       if (prevPitchSvg && prevPitchSvg.path) {
         mediaRegionLocal = calculateMediaRegion(prevPitchSvg.path, m.width ?? 0, m.height ?? 0);
         if (mediaRegionLocal) {
-          mediaRegionLocal.y = Math.max(
-            0,
-            mediaRegionLocal.y - Math.round(mediaRegionLocal.height / 2),
-          );
+          mediaRegionLocal.y = Math.max(0, mediaRegionLocal.y - Math.round(mediaRegionLocal.height / 2));
         }
       }
     }
@@ -621,8 +606,7 @@ export function useSvgEdit(
   const svgId = svg?.id ?? 0;
   const svgNr = svg?.nr ?? 0;
   const hasAnchor = svg?.hasAnchor ?? pitch === 0;
-  const path =
-    (svg?.path && mediaRegionLocal ? scalePath(svg.path, mediaRegionLocal) : svg?.path) ?? '';
+  const path = (svg?.path && mediaRegionLocal ? scalePath(svg.path, mediaRegionLocal) : svg?.path) ?? '';
   const anchors: { x: number; y: number }[] = [];
   if (svg?.anchors) {
     try {

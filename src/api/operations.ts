@@ -18,10 +18,7 @@ export function downloadTocXlsx(accessToken: string | null) {
   return downloadFileWithProgress(accessToken, '/toc/xlsx');
 }
 
-export function deleteMedia(
-  accessToken: string | null,
-  id: number,
-): Promise<Success<'deleteMedia'>> {
+export function deleteMedia(accessToken: string | null, id: number): Promise<Success<'deleteMedia'>> {
   return makeAuthenticatedRequest(accessToken, `/media?id=${id}`, {
     method: 'DELETE',
   });
@@ -44,10 +41,7 @@ export function moveMedia(
   );
 }
 
-export function setMediaAsAvatar(
-  accessToken: string | null,
-  id: number,
-): Promise<Success<'putMediaAvatar'>> {
+export function setMediaAsAvatar(accessToken: string | null, id: number): Promise<Success<'putMediaAvatar'>> {
   return makeAuthenticatedRequest(accessToken, `/media/avatar?id=${id}`, {
     method: 'PUT',
   });
@@ -93,9 +87,7 @@ export function postComment(
       newMedia,
     }),
   );
-  media.forEach(
-    (m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file),
-  );
+  media.forEach((m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file));
 
   return makeAuthenticatedRequest(accessToken, `/comments`, {
     method: 'POST',
@@ -199,20 +191,35 @@ export function postProblem(
       descent,
     }),
   );
-  media.forEach(
-    (m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file),
-  );
+  media.forEach((m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file));
   return makeAuthenticatedRequest(accessToken, `/problems`, {
     method: 'POST',
     body: formData,
     headers: {
       Accept: 'application/json',
     },
+    /** Avoid refetching every cached query — that floods the network/console after save. */
+    consistencyAction: 'nop',
   })
-    .then((data) => data.json())
+    .then(async (response) => {
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const message =
+          typeof body === 'object' &&
+          body !== null &&
+          'message' in body &&
+          typeof (body as { message?: unknown }).message === 'string'
+            ? (body as { message: string }).message
+            : response.statusText;
+        throw new Error(message);
+      }
+      return body;
+    })
     .catch((error) => {
       console.warn(error);
-      alert(error);
+      const message = error instanceof Error ? error.message : String(error);
+      alert(message);
+      throw error;
     });
 }
 
@@ -236,9 +243,7 @@ export function postProblemMedia(
     };
   });
   formData.append('json', JSON.stringify({ id, newMedia }));
-  media.forEach(
-    (m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file),
-  );
+  media.forEach((m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file));
   return makeAuthenticatedRequest(accessToken, `/problems/media`, {
     method: 'POST',
     body: formData,
@@ -347,20 +352,34 @@ export function postSector(
       problemOrder,
     }),
   );
-  media.forEach(
-    (m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file),
-  );
+  media.forEach((m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file));
   return makeAuthenticatedRequest(accessToken, `/sectors`, {
     method: 'POST',
     body: formData,
     headers: {
       Accept: 'application/json',
     },
+    consistencyAction: 'nop',
   })
-    .then((data) => data.json())
+    .then(async (response) => {
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const message =
+          typeof body === 'object' &&
+          body !== null &&
+          'message' in body &&
+          typeof (body as { message?: unknown }).message === 'string'
+            ? (body as { message: string }).message
+            : response.statusText;
+        throw new Error(message);
+      }
+      return body;
+    })
     .catch((error) => {
       console.warn(error);
-      alert(error);
+      const message = error instanceof Error ? error.message : String(error);
+      alert(message);
+      throw error;
     });
 }
 
@@ -419,16 +438,8 @@ export function putMediaInfo(
   });
 }
 
-export function putMediaJpegRotate(
-  accessToken: string | null,
-  idMedia: number,
-  degrees: number,
-): Promise<unknown> {
-  return makeAuthenticatedRequest(
-    accessToken,
-    `/media/jpeg/rotate?idMedia=${idMedia}&degrees=${degrees}`,
-    {
-      method: 'PUT',
-    },
-  );
+export function putMediaJpegRotate(accessToken: string | null, idMedia: number, degrees: number): Promise<unknown> {
+  return makeAuthenticatedRequest(accessToken, `/media/jpeg/rotate?idMedia=${idMedia}&degrees=${degrees}`, {
+    method: 'PUT',
+  });
 }

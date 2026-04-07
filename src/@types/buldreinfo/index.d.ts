@@ -21,6 +21,4 @@ type Success<
   content = 'application/json',
 > = operations[T]['responses']['200']['content'][content];
 
-type WithoutFirstParameter<F> = F extends (x: any, ...args: infer P) => infer R
-  ? Parameters<(...args: P) => R>
-  : never;
+type WithoutFirstParameter<F> = F extends (x: any, ...args: infer P) => infer R ? Parameters<(...args: P) => R> : never;

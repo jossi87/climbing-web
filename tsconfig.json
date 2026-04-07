@@ -10,6 +10,9 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
     "moduleResolution": "bundler",
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
@@ -18,5 +21,5 @@
     "jsx": "react-jsx",
     "types": ["vite/client", "node"]
   },
-  "include": ["src", "server.js", "vite.config.ts"]
+  "include": ["src", "vite.config.js", "eslint.config.js"]
 }

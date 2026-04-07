@@ -1,1 +1,0 @@
-export { ProblemsOnRock } from './ProblemsOnRock';

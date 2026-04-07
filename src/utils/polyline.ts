@@ -62,17 +62,10 @@ const hashLatLng = ({ latitude, longitude }: components['schemas']['Coordinates'
     .reverse()
     .join('')
     .substring(0, componentSize - 1);
-  const msbLng = String(longitude)
-    .replace(/[^\d]/g, '')
-    .split('')
-    .reverse()
-    .join('')
-    .substring(0, componentSize);
+  const msbLng = String(longitude).replace(/[^\d]/g, '').split('').reverse().join('').substring(0, componentSize);
   return Number(`${msbLat}${msbLng}`) % Number.MAX_SAFE_INTEGER;
 };
 
-export const colorLatLng = (
-  c: components['schemas']['Coordinates'],
-): ReturnType<typeof hashHexColor> => {
+export const colorLatLng = (c: components['schemas']['Coordinates']): ReturnType<typeof hashHexColor> => {
   return hashHexColor(hashLatLng(c));
 };

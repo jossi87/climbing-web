@@ -1,0 +1,881 @@
+import { Fragment, type ComponentProps, type ReactNode, useMemo, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import ChartGradeDistribution from '../../shared/components/ChartGradeDistribution/ChartGradeDistribution';
+import Top from '../../shared/components/Top/Top';
+import Activity from '../../shared/components/Activity/Activity';
+import Leaflet from '../../shared/components/Leaflet/Leaflet';
+import { getDistanceWithUnit } from '../../shared/components/Leaflet/geo-utils';
+import { SLOPE_APPROACH_COLOR, SLOPE_DESCENT_COLOR } from '../../shared/slopePolylineColors';
+import Media from '../../shared/components/Media/Media';
+import Todo from '../../shared/components/Todo/Todo';
+import { Loading } from '../../shared/ui/StatusWidgets';
+import { Stars, LockSymbol } from '../../shared/ui/Indicators';
+import { ConditionLabels } from '../../shared/components/Widgets/ConditionLabels';
+import { ExternalLinkLabels } from '../../shared/components/Widgets/ExternalLinkLabels';
+import { NoDogsAllowed } from '../../shared/components/Widgets/NoDogsAllowed';
+import { useMeta } from '../../shared/components/Meta/context';
+import { getMediaFileUrl, useArea } from '../../api';
+import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
+import ProblemList from '../../shared/components/ProblemList';
+import type { components } from '../../@types/buldreinfo/swagger';
+import { DownloadButton } from '../../shared/ui/DownloadButton';
+import { Card, PageCardBreadcrumbRow } from '../../shared/ui';
+import { TradGearMarker } from '../../shared/ui/TradGearMarker';
+import { climbingRouteUsesPassiveGear, formatRouteTypeLabel } from '../../utils/routeTradGear';
+import {
+  Check,
+  ChevronRight,
+  Plus,
+  Edit,
+  AlertTriangle,
+  Image as ImageIcon,
+  Map as MapIcon,
+  MapPinned,
+  BarChart2,
+  Trophy,
+  Bookmark,
+  MapPin,
+  Spline,
+  Film,
+  LayoutGrid,
+  LayoutDashboard,
+  List,
+  Clock,
+} from 'lucide-react';
+import { cn } from '../../lib/utils';
+import { designContract } from '../../design/contract';
+import { twInk } from '../../design/twInk';
+import {
+  tabBarButtonClassName,
+  tabBarButtonClassNameInline,
+  tabBarIconClassName,
+  tabBarStripContainerClassName,
+  TAB_BAR_ICON_SIZE,
+} from '../../design/tabBar';
+import { ProfileRowTextSep } from '../../shared/components/Profile/ProfileRowTextSep';
+import {
+  profileRowRootClass,
+  tickCommentSmall,
+  tickFlags,
+  tickProblemLinkWithStatus,
+  tickWhenGrade,
+} from '../../shared/components/Profile/profileRowTypography';
+
+type Props = {
+  sectorId: number;
+  sectorName: string;
+  problem: NonNullable<NonNullable<components['schemas']['Area']['sectors']>[number]['problems']>[number];
+};
+
+const areaListLockInlineClass = 'ml-0.5 inline-block align-middle';
+
+/** Area Routes tab row — same typography/layout as the sector problem list; includes sector name for context. */
+const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
+  const { isClimbing, isBouldering } = useMeta();
+
+  const passiveGearAfterGrade =
+    isClimbing && problem.t
+      ? (() => {
+          const typeLabel = formatRouteTypeLabel(problem.t.type, problem.t.subType);
+          if (!typeLabel || !climbingRouteUsesPassiveGear(typeLabel)) return null;
+          return <TradGearMarker line={typeLabel} />;
+        })()
+      : null;
+
+  const faMetaBlock = (() => {
+    const segments: { key: string; node: ReactNode }[] = [];
+    const faText = (problem.fa ?? '').trim();
+    const faYear = problem.faDate ? problem.faDate.substring(0, 4) : '';
+    const faLine = [faText, faYear].filter(Boolean).join(' ');
+    if (faLine) {
+      segments.push({ key: 'fa', node: faLine });
+    }
+    if (isClimbing) {
+      if ((problem.numPitches ?? 1) > 1) {
+        segments.push({
+          key: 'pitches',
+          node: (
+            <>
+              <span className='tabular-nums'>{problem.numPitches}</span> pitches
+            </>
+          ),
+        });
+      }
+    }
+    const n = problem.numTicks ?? 0;
+    if (n > 0) {
+      segments.push({
+        key: 'ascents',
+        node: (
+          <>
+            <span className='tabular-nums'>{n}</span>
+            {n === 1 ? ' ascent' : ' ascents'}
+          </>
+        ),
+      });
+    }
+
+    if (segments.length === 0) return null;
+
+    const metaMuted = tickFlags;
+
+    return (
+      <>
+        {segments.map((seg, i) => (
+          <Fragment key={seg.key}>
+            {i > 0 ? <ProfileRowTextSep /> : null}
+            <span className={metaMuted}>{seg.node}</span>
+          </Fragment>
+        ))}
+      </>
+    );
+  })();
+
+  const hasMediaTrail = !!problem.coordinates || !!problem.hasTopo || !!problem.hasImages || !!problem.hasMovies;
+
+  const hasLock = !!(problem.lockedAdmin || problem.lockedSuperadmin);
+  const hasBroken = !!problem.broken;
+  const lockBrokenBlock =
+    hasLock || hasBroken ? (
+      <>
+        {hasLock ? (
+          <span className={areaListLockInlineClass}>
+            <LockSymbol lockedAdmin={!!problem.lockedAdmin} lockedSuperadmin={!!problem.lockedSuperadmin} />
+          </span>
+        ) : null}
+        {hasBroken ? (
+          <>
+            {hasLock ? ' ' : null}
+            <span className='rounded border border-red-500/25 bg-red-500/12 px-1.5 py-0.5 text-[9px] font-semibold tracking-wide text-red-300 uppercase'>
+              {problem.broken}
+            </span>
+          </>
+        ) : null}
+      </>
+    ) : null;
+
+  const mediaTrailBlock = hasMediaTrail ? (
+    <span className='inline text-slate-500'>
+      {problem.coordinates ? (
+        <span className='inline' title='Coordinates'>
+          <MapPin size={12} strokeWidth={2} className='inline-block align-[-0.125em]' />
+        </span>
+      ) : null}
+      {problem.hasTopo ? (
+        <span className='inline pl-1' title='Topo line'>
+          <Spline size={12} strokeWidth={2} className='inline-block align-[-0.125em]' />
+        </span>
+      ) : null}
+      {problem.hasImages ? (
+        <span className='inline pl-1' title='Images'>
+          <ImageIcon size={12} strokeWidth={2} className='inline-block align-[-0.125em]' />
+        </span>
+      ) : null}
+      {problem.hasMovies ? (
+        <span className='inline pl-1' title='Movies'>
+          <Film size={12} strokeWidth={2} className='inline-block align-[-0.125em]' />
+        </span>
+      ) : null}
+    </span>
+  ) : null;
+
+  const lockAndMedia =
+    lockBrokenBlock || mediaTrailBlock ? (
+      <>
+        {lockBrokenBlock}
+        {lockBrokenBlock && mediaTrailBlock ? ' ' : null}
+        {mediaTrailBlock}
+      </>
+    ) : null;
+
+  const iconRunBeforeSector = !!(passiveGearAfterGrade || (problem.stars && problem.stars > 0) || lockAndMedia);
+  /** Middle dot only between text segments; plain space after star / lock / media icons. */
+  const faMetaLead = sectorName || !iconRunBeforeSector ? <ProfileRowTextSep /> : ' ';
+
+  return (
+    <div className={cn(profileRowRootClass, 'min-w-0 py-1 sm:py-1.5')}>
+      <div className='min-w-0 leading-snug'>
+        {problem.danger ? (
+          <AlertTriangle
+            size={12}
+            className={cn('mr-1 inline-block shrink-0 align-[-0.125em]', designContract.ascentStatus.dangerous)}
+            strokeWidth={2.25}
+          />
+        ) : null}
+        <span
+          className={cn(
+            'mr-1.5 inline-block font-normal tabular-nums antialiased sm:mr-2',
+            problem.ticked
+              ? cn(designContract.ascentStatus.ticked, 'font-semibold')
+              : problem.todo
+                ? cn(designContract.ascentStatus.todo, 'font-semibold')
+                : tickWhenGrade,
+          )}
+          title={
+            problem.ticked ? 'Ticked' : problem.todo ? 'On to-do list' : `${isBouldering ? 'Boulder' : 'Route'} number`
+          }
+        >
+          #{problem.nr}
+        </span>
+        <Link
+          to={`/problem/${problem.id}`}
+          className={tickProblemLinkWithStatus({
+            ticked: !!problem.ticked,
+            todo: !!problem.todo,
+            broken: !!problem.broken,
+          })}
+        >
+          {problem.name}
+        </Link>
+        {problem.grade ? (
+          <span className={cn(tickWhenGrade, 'ml-1 whitespace-nowrap tabular-nums')}>{problem.grade}</span>
+        ) : null}
+        {passiveGearAfterGrade}
+        {problem.stars ? (
+          <span className='ml-1 inline-block align-[-0.15em] opacity-90'>
+            <Stars numStars={problem.stars} size={11} />
+          </span>
+        ) : null}
+        {lockAndMedia ? <> {lockAndMedia}</> : null}
+        {sectorName ? (
+          <>
+            {iconRunBeforeSector ? ' ' : <ProfileRowTextSep />}
+            {sectorId > 0 ? (
+              <Link
+                to={`/sector/${sectorId}`}
+                className={cn(tickFlags, designContract.typography.listLinkMuted, 'underline-offset-2 hover:underline')}
+              >
+                {sectorName}
+              </Link>
+            ) : (
+              <span className={cn(tickFlags, 'text-slate-300')}>{sectorName}</span>
+            )}
+          </>
+        ) : null}
+        {faMetaBlock ? (
+          <>
+            {faMetaLead}
+            {faMetaBlock}
+          </>
+        ) : null}
+        {problem.rock ? (
+          <>
+            <ProfileRowTextSep />
+            <span className={cn(tickFlags, 'not-italic')}>Rock: {problem.rock}</span>
+          </>
+        ) : null}
+        {problem.comment ? (
+          <>
+            <ProfileRowTextSep />
+            <span className={tickCommentSmall}>{problem.comment}</span>
+          </>
+        ) : null}
+      </div>
+    </div>
+  );
+};
+
+type AreaSectorType = NonNullable<components['schemas']['Area']['sectors']>[number];
+type SectorWithParking = AreaSectorType &
+  (Pick<AreaSectorType, 'parking'> & {
+    parking: Required<Pick<NonNullable<AreaSectorType['parking']>, 'latitude' | 'longitude'>>;
+  });
+
+const isSectorWithParking = (s: AreaSectorType): s is SectorWithParking => {
+  return !!(s.parking && s.parking.latitude && s.parking.longitude);
+};
+
+/** Problems in area — prefer server count when present. */
+function countAreaProblems(area: components['schemas']['Area']): number {
+  const n = area.numProblems;
+  if (n != null && n > 0) return n;
+  return (area.sectors ?? []).reduce((acc, s) => acc + (s.problems?.length ?? 0), 0);
+}
+
+/** Sum of `numTicks` across embedded sector problems (same payload as the lists). */
+function sumAreaProblemTicks(area: components['schemas']['Area']): number {
+  return (area.sectors ?? []).reduce(
+    (acc, s) => acc + (s.problems ?? []).reduce((m, p) => m + (p.numTicks ?? 0), 0),
+    0,
+  );
+}
+
+/** Keep Todo tab unless `typeNumTickedTodo` has rows and every aggregate todo count is zero. */
+function shouldShowAreaTodoTabFromPayload(area: components['schemas']['Area']): boolean {
+  const rows = area.typeNumTickedTodo;
+  if (rows == null || rows.length === 0) return true;
+  return rows.reduce((s, x) => s + (x.todo ?? 0), 0) > 0;
+}
+
+const Area = () => {
+  const meta = useMeta();
+  const { areaId } = useParams();
+  const [activeTab, setActiveTab] = useState<string | null>(null);
+  const [activeSectorTab, setActiveSectorTab] = useState<string>('sectors');
+
+  if (areaId === undefined) {
+    throw new Error('Missing areaId parameter');
+  }
+
+  const { data, error, redirectUi } = useArea(+areaId);
+
+  const markers = useMemo(() => {
+    if (!data?.sectors) return [];
+
+    type SectorParkingMarker = Pick<SectorWithParking['parking'], 'latitude' | 'longitude'> & {
+      sectors: Pick<NonNullable<SectorWithParking>, 'id' | 'name'>[];
+    };
+
+    const uniqueSectors = data.sectors.filter(isSectorWithParking).reduce(
+      (acc, { parking, name, id }) => {
+        const key = `${parking.latitude},${parking.longitude}`;
+        const existing = acc[key];
+        return {
+          ...acc,
+          [key]: {
+            latitude: parking.latitude,
+            longitude: parking.longitude,
+            sectors: [...(existing?.sectors ?? []), { name, id }],
+          },
+        };
+      },
+      {} as Record<string, SectorParkingMarker>,
+    );
+
+    return Object.values(uniqueSectors).map((info) => ({
+      coordinates: { latitude: info.latitude, longitude: info.longitude },
+      isParking: true,
+    }));
+  }, [data?.sectors]);
+
+  const { outlines, slopes } = useMemo(() => {
+    const nextOutlines: NonNullable<ComponentProps<typeof Leaflet>['outlines']> = [];
+    const nextSlopes: NonNullable<ComponentProps<typeof Leaflet>['slopes']> = [];
+    if (!data?.sectors) return { outlines: nextOutlines, slopes: nextSlopes };
+
+    const showSlopeLengthOnOutline = (data.sectors.filter((s) => s.approach && s.outline).length ?? 0) > 1;
+
+    for (const s of data.sectors) {
+      let distance: string | null = null;
+      const approach = s.approach;
+      if (approach?.coordinates?.length) {
+        distance = getDistanceWithUnit(approach);
+        const label = (!s.outline || !showSlopeLengthOnOutline) && distance ? distance : '';
+        nextSlopes.push({ backgroundColor: SLOPE_APPROACH_COLOR, slope: approach, label: label ?? '' });
+      }
+      if (s.descent?.coordinates?.length) {
+        distance = getDistanceWithUnit(s.descent);
+        const label = (!s.outline || !showSlopeLengthOnOutline) && distance ? distance : '';
+        nextSlopes.push({ backgroundColor: SLOPE_DESCENT_COLOR, slope: s.descent, label: label ?? '' });
+      }
+      if (s.outline?.length) {
+        const label = (s.name ?? '') + (showSlopeLengthOnOutline && distance ? ' (' + distance + ')' : '');
+        nextOutlines.push({ url: '/sector/' + s.id, label, outline: s.outline });
+      }
+    }
+    return { outlines: nextOutlines, slopes: nextSlopes };
+  }, [data]);
+
+  const tabs = useMemo(() => {
+    const t: { id: string; label: string; icon: typeof LayoutDashboard }[] = [];
+    if (!data) return t;
+    t.push({ id: 'overview', label: 'Overview', icon: LayoutDashboard });
+    const hasMapContent = markers.length > 0 || outlines.length > 0 || slopes.length > 0;
+    if (hasMapContent) t.push({ id: 'map', label: 'Map', icon: MapIcon });
+    if (data.sectors?.length) {
+      const problemCount = countAreaProblems(data);
+      const tickSum = sumAreaProblemTicks(data);
+      if (problemCount > 0) {
+        t.push({ id: 'distribution', label: 'Distribution', icon: BarChart2 });
+      }
+      if (problemCount > 0 && tickSum > 0) {
+        t.push({ id: 'top', label: 'Top', icon: Trophy });
+      }
+      if (shouldShowAreaTodoTabFromPayload(data)) {
+        t.push({ id: 'todo', label: 'Todo', icon: Bookmark });
+      }
+      t.push({ id: 'activity', label: 'Activity', icon: Clock });
+    }
+    return t;
+  }, [data, markers.length, outlines.length, slopes.length]);
+
+  const normalizedActiveTab = activeTab === 'image' ? 'overview' : activeTab;
+  const effectiveTab =
+    tabs.length === 0
+      ? null
+      : normalizedActiveTab !== null && tabs.some((x) => x.id === normalizedActiveTab)
+        ? normalizedActiveTab
+        : tabs[0].id;
+
+  const problemRows = useMemo(() => {
+    if (!data?.sectors) return [];
+    return (data.sectors ?? [])
+      .flatMap((sector) => {
+        const name = sector.name ?? '';
+        const problems = sector.problems ?? [];
+        return problems.map((p) => ({
+          element: <SectorListItem key={p.id} sectorId={sector.id ?? 0} sectorName={name} problem={p} />,
+          name: p.name ?? '',
+          areaName: data.name ?? '',
+          sectorName: name,
+          nr: p.nr ?? 0,
+          gradeNumber: p.gradeNumber ?? 0,
+          stars: p.stars ?? 0,
+          numTicks: p.numTicks ?? 0,
+          ticked: p.ticked ?? false,
+          rock: p.rock ?? '',
+          subType: p.t?.subType ?? '',
+          broken: !!p.broken,
+          num: p.nr ?? 0,
+          fa: !!p.fa,
+          faDate: p.faDate ?? null,
+        }));
+      })
+      .sort((a, b) => b.gradeNumber - a.gradeNumber);
+  }, [data]);
+
+  if (redirectUi) return redirectUi;
+
+  if (error) {
+    return (
+      <div className='bg-surface-card border-surface-border mx-auto mt-12 max-w-2xl space-y-4 rounded-2xl border p-8 text-center'>
+        <AlertTriangle size={48} className='mx-auto text-red-500 opacity-50' />
+        <h2 className='type-h1'>404 Error</h2>
+        <p className='text-slate-400'>
+          Cannot find the specified area because it does not exist or you do not have sufficient permissions.
+        </p>
+      </div>
+    );
+  }
+
+  if (!data) return <Loading />;
+
+  const orderableMedia: ComponentProps<typeof Media>['orderableMedia'] = [];
+  const carouselMedia: ComponentProps<typeof Media>['carouselMedia'] = [];
+  if (data.media?.length) {
+    carouselMedia.push(...data.media);
+    if (data.media.length > 1) orderableMedia.push(...data.media);
+  }
+  if (data.triviaMedia?.length) {
+    carouselMedia.push(...data.triviaMedia);
+    if (data.triviaMedia.length > 1) orderableMedia.push(...data.triviaMedia);
+  }
+
+  const areaAccessRestrictions =
+    data.accessClosed || data.noDogsAllowed || data.accessInfo ? (
+      <div className={cn('min-w-0 space-y-2', designContract.typography.detailBody)}>
+        {data.accessClosed && <p className='text-access-danger text-pretty'>{data.accessClosed}</p>}
+        {(data.noDogsAllowed || data.accessInfo) && (
+          <div className='text-access-caution space-y-1.5'>
+            {data.noDogsAllowed && <NoDogsAllowed />}
+            {data.accessInfo && <p className='text-pretty'>{data.accessInfo}</p>}
+          </div>
+        )}
+      </div>
+    ) : null;
+
+  return (
+    <div className='w-full min-w-0'>
+      <title>{`${data.name} | ${meta?.title}`}</title>
+      <meta name='description' content={data.comment} />
+
+      <div className='mb-3 min-w-0 space-y-3 pt-1 sm:mb-4 sm:space-y-2 sm:pt-1 lg:pt-0'>
+        <PageCardBreadcrumbRow
+          className='mb-0'
+          breadcrumb={
+            <nav
+              className={cn(
+                'flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-2 text-pretty break-words',
+                designContract.typography.detailBody,
+              )}
+            >
+              <Link to='/areas' className={designContract.typography.breadcrumbLink}>
+                Areas
+              </Link>
+              <ChevronRight size={12} className='shrink-0 translate-y-px opacity-30' aria-hidden />
+              <span className='inline-flex max-w-full min-w-0 items-baseline gap-1.5'>
+                <span className='light:text-slate-950 min-w-0 font-semibold text-slate-50'>{data.name}</span>
+                <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
+              </span>
+            </nav>
+          }
+          actions={
+            meta.isAdmin ? (
+              <>
+                <Link
+                  to={`/sector/edit/${data.id}/0`}
+                  title='Add sector'
+                  aria-label='Add sector'
+                  data-ph-action='add'
+                  className={cn(
+                    designContract.controls.pageHeaderIconButton,
+                    designContract.controls.pageHeaderIconButtonAdd,
+                  )}
+                >
+                  <Plus className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
+                </Link>
+                <Link
+                  to={`/area/edit/${data.id}`}
+                  title='Edit area'
+                  aria-label='Edit area'
+                  data-ph-action='edit'
+                  className={cn(
+                    designContract.controls.pageHeaderIconButton,
+                    designContract.controls.pageHeaderIconButtonEdit,
+                  )}
+                >
+                  <Edit className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
+                </Link>
+              </>
+            ) : null
+          }
+        />
+      </div>
+
+      <Card flush className='min-w-0 border-0'>
+        {tabs.length > 1 && (
+          <>
+            <div
+              className={tabBarStripContainerClassName('equal')}
+              style={{ display: 'grid', gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
+              role='tablist'
+              aria-label='Area sections'
+            >
+              {tabs.map((t) => {
+                const IconComp = t.icon;
+                const isActive = effectiveTab === t.id;
+                return (
+                  <button
+                    key={t.id}
+                    type='button'
+                    role='tab'
+                    aria-selected={isActive}
+                    onClick={() => setActiveTab(t.id)}
+                    className={tabBarButtonClassName(isActive)}
+                  >
+                    <IconComp
+                      size={TAB_BAR_ICON_SIZE}
+                      strokeWidth={isActive ? 2.3 : 2}
+                      className={tabBarIconClassName(isActive)}
+                    />
+                    <span className={designContract.controls.tabBarLabel}>{t.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {effectiveTab !== 'activity' && (
+              <div>
+                {effectiveTab === 'overview' && (
+                  <div className='space-y-4 p-4 sm:p-5'>
+                    {areaAccessRestrictions}
+                    {(data.media?.length ?? 0) > 0 && (
+                      <Media
+                        pitches={null}
+                        media={data.media ?? []}
+                        orderableMedia={orderableMedia}
+                        carouselMedia={carouselMedia}
+                        optProblemId={null}
+                        showLocation={false}
+                        compactTiles
+                      />
+                    )}
+
+                    <div className='flex w-full min-w-0 flex-wrap items-center gap-x-2 gap-y-2'>
+                      <ConditionLabels
+                        lat={data.coordinates?.latitude}
+                        lng={data.coordinates?.longitude}
+                        label={data.name ?? ''}
+                        wallDirectionCalculated={undefined}
+                        wallDirectionManual={undefined}
+                        sunFromHour={data.sunFromHour ?? 0}
+                        sunToHour={data.sunToHour ?? 0}
+                        pageViews={data.pageViews}
+                      />
+                      {data.forDevelopers && (
+                        <span
+                          className={cn(
+                            designContract.surfaces.inlineChip,
+                            'text-[10px] font-semibold tracking-wide text-amber-400/90 uppercase',
+                          )}
+                        >
+                          Under development
+                        </span>
+                      )}
+                      <DownloadButton href={`/areas/pdf?id=${data.id}`}>PDF</DownloadButton>
+                      <ExternalLinkLabels externalLinks={data.externalLinks} />
+                    </div>
+
+                    {(data.comment ?? '').trim().length > 0 && (
+                      <ExpandableMarkdown key={data.id} content={data.comment ?? ''} contentClassName='max-w-none' />
+                    )}
+
+                    {(data.triviaMedia?.length ?? 0) > 0 && (
+                      <div className='pt-1'>
+                        <Media
+                          pitches={null}
+                          media={data.triviaMedia ?? []}
+                          orderableMedia={orderableMedia}
+                          carouselMedia={carouselMedia}
+                          optProblemId={null}
+                          showLocation={false}
+                          triviaTiles
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+                {effectiveTab === 'map' && (
+                  <div className='relative z-0 -mx-px h-[35vh] min-h-[220px] w-[calc(100%+2px)] overflow-hidden sm:mx-0 sm:h-[40vh] sm:w-full'>
+                    <Leaflet
+                      key={'area=' + data.id}
+                      autoZoom={true}
+                      height='100%'
+                      markers={markers}
+                      outlines={outlines}
+                      slopes={slopes}
+                      defaultCenter={
+                        data.coordinates?.latitude && data.coordinates?.longitude
+                          ? { lat: data.coordinates.latitude, lng: data.coordinates.longitude }
+                          : meta.defaultCenter
+                      }
+                      defaultZoom={data.coordinates ? 14 : meta.defaultZoom}
+                      showSatelliteImage={false}
+                      clusterMarkers={false}
+                      flyToId={null}
+                    />
+                  </div>
+                )}
+                {effectiveTab === 'distribution' && (
+                  <div className='p-4 sm:p-5'>
+                    <ChartGradeDistribution idArea={data.id ?? 0} embedded />
+                  </div>
+                )}
+                {effectiveTab === 'top' && (
+                  <div className='p-4 sm:p-5'>
+                    <Top idArea={data.id ?? 0} idSector={0} />
+                  </div>
+                )}
+                {effectiveTab === 'todo' && (
+                  <div className='p-4 sm:p-5'>
+                    <Todo idArea={data.id ?? 0} idSector={0} />
+                  </div>
+                )}
+              </div>
+            )}
+          </>
+        )}
+      </Card>
+
+      {effectiveTab === 'overview' && (data.sectors?.length ?? 0) > 0 && (
+        <Card flush className='mt-6 min-w-0 overflow-hidden border-0 shadow-sm'>
+          <div
+            role='tablist'
+            aria-label='Choose sector grid or full problem list'
+            className={tabBarStripContainerClassName('inline')}
+          >
+            <button
+              type='button'
+              role='tab'
+              aria-selected={activeSectorTab === 'sectors'}
+              onClick={() => setActiveSectorTab('sectors')}
+              className={cn(tabBarButtonClassNameInline(activeSectorTab === 'sectors'), 'flex-row gap-2')}
+            >
+              <LayoutGrid
+                size={TAB_BAR_ICON_SIZE}
+                strokeWidth={activeSectorTab === 'sectors' ? 2.3 : 2}
+                className={tabBarIconClassName(activeSectorTab === 'sectors')}
+              />
+              <span className={designContract.controls.tabBarLabelInline}>
+                Sectors{' '}
+                <span className={cn(designContract.typography.micro, 'font-normal text-slate-500 tabular-nums')}>
+                  ({data.sectors?.length ?? 0})
+                </span>
+              </span>
+            </button>
+            <button
+              type='button'
+              role='tab'
+              aria-selected={activeSectorTab === 'problems'}
+              onClick={() => setActiveSectorTab('problems')}
+              className={cn(tabBarButtonClassNameInline(activeSectorTab === 'problems'), 'flex-row gap-2')}
+            >
+              <List
+                size={TAB_BAR_ICON_SIZE}
+                strokeWidth={activeSectorTab === 'problems' ? 2.3 : 2}
+                className={tabBarIconClassName(activeSectorTab === 'problems')}
+              />
+              <span className={designContract.controls.tabBarLabelInline}>
+                {meta.isBouldering ? 'Problems' : 'Routes'}{' '}
+                <span className={cn(designContract.typography.micro, 'font-normal text-slate-500 tabular-nums')}>
+                  ({problemRows.length})
+                </span>
+              </span>
+            </button>
+          </div>
+          <div className='min-w-0 p-4 sm:p-5'>
+            {activeSectorTab === 'sectors' ? (
+              <div className={cn('min-w-0', designContract.layout.areaSectorCardGrid)}>
+                {data.sectors?.map((sector) => {
+                  const sectorHasThumb = !!sector.randomMediaId;
+                  /** Thumbnails + dark placeholders: light ink remaps break `text-slate-*`; use overlay tokens or `light:` for empty tiles. */
+                  const sectorCardTitleClass = cn(
+                    'line-clamp-2 min-w-0 flex-1 font-medium tracking-tight text-[0.95rem] leading-tight sm:text-[1.1rem] md:text-[1.25rem]',
+                    sectorHasThumb
+                      ? 'photo-overlay-fg drop-shadow-md'
+                      : cn('text-slate-100 drop-shadow-md light:drop-shadow-none', twInk.lightTextSlate900),
+                  );
+                  const sectorCardMetaClass = cn(
+                    'mt-1 flex min-w-0 flex-col gap-y-0.5 text-[8px] leading-none sm:mt-1.5 sm:text-[9px]',
+                    sectorHasThumb ? 'photo-overlay-fg-muted' : 'text-slate-400 light:text-slate-600',
+                  );
+                  /** On photo scrims, use `--color-status-*-imagery` (same as dark defaults; light body uses muted status tokens). */
+                  const sectorCardTickedClass = sectorHasThumb
+                    ? 'text-[color:var(--color-status-ticked-imagery)]'
+                    : designContract.ascentStatus.ticked;
+                  const sectorCardTodoClass = sectorHasThumb
+                    ? 'text-[color:var(--color-status-todo-imagery)]'
+                    : designContract.ascentStatus.todo;
+                  return (
+                    <div
+                      key={sector.id}
+                      className='bg-surface-card border-surface-border h-full max-w-full min-w-0 overflow-hidden rounded-xl border shadow-lg max-sm:!mx-0 max-sm:!w-full sm:shadow-xl'
+                    >
+                      <Link
+                        to={`/sector/${sector.id}`}
+                        className='group relative block min-h-[12rem] overflow-hidden rounded-xl sm:min-h-[14rem] md:min-h-[15rem]'
+                      >
+                        <div
+                          className={cn(
+                            'absolute inset-0 bg-gradient-to-br from-slate-600 via-slate-800 to-slate-950',
+                            'light:from-slate-200 light:via-slate-300 light:to-slate-400',
+                          )}
+                          aria-hidden
+                        />
+                        <div
+                          className={cn(
+                            'pointer-events-none absolute inset-0 z-[1] flex items-center justify-center bg-[radial-gradient(ellipse_85%_70%_at_50%_42%,rgba(148,163,184,0.22),transparent_65%)]',
+                            'light:bg-[radial-gradient(ellipse_85%_70%_at_50%_42%,rgba(15,23,42,0.07),transparent_65%)]',
+                          )}
+                          aria-hidden
+                        >
+                          <MapPinned
+                            className='light:text-slate-600/40 h-[4.5rem] w-[4.5rem] text-slate-300/55 sm:h-[5.25rem] sm:w-[5.25rem] md:h-24 md:w-24'
+                            strokeWidth={1.15}
+                          />
+                        </div>
+                        {sectorHasThumb ? (
+                          <img
+                            className='absolute inset-0 z-[2] h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105'
+                            src={getMediaFileUrl(sector.randomMediaId!, sector.randomMediaVersionStamp ?? 0, false, {
+                              minDimension: 400,
+                            })}
+                            alt=''
+                            onError={(e) => {
+                              (e.currentTarget as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
+                        ) : null}
+                        <div
+                          className={cn(
+                            'absolute inset-0 z-[3]',
+                            sectorHasThumb
+                              ? cn(
+                                  'bg-linear-to-t from-black/72 via-black/32 to-transparent',
+                                  'light:from-black/52 light:via-black/18 light:to-transparent',
+                                )
+                              : cn(
+                                  'bg-linear-to-t from-black/90 via-black/40 to-slate-800/25',
+                                  'light:from-transparent light:via-transparent light:to-slate-950/10',
+                                ),
+                          )}
+                        />
+                        <div
+                          className={cn(
+                            'absolute inset-0 z-[3] bg-black/16 opacity-0 transition-opacity duration-300 group-hover:opacity-100',
+                            'light:bg-slate-900/12',
+                          )}
+                        />
+                        <div className='relative z-[4] flex min-h-[12rem] flex-col justify-end p-2.5 sm:min-h-[14rem] sm:p-3 md:min-h-[15rem] md:p-4'>
+                          <div className='flex items-start justify-between gap-2'>
+                            <h4 className={sectorCardTitleClass}>{sector.name}</h4>
+                            <span className='shrink-0 drop-shadow'>
+                              <LockSymbol
+                                lockedAdmin={!!sector.lockedAdmin}
+                                lockedSuperadmin={!!sector.lockedSuperadmin}
+                              />
+                            </span>
+                          </div>
+                          {sector.typeNumTickedTodo && sector.typeNumTickedTodo.length > 0 && (
+                            <div className={sectorCardMetaClass}>
+                              {sector.typeNumTickedTodo.map((x, i) => {
+                                const n = x.num ?? 0;
+                                const nt = x.ticked ?? 0;
+                                const nd = x.todo ?? 0;
+                                return (
+                                  <div
+                                    key={`${sector.id}-${i}-${x.type ?? ''}`}
+                                    className='inline-flex min-w-0 items-center gap-x-0.5'
+                                  >
+                                    <span className='font-medium'>{x.type}</span>
+                                    <span aria-hidden>:</span>
+                                    <span className='tabular-nums'>{n}</span>
+                                    {nt > 0 ? (
+                                      <span className='inline-flex items-center gap-px'>
+                                        <Check
+                                          size={9}
+                                          strokeWidth={2.5}
+                                          className={cn('shrink-0', sectorCardTickedClass)}
+                                          aria-hidden
+                                        />
+                                        <span className={cn('font-medium tabular-nums', sectorCardTickedClass)}>
+                                          {nt}
+                                        </span>
+                                      </span>
+                                    ) : null}
+                                    {nd > 0 ? (
+                                      <span className='inline-flex items-center gap-px'>
+                                        <Bookmark
+                                          size={9}
+                                          strokeWidth={2.5}
+                                          className={cn('shrink-0', sectorCardTodoClass)}
+                                          aria-hidden
+                                        />
+                                        <span className={cn('font-medium tabular-nums', sectorCardTodoClass)}>
+                                          {nd}
+                                        </span>
+                                      </span>
+                                    ) : null}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                          {sector.accessClosed && (
+                            <p className='type-micro text-access-danger mt-1 font-semibold drop-shadow'>
+                              {sector.accessClosed}
+                            </p>
+                          )}
+                        </div>
+                      </Link>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <ProblemList storageKey={`area/${areaId}`} mode='sector' defaultOrder='grade-desc' rows={problemRows} />
+            )}
+          </div>
+        </Card>
+      )}
+
+      {effectiveTab === 'activity' && (
+        <div className='mt-6 min-w-0 sm:mt-8'>
+          <Activity idArea={data.id ?? 0} idSector={0} />
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Area;

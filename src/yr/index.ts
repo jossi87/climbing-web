@@ -96,10 +96,7 @@ export function convertSymbolKeyToId(key: TWeatherSymbolKey): TWeatherSymbolId |
   return weatherSymbolKeys[key] ?? undefined;
 }
 
-export function getWeatherSymbolId(symbol?: {
-  n?: number;
-  var?: 'None' | 'Sun' | 'Moon' | 'PolarNight';
-}) {
+export function getWeatherSymbolId(symbol?: { n?: number; var?: 'None' | 'Sun' | 'Moon' | 'PolarNight' }) {
   if (symbol == null || symbol.n == null) {
     return undefined;
   }

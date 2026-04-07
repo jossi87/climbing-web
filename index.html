@@ -3,14 +3,51 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://climbing.eu.auth0.com" />
-    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" media="print" onload="this.media='all'" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=6.0, minimum-scale=1.0, user-scalable=yes" />
     <meta name="description" content="Climbing guide for Norway, covering bouldering, route climbing, and ice climbing." />
     <meta name="author" content="Jostein Øygarden" />
-    <meta name="theme-color" content="#2185d0" />
+    <meta name="theme-color" content="#060709" />
+    <script>
+      /* Theme order: saved `theme_preference` → OS light/dark → default dark (keep in sync with `themeStorage.ts`). */
+      (function () {
+        try {
+          var k = 'theme_preference';
+          var raw = localStorage.getItem(k);
+          var stored = null;
+          if (raw != null) {
+            var v = JSON.parse(raw);
+            if (v === 'light' || v === 'dark') stored = v;
+          }
+          var resolved;
+          if (stored === 'light' || stored === 'dark') {
+            resolved = stored;
+          } else {
+            var mqDark = window.matchMedia('(prefers-color-scheme: dark)');
+            var mqLight = window.matchMedia('(prefers-color-scheme: light)');
+            if (mqDark.matches) resolved = 'dark';
+            else if (mqLight.matches) resolved = 'light';
+            else resolved = 'dark';
+          }
+          var el = document.documentElement;
+          el.dataset.theme = resolved;
+          el.style.colorScheme = resolved === 'dark' ? 'dark' : 'light';
+          el.style.backgroundColor = resolved === 'dark' ? '#060709' : '#e2e8f0';
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', resolved === 'dark' ? '#060709' : '#13151a');
+        } catch (e) {
+          var root = document.documentElement;
+          root.dataset.theme = 'dark';
+          root.style.colorScheme = 'dark';
+          root.style.backgroundColor = '#060709';
+        }
+      })();
+    </script>
+    <title>Climbing Web</title>
   </head>
   <body>
     <div id="root"></div>

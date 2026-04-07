@@ -1,4 +1,4 @@
-import type { JSX, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { parseSVG, makeAbsolute } from 'svg-path-parser';
 import { neverGuard } from './neverGuard';
 import type { MediaRegion } from './svg-scaler';
@@ -172,11 +172,6 @@ export function generateSvgNrAndAnchor(
   if (x > w - r) x = w - r;
   if (y < r) y = r;
   if (y > h - r) y = h - r;
-  let anchor: JSX.Element | null = null;
-  if (hasAnchor === true) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    anchor = <circle fill='#E2011A' cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.006 * w} />;
-  }
   return (
     <g key={key} className='buldreinfo-svg-edit-opacity'>
       {nr && (
@@ -195,9 +190,7 @@ export function generateSvgNrAndAnchor(
           </text>
         </>
       )}
-      {hasAnchor && (
-        <circle fill={'#000000'} cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.005 * w} />
-      )}
+      {hasAnchor && <circle fill={'#000000'} cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.005 * w} />}
     </g>
   );
 }
@@ -209,16 +202,7 @@ export function parseReadOnlySvgs(readOnlySvgs: SvgType[], w: number, h: number,
     const { t } = svg;
     switch (t) {
       case 'PATH': {
-        return [
-          ...acc,
-          <Descent
-            key={svg.path}
-            path={svg.path}
-            whiteNotBlack={true}
-            scale={scale}
-            thumb={false}
-          />,
-        ];
+        return [...acc, <Descent key={svg.path} path={svg.path} whiteNotBlack={true} scale={scale} thumb={false} />];
       }
       case 'RAPPEL_BOLTED':
       case 'RAPPEL_NOT_BOLTED': {

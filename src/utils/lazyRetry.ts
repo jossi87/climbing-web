@@ -1,29 +1,12 @@
-import { lazy as reactLazy } from 'react';
+import { lazy as reactLazy, type ComponentType } from 'react';
 import * as Sentry from '@sentry/react';
 
-/**
- * This was heavily inspired by this blog post: https://www.codemzy.com/blog/fix-chunkloaderror-react
- */
-const lazyRetry = function (
-  componentImport: Parameters<typeof reactLazy>[0],
-  componentName: string,
-) {
+const lazyRetry = function <P>(componentImport: () => Promise<{ default: ComponentType<P> }>, componentName: string) {
   const key = `retry-lazy-refreshed/${componentName}`;
 
-  return new Promise<Awaited<ReturnType<typeof componentImport>>>((resolve, reject) => {
-    const refreshTime: number = (() => {
-      const data = window.sessionStorage.getItem(key);
-      if (!data) {
-        return 0;
-      }
-
-      const timestamp = +data;
-      if (Number.isNaN(timestamp)) {
-        return 0;
-      }
-
-      return timestamp;
-    })();
+  return new Promise<{ default: ComponentType<P> }>((resolve, reject) => {
+    const data = window.sessionStorage.getItem(key);
+    const refreshTime = data ? +data : 0;
 
     componentImport()
       .then((component) => {
@@ -32,40 +15,34 @@ const lazyRetry = function (
       })
       .catch((error) => {
         if (refreshTime) {
-          const extra: Record<string, unknown> = {
-            componentName,
-          };
-
+          const extra: Record<string, unknown> = { componentName };
           for (let i = 0; i < sessionStorage.length; i += 1) {
             const itemKey = sessionStorage.key(i);
-            if (!itemKey || !itemKey.startsWith('retry-lazy-refreshed/')) {
-              continue;
+            if (itemKey?.startsWith('retry-lazy-refreshed/')) {
+              extra[itemKey] = sessionStorage.getItem(itemKey);
             }
-
-            extra[itemKey] = sessionStorage.getItem(itemKey);
           }
-
-          Sentry.captureException(error, {
-            extra,
-          });
+          Sentry.captureException(error, { extra });
           reject(error);
         } else {
           Sentry.captureMessage('Failed to load chunk', {
-            extra: {
-              componentName,
-              error,
-            },
+            extra: { componentName, error },
           });
-          window.sessionStorage.setItem(key, String(Date.now())); // we are now going to refresh
-          window.location.reload(); // refresh the page
+          window.sessionStorage.setItem(key, String(Date.now()));
+          window.location.reload();
         }
       });
   });
 };
 
-export const lazy = function (
-  componentImport: Parameters<typeof reactLazy>[0],
-  componentName: string,
-) {
-  return reactLazy(() => lazyRetry(componentImport, componentName));
+export const lazy = <P>(componentImport: () => Promise<{ default: ComponentType<P> }>, componentName: string) => {
+  const Component = reactLazy(() => lazyRetry(componentImport, componentName));
+
+  const PreloadableComponent = Component as typeof Component & {
+    preload: () => Promise<{ default: ComponentType<P> }>;
+  };
+
+  PreloadableComponent.preload = componentImport;
+
+  return PreloadableComponent;
 };

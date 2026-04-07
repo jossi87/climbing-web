@@ -42,9 +42,7 @@ const useForceUpdate = () => {
 };
 
 const createLeafletControl = (useElement: unknown) => {
-  const LeafletControl = (
-    props: { children?: ReactNode; ref?: Ref<any> } & Record<string, unknown>,
-  ) => {
+  const LeafletControl = (props: { children?: ReactNode; ref?: Ref<any> } & Record<string, unknown>) => {
     const forceUpdate = useForceUpdate();
     const { instance } = (useElement as any)(props).current;
 

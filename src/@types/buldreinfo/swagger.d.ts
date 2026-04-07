@@ -143,57 +143,6 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/v2/frontpage/num_media": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get frontpage (num media) */
-        get: operations["getFrontpageNumMedia"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/frontpage/num_problems": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get frontpage (num problems) */
-        get: operations["getFrontpageNumProblems"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/frontpage/num_ticks": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get frontpage (num ticks) */
-        get: operations["getFrontpageNumTicks"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v2/frontpage/random_media": {
         parameters: {
             query?: never;
@@ -203,6 +152,23 @@ export type paths = {
         };
         /** Get frontpage (random media) */
         get: operations["getFrontpageRandomMedia"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/frontpage/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get frontpage stats */
+        get: operations["getFrontpageStats"];
         put?: never;
         post?: never;
         delete?: never;
@@ -948,6 +914,7 @@ export type components = {
             redirectUrl?: string;
             /** Format: int32 */
             regionId?: number;
+            regionName?: string;
             canonical?: string;
             /** Format: int32 */
             id?: number;
@@ -1242,24 +1209,6 @@ export type components = {
             sunToHour?: number;
             problems?: components["schemas"]["DangerousProblem"][];
         };
-        FrontpageNumMedia: {
-            /** Format: int32 */
-            numImages?: number;
-            /** Format: int32 */
-            numMovies?: number;
-        };
-        FrontpageNumProblems: {
-            /** Format: int32 */
-            numProblems?: number;
-            /** Format: int32 */
-            numProblemsWithCoordinates?: number;
-            /** Format: int32 */
-            numProblemsWithTopo?: number;
-        };
-        FrontpageNumTicks: {
-            /** Format: int32 */
-            numTicks?: number;
-        };
         FrontpageRandomMedia: {
             /** Format: int32 */
             idMedia?: number;
@@ -1281,6 +1230,14 @@ export type components = {
             grade?: string;
             photographer?: components["schemas"]["User"];
             tagged?: components["schemas"]["User"][];
+        };
+        FrontpageStats: {
+            /** Format: int32 */
+            areas?: number;
+            /** Format: int32 */
+            problems?: number;
+            /** Format: int32 */
+            ticks?: number;
         };
         GradeDistribution: {
             grade?: string;
@@ -1546,9 +1503,13 @@ export type components = {
         };
         ProfileStatisticsTick: {
             regionName?: string;
+            /** Format: int32 */
+            areaId?: number;
             areaName?: string;
             areaLockedAdmin?: boolean;
             areaLockedSuperadmin?: boolean;
+            /** Format: int32 */
+            sectorId?: number;
             sectorName?: string;
             sectorLockedAdmin?: boolean;
             sectorLockedSuperadmin?: boolean;
@@ -1659,6 +1620,8 @@ export type components = {
             externalLinks?: components["schemas"]["ExternalLink"][];
             pageViews?: string;
             siblings?: components["schemas"]["SectorJump"][];
+            /** Aggregate tick/todo counts by type (same shape as `AreaSector`) — optional on sector detail. */
+            typeNumTickedTodo?: components["schemas"]["TypeNumTickedTodo"][];
         };
         SectorJump: {
             /** Format: int32 */
@@ -1677,9 +1640,13 @@ export type components = {
             nr?: number;
         };
         PublicAscent: {
+            /** Format: int32 */
+            areaId?: number;
             areaName?: string;
             areaLockedAdmin?: boolean;
             areaLockedSuperadmin?: boolean;
+            /** Format: int32 */
+            sectorId?: number;
             sectorName?: string;
             sectorLockedAdmin?: boolean;
             sectorLockedSuperadmin?: boolean;
@@ -2289,63 +2256,6 @@ export interface operations {
             };
         };
     };
-    getFrontpageNumMedia: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FrontpageNumMedia"];
-                };
-            };
-        };
-    };
-    getFrontpageNumProblems: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FrontpageNumProblems"];
-                };
-            };
-        };
-    };
-    getFrontpageNumTicks: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FrontpageNumTicks"];
-                };
-            };
-        };
-    };
     getFrontpageRandomMedia: {
         parameters: {
             query?: never;
@@ -2361,6 +2271,25 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["FrontpageRandomMedia"];
+                };
+            };
+        };
+    };
+    getFrontpageStats: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FrontpageStats"];
                 };
             };
         };

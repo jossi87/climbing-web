@@ -29,3 +29,5 @@ export {
   convertFromDateToString,
   convertFromStringToDate,
 } from './utils';
+
+export { spaPathFromRedirectResponse } from './redirectResponse';

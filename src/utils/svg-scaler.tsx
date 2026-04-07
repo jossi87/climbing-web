@@ -5,11 +5,7 @@ export type MediaRegion = {
   height: number;
 };
 
-export function calculateMediaRegion(
-  path: string,
-  mediaWidth: number,
-  mediaHeight: number,
-): MediaRegion | null {
+export function calculateMediaRegion(path: string, mediaWidth: number, mediaHeight: number): MediaRegion | null {
   if (!path) {
     return null;
   }
@@ -114,11 +110,7 @@ export function isPathVisible(path: string, mediaRegion: MediaRegion | null): bo
   return false;
 }
 
-export function scalePoint(
-  x: number,
-  y: number,
-  mediaRegion: MediaRegion | null,
-): { x: number; y: number } {
+export function scalePoint(x: number, y: number, mediaRegion: MediaRegion | null): { x: number; y: number } {
   if (!mediaRegion) {
     return { x, y };
   }

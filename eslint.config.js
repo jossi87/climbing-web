@@ -17,9 +17,10 @@ export default defineConfig([
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
-        ecmaVersion: 2020,
+        ecmaVersion: 'latest',
         sourceType: 'module',
         ecmaFeatures: { jsx: true },
+        warnOnUnsupportedTypeScriptVersion: false,
       },
       globals: {
         ...globals.browser,
@@ -38,12 +39,20 @@ export default defineConfig([
     },
 
     rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            "JSXAttribute[name.name='className'] Literal[value=/text-(white|black|slate-900|slate-800|slate-700)/]",
+          message: 'Use semantic .type-* classes instead of raw contrast classes.',
+        },
+      ],
       'react/jsx-uses-react': 'off',
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
-      'react-hooks/rules-of-hooks': 'warn',
+      'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
-      'react-hooks/set-state-in-effect': 'warn',
+      'react-hooks/set-state-in-effect': 'error',
       '@typescript-eslint/array-type': 'off',
       '@typescript-eslint/consistent-indexed-object-style': 'off',
       '@typescript-eslint/consistent-type-definitions': ['warn', 'type'],
