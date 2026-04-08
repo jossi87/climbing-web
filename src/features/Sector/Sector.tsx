@@ -363,8 +363,13 @@ function sumSectorProblemTicks(problems: components['schemas']['SectorProblem'][
   return (problems ?? []).reduce((s, p) => s + (p.numTicks ?? 0), 0);
 }
 
+/** Present on API payloads; optional until sector spec in generated swagger includes it. */
+type SectorTodoTabPayload = components['schemas']['Sector'] & {
+  typeNumTickedTodo?: components['schemas']['TypeNumTickedTodo'][];
+};
+
 /** Keep Todo tab unless `typeNumTickedTodo` has rows and every aggregate todo count is zero. */
-function shouldShowSectorTodoTabFromPayload(sector: components['schemas']['Sector']): boolean {
+function shouldShowSectorTodoTabFromPayload(sector: SectorTodoTabPayload): boolean {
   const rows = sector.typeNumTickedTodo;
   if (rows == null || rows.length === 0) return true;
   return rows.reduce((s, x) => s + (x.todo ?? 0), 0) > 0;
