@@ -11,12 +11,12 @@ import {
   setMediaAsAvatar,
 } from '../../../api';
 import { useAuth0 } from '@auth0/auth0-react';
-import { Film } from 'lucide-react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 import SvgViewer from '../SvgViewer';
 import { VideoThumbnailPlayOverlay } from './VideoThumbnailPlayOverlay';
+import { VideoProcessingPlaceholder } from './VideoProcessingPlaceholder';
 import { Loading } from '../../ui/StatusWidgets';
 import MediaEditModal from './MediaEditModal';
 import MediaModal from './MediaModal';
@@ -47,9 +47,8 @@ const MediaVideoTile = ({ x, triviaTiles }: { x: MediaItem; triviaTiles: boolean
 
   if (imgError) {
     return (
-      <div className='absolute inset-0 flex flex-col items-center justify-center gap-1 bg-gradient-to-b from-slate-800 to-slate-950 px-2 text-center'>
-        <Film className='text-slate-500' size={28} aria-hidden />
-        <p className='text-[10px] font-medium text-slate-400'>No thumbnail</p>
+      <div className='absolute inset-0'>
+        <VideoProcessingPlaceholder />
       </div>
     );
   }

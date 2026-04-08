@@ -68,13 +68,13 @@ const darkSelectStyles: StylesConfig<UserOption, boolean, GroupBase<UserOption>>
     color: 'var(--color-muted-ink)',
     ':hover': { backgroundColor: 'transparent', color: 'var(--color-datepicker-text)' },
   }),
-  input: (base) => ({
+  input: (base, _state) => ({
     ...base,
     color: 'var(--color-datepicker-text)',
     boxShadow: 'none',
     outline: 'none',
   }),
-  placeholder: (base) => ({ ...base, color: 'var(--color-datepicker-muted)' }),
+  placeholder: (base, _state) => ({ ...base, color: 'var(--color-datepicker-muted)' }),
   singleValue: (base) => ({ ...base, color: 'var(--color-datepicker-text)' }),
   indicatorSeparator: (base) => ({ ...base, backgroundColor: 'var(--color-surface-border)' }),
   dropdownIndicator: (base, state) => ({
@@ -88,6 +88,8 @@ const darkSelectStyles: StylesConfig<UserOption, boolean, GroupBase<UserOption>>
     color: 'var(--color-datepicker-muted)',
     ':hover': { color: 'var(--color-datepicker-nav-hover)' },
   }),
+  noOptionsMessage: (base) => ({ ...base, color: 'var(--color-datepicker-muted)' }),
+  loadingMessage: (base) => ({ ...base, color: 'var(--color-datepicker-muted)' }),
 };
 
 /** Tighter control + border-only focus (avoid stacked ring + placeholder clash when focused). */
@@ -119,24 +121,15 @@ function buildSelectStyles(
         ...base,
         height: '2.25rem',
       }),
-      input: (base) => ({
-        ...base,
+      input: (base, state) => ({
+        ...darkSelectStyles.input!(base, state),
         margin: 0,
         paddingTop: 0,
         paddingBottom: 0,
       }),
-      placeholder: (base) => ({
-        ...base,
+      placeholder: (base, state) => ({
+        ...darkSelectStyles.placeholder!(base, state),
         margin: 0,
-        color: 'rgb(100 116 139 / 0.85)',
-      }),
-      singleValue: (base) => ({
-        ...base,
-        color: 'rgb(226 232 240)',
-      }),
-      multiValueLabel: (base) => ({
-        ...base,
-        color: 'rgb(226 232 240)',
       }),
     };
   }
@@ -168,8 +161,8 @@ function buildSelectStyles(
       ...base,
       height: '2.25rem',
     }),
-    input: (base) => ({
-      ...base,
+    input: (base, state) => ({
+      ...darkSelectStyles.input!(base, state),
       margin: 0,
       paddingTop: 0,
       paddingBottom: 0,
