@@ -6,11 +6,10 @@ import { cn } from '../../../lib/utils';
 export const profileRowRootClass = designContract.typography.listBody;
 
 /**
- * Sector/Area problem rows — same type rhythm as {@link profileRowRootClass} but **without** `text-pretty` or
- * `[overflow-wrap:anywhere]` so wrapping follows normal browser rules (not balanced/pretty breaks).
+ * Sector/Area problem rows — {@link designContract.typography.listBodyPlain} (same step as {@link profileRowRootClass},
+ * without pretty-print wrapping).
  */
-export const problemListRowRootClass =
-  'm-0 text-[12px] font-normal leading-snug tracking-normal md:text-[13px] md:leading-snug';
+export const problemListRowRootClass = designContract.typography.listBodyPlain;
 
 export const tickCragLink = 'font-normal text-slate-100 antialiased transition-colors hover:text-brand';
 /** Light: sky ink for area (reads as “where”, distinct from sector green + body black). */
@@ -54,4 +53,5 @@ export const tickListRowQuietMeta = cn('font-normal text-slate-400 antialiased',
 /** FA marker (green) — use where FA should read as a highlight; ascent list uses {@link tickListRowQuietMeta} instead. */
 export const tickFa = 'font-medium text-status-ticked antialiased';
 
+/** Italic comments in problem rows — one step below {@link designContract.typography.listBodyPlain} on narrow + `sm`. */
 export const tickCommentSmall = `${tickComment} text-[12px] leading-snug sm:text-[13px]`;

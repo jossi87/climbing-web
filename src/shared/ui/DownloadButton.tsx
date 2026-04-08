@@ -49,9 +49,9 @@ export const DownloadButton = ({ href, icon: Icon = Download, children }: Props)
       )}
     >
       {loading ? (
-        <Loader2 size={11} strokeWidth={2} className='text-brand shrink-0 animate-spin' />
+        <Loader2 size={12} strokeWidth={2} className='text-brand shrink-0 animate-spin' />
       ) : (
-        <Icon size={11} strokeWidth={2} className='shrink-0 text-slate-100' />
+        <Icon size={12} strokeWidth={2} className='shrink-0 text-slate-100' />
       )}
       <span className='min-w-0 leading-snug'>{getLabelText()}</span>
     </a>

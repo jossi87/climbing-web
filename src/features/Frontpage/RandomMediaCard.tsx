@@ -147,15 +147,15 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
   const problemTitleClass = 'text-[15px] font-semibold leading-tight text-slate-300 md:text-[16px] md:leading-snug';
   const gradeClass = 'text-[13px] leading-none font-light tabular-nums tracking-tight text-slate-300 md:text-[14px]';
   const locationClass =
-    'text-[11px] font-normal leading-tight text-slate-300 md:text-[12px] md:leading-snug md:text-slate-400';
-  const metaTextClass = 'text-[11px] leading-snug text-slate-400 md:text-[12px]';
+    'text-[12px] font-normal leading-tight text-slate-300 md:text-[13px] md:leading-snug md:text-slate-400';
+  const metaTextClass = 'text-[12px] leading-snug text-slate-400 md:text-[13px]';
   const interactiveLinkClass =
     'rounded-sm transition-colors duration-150 hover:text-brand hover:underline hover:decoration-brand/50 underline-offset-[3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-border/70';
   /** Mobile-only text on the photo — `photo-overlay-*` avoids light-theme `text-slate-*` remaps. No people row. */
   const overlayLinkClass = `${interactiveLinkClass} photo-overlay-link`;
   const mobileProblemTitleClass = 'photo-overlay-fg text-[15px] font-semibold leading-tight';
   const mobileGradeClass = 'photo-overlay-fg-muted text-[13px] font-light tabular-nums tracking-tight leading-none';
-  const mobileLocationClass = 'photo-overlay-fg-muted text-[11px] font-normal leading-tight';
+  const mobileLocationClass = 'photo-overlay-fg-muted text-[12px] font-normal leading-tight';
   const multi = items.length > 1;
 
   return (

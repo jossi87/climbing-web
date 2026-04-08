@@ -237,20 +237,18 @@ const Media = ({
           </div>{' '}
         </div>
       )}{' '}
-      {editM &&
-        createPortal(
-          <MediaEditModal
-            numPitches={pitches?.length || 0}
-            m={editM}
-            save={(id, description, pitchNr, trivia) => {
-              getAccessTokenSilently().then((token) => {
-                putMediaInfo(token, id, description, pitchNr, trivia).then(() => setEditM(null));
-              });
-            }}
-            onCloseWithoutReload={() => setEditM(null)}
-          />,
-          document.body,
-        )}{' '}
+      {editM && (
+        <MediaEditModal
+          numPitches={pitches?.length || 0}
+          m={editM}
+          save={async (id, description, pitchNr, trivia) => {
+            const token = await getAccessTokenSilently();
+            await putMediaInfo(token, id, description, pitchNr, trivia);
+            setEditM(null);
+          }}
+          onCloseWithoutReload={() => setEditM(null)}
+        />
+      )}{' '}
       {m &&
         createPortal(
           <MediaModal

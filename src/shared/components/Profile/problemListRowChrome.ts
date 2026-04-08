@@ -4,7 +4,7 @@ import { tickListRowQuietMeta } from './profileRowTypography';
 
 /** FA / pitches / ticks / rock — soft pill; spacing from flex `gap` only (no middle dots). */
 export const problemListRowMetaChipClass = cn(
-  'inline-flex max-w-full min-w-0 shrink-0 items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-normal leading-tight ring-1 ring-white/[0.08] sm:text-[12px]',
+  'inline-flex max-w-full min-w-0 shrink-0 items-center gap-1 rounded-md px-1.5 py-0.5 text-[12px] font-normal leading-tight ring-1 ring-white/[0.08] sm:text-[13px]',
   'bg-slate-400/12 text-slate-300 light:bg-slate-900/[0.07] light:text-slate-600 light:ring-slate-900/10',
 );
 

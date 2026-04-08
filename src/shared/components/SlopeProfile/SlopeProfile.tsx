@@ -83,7 +83,7 @@ export const SlopeProfile = ({
   }, []);
 
   const icon = compact ? 10 : 12;
-  const statText = compact ? 'text-[11px] leading-snug' : 'text-[12px] leading-snug';
+  const statText = compact ? 'text-[12px] leading-snug' : 'text-[13px] leading-snug';
   const lineColor =
     variant === 'approach' ? SLOPE_APPROACH_COLOR : variant === 'descent' ? SLOPE_DESCENT_COLOR : '#c9ac62';
   const chartStroke = lineColor;
@@ -203,7 +203,7 @@ export const SlopeProfile = ({
                 if (!active || !payload?.length) return null;
                 return (
                   <div className='bg-surface-card ring-surface-border/50 rounded-lg px-2.5 py-1.5 shadow-lg ring-1'>
-                    <div className='flex gap-3 font-mono text-[10px] text-slate-300'>
+                    <div className='flex gap-3 font-mono text-[11px] text-slate-300'>
                       <span>D: {parseInt(String(label ?? '0'))}m</span>
                       <span>E: {parseInt(String(payload[0].value ?? '0'))}m</span>
                     </div>

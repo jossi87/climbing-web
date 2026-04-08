@@ -28,7 +28,7 @@ export const StatItem = ({
       <span className='text-xl leading-none font-black tracking-tight text-slate-100 tabular-nums transition-colors'>
         {value}
       </span>
-      <span className='mt-1 text-[9px] font-bold tracking-widest text-slate-500 uppercase transition-colors group-hover:text-slate-400'>
+      <span className='mt-1 text-[10px] font-bold tracking-widest text-slate-500 uppercase transition-colors group-hover:text-slate-400'>
         {label}
       </span>
     </div>

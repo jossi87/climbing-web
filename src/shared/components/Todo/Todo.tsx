@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { Loading } from '../../ui/StatusWidgets';
 import { LockSymbol } from '../../ui/Indicators';
@@ -5,11 +6,13 @@ import { useTodo } from '../../../api';
 import { cn } from '../../../lib/utils';
 import {
   profileRowRootClass,
-  tickCragLinkSector,
+  tickCragLink,
   tickFlags,
-  tickProblemLinkWithStatus,
+  tickProblemLink,
   tickWhenGrade,
 } from '../Profile/profileRowTypography';
+import { twInk } from '../../../design/twInk';
+import { designContract } from '../../../design/contract';
 
 const lockInlineClass = 'ml-1 inline-block align-middle';
 
@@ -30,7 +33,7 @@ const Todo = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
         <div key={sector.id} className='space-y-2.5'>
           {idArea > 0 && (
             <div className='border-surface-border flex flex-wrap items-center gap-x-2 gap-y-1 border-b pb-2'>
-              <Link to={`/sector/${sector.id}`} className={cn(tickCragLinkSector, 'font-medium')}>
+              <Link to={`/sector/${sector.id}`} className={cn(tickCragLink, 'font-medium')}>
                 {sector.name}
               </Link>
               <span className={lockInlineClass}>
@@ -41,9 +44,9 @@ const Todo = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
 
           <div className='flex flex-col gap-y-2'>
             {(sector.problems ?? []).map((problem) => (
-              <div key={problem.id} className={cn(profileRowRootClass, 'min-w-0 text-pretty [overflow-wrap:anywhere]')}>
+              <div key={problem.id} className={cn(designContract.typography.listBodyPlain, 'min-w-0')}>
                 <span className={cn(tickWhenGrade, 'font-mono tabular-nums antialiased')}>#{problem.nr}</span>{' '}
-                <Link to={`/problem/${problem.id}`} className={tickProblemLinkWithStatus({ todo: true })}>
+                <Link to={`/problem/${problem.id}`} className={tickProblemLink}>
                   {problem.name}
                 </Link>
                 {problem.grade ? (
@@ -55,17 +58,21 @@ const Todo = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
                 {problem.partners && problem.partners.length > 0 ? (
                   <>
                     {' '}
-                    <span className='inline-flex min-w-0 flex-wrap content-start items-center gap-x-2 gap-y-1'>
-                      {problem.partners.map((u) => (
+                    {problem.partners.map((u, i) => (
+                      <Fragment key={u.id}>
+                        {i > 0 ? (
+                          <span className='light:text-slate-600 text-slate-400 select-none' aria-hidden>
+                            {', '}
+                          </span>
+                        ) : null}
                         <Link
-                          key={u.id}
                           to={`/user/${u.id}/todo`}
-                          className={cn(tickFlags, 'hover:text-status-todo transition-colors')}
+                          className={cn(tickFlags, 'transition-colors hover:text-slate-200', twInk.lightHoverSlate800)}
                         >
                           {u.name}
                         </Link>
-                      ))}
-                    </span>
+                      </Fragment>
+                    ))}
                   </>
                 ) : null}
               </div>

@@ -18,11 +18,11 @@ type ActivitySchema = components['schemas']['Activity'];
 
 /** Mirrors {@link ActivityFeedMetaRow}: story flex-1 + time on the far right; optional second row like stars/comment. */
 const ActivitySkeleton = () => (
-  <div className='min-h-[3.75rem] animate-pulse bg-transparent px-4 py-4 md:min-h-[4.25rem] md:px-5 md:py-3.5'>
-    <div className='flex items-start gap-3 md:gap-3.5'>
+  <div className='min-h-[3.5rem] animate-pulse bg-transparent px-4 py-3 md:min-h-[4rem] md:px-5 md:py-2.5'>
+    <div className='flex items-start gap-3 md:gap-3'>
       {/* Match {@link Avatar} size `small` (40px) at all breakpoints */}
       <div className='skeleton-bar h-10 w-10 shrink-0 rounded-full pt-0.5' />
-      <div className='min-w-0 flex-1 space-y-2 pt-0.5'>
+      <div className='min-w-0 flex-1 space-y-1.5 pt-0.5'>
         <div className='flex w-full min-w-0 flex-row items-start justify-between gap-3 sm:gap-4 md:gap-6'>
           <div className='min-w-0 flex-1 space-y-1.5'>
             <div className='skeleton-bar h-3 max-w-[min(100%,22rem)] rounded md:h-3.5' />
@@ -308,9 +308,9 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
     return <Check size={statusIconSize} className={statusIconGlyph} strokeWidth={2.25} />;
   })();
 
-  /** Roomier vertical rhythm on small screens — easier to scan the feed; desktop stays compact. */
-  const pad = 'px-4 py-4 md:px-5 md:py-3.5';
-  const gap = 'gap-3.5 md:gap-3.5';
+  /** Tight vertical rhythm so headline, stars/comment, and media read as one story; still clear between rows. */
+  const pad = 'px-4 py-3 md:px-5 md:py-2.5';
+  const gap = 'gap-3 md:gap-3';
 
   const actionClass = designContract.typography.feed.action;
   const cragLeadClass = designContract.typography.feed.lead;
@@ -325,9 +325,9 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
   const faAuthorsInHeadline = !!(a.users && a.users.length > 0 && !a.repeat);
   const hasStarsCommentLine = hasStars || hasText;
   const hasSecondaryBlock = hasStarsCommentLine || (hasFaUsers && !faAuthorsInHeadline);
-  const gapAfterHeadline = 'mt-2';
-  const faLineGap = 'mt-1.5 md:mt-2';
-  const gapAfterBlock = hasSecondaryBlock ? 'mt-2.5 md:mt-3' : 'mt-2';
+  const gapAfterHeadline = 'mt-1';
+  const faLineGap = 'mt-1 md:mt-1';
+  const gapAfterBlock = hasSecondaryBlock ? 'mt-2 md:mt-2' : 'mt-1.5';
   const commentCellClass = cn(activityCommentClass, hasText && 'w-fit max-w-full min-w-0');
 
   return (
@@ -351,7 +351,7 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
           {hasStarsCommentLine ? (
             <div
               className={cn(
-                'flex w-full min-w-0 flex-wrap items-baseline justify-start gap-x-2 gap-y-1',
+                'flex w-full min-w-0 flex-wrap items-baseline justify-start gap-x-2 gap-y-0.5',
                 gapAfterHeadline,
               )}
             >

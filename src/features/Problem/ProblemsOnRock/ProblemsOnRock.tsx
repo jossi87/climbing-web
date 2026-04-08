@@ -36,20 +36,22 @@ export const ProblemsOnRock = ({
           )}
         >
           <span className='flex min-w-0 flex-wrap items-baseline gap-x-1'>
-            <span className={cn(tickWhenGrade, 'font-mono tabular-nums')}>#{p.nr}</span>
+            <span className={cn(tickWhenGrade, 'font-mono font-normal tabular-nums')}>#{p.nr}</span>
             <span
               className={cn(
-                'min-w-0 font-medium',
+                'min-w-0 font-normal',
                 p.ticked
                   ? designContract.ascentStatus.ticked
                   : p.todo
                     ? designContract.ascentStatus.todo
-                    : 'text-slate-200',
+                    : tickWhenGrade,
               )}
             >
               {p.name}
             </span>
-            <span className={cn(designContract.typography.grade, problemId === p.id && 'text-slate-300')}>
+            <span
+              className={cn(tickWhenGrade, 'font-mono font-normal tabular-nums', problemId === p.id && 'opacity-95')}
+            >
               {p.grade}
             </span>
           </span>

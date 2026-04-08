@@ -139,13 +139,13 @@ const Dangerous = () => {
 
       <Card flush className='min-w-0 border-0'>
         <div className='p-4 pb-3 sm:p-5 sm:pb-4'>
-          <SectionHeader title='Dangerous' icon={AlertTriangle} subheader={description} />
+          <SectionHeader title='Dangerous' icon={AlertTriangle} subheader={description} className='mb-4 sm:mb-5' />
         </div>
         <div className='mb-2'>
           <ProblemsMap areas={mapAreas} />
         </div>
         <div className='p-4 sm:p-5'>
-          <TableOfContents areas={areas} compact showAreaJumpToTop={false} />
+          <TableOfContents areas={areas} compact showAreaJumpToTop={false} showSunWallMeta={false} />
         </div>
       </Card>
     </div>

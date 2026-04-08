@@ -97,8 +97,8 @@ export const ProblemLink = ({
       {showPassiveGearIcon ? (
         <TradGearMarker
           line={routeTypeLabel}
-          className={typeBesideGrade}
-          iconClassName={tone === 'soft' ? 'opacity-85 light:opacity-100' : undefined}
+          className={cn(typeBesideGrade, problemFirst && tone === 'soft' && 'trad-gear-marker-wrap--activity-feed')}
+          iconClassName={tone === 'soft' && !problemFirst ? 'opacity-85 light:opacity-100' : undefined}
         />
       ) : null}
     </>

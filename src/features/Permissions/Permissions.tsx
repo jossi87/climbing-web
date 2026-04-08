@@ -105,8 +105,8 @@ const Permissions = () => {
           ) : (
             <div className='divide-surface-border/25 divide-y'>
               {groups.map((group) => (
-                <section key={group.value} className='py-2'>
-                  <div className='px-3 pb-2 sm:px-5'>
+                <section key={group.value} className='py-1.5'>
+                  <div className='px-3 pb-1.5 sm:px-5'>
                     <span className={cn(designContract.typography.label, 'text-slate-500')}>{group.title}</span>
                   </div>
                   <div className='bg-surface-card grid grid-cols-2 gap-px lg:grid-cols-3 xl:grid-cols-4'>
@@ -114,7 +114,7 @@ const Permissions = () => {
                       const currentLevel = getLevel(u);
 
                       return (
-                        <div key={u.userId} className='bg-surface-card min-w-0 px-2.5 py-2.5 sm:px-3 sm:py-3'>
+                        <div key={u.userId} className='bg-surface-card min-w-0 px-2 py-2 sm:px-2.5 sm:py-2'>
                           <UserCard
                             variant='minimal'
                             user={{
@@ -134,7 +134,7 @@ const Permissions = () => {
                                       prev === (u.userId ?? -1) ? null : (u.userId ?? -1),
                                     )
                                   }
-                                  className='bg-surface-raised hover:bg-surface-raised-hover border-surface-border inline-flex w-full min-w-0 items-center justify-between rounded-md border px-2 py-1 text-left text-[10px] font-semibold text-slate-100 transition-colors hover:border-slate-500 focus:border-slate-400 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-[11px]'
+                                  className='bg-surface-raised hover:bg-surface-raised-hover border-surface-border inline-flex w-full min-w-0 items-center justify-between rounded-md border px-2 py-1 text-left text-[11px] font-semibold text-slate-100 transition-colors hover:border-slate-500 focus:border-slate-400 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-[12px]'
                                 >
                                   <span className='truncate'>{ROLE_CONFIG[currentLevel]?.label ?? 'Default user'}</span>
                                   <ChevronDown size={12} className='ml-2 shrink-0 text-slate-500' />
@@ -150,7 +150,7 @@ const Permissions = () => {
                                           setOpenRoleMenuUserId(null);
                                         }}
                                         className={cn(
-                                          'w-full px-2 py-1.5 text-left text-[10px] font-semibold transition-colors sm:text-[11px]',
+                                          'w-full px-2 py-1.5 text-left text-[11px] font-semibold transition-colors sm:text-[12px]',
                                           opt.value === currentLevel
                                             ? 'bg-surface-hover text-slate-100'
                                             : 'hover:bg-surface-hover text-slate-300',

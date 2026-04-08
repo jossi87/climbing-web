@@ -90,7 +90,7 @@ const StatItem = ({ to, icon: Icon, label, value, loading, tileRadiusClass }: St
         <div className='flex h-4 shrink-0 items-center justify-center'>
           <SectionLabel
             className={cn(
-              '!text-[9px] !leading-none !tracking-[0.06em] text-slate-400 sm:!text-[10px] sm:!tracking-[0.1em]',
+              '!text-[10px] !leading-none !tracking-[0.06em] text-slate-400 sm:!text-[11px] sm:!tracking-[0.1em]',
               !loading && 'transition-colors group-hover:text-slate-400',
             )}
           >

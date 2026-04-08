@@ -81,7 +81,7 @@ export const VisibilitySelector = ({
 export const VisibilitySelectorField = ({ label, labelClassName, ...props }: CustomProps) => {
   return (
     <div className='space-y-2'>
-      <label className={cn('mb-1 ml-1 block text-[11px] font-medium text-slate-400 sm:text-[12px]', labelClassName)}>
+      <label className={cn('mb-1 ml-1 block text-[12px] font-medium text-slate-400 sm:text-[13px]', labelClassName)}>
         {label || 'Visibility'}
       </label>
       <VisibilitySelector {...props} />

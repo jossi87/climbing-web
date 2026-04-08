@@ -67,7 +67,7 @@ import {
 } from '../../shared/components/Profile/problemListRowChrome';
 import {
   problemListRowRootClass,
-  tickComment,
+  tickCommentSmall,
   tickListRowQuietMeta,
   tickProblemLinkWithStatus,
   tickWhenGrade,
@@ -117,9 +117,7 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
     ) : null;
   const rockLine = problem.rock ? <span className='not-italic'>Rock: {problem.rock}</span> : null;
   const faEl = faLine ? <span>{faLine}</span> : null;
-  const commentEl = commentTrimmed ? (
-    <span className={cn(tickComment, 'text-[12px] leading-snug sm:text-[13px]')}>{commentTrimmed}</span>
-  ) : null;
+  const commentEl = commentTrimmed ? <span className={tickCommentSmall}>{commentTrimmed}</span> : null;
 
   const hasLock = !!(problem.lockedAdmin || problem.lockedSuperadmin);
   const hasBroken = !!problem.broken;
@@ -134,7 +132,7 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
         {hasBroken ? (
           <>
             {hasLock ? ' ' : null}
-            <span className='rounded border border-red-500/25 bg-red-500/12 px-1.5 py-0.5 text-[9px] font-semibold tracking-wide text-red-300 uppercase'>
+            <span className='rounded border border-red-500/25 bg-red-500/12 px-1.5 py-0.5 text-[11px] font-semibold tracking-wide text-red-300 uppercase'>
               {problem.broken}
             </span>
           </>
@@ -313,7 +311,7 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
         </div>
 
         <div className='min-w-0 leading-snug' title={listRowTitle || undefined}>
-          <div className='min-w-0 text-[12px] leading-snug sm:text-[13px]'>
+          <div className='min-w-0'>
             <Link
               to={`/problem/${problem.id}`}
               className={cn(
@@ -588,7 +586,7 @@ const Area = () => {
 
   const areaAccessRestrictions =
     data.accessClosed || data.noDogsAllowed || data.accessInfo ? (
-      <div className={cn('min-w-0 space-y-2', designContract.typography.detailBody)}>
+      <div className={cn('min-w-0 space-y-2', designContract.typography.body)}>
         {data.accessClosed && <p className='text-access-danger text-pretty'>{data.accessClosed}</p>}
         {(data.noDogsAllowed || data.accessInfo) && (
           <div className='text-access-caution space-y-1.5'>
@@ -611,7 +609,7 @@ const Area = () => {
             <nav
               className={cn(
                 'flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-2 text-pretty break-words',
-                designContract.typography.detailBody,
+                designContract.typography.breadcrumb,
               )}
             >
               <Link to='/areas' className={designContract.typography.breadcrumbLink}>
@@ -706,7 +704,7 @@ const Area = () => {
                       />
                     )}
 
-                    <div className='flex w-full min-w-0 flex-wrap items-center gap-x-2 gap-y-2'>
+                    <div className='flex w-full min-w-0 flex-wrap content-start items-center gap-x-2 gap-y-1 sm:gap-y-1.5'>
                       <ConditionLabels
                         lat={data.coordinates?.latitude}
                         lng={data.coordinates?.longitude}
@@ -721,7 +719,7 @@ const Area = () => {
                         <span
                           className={cn(
                             designContract.surfaces.inlineChip,
-                            'text-[10px] font-semibold tracking-wide text-amber-400/90 uppercase',
+                            'text-[11px] font-semibold tracking-wide text-amber-400/90 uppercase',
                           )}
                         >
                           Under development
@@ -851,7 +849,7 @@ const Area = () => {
                       : cn('text-slate-100 drop-shadow-md light:drop-shadow-none', twInk.lightTextSlate900),
                   );
                   const sectorCardMetaClass = cn(
-                    'mt-1 flex min-w-0 flex-col gap-y-0.5 text-[8px] leading-none sm:mt-1.5 sm:text-[9px]',
+                    'mt-1 flex min-w-0 flex-col gap-y-0.5 text-[11px] leading-none sm:mt-1.5 sm:text-[12px]',
                     sectorHasThumb ? 'photo-overlay-fg-muted' : 'text-slate-400 light:text-slate-600',
                   );
                   /** On photo scrims, use `--color-status-*-imagery` (same as dark defaults; light body uses muted status tokens). */

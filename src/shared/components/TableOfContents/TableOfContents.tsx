@@ -7,7 +7,7 @@ import { ArrowUpCircle, Compass, Sun } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 import { profileRowMiddleDotClass } from '../Profile/ProfileRowTextSep';
-import { tickProblemLinkWithStatus } from '../Profile/profileRowTypography';
+import { tickComment, tickProblemLinkWithStatus } from '../Profile/profileRowTypography';
 import { TradGearMarker } from '../../ui/TradGearMarker';
 
 const JumpToTop = ({ compact = false }: { compact?: boolean }) => (
@@ -61,6 +61,8 @@ export type Props = {
   compact?: boolean;
   /** Hide per-area “Top” scroll control (e.g. below a map where it reads as map chrome). */
   showAreaJumpToTop?: boolean;
+  /** Sun-on-wall + wall direction chips (area/sector). Off for focused lists like `/dangerous`. */
+  showSunWallMeta?: boolean;
 };
 
 const getSunLabel = (fromHour?: number, toHour?: number) => {
@@ -71,7 +73,14 @@ const getSunLabel = (fromHour?: number, toHour?: number) => {
 const getWallLabel = (wallDirectionManual?: { direction?: string }, wallDirectionCalculated?: { direction?: string }) =>
   wallDirectionManual?.direction ?? wallDirectionCalculated?.direction ?? null;
 
-export const TableOfContents = ({ areas, header, subHeader, compact = false, showAreaJumpToTop = true }: Props) => {
+export const TableOfContents = ({
+  areas,
+  header,
+  subHeader,
+  compact = false,
+  showAreaJumpToTop = true,
+  showSunWallMeta = true,
+}: Props) => {
   const areaRefs = useRef<Record<number, HTMLElement | null>>({});
 
   if (!areas || areas.length === 0) {
@@ -137,15 +146,15 @@ export const TableOfContents = ({ areas, header, subHeader, compact = false, sho
                 </Link>
                 <LockSymbol lockedAdmin={area.lockedAdmin} lockedSuperadmin={area.lockedSuperadmin} />
                 {compact ? (
-                  getSunLabel(area.sunFromHour, area.sunToHour) ? (
+                  showSunWallMeta && getSunLabel(area.sunFromHour, area.sunToHour) ? (
                     <span className='type-micro bg-surface-raised inline-flex items-center gap-1 rounded-full border border-white/12 px-2 py-0.5 text-slate-200'>
                       <Sun size={10} className='text-slate-300/90' />
                       {getSunLabel(area.sunFromHour, area.sunToHour)}
                     </span>
                   ) : null
-                ) : (
+                ) : showSunWallMeta ? (
                   <SunOnWall sunFromHour={area.sunFromHour} sunToHour={area.sunToHour} />
-                )}
+                ) : null}
               </div>
               {showAreaJumpToTop ? compact ? <JumpToTop compact /> : <JumpToTop /> : null}
             </div>
@@ -170,7 +179,7 @@ export const TableOfContents = ({ areas, header, subHeader, compact = false, sho
                         {sector.name}
                       </Link>
                       <LockSymbol lockedAdmin={sector.lockedAdmin} lockedSuperadmin={sector.lockedSuperadmin} />
-                      {compact ? (
+                      {compact && showSunWallMeta ? (
                         <>
                           {getWallLabel(sector.wallDirectionManual, sector.wallDirectionCalculated) ? (
                             <span className='type-micro bg-surface-raised inline-flex items-center gap-1 rounded-full border border-white/12 px-2 py-0.5 text-slate-200'>
@@ -187,17 +196,15 @@ export const TableOfContents = ({ areas, header, subHeader, compact = false, sho
                         </>
                       ) : null}
                     </div>
-                    {!compact && (
+                    {!compact && showSunWallMeta ? (
                       <div className='flex items-center gap-2'>
-                        <>
-                          <WallDirection
-                            wallDirectionCalculated={sector.wallDirectionCalculated}
-                            wallDirectionManual={sector.wallDirectionManual}
-                          />
-                          <SunOnWall sunFromHour={sector.sunFromHour} sunToHour={sector.sunToHour} />
-                        </>
+                        <WallDirection
+                          wallDirectionCalculated={sector.wallDirectionCalculated}
+                          wallDirectionManual={sector.wallDirectionManual}
+                        />
+                        <SunOnWall sunFromHour={sector.sunFromHour} sunToHour={sector.sunToHour} />
                       </div>
-                    )}
+                    ) : null}
                   </div>
 
                   <div className={cn('flex flex-col', compact ? 'gap-0' : 'gap-1')}>
@@ -225,7 +232,12 @@ export const TableOfContents = ({ areas, header, subHeader, compact = false, sho
                                 : 'hover:bg-surface-raised-hover border-transparent',
                         )}
                       >
-                        <div className='w-6 shrink-0 pt-0.5 text-[12px] text-slate-500 md:text-[13px]'>
+                        <div
+                          className={cn(
+                            'w-6 shrink-0 pt-0.5 text-slate-500 tabular-nums',
+                            designContract.typography.meta,
+                          )}
+                        >
                           #{problem.nr}
                         </div>
 
@@ -264,17 +276,17 @@ export const TableOfContents = ({ areas, header, subHeader, compact = false, sho
                             ) : null}
                             <LockSymbol lockedAdmin={problem.lockedAdmin} lockedSuperadmin={problem.lockedSuperadmin} />
                             {problem.broken && (
-                              <span className='ml-1 rounded bg-red-500/10 px-1.5 py-0.5 text-[9px] font-bold text-red-500 uppercase'>
+                              <span className='ml-1 rounded bg-red-500/10 px-1.5 py-0.5 text-[11px] font-bold text-red-500 uppercase'>
                                 {problem.broken}
                               </span>
                             )}
                           </div>
                           {problem.subText && (
-                            <span className='text-[12px] text-slate-500 sm:text-[13px]'>{problem.subText}</span>
+                            <span className={cn(designContract.typography.meta, 'text-slate-500')}>
+                              {problem.subText}
+                            </span>
                           )}
-                          {problem.text && (
-                            <span className='text-[12px] text-slate-400 italic sm:text-[13px]'>{problem.text}</span>
-                          )}
+                          {problem.text && <span className={tickComment}>{problem.text}</span>}
                         </div>
                       </div>
                     ))}

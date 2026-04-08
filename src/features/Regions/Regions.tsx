@@ -38,7 +38,7 @@ const Regions = () => {
                 key={id}
                 to={`/regions/${id}`}
                 className={cn(
-                  'inline-flex h-8 shrink-0 items-center justify-center rounded-full px-3 text-[11px] leading-none font-medium transition-colors sm:text-[12px]',
+                  'inline-flex h-8 shrink-0 items-center justify-center rounded-full px-3 text-[12px] leading-none font-medium transition-colors sm:text-[13px]',
                   selectedType === id
                     ? designContract.surfaces.segmentActiveBrandBorder
                     : designContract.surfaces.segmentIdleRaised,

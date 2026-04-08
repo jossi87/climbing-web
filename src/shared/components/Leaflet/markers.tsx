@@ -104,7 +104,7 @@ export default function Markers({ opacity, markers, addEventHandlers, flyToId, s
               href={`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`}
               target='_blank'
               rel='noopener noreferrer'
-              className='border-surface-border bg-surface-nav type-body inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[11px] leading-none font-semibold text-slate-200 no-underline transition-colors hover:border-white/15 hover:text-slate-100'
+              className='border-surface-border bg-surface-nav type-body inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[12px] leading-none font-semibold text-slate-200 no-underline transition-colors hover:border-white/15 hover:text-slate-100'
             >
               <Navigation size={12} />
               Navigate
@@ -141,7 +141,7 @@ export default function Markers({ opacity, markers, addEventHandlers, flyToId, s
                       <img src={feed.urlStillImage} alt={m.name} className='block h-auto w-full' loading='lazy' />
                     </a>
                     <div className='flex items-center justify-end'>
-                      <span className='text-[9px] font-medium text-slate-500'>{feed.lastUpdated}</span>
+                      <span className='text-[11px] font-medium text-slate-500'>{feed.lastUpdated}</span>
                     </div>
                   </div>
                 ))}
@@ -157,11 +157,11 @@ export default function Markers({ opacity, markers, addEventHandlers, flyToId, s
                   >
                     <div className='flex items-center gap-2'>
                       <CloudSun size={14} className='text-slate-500 transition-colors group-hover:text-slate-300' />
-                      <span className='text-[11px] font-bold text-slate-400 group-hover:text-slate-200'>
+                      <span className='text-[12px] font-bold text-slate-400 group-hover:text-slate-200'>
                         Weather Forecast
                       </span>
                     </div>
-                    <span className='text-[9px] font-black tracking-tighter text-slate-500 uppercase'>yr.no</span>
+                    <span className='text-[11px] font-black tracking-tighter text-slate-500 uppercase'>yr.no</span>
                   </a>
                 )}
                 {m.urlOther && (
@@ -169,7 +169,7 @@ export default function Markers({ opacity, markers, addEventHandlers, flyToId, s
                     href={m.urlOther}
                     target='_blank'
                     rel='noreferrer'
-                    className='group flex items-center gap-2.5 px-3 py-1.5 text-[11px] font-bold text-slate-500 no-underline transition-colors hover:text-slate-200'
+                    className='group flex items-center gap-2.5 px-3 py-1.5 text-[12px] font-bold text-slate-500 no-underline transition-colors hover:text-slate-200'
                   >
                     <ExternalLink size={14} className='text-slate-500 transition-colors group-hover:text-slate-400' />
                     Official Source
@@ -207,6 +207,7 @@ export default function Markers({ opacity, markers, addEventHandlers, flyToId, s
         <Marker
           icon={markerBlueIcon}
           position={position}
+          zIndexOffset={100}
           key={['label', m.label, lat, lng].join('/')}
           eventHandlers={{
             click: () => addEventHandlers && navigate(m.url),
@@ -224,6 +225,7 @@ export default function Markers({ opacity, markers, addEventHandlers, flyToId, s
       <Marker
         icon={markerRedIcon}
         position={position}
+        zIndexOffset={650}
         key={['red', lat, lng].join('/')}
         eventHandlers={{
           click: () => addEventHandlers && m.url && navigate(m.url),

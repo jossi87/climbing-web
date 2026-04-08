@@ -118,7 +118,7 @@ const VideoEmbedder = ({ addMedia }: Props) => {
   };
 
   return (
-    <div className='flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:gap-2'>
+    <div className='flex w-full min-w-0 flex-row items-center gap-2'>
       <div className='group relative min-w-0 flex-1'>
         <div className='group-focus-within:text-brand pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-slate-500 transition-colors sm:left-3'>
           <Video size={16} className='sm:h-[18px] sm:w-[18px]' />
@@ -126,7 +126,7 @@ const VideoEmbedder = ({ addMedia }: Props) => {
         <input
           type='text'
           placeholder='YouTube or Vimeo URL'
-          className='bg-surface-nav border-surface-border type-body focus:border-brand-border w-full rounded-lg border py-2 pr-3 pl-9 text-[13px] transition-[border-color] focus:ring-0 focus:outline-none focus-visible:ring-0 sm:rounded-xl sm:py-2.5 sm:pr-4 sm:pl-10 sm:text-base'
+          className='bg-surface-nav border-surface-border type-body focus:border-brand-border min-h-9 w-full min-w-0 rounded-lg border py-2 pr-3 pl-9 text-[13px] transition-[border-color] focus:ring-0 focus:outline-none focus-visible:ring-0 sm:min-h-0 sm:rounded-xl sm:py-2.5 sm:pr-4 sm:pl-10 sm:text-base'
           onChange={handleChange}
           value={rawUrl}
         />
@@ -137,7 +137,7 @@ const VideoEmbedder = ({ addMedia }: Props) => {
         disabled={!canAdd}
         aria-label='Add embedded video'
         className={cn(
-          'flex shrink-0 items-center justify-center gap-1.5 rounded-lg px-4 py-2 sm:gap-2 sm:rounded-xl sm:px-6 sm:py-2.5',
+          'inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg sm:h-auto sm:w-auto sm:gap-2 sm:rounded-xl sm:px-6 sm:py-2.5',
           canAdd
             ? cn(designContract.controls.brandSolid, 'shadow-md shadow-black/20')
             : 'type-label bg-surface-nav border-surface-border cursor-not-allowed border text-slate-500',

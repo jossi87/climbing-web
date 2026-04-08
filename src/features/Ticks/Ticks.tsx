@@ -8,10 +8,10 @@ import { Card, SectionHeader } from '../../shared/ui';
 import {
   profileRowRootClass,
   tickCrag,
+  tickCragLink,
   tickCragLinkArea,
-  tickCragLinkSector,
   tickFlags,
-  tickProblemLinkWithStatus,
+  tickProblemLink,
   tickWhenGrade,
 } from '../../shared/components/Profile/profileRowTypography';
 import { cn } from '../../lib/utils';
@@ -52,7 +52,7 @@ const TickRow = ({ t }: { t: PublicAscent }) => {
       <LockSymbol lockedAdmin={t.areaLockedAdmin} lockedSuperadmin={t.areaLockedSuperadmin} />
       {t.areaLockedAdmin || t.areaLockedSuperadmin ? ' ' : <ProfileRowTextSep />}
       {sectorId ? (
-        <Link to={`/sector/${sectorId}`} className={tickCragLinkSector}>
+        <Link to={`/sector/${sectorId}`} className={tickCragLink}>
           {t.sectorName}
         </Link>
       ) : (
@@ -60,7 +60,7 @@ const TickRow = ({ t }: { t: PublicAscent }) => {
       )}
       <LockSymbol lockedAdmin={t.sectorLockedAdmin} lockedSuperadmin={t.sectorLockedSuperadmin} />
       {t.sectorLockedAdmin || t.sectorLockedSuperadmin ? ' ' : <ProfileRowTextSep />}
-      <Link to={`/problem/${t.problemId}`} className={tickProblemLinkWithStatus({ ticked: true })}>
+      <Link to={`/problem/${t.problemId}`} className={tickProblemLink}>
         {t.problemName}
       </Link>
       {t.problemGrade ? (

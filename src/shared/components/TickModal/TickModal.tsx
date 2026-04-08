@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -76,6 +76,16 @@ const TickModal = ({
   const [repeats, setRepeats] = useState<Repeat[]>(initialRepeats || []);
   const [apiError, setApiError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || isSaving) return;
+      onClose();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [open, onClose, isSaving]);
 
   const today = new Date();
   const validDate = !date || (convertFromStringToDate(date) ?? new Date()) <= today;
@@ -252,7 +262,7 @@ const TickModal = ({
                 aria-checked={stars === -1}
                 onClick={() => setStars(-1)}
                 className={cn(
-                  'flex min-w-0 flex-1 items-center justify-center px-1 py-2.5 text-center text-[10px] leading-tight font-semibold tracking-wide uppercase transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-emerald-400/50 focus-visible:ring-offset-0 focus-visible:outline-none sm:px-2 sm:text-xs',
+                  'flex min-w-0 flex-1 items-center justify-center px-1 py-2.5 text-center text-[11px] leading-tight font-semibold tracking-wide uppercase transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-emerald-400/50 focus-visible:ring-offset-0 focus-visible:outline-none sm:px-2 sm:text-sm',
                   stars === -1
                     ? 'bg-emerald-950 text-slate-50 shadow-none ring-1 ring-emerald-400/50'
                     : 'hover:bg-surface-raised-hover text-slate-400 hover:text-slate-200',
@@ -327,7 +337,7 @@ const TickModal = ({
                         className='animate-in slide-in-from-left-2 flex gap-2 p-2.5 duration-150 sm:gap-3 sm:p-3'
                       >
                         <div
-                          className='bg-surface-raised border-surface-border/80 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-[10px] font-semibold text-slate-400 tabular-nums sm:h-8 sm:w-8 sm:text-[11px]'
+                          className='bg-surface-raised border-surface-border/80 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-[11px] font-semibold text-slate-400 tabular-nums sm:h-8 sm:w-8 sm:text-[12px]'
                           aria-hidden
                         >
                           {index + 1}
@@ -413,7 +423,7 @@ const TickModal = ({
               disabled={stars === null || !validDate || isSaving}
               className={cn(
                 designContract.controls.savePrimaryModal,
-                'disabled:bg-surface-hover shadow-sm disabled:opacity-50 max-sm:px-3 max-sm:py-2 max-sm:text-[9px] max-sm:tracking-wide',
+                'disabled:bg-surface-hover shadow-sm disabled:opacity-50 max-sm:px-3 max-sm:py-2 max-sm:text-[10px] max-sm:tracking-wide',
               )}
             >
               {isSaving ? <RefreshCw size={14} className='animate-spin' /> : <Check size={14} />}

@@ -118,11 +118,11 @@ export const YrLink = ({ lat, lng }: { lat: number; lng: number }) => {
                   className='mx-auto h-9 w-9'
                   alt=''
                 />
-                <span className='mt-1 block text-[10px] font-medium text-slate-500'>{item.label}</span>
+                <span className='mt-1 block text-[12px] font-medium text-slate-500'>{item.label}</span>
               </div>
             ))}
           </div>
-          <p className='border-surface-border border-t pt-2 text-center text-[10px] text-slate-500'>Forecast · yr.no</p>
+          <p className='border-surface-border border-t pt-2 text-center text-[12px] text-slate-500'>Forecast · yr.no</p>
         </div>
       )}
     </div>

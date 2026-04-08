@@ -83,7 +83,7 @@ export const AreaEdit = () => {
 
   const inputClasses =
     'w-full bg-surface-nav border border-surface-border rounded-lg px-3 py-2.5 text-sm text-white transition-colors focus:border-brand focus:outline-none';
-  const labelClasses = 'ml-1 mb-1 block text-[11px] font-medium text-slate-400 sm:text-[12px]';
+  const labelClasses = 'ml-1 mb-1 block text-[12px] font-medium text-slate-400 sm:text-[13px]';
 
   return (
     <div className='w-full min-w-0 pb-20'>
@@ -114,7 +114,7 @@ export const AreaEdit = () => {
                     value={data.name ?? ''}
                     onChange={(e) => setString('name')(e, { value: e.target.value })}
                   />
-                  {!data.name && <p className='ml-1 text-[10px] font-bold text-red-500'>Area name required</p>}
+                  {!data.name && <p className='ml-1 text-[11px] font-bold text-red-500'>Area name required</p>}
                 </div>
 
                 <VisibilitySelectorField
@@ -206,7 +206,7 @@ export const AreaEdit = () => {
                     onChange={(e) => setString('accessClosed')(e, { value: e.target.value })}
                   />
                   <AlertTriangle className='absolute top-1/2 left-3 -translate-y-1/2 text-red-400/90' size={14} />
-                  <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[9px] font-black tracking-tighter text-red-300/90 uppercase'>
+                  <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[11px] font-black tracking-tighter text-red-300/90 uppercase'>
                     Area Closed
                   </span>
                 </div>
@@ -221,7 +221,7 @@ export const AreaEdit = () => {
                     onChange={(e) => setString('accessInfo')(e, { value: e.target.value })}
                   />
                   <Info className='absolute top-1/2 left-3 -translate-y-1/2 text-orange-400/90' size={14} />
-                  <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[9px] font-black tracking-tighter text-orange-300/90 uppercase'>
+                  <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[11px] font-black tracking-tighter text-orange-300/90 uppercase'>
                     Restrictions
                   </span>
                 </div>
@@ -306,7 +306,7 @@ export const AreaEdit = () => {
                 </button>
                 {showSectorOrder && (
                   <div className='space-y-3 p-3 pt-0 sm:p-4 sm:pt-0'>
-                    <p className='mb-2 text-[10px] text-slate-500 italic'>Lower numbers appear first</p>
+                    <p className='mb-2 text-[11px] text-slate-500 italic'>Lower numbers appear first</p>
                     {safeSectorOrder.map((s) => (
                       <div key={s.id} className='group flex items-center'>
                         <div className='relative flex-1'>
@@ -354,7 +354,7 @@ export const AreaEdit = () => {
 const Toggle = ({ label, checked, onChange, disabled }: ToggleProps) => (
   <div className={cn('flex items-center gap-3', disabled && 'cursor-not-allowed opacity-40')}>
     <FormSwitch checked={checked} onChange={onChange} disabled={disabled} variant='brand' aria-label={label} />
-    <span className='text-[11px] font-medium text-slate-300 sm:text-[12px]'>{label}</span>
+    <span className='text-[12px] font-medium text-slate-300 sm:text-[13px]'>{label}</span>
   </div>
 );
 

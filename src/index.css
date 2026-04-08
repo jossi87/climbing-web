@@ -197,11 +197,15 @@ html[data-theme='light']
   html {
     /* Reserve space for the vertical scrollbar so layout doesn’t shift when content grows (CLS). */
     scrollbar-gutter: stable;
+    /*
+     * Match the browser default (typically 16px) so `rem` typography tracks OS text sizing and stays legible
+     * for a wider range of ages. Previously 14px; layouts are tuned via Tailwind scale + component tokens below.
+     */
     /* Default copy: stay below `slate-300` so titles/emphasis can use 200–300 without the whole page “glowing”. */
     @apply selection:bg-surface-hover font-sans text-slate-400 antialiased selection:text-slate-200;
     font-family: var(--font-ui);
-    font-size: 14px;
-    letter-spacing: -0.005em;
+    font-size: 100%;
+    letter-spacing: normal;
     background-color: var(--color-surface-dark);
   }
 
@@ -322,35 +326,35 @@ html[data-theme='light']
    * - type-h1 / type-h2: page & section titles
    * - type-body: primary list copy, paragraphs (Activity feed, problem rows, Todo)
    * - type-small: secondary (#, grades, de-emphasized UI)
-   * - type-label: form / modal field labels (11px caps)
-   * - typography.sectionEyebrow: rail kickers & breadcrumbs (10px caps, see contract.ts)
+   * - type-label: form / modal field labels (12px caps)
+   * - typography.sectionEyebrow: rail kickers & breadcrumbs (11px caps, see contract.ts)
    * - type-micro: captions & tight UI
    */
   .type-h1 {
-    @apply text-2xl font-medium tracking-tight text-slate-200;
+    @apply text-[23px] font-medium tracking-tight text-slate-200;
     font-family: var(--font-ui);
   }
 
   .type-h2 {
-    @apply text-lg font-medium tracking-tight text-slate-200;
+    @apply text-[17px] font-medium tracking-tight text-slate-200;
     font-family: var(--font-ui);
   }
 
   .type-body {
-    @apply text-sm leading-relaxed font-normal text-slate-300 sm:text-base;
+    @apply text-[13px] leading-relaxed font-normal text-slate-300 sm:text-[15px];
   }
 
   .type-small {
-    @apply text-sm leading-snug font-medium text-slate-400;
+    @apply text-[13px] leading-snug font-medium text-slate-400;
   }
 
   .type-label {
-    @apply text-[11px] font-semibold tracking-[0.1em] text-slate-400 uppercase;
+    @apply text-[12px] font-semibold tracking-[0.1em] text-slate-400 uppercase;
     font-family: var(--font-ui);
   }
 
   .type-micro {
-    @apply text-[12px] leading-[1.35] font-medium text-slate-400 sm:text-[13px];
+    @apply text-[13px] leading-[1.4] font-medium text-slate-400 sm:text-[14px];
   }
 
   /** Saturated buttons / toggles — use instead of raw `text-white` (eslint typography rule). */
@@ -407,7 +411,7 @@ html[data-theme='light']
   }
 
   .search-input {
-    @apply bg-surface-raised h-10 rounded-md border border-transparent px-3 text-[12px] font-medium text-slate-300 transition-[color,background-color,border-color,box-shadow] duration-200 sm:text-sm;
+    @apply bg-surface-raised h-10 rounded-md border border-transparent px-3 text-[12px] font-medium text-slate-300 transition-[color,background-color,border-color,box-shadow] duration-200 sm:text-[13px];
   }
   .search-input:focus,
   .search-input:focus-visible {
@@ -524,6 +528,34 @@ html[data-theme='light']
   html:not([data-theme='light']) .trad-gear-marker-wrap {
     background-color: rgb(248 250 252 / 0.13);
     box-shadow: 0 1px 4px rgb(0 0 0 / 0.3);
+  }
+
+  /**
+   * Activity feed (sentence inline): slightly larger wire + clearer chip vs default — full opacity from ProblemLink.
+   */
+  html:not([data-theme='light']) .trad-gear-marker-wrap.trad-gear-marker-wrap--activity-feed {
+    background-color: rgb(248 250 252 / 0.18);
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.07),
+      0 1px 3px rgb(0 0 0 / 0.28);
+    padding: 0 6px;
+  }
+  html[data-theme='light'] .trad-gear-marker-wrap.trad-gear-marker-wrap--activity-feed {
+    background-color: rgb(15 23 42 / 0.1);
+    box-shadow:
+      0 0 0 1px rgb(15 23 42 / 0.08),
+      0 1px 2px rgb(15 23 42 / 0.06);
+    padding: 0 6px;
+  }
+  html:not([data-theme='light']) .trad-gear-marker-wrap.trad-gear-marker-wrap--activity-feed .trad-gear-wire-icon {
+    height: 1.14em;
+    max-width: 1.08em;
+    filter: brightness(0) invert(1) contrast(1.14) drop-shadow(0 0 2px rgb(248 250 252 / 0.2));
+  }
+  html[data-theme='light'] .trad-gear-marker-wrap.trad-gear-marker-wrap--activity-feed .trad-gear-wire-icon {
+    height: 1.14em;
+    max-width: 1.08em;
+    filter: contrast(1.1) drop-shadow(0 0 1.5px rgb(15 23 42 / 0.14));
   }
 
   /**

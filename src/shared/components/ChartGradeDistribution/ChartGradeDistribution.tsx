@@ -93,8 +93,8 @@ const ChartGradeDistribution = ({
                     <span
                       className={
                         embedded
-                          ? 'border-surface-border/50 bg-surface-card rounded-md border px-2 py-0.5 text-[10px] font-semibold text-slate-200'
-                          : 'border-surface-border/50 bg-surface-raised rounded-md border px-2 py-0.5 text-[10px] font-semibold text-slate-200 shadow-sm'
+                          ? 'border-surface-border/50 bg-surface-card rounded-md border px-2 py-0.5 text-[11px] font-semibold text-slate-200'
+                          : 'border-surface-border/50 bg-surface-raised rounded-md border px-2 py-0.5 text-[11px] font-semibold text-slate-200 shadow-sm'
                       }
                     >
                       {g.num}

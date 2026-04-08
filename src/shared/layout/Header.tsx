@@ -93,7 +93,7 @@ const Header = () => {
         to={to}
         onClick={onClick}
         className={cn(
-          'mx-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[12px] leading-snug font-medium transition-colors sm:text-[13px]',
+          'mx-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] leading-snug font-medium transition-colors sm:text-[14px]',
           isActive
             ? 'bg-surface-hover ring-brand-border/70 text-slate-50 ring-1'
             : 'hover:bg-surface-raised-hover text-slate-300 hover:text-slate-50',
@@ -145,7 +145,7 @@ const Header = () => {
                   downloadUsersTicks(accessToken).finally(() => setIsDownloadingTicks(false));
                   setIsAccountOpen(false);
                 }}
-                className='hover:bg-surface-raised-hover mx-1 flex w-[calc(100%-0.5rem)] items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[12px] leading-snug font-medium text-slate-300 transition-colors hover:text-slate-50 sm:text-[13px]'
+                className='hover:bg-surface-raised-hover mx-1 flex w-[calc(100%-0.5rem)] items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[13px] leading-snug font-medium text-slate-300 transition-colors hover:text-slate-50 sm:text-[14px]'
               >
                 {isDownloadingTicks ? (
                   <Loader2 size={16} className='shrink-0 animate-spin text-slate-400' />
@@ -161,7 +161,7 @@ const Header = () => {
                 href='/pdf/20230525_administrator_doc.pdf'
                 target='_blank'
                 rel='noopener noreferrer'
-                className='hover:bg-surface-raised-hover mx-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[12px] leading-snug font-medium text-slate-300 transition-colors hover:text-slate-50 sm:text-[13px]'
+                className='hover:bg-surface-raised-hover mx-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] leading-snug font-medium text-slate-300 transition-colors hover:text-slate-50 sm:text-[14px]'
               >
                 <HelpCircle size={16} strokeWidth={2} className='shrink-0 text-slate-400' /> Help
               </a>
@@ -184,7 +184,7 @@ const Header = () => {
               <button
                 type='button'
                 onClick={() => logout({ logoutParams: { returnTo: window.origin } })}
-                className='mx-1 flex w-[calc(100%-0.5rem)] items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[12px] leading-snug font-medium text-red-400 transition-colors hover:bg-red-500/12 hover:text-red-300 sm:text-[13px]'
+                className='mx-1 flex w-[calc(100%-0.5rem)] items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[13px] leading-snug font-medium text-red-400 transition-colors hover:bg-red-500/12 hover:text-red-300 sm:text-[14px]'
               >
                 <LogOut size={16} strokeWidth={2} className='shrink-0' /> Sign out
               </button>
@@ -195,7 +195,7 @@ const Header = () => {
     ) : (
       <button
         onClick={() => loginWithRedirect()}
-        className='header-sign-in-btn border-brand-border bg-surface-raised text-brand hover:border-brand-border hover:bg-surface-hover flex items-center gap-2 rounded border px-3 py-1.5 text-[10px] font-semibold tracking-[0.08em] normal-case transition-colors active:scale-95'
+        className='header-sign-in-btn border-brand-border bg-surface-raised text-brand hover:border-brand-border hover:bg-surface-hover flex items-center gap-2 rounded border px-3 py-1.5 text-[11px] font-semibold tracking-[0.08em] normal-case transition-colors active:scale-95'
       >
         <LogIn size={14} /> <span>Sign in</span>
       </button>

@@ -59,7 +59,7 @@ function Chart({ ticks: data }: Props) {
   );
 
   if (!grades.length) {
-    return <div className='py-4 text-center text-[11px] text-slate-500 sm:text-[12px]'>No grade distribution yet.</div>;
+    return <div className='py-4 text-center text-[12px] text-slate-500 sm:text-[13px]'>No grade distribution yet.</div>;
   }
 
   return (
@@ -67,16 +67,16 @@ function Chart({ ticks: data }: Props) {
       <table className='w-full table-auto border-separate border-spacing-0 text-left'>
         <thead>
           <tr>
-            <th className='w-px px-1 py-0.5 text-[11px] leading-none font-medium whitespace-nowrap text-slate-300 sm:px-1.5 sm:py-0.5 sm:text-[12px]'>
+            <th className='w-px px-1 py-0.5 text-[12px] leading-none font-medium whitespace-nowrap text-slate-300 sm:px-1.5 sm:py-0.5 sm:text-[13px]'>
               Grade
             </th>
-            <th className='w-px px-1 py-0.5 text-left text-[11px] leading-none font-medium whitespace-nowrap text-slate-300 sm:px-1.5 sm:py-0.5 sm:text-[12px]'>
+            <th className='w-px px-1 py-0.5 text-left text-[12px] leading-none font-medium whitespace-nowrap text-slate-300 sm:px-1.5 sm:py-0.5 sm:text-[13px]'>
               FA
             </th>
-            <th className='w-px px-1 py-0.5 text-left text-[11px] leading-none font-medium whitespace-nowrap text-slate-300 sm:px-1.5 sm:py-0.5 sm:text-[12px]'>
+            <th className='w-px px-1 py-0.5 text-left text-[12px] leading-none font-medium whitespace-nowrap text-slate-300 sm:px-1.5 sm:py-0.5 sm:text-[13px]'>
               Tick
             </th>
-            <th className='w-px px-1 py-0.5 text-left text-[11px] leading-none font-medium whitespace-nowrap text-slate-300 sm:px-1.5 sm:py-0.5 sm:text-[12px]'>
+            <th className='w-px px-1 py-0.5 text-left text-[12px] leading-none font-medium whitespace-nowrap text-slate-300 sm:px-1.5 sm:py-0.5 sm:text-[13px]'>
               Total
             </th>
             <th className='w-full px-1 py-0.5 text-right sm:px-1.5' aria-hidden='true'>
@@ -93,16 +93,16 @@ function Chart({ ticks: data }: Props) {
 
             return (
               <tr key={[g.grade, g.fa, g.tick].join('/')} className='hover:bg-surface-raised-hover transition-colors'>
-                <td className='px-1 py-0.5 text-[11px] leading-none font-medium whitespace-nowrap text-slate-400 sm:px-1.5 sm:py-0.5 sm:text-[12px]'>
+                <td className='px-1 py-0.5 text-[12px] leading-none font-medium whitespace-nowrap text-slate-400 sm:px-1.5 sm:py-0.5 sm:text-[13px]'>
                   {g.grade}
                 </td>
-                <td className='px-1 py-0.5 text-left text-[11px] leading-none whitespace-nowrap text-slate-400 sm:px-1.5 sm:py-0.5 sm:text-[12px]'>
+                <td className='px-1 py-0.5 text-left text-[12px] leading-none whitespace-nowrap text-slate-400 sm:px-1.5 sm:py-0.5 sm:text-[13px]'>
                   {g.fa}
                 </td>
-                <td className='px-1 py-0.5 text-left text-[11px] leading-none whitespace-nowrap text-slate-400 sm:px-1.5 sm:py-0.5 sm:text-[12px]'>
+                <td className='px-1 py-0.5 text-left text-[12px] leading-none whitespace-nowrap text-slate-400 sm:px-1.5 sm:py-0.5 sm:text-[13px]'>
                   {g.tick}
                 </td>
-                <td className='px-1 py-0.5 text-left text-[11px] leading-none whitespace-nowrap text-slate-400 sm:px-1.5 sm:py-0.5 sm:text-[12px]'>
+                <td className='px-1 py-0.5 text-left text-[12px] leading-none whitespace-nowrap text-slate-400 sm:px-1.5 sm:py-0.5 sm:text-[13px]'>
                   {total}
                 </td>
                 <td className='w-full px-1 py-0.5 text-right sm:px-1.5 sm:py-0.5'>

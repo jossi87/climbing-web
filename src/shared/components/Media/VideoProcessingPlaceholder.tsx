@@ -21,13 +21,13 @@ export function VideoProcessingPlaceholder({ compact = false, className }: Props
       )}
     >
       <Film className='text-slate-500' size={compact ? 22 : 28} aria-hidden />
-      <p className={cn('leading-tight font-semibold text-slate-200', compact ? 'text-[9px]' : 'text-[10px]')}>
+      <p className={cn('leading-tight font-semibold text-slate-200', compact ? 'text-[10px]' : 'text-[11px]')}>
         Processing video
       </p>
       <p
         className={cn(
           'max-w-[13rem] leading-snug text-slate-400 sm:max-w-[15rem]',
-          compact ? 'text-[8px] leading-snug sm:text-[9px]' : 'text-[9px] sm:text-[10px]',
+          compact ? 'text-[10px] leading-snug sm:text-[11px]' : 'text-[11px] sm:text-[12px]',
         )}
       >
         This video is still being processed in the background. It will be ready soon — refresh the page if the preview

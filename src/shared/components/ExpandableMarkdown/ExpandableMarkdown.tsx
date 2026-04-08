@@ -15,7 +15,9 @@ type Props = {
 const COLLAPSED_MAX_H = 'max-h-[8.75rem]';
 
 /**
- * Collapsible long markdown (Area overview description pattern).
+ * Collapsible long markdown (problem / area / sector descriptions, trivia, aid notes).
+ * Body uses `designContract.typography.body` (`type-body` in `index.css`). Optional `contentClassName`
+ * overrides ink (e.g. muted `text-slate-400` for aid subcopy).
  * The toggle only appears when collapsed content is actually clipped (measured in the DOM).
  */
 export const ExpandableMarkdown = ({ content, className, contentClassName }: Props) => {
@@ -48,7 +50,10 @@ export const ExpandableMarkdown = ({ content, className, contentClassName }: Pro
       <div
         ref={bodyRef}
         className={cn(
-          'text-[13px] leading-relaxed text-slate-300 sm:text-sm [&_p:first-child]:mt-0 [&_p:last-child]:mb-0',
+          designContract.typography.body,
+          'text-pretty [overflow-wrap:anywhere]',
+          '[&_p+p]:mt-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0',
+          'hover:[&_a]:text-brand light:[&_a]:decoration-slate-400/40 [&_a]:text-inherit [&_a]:underline [&_a]:decoration-white/15 [&_a]:underline-offset-2 [&_a]:transition-colors',
           contentClassName,
           !expanded && COLLAPSED_MAX_H,
           !expanded && 'overflow-hidden',

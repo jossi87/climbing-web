@@ -144,7 +144,7 @@ const About = () => {
 
         <Card className='lg:col-span-2'>
           <SectionHeader title='Administrators' icon={Users} subheader={adminSubheader} />
-          <div className='grid grid-cols-2 gap-1.5 sm:gap-2 lg:grid-cols-3 xl:grid-cols-4'>
+          <div className='grid grid-cols-2 gap-1 sm:gap-1.5 lg:grid-cols-3 xl:grid-cols-4'>
             {data?.map((u) => (
               <UserCard key={u.userId} user={u} variant='minimal' />
             ))}

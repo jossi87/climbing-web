@@ -48,7 +48,7 @@ const ProblemEditMedia = () => {
             breadcrumb={
               <nav
                 className={cn(
-                  'block min-w-0 text-[11px] leading-relaxed text-pretty break-words text-slate-400 sm:text-[12px] [&>*+*]:ml-1.5',
+                  'block min-w-0 text-[12px] leading-relaxed text-pretty break-words text-slate-400 sm:text-[13px] [&>*+*]:ml-1.5',
                 )}
               >
                 <Link to='/areas' className='inline align-middle transition-colors hover:text-slate-200'>
@@ -119,7 +119,7 @@ const ProblemEditMedia = () => {
           onClick={() => navigate(problemId ? `/problem/${problemId}` : '/areas')}
           className={cn(
             designContract.surfaces.inlineChipInteractive,
-            'px-4 py-2 text-[12px] font-semibold sm:text-[13px]',
+            'px-4 py-2 text-[13px] font-semibold sm:text-[14px]',
           )}
         >
           Cancel
@@ -128,7 +128,7 @@ const ProblemEditMedia = () => {
           form='media-form'
           type='submit'
           disabled={saving}
-          className={cn(designContract.controls.savePrimary, 'px-6 py-2.5 text-[12px] font-semibold sm:text-[13px]')}
+          className={cn(designContract.controls.savePrimary, 'px-6 py-2.5 text-[13px] font-semibold sm:text-[14px]')}
         >
           {saving ? <Loader2 className='animate-spin' size={16} /> : <Save size={16} strokeWidth={2.25} />}
           Save

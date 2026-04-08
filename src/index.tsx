@@ -35,13 +35,13 @@ function ErrorFallback({ error, resetError }: { error: unknown; componentStack: 
       <div className='bg-surface-card border-surface-border w-full max-w-2xl rounded-xl border p-8 shadow-2xl'>
         <h1 className='mb-2 text-2xl font-semibold text-slate-100'>Something went wrong</h1>
         <p className='mb-6 text-sm text-slate-400'>The application encountered an unexpected error.</p>
-        <div className='bg-surface-dark border-surface-border max-h-64 space-y-4 overflow-auto rounded-lg border p-4 font-mono text-[11px]'>
+        <div className='bg-surface-dark border-surface-border max-h-64 space-y-4 overflow-auto rounded-lg border p-4 font-mono text-[12px]'>
           <div className='text-brand font-semibold tracking-wide uppercase'>Error Log</div>
           <div className='whitespace-pre-wrap text-slate-300'>{`${error}`}</div>
         </div>
         <button
           onClick={resetError}
-          className='btn-brand-solid mt-8 rounded-md px-6 py-2 text-[11px] font-semibold tracking-wide uppercase transition active:scale-95'
+          className='btn-brand-solid mt-8 rounded-md px-6 py-2 text-[12px] font-semibold tracking-wide uppercase transition active:scale-95'
         >
           Try again
         </button>

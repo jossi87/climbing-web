@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { invalidateProblemQueries, postComment, useAccessToken } from '../../../api';
@@ -31,6 +31,15 @@ const CommentModal = ({
   const [resolved, setResolved] = useState(comment?.resolved);
   const [media, setMedia] = useState<UploadedMedia[]>([]);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || saving) return;
+      onClose();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [onClose, saving]);
 
   const handleSave = () => {
     if (id == null || idProblem == null) return;
@@ -124,7 +133,7 @@ const CommentModal = ({
                   }}
                   className={cn(
                     designContract.typography.uiCompact,
-                    'focus-visible:ring-brand-border/70 min-w-0 flex-1 px-2 py-2.5 uppercase transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:outline-none max-sm:text-[10px] sm:flex-none sm:px-4',
+                    'focus-visible:ring-brand-border/70 min-w-0 flex-1 px-2 py-2.5 uppercase transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:outline-none max-sm:text-[11px] sm:flex-none sm:px-4',
                     !danger && !resolved
                       ? 'bg-brand/20 text-brand ring-brand-border/55 shadow-none ring-1'
                       : 'hover:bg-surface-raised-hover hover:text-brand/90 text-slate-500',
@@ -142,7 +151,7 @@ const CommentModal = ({
                   }}
                   className={cn(
                     designContract.typography.uiCompact,
-                    'flex min-w-0 flex-1 items-center justify-center gap-1 px-2 py-2.5 uppercase transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-red-400/50 focus-visible:outline-none max-sm:text-[10px] sm:flex-none sm:gap-2 sm:px-4',
+                    'flex min-w-0 flex-1 items-center justify-center gap-1 px-2 py-2.5 uppercase transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-red-400/50 focus-visible:outline-none max-sm:text-[11px] sm:flex-none sm:gap-2 sm:px-4',
                     danger && !resolved
                       ? 'bg-red-950 text-red-100 shadow-none ring-1 ring-red-400/50'
                       : 'hover:bg-surface-raised-hover text-slate-500 hover:text-red-300',
@@ -160,7 +169,7 @@ const CommentModal = ({
                   }}
                   className={cn(
                     designContract.typography.uiCompact,
-                    'flex min-w-0 flex-1 items-center justify-center gap-1 px-2 py-2.5 uppercase transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-emerald-400/45 focus-visible:outline-none max-sm:text-[10px] sm:flex-none sm:gap-2 sm:px-4',
+                    'flex min-w-0 flex-1 items-center justify-center gap-1 px-2 py-2.5 uppercase transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-emerald-400/45 focus-visible:outline-none max-sm:text-[11px] sm:flex-none sm:gap-2 sm:px-4',
                     !danger && resolved
                       ? 'bg-emerald-950 text-emerald-100 shadow-none ring-1 ring-emerald-400/50'
                       : 'hover:bg-surface-raised-hover text-slate-500 hover:text-emerald-300',
@@ -200,7 +209,7 @@ const CommentModal = ({
             disabled={saving || !message.trim()}
             className={cn(
               designContract.controls.savePrimaryModal,
-              'disabled:bg-surface-hover rounded-lg shadow-sm disabled:opacity-50 max-sm:px-3 max-sm:py-2 max-sm:text-[9px] max-sm:tracking-wide',
+              'disabled:bg-surface-hover rounded-lg shadow-sm disabled:opacity-50 max-sm:px-3 max-sm:py-2 max-sm:text-[10px] max-sm:tracking-wide',
             )}
           >
             {saving ? (

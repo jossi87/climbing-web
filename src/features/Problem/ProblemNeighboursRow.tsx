@@ -1,9 +1,8 @@
 import { Link } from 'react-router-dom';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
-import { twInk } from '../../design/twInk';
 import type { components } from '../../@types/buldreinfo/swagger';
-import { tickWhenGrade } from '../../shared/components/Profile/profileRowTypography';
+import { problemOverviewFactClass } from './ProblemAscentOverview';
 import { problemSurroundingsLeadClass, problemSurroundingsRowClass } from './problemSurroundingsLayout';
 
 type SectorProblem = components['schemas']['SectorProblem'];
@@ -12,8 +11,6 @@ type Props = {
   neighbourPrev?: SectorProblem;
   neighbourNext?: SectorProblem;
 };
-
-const factClass = 'text-[13px] font-normal leading-normal text-slate-300 sm:text-sm';
 
 /** Same typography as neighbour links — also used for boulder “on rock” inline list. */
 export function SectorProblemLink({
@@ -50,34 +47,29 @@ export function SectorProblemLink({
       aria-label={ariaLabel}
       aria-current={isCurrent ? 'page' : undefined}
       className={cn(
-        factClass,
-        'inline-flex max-w-[min(100%,15rem)] min-w-0 items-baseline gap-1 sm:max-w-[18rem]',
-        routeTicked || routeTodo
-          ? 'transition-opacity hover:opacity-90'
-          : cn(designContract.typography.listLink, isCurrent && 'text-slate-100'),
+        problemOverviewFactClass,
+        'inline-flex max-w-[min(100%,15rem)] min-w-0 items-baseline gap-1 transition-colors sm:max-w-[18rem]',
+        routeTicked || routeTodo ? 'hover:opacity-90' : 'hover:text-brand',
       )}
     >
       {/*
-        Do not use typography.meta (type-small) on # — light theme forces .type-small to slate and overrides
-        text-status-ticked / text-status-todo on the same node.
-        Status color on **name** only; # stays {@link tickWhenGrade} like grade.
+        Match First Ascent / overview fact row (`problemOverviewFactClass`). Do not use {@link designContract.typography.listLink}
+        or `tickWhenGrade` here — they skew cooler/darker than the FA line.
       */}
-      <span className={cn(tickWhenGrade, 'shrink-0 leading-snug tabular-nums antialiased')}>#{nr}</span>
+      <span className={cn(problemOverviewFactClass, 'shrink-0 font-mono tabular-nums')}>#{nr}</span>
       <span
         className={cn(
-          'min-w-0 flex-1 truncate leading-snug font-medium antialiased',
+          'min-w-0 flex-1 truncate leading-snug font-normal antialiased',
           routeTicked
             ? designContract.ascentStatus.ticked
             : routeTodo
               ? designContract.ascentStatus.todo
-              : isCurrent
-                ? cn('text-slate-50', twInk.lightTextSlate900)
-                : 'text-slate-400',
+              : problemOverviewFactClass,
         )}
       >
         {name}
       </span>
-      <span className={cn(designContract.typography.grade, 'shrink-0 font-medium')}>{grade}</span>
+      <span className={cn(problemOverviewFactClass, 'shrink-0 font-mono font-normal tabular-nums')}>{grade}</span>
     </Link>
   );
 }

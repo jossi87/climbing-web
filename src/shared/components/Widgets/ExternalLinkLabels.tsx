@@ -29,7 +29,7 @@ export function ExternalLinkLabels({
                 'inline-flex max-w-full items-center gap-1 [overflow-wrap:anywhere] text-slate-400 underline decoration-transparent underline-offset-2 transition-colors hover:text-slate-200 hover:decoration-white/20',
               )}
             >
-              <LinkIcon size={11} strokeWidth={2} className='shrink-0 text-slate-100' />
+              <LinkIcon size={12} strokeWidth={2} className='shrink-0 text-slate-100' />
               <span className='min-w-0 font-medium'>
                 {l.title}
                 {l.url?.includes('page=') && (

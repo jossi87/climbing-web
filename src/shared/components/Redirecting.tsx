@@ -5,7 +5,7 @@ export const Redirecting = () => (
         <div className='border-t-brand h-5 w-5 animate-spin rounded-full border-2 border-slate-700' />
         <div className='flex flex-col'>
           <h3 className='type-label'>Redirecting</h3>
-          <p className='mt-0.5 text-[10px] font-medium text-slate-500 italic'>Please wait...</p>
+          <p className='mt-0.5 text-[11px] font-medium text-slate-500 italic'>Please wait...</p>
         </div>
       </div>
     </div>

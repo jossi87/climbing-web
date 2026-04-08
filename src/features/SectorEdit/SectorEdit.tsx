@@ -103,7 +103,8 @@ export const SectorEdit = ({ sector, area }: Props) => {
   const [data, setData] = useState<Sector>(sector);
 
   const [showProblemOrder, setShowProblemOrder] = useState(false);
-  const [sectorMarkers, setSectorMarkers] = useState<ComponentProps<typeof Leaflet>['markers']>([]);
+  /** `null` = do not show problem markers; array (possibly empty) = include-all mode is on. */
+  const [sectorMarkers, setSectorMarkers] = useState<ComponentProps<typeof Leaflet>['markers'] | null>(null);
 
   const [saving, setSaving] = useState(false);
 
@@ -363,13 +364,13 @@ export const SectorEdit = ({ sector, area }: Props) => {
       isParking: true,
     });
   }
-  if (sectorMarkers) {
+  if (sectorMarkers != null) {
     markers.push(...sectorMarkers);
   }
 
   const inputClasses =
     'w-full bg-surface-nav border border-surface-border rounded-lg px-3 py-2.5 text-sm text-white transition-colors focus:border-brand focus:outline-none';
-  const labelClasses = 'ml-1 mb-1 block text-[11px] font-medium text-slate-400 sm:text-[12px]';
+  const labelClasses = 'ml-1 mb-1 block text-[12px] font-medium text-slate-400 sm:text-[13px]';
 
   return (
     <div className='w-full min-w-0 pb-20'>
@@ -399,7 +400,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
                     value={data.name ?? ''}
                     onChange={(e) => onNameChanged(dummyEvent, { value: e.target.value })}
                   />
-                  {!data.name && <p className='ml-1 text-[10px] font-bold text-red-500'>Sector name required</p>}
+                  {!data.name && <p className='ml-1 text-[11px] font-bold text-red-500'>Sector name required</p>}
                 </div>
 
                 {meta.isClimbing && (
@@ -501,7 +502,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
                     onChange={(e) => onAccessClosedChanged(dummyEvent, { value: e.target.value })}
                   />
                   <AlertTriangle className='absolute top-1/2 left-3 -translate-y-1/2 text-red-400/90' size={14} />
-                  <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[9px] font-black tracking-tighter text-red-300/90 uppercase'>
+                  <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[11px] font-black tracking-tighter text-red-300/90 uppercase'>
                     Sector Closed
                   </span>
                 </div>
@@ -516,7 +517,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
                     onChange={(e) => onAccessInfoChanged(dummyEvent, { value: e.target.value })}
                   />
                   <Info className='absolute top-1/2 left-3 -translate-y-1/2 text-orange-400/90' size={14} />
-                  <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[9px] font-black tracking-tighter text-orange-300/90 uppercase'>
+                  <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[11px] font-black tracking-tighter text-orange-300/90 uppercase'>
                     Restrictions
                   </span>
                 </div>
@@ -564,13 +565,13 @@ export const SectorEdit = ({ sector, area }: Props) => {
                           )}
                         >
                           <m.icon size={14} strokeWidth={2} className='shrink-0 opacity-80' aria-hidden />
-                          <span className='min-w-0 truncate'>{m.label}</span>
+                          <span className='min-w-0 whitespace-nowrap'>{m.label}</span>
                         </button>
                       ))}
                       <button
                         type='button'
                         onClick={clearDrawing}
-                        className='border-surface-border hover:bg-surface-hover inline-flex min-h-10 w-full items-center justify-center gap-1.5 rounded-md border border-dashed px-2 py-2 text-[11px] font-semibold tracking-wide text-orange-400 transition-colors hover:text-orange-300 max-sm:col-span-2 sm:ml-0.5 sm:w-auto sm:border-0 sm:border-l sm:border-solid sm:pl-3'
+                        className='border-surface-border hover:bg-surface-hover inline-flex min-h-10 w-full items-center justify-center gap-1.5 rounded-md border border-dashed px-2 py-2 text-[12px] font-semibold tracking-wide text-orange-400 transition-colors hover:text-orange-300 max-sm:col-span-2 sm:ml-0.5 sm:w-auto sm:border-0 sm:border-l sm:border-solid sm:pl-3'
                       >
                         <RotateCcw size={14} strokeWidth={2} aria-hidden /> Reset
                       </button>
@@ -599,26 +600,24 @@ export const SectorEdit = ({ sector, area }: Props) => {
                     </Leaflet>
                   </div>
 
-                  <div className='border-surface-border flex items-center gap-3 border-t px-3 py-2.5'>
+                  <div className='border-surface-border bg-surface-card relative z-10 flex items-center gap-3 border-t px-3 py-2.5'>
                     <FormSwitch
-                      checked={sectorMarkers != null && sectorMarkers.length > 0}
+                      checked={sectorMarkers !== null}
                       onChange={() => {
-                        if (sectorMarkers == null || sectorMarkers.length === 0) {
-                          if (sectorId) {
-                            setSectorMarkers(
-                              data.problems
-                                ?.filter((p): p is Required<Pick<typeof p, 'coordinates' | 'name'>> => !!p.coordinates)
-                                .map((p) => ({ coordinates: p.coordinates, label: p.name })) || [],
-                            );
-                          }
+                        if (sectorMarkers === null) {
+                          setSectorMarkers(
+                            data.problems
+                              ?.filter((p): p is Required<Pick<typeof p, 'coordinates' | 'name'>> => !!p.coordinates)
+                              .map((p) => ({ coordinates: p.coordinates, label: p.name })) ?? [],
+                          );
                         } else {
-                          setSectorMarkers([]);
+                          setSectorMarkers(null);
                         }
                       }}
                       variant='brand'
                       aria-label='Include all markers in sector'
                     />
-                    <span className='text-[11px] font-medium text-slate-300 sm:text-[12px]'>
+                    <span className='text-[12px] font-medium text-slate-300 sm:text-[13px]'>
                       Include all markers in sector
                     </span>
                   </div>

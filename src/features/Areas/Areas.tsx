@@ -52,15 +52,12 @@ const Areas = () => {
         html: (
           <div className='flex min-w-56 flex-col gap-1.5 p-1 text-left'>
             <div className='flex items-center gap-2'>
-              <Link
-                to={'/area/' + (a.id ?? 0)}
-                className='hover:text-brand text-[12px] font-semibold transition-colors'
-              >
+              <Link to={'/area/' + (a.id ?? 0)} className='hover:text-brand text-[12px] font-normal transition-colors'>
                 {a.name}
               </Link>
               <LockSymbol lockedAdmin={!!a.lockedAdmin} lockedSuperadmin={!!a.lockedSuperadmin} />
             </div>
-            <div className='text-[11px] text-slate-400'>
+            <div className='text-[12px] text-slate-400'>
               {a.numSectors ?? 0} sectors, {a.numProblems ?? 0} {typeDescription}
             </div>
           </div>
@@ -102,7 +99,7 @@ const Areas = () => {
                   type='button'
                   onClick={() => setShowForDevelopers(false)}
                   className={cn(
-                    'inline-flex h-6 items-center rounded-full px-2.5 text-[11px] leading-none font-medium transition-colors sm:text-[12px]',
+                    'inline-flex h-6 items-center rounded-full px-2.5 text-[12px] leading-none font-medium transition-colors sm:text-[13px]',
                     !showForDevelopers
                       ? designContract.surfaces.segmentActiveBrandBorder
                       : designContract.surfaces.segmentInactiveInGroup,
@@ -114,7 +111,7 @@ const Areas = () => {
                   type='button'
                   onClick={() => setShowForDevelopers(true)}
                   className={cn(
-                    'inline-flex h-6 items-center rounded-full px-2.5 text-[11px] leading-none font-medium transition-colors sm:text-[12px]',
+                    'inline-flex h-6 items-center rounded-full px-2.5 text-[12px] leading-none font-medium transition-colors sm:text-[13px]',
                     showForDevelopers
                       ? designContract.surfaces.segmentActiveBrandBorder
                       : designContract.surfaces.segmentInactiveInGroup,
@@ -151,7 +148,7 @@ const Areas = () => {
                         <span className='inline-flex items-center gap-1'>
                           <Link
                             to={`/area/${area.id}`}
-                            className='hover:text-brand hover:decoration-brand/50 text-slate-300 underline-offset-[3px] transition-colors hover:underline'
+                            className='hover:text-brand hover:decoration-brand/50 font-normal text-slate-300 underline-offset-[3px] transition-colors hover:underline'
                           >
                             {area.name}
                           </Link>
@@ -171,7 +168,7 @@ const Areas = () => {
                   <span className='inline-flex items-center gap-1'>
                     <Link
                       to={`/area/${area.id}`}
-                      className='hover:text-brand hover:decoration-brand/50 text-slate-300 underline-offset-[3px] transition-colors hover:underline'
+                      className='hover:text-brand hover:decoration-brand/50 font-normal text-slate-300 underline-offset-[3px] transition-colors hover:underline'
                     >
                       {area.name}
                     </Link>

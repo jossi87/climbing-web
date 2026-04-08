@@ -159,7 +159,7 @@ const MediaUpload = ({ onMediaChanged, isMultiPitch, variant = 'default' }: Prop
               <p className='text-[13px] leading-snug font-semibold text-slate-200 sm:text-base sm:leading-relaxed'>
                 {isDragActive ? 'Drop here' : 'Tap or drop to upload'}
               </p>
-              <p className='text-[11px] leading-tight text-slate-500 sm:text-xs'>JPG, PNG, HEIC, MP4…</p>
+              <p className='text-[12px] leading-tight text-slate-500 sm:text-sm'>JPG, PNG, HEIC, MP4…</p>
             </div>
           </>
         )}
@@ -194,14 +194,14 @@ const MediaUpload = ({ onMediaChanged, isMultiPitch, variant = 'default' }: Prop
                     <div className='flex h-full w-full flex-col items-center justify-center gap-1.5 bg-gradient-to-b from-slate-800 to-slate-950 px-3 text-center'>
                       <Film className='text-slate-500' size={36} aria-hidden />
                       <p className='text-[12px] font-medium text-slate-300'>Preview shortly</p>
-                      <p className='text-[11px] leading-snug text-slate-500'>
+                      <p className='text-[12px] leading-snug text-slate-500'>
                         Can’t preview this file — it will still upload, and a thumbnail will appear after processing.
                       </p>
                     </div>
                   ) : (
                     <div className='flex h-full w-full flex-col items-center justify-center gap-1 bg-gradient-to-b from-slate-800 to-slate-950 px-3 text-center'>
                       <Film className='text-slate-500 opacity-50' size={40} aria-hidden />
-                      <p className='text-[11px] text-slate-500'>No preview</p>
+                      <p className='text-[12px] text-slate-500'>No preview</p>
                     </div>
                   )}
                   <button
@@ -285,7 +285,7 @@ const MediaUpload = ({ onMediaChanged, isMultiPitch, variant = 'default' }: Prop
                       <Clock size={14} className='mt-[3px] shrink-0 self-start text-slate-500' aria-hidden />
                       <div className='grid min-w-0 flex-1 grid-cols-2 gap-2'>
                         <label className='bg-surface-nav border-surface-border/80 focus-within:border-brand flex min-h-0 min-w-0 items-center gap-1.5 overflow-hidden rounded-lg border px-1.5 py-0.5 transition-colors'>
-                          <span className='w-8 shrink-0 text-center text-[10px] font-semibold text-slate-500'>min</span>
+                          <span className='w-8 shrink-0 text-center text-[11px] font-semibold text-slate-500'>min</span>
                           <input
                             type='number'
                             className={timestampInputClass}
@@ -296,7 +296,7 @@ const MediaUpload = ({ onMediaChanged, isMultiPitch, variant = 'default' }: Prop
                           />
                         </label>
                         <label className='bg-surface-nav border-surface-border/80 focus-within:border-brand flex min-h-0 min-w-0 items-center gap-1.5 overflow-hidden rounded-lg border px-1.5 py-0.5 transition-colors'>
-                          <span className='w-8 shrink-0 text-center text-[10px] font-semibold text-slate-500'>sec</span>
+                          <span className='w-8 shrink-0 text-center text-[11px] font-semibold text-slate-500'>sec</span>
                           <input
                             type='number'
                             className={timestampInputClass}

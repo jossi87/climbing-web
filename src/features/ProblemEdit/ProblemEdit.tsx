@@ -23,7 +23,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { captureException, captureMessage } from '@sentry/react';
 import ExternalLink from '../../shared/ui/ExternalLinks';
-import { Calendar, Save, ChevronDown, AlertCircle, AlertTriangle, Edit, Loader2, RotateCcw } from 'lucide-react';
+import { Calendar, Save, ChevronDown, AlertCircle, AlertTriangle, Edit, Loader2, MapPinOff } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 import { Card, FormSwitch, MarkdownFieldLabel, SectionHeader } from '../../shared/ui';
@@ -211,8 +211,8 @@ const ProblemEdit = ({ problem, sector }: Props) => {
     defaultZoom = meta.defaultZoom;
   }
 
+  /** Siblings first (blue label pins), then this problem last so the red “current” pin stacks on top at identical coords. */
   const markers: NonNullable<ComponentProps<typeof Leaflet>['markers']> = [];
-  if (data.coordinates) markers.push({ coordinates: data.coordinates });
   if (showSectorMarkers && sector.problems?.length) {
     markers.push(
       ...sector.problems
@@ -221,6 +221,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
         .map((p) => ({ coordinates: p.coordinates, label: p.name ?? '' })),
     );
   }
+  if (data.coordinates) markers.push({ coordinates: data.coordinates });
 
   const sectorRocks =
     sector.problems
@@ -256,7 +257,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
 
   const inputClasses =
     'problem-edit-field w-full bg-surface-nav border border-surface-border rounded-lg px-3 py-2.5 text-sm text-white transition-colors focus:border-brand-border focus:outline-none focus:ring-0 focus-visible:ring-0';
-  const labelClasses = 'ml-1 mb-1 block text-[11px] font-medium text-slate-400 sm:text-[12px]';
+  const labelClasses = 'ml-1 mb-1 block text-[12px] font-medium text-slate-400 sm:text-[13px]';
 
   return (
     <div className='w-full min-w-0 pb-20 text-left'>
@@ -293,7 +294,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                     value={data.name}
                     onChange={(e) => setData((prev) => ({ ...prev, name: e.target.value }))}
                   />
-                  {!data.name && <p className='ml-1 text-[10px] font-bold text-red-500'>Name required</p>}
+                  {!data.name && <p className='ml-1 text-[11px] font-bold text-red-500'>Name required</p>}
                 </div>
 
                 <VisibilitySelectorField
@@ -424,7 +425,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                   className='pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-red-400/90'
                   size={14}
                 />
-                <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[9px] font-black tracking-tighter text-red-300/90 uppercase'>
+                <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[11px] font-black tracking-tighter text-red-300/90 uppercase'>
                   {meta.isBouldering ? 'Problem broken' : 'Route broken'}
                 </span>
               </div>
@@ -595,33 +596,6 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                   {meta.isBouldering ? 'Mark problem on map' : 'Mark route on map'}
                 </label>
                 <div className='border-surface-border bg-surface-raised overflow-hidden rounded-lg border'>
-                  <div className='border-surface-border flex flex-col gap-2.5 border-b px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4'>
-                    <div className='flex items-center gap-3'>
-                      <FormSwitch
-                        checked={showSectorMarkers}
-                        onChange={() => setShowSectorMarkers(!showSectorMarkers)}
-                        variant='brand'
-                        aria-label={`Show other ${meta.isBouldering ? 'problems' : 'routes'} in sector on map`}
-                      />
-                      <span className='text-[11px] font-medium text-slate-300 sm:text-[12px]'>
-                        Show other {meta.isBouldering ? 'problems' : 'routes'} in sector
-                      </span>
-                    </div>
-                    <button
-                      type='button'
-                      onClick={() => setData((p) => ({ ...p, coordinates: undefined }))}
-                      disabled={!hasProblemCoords}
-                      className={cn(
-                        'type-label inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[11px] transition-colors sm:text-xs',
-                        hasProblemCoords
-                          ? 'bg-surface-nav hover:bg-surface-hover text-orange-300 hover:text-orange-200'
-                          : 'cursor-not-allowed text-slate-600 opacity-50',
-                      )}
-                    >
-                      <RotateCcw size={14} strokeWidth={2} aria-hidden />
-                      Clear marker
-                    </button>
-                  </div>
                   <div className='border-surface-border relative overflow-hidden border-b'>
                     <Leaflet
                       autoZoom={true}
@@ -642,6 +616,36 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                       showSatelliteImage={true}
                       clusterMarkers={false}
                     />
+                  </div>
+                  <div className='border-surface-border bg-surface-card flex flex-nowrap items-center justify-between gap-2 px-2.5 py-2 sm:gap-3 sm:px-3 sm:py-2.5'>
+                    <div className='flex min-w-0 flex-1 items-center gap-2 sm:gap-2.5'>
+                      <FormSwitch
+                        checked={showSectorMarkers}
+                        onChange={() => setShowSectorMarkers(!showSectorMarkers)}
+                        variant='brand'
+                        aria-label='Include sibling problems and routes on the map'
+                      />
+                      <span className='min-w-0 text-[12px] font-medium whitespace-nowrap text-slate-300 sm:text-[13px]'>
+                        Include siblings
+                      </span>
+                    </div>
+                    <button
+                      type='button'
+                      onClick={() => setData((p) => ({ ...p, coordinates: undefined }))}
+                      disabled={!hasProblemCoords}
+                      title={hasProblemCoords ? 'Remove this problem’s coordinates from the map' : undefined}
+                      className={cn(
+                        designContract.typography.uiCompact,
+                        'inline-flex shrink-0 items-center gap-1 rounded-md border border-dashed border-orange-500/45 px-2 py-1 font-semibold tracking-wide text-orange-400 transition-colors',
+                        'dark:hover:bg-surface-hover hover:border-orange-400/75 dark:hover:text-orange-300',
+                        'light:border-orange-600/40 light:text-orange-700',
+                        'light:hover:bg-orange-500/14 light:hover:border-orange-600/60 light:hover:text-orange-950',
+                        'disabled:cursor-not-allowed disabled:opacity-40 sm:border-0 sm:px-2 sm:py-1',
+                      )}
+                    >
+                      <MapPinOff size={13} strokeWidth={2} aria-hidden />
+                      Remove position
+                    </button>
                   </div>
                 </div>
               </div>

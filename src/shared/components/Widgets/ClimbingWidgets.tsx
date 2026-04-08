@@ -15,12 +15,12 @@ type BadgeProps = {
 export const Badge = ({ children, title, className, icon: Icon }: BadgeProps) => (
   <span
     className={cn(
-      'bg-surface-raised inline-flex max-w-full items-center gap-1 rounded-md px-2 py-0.5 text-[11px] leading-snug font-medium text-slate-300 ring-1 ring-white/10 transition-colors duration-150 sm:text-[12px]',
+      'bg-surface-raised inline-flex max-w-full items-center gap-1 rounded-md px-2 py-0.5 text-[12px] leading-snug font-medium text-slate-300 ring-1 ring-white/10 transition-colors duration-150 sm:text-[13px]',
       className,
     )}
     title={title}
   >
-    {Icon && <Icon size={11} strokeWidth={2} className='shrink-0 text-slate-100' />}
+    {Icon && <Icon size={12} strokeWidth={2} className='shrink-0 text-slate-100' />}
     <span className='min-w-0 normal-case'>{children}</span>
   </span>
 );
@@ -42,7 +42,7 @@ export const SunOnWall = ({ sunFromHour, sunToHour, variant = 'chip', className 
         className={cn(designContract.typography.menuItem, 'inline-flex items-center gap-1 text-slate-300', className)}
         title='Sun on wall'
       >
-        <Sun size={11} strokeWidth={2} className='shrink-0 text-slate-100' />
+        <Sun size={12} strokeWidth={2} className='shrink-0 text-slate-100' />
         <span className='font-medium tabular-nums'>{label}</span>
       </span>
     );
@@ -87,7 +87,7 @@ export const SunriseSunset = ({ lat, lng, date, variant = 'chip', className }: S
         )}
         title={sunriseSunsetTitle}
       >
-        <Sunrise size={11} strokeWidth={2} className='shrink-0 text-slate-100' aria-hidden />
+        <Sunrise size={12} strokeWidth={2} className='shrink-0 text-slate-100' aria-hidden />
         <span className='inline-flex min-w-0 items-baseline gap-0 font-medium'>{times}</span>
       </span>
     );
@@ -125,7 +125,7 @@ export const WallDirection = ({
         )}
         title={title}
       >
-        <Compass size={11} strokeWidth={2} className='shrink-0 text-slate-100' />
+        <Compass size={12} strokeWidth={2} className='shrink-0 text-slate-100' />
         <span className='min-w-0 font-medium'>{direction}</span>
       </span>
     );

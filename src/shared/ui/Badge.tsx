@@ -20,7 +20,7 @@ export const Badge = ({
   );
 
   const baseClasses =
-    'inline-flex h-4 items-center justify-center rounded-sm border border-white/10 bg-surface-raised px-1.5 align-middle text-[8px] font-black tracking-tighter text-slate-500 uppercase leading-none';
+    'inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-sm border border-white/10 bg-surface-raised px-1.5 align-middle text-[10px] font-black tracking-tighter text-slate-500 uppercase leading-none';
 
   return href ? (
     <a href={href} target='_blank' rel='noreferrer' className={cn(baseClasses, className)}>

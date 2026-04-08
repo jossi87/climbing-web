@@ -87,19 +87,17 @@ const Webcams = () => {
             subheader={`${data.length} active feeds · ${markers.length} locations`}
           />
         </div>
-        <div className='border-surface-border/60 border-t'>
-          <div className='h-[56vh] min-h-[320px] sm:h-[66vh] lg:h-[72vh]'>
-            <Leaflet
-              height='100%'
-              autoZoom={false}
-              defaultCenter={defaultCenter}
-              defaultZoom={defaultZoom}
-              markers={markers}
-              showSatelliteImage={false}
-              clusterMarkers={false}
-              flyToId={null}
-            />
-          </div>
+        <div className='h-[56vh] min-h-[320px] sm:h-[66vh] lg:h-[72vh]'>
+          <Leaflet
+            height='100%'
+            autoZoom={false}
+            defaultCenter={defaultCenter}
+            defaultZoom={defaultZoom}
+            markers={markers}
+            showSatelliteImage={false}
+            clusterMarkers={false}
+            flyToId={null}
+          />
         </div>
       </Card>
     </>

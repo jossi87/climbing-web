@@ -361,6 +361,7 @@ const Leaflet = ({
           font-family: inherit !important;
           border: none !important;
           outline: none !important;
+          box-shadow: none !important;
         }
 
         /* Default Leaflet popups are light; force dark UI to match the app */

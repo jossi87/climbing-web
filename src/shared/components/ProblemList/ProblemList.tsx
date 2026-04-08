@@ -33,7 +33,7 @@ const ORDER_BY_OPTIONS: Record<'sector' | 'user', OrderByOption[]> = {
     { key: 'first-ascent', text: 'First ascent', shortText: '1st asc.', value: 'first-ascent' },
     { key: 'grade-asc', text: 'Grade (easy -> hard)', shortText: 'Easy→hard', value: 'grade-asc' },
     { key: 'grade-desc', text: 'Grade (hard -> easy)', shortText: 'Hard→easy', value: 'grade-desc' },
-    { key: 'number', text: 'Number', shortText: '#', value: 'number' },
+    { key: 'number', text: 'Number', shortText: 'Numbers', value: 'number' },
     { key: 'rating', text: 'Rating', shortText: 'Stars', value: 'rating' },
   ],
   user: [
@@ -263,33 +263,43 @@ const ToolbarDropdown = <T extends string>({
         title={selected?.text ? `${label}: ${selected.text}` : label}
         className={cn(
           variant === 'ghost'
-            ? 'inline-flex h-8 w-full min-w-0 items-center justify-between gap-1 rounded-lg px-2 text-[12px] leading-none font-medium transition-colors sm:px-2.5 sm:text-[13px]'
+            ? 'inline-flex h-8 w-full min-w-0 items-center justify-between gap-1 rounded-lg px-2 text-[13px] leading-none font-medium transition-colors sm:px-2.5 sm:text-[14px]'
             : compact
-              ? 'inline-flex h-7 w-full min-w-0 items-center justify-between gap-0.5 rounded-md border px-1.5 text-[11px] leading-none font-medium transition-colors sm:gap-1 sm:px-2 sm:text-[12px] md:h-7'
-              : 'inline-flex h-8 w-full max-w-full min-w-0 items-center justify-between gap-1 rounded-md border px-2 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:h-9 sm:gap-1.5 sm:px-3 sm:text-[13px] md:h-8 md:w-auto md:max-w-[22rem] md:gap-1 md:px-2.5',
+              ? 'inline-flex h-7 w-full min-w-0 items-center justify-between gap-0.5 rounded-md border px-1.5 text-[12px] leading-none font-medium transition-colors sm:gap-1 sm:px-2 sm:text-[13px] md:h-7'
+              : // Sector list toolbar: borderless + fluid below md; bordered “card” controls from md up (desktop unchanged).
+                'inline-flex h-8 w-full max-w-full min-w-0 items-center justify-between gap-0.5 rounded-md px-1.5 text-[12px] leading-none font-medium transition-colors sm:gap-1 sm:px-2 sm:text-[13px] md:h-8 md:w-auto md:max-w-[22rem] md:gap-1 md:rounded-md md:border md:px-2.5 md:text-[14px] lg:px-3',
           fullWidth && !compact ? 'w-full md:w-auto' : fullWidth && compact ? 'w-full' : '',
           variant === 'ghost'
             ? isOpen
               ? 'bg-surface-raised-hover text-slate-100'
               : 'hover:bg-surface-raised-hover border-0 bg-transparent text-slate-300 hover:text-slate-100'
-            : isOpen
-              ? 'border-surface-border bg-surface-hover text-slate-100'
-              : 'border-surface-border bg-surface-raised hover:border-surface-border hover:bg-surface-raised-hover text-slate-300 hover:text-slate-200',
+            : compact
+              ? isOpen
+                ? 'border-surface-border bg-surface-hover text-slate-100'
+                : 'border-surface-border bg-surface-raised hover:border-surface-border hover:bg-surface-raised-hover text-slate-300 hover:text-slate-200'
+              : isOpen
+                ? 'bg-surface-hover md:border-surface-border text-slate-100 md:border'
+                : 'hover:bg-surface-raised-hover/90 md:border-surface-border md:bg-surface-raised md:hover:bg-surface-raised-hover text-slate-300 hover:text-slate-200 md:border',
         )}
       >
         {Icon ? (
-          <Icon size={11} className={cn('shrink-0 transition-colors', isOpen ? 'text-slate-300' : 'text-slate-400')} />
+          <Icon size={12} className={cn('shrink-0 transition-colors', isOpen ? 'text-slate-300' : 'text-slate-400')} />
         ) : null}
-        {!compact && <span className='shrink-0 text-slate-500'>{label}:</span>}
+        {!compact && <span className='shrink-0 text-slate-500 max-md:text-[11px]'>{label}:</span>}
         {variant === 'ghost' && compact && fullWidth ? (
           <span className='min-w-0 flex-1 text-left text-slate-100'>
             <span className='block truncate md:hidden'>{shortLabel}</span>
             <span className='hidden md:block md:whitespace-nowrap'>{fullLabel}</span>
           </span>
-        ) : (
+        ) : compact ? (
           <span className='min-w-0 flex-1 truncate text-left text-slate-200'>{displayLabel}</span>
+        ) : (
+          <>
+            <span className='min-w-0 flex-1 truncate text-left text-slate-200 md:hidden'>{shortLabel}</span>
+            <span className='hidden min-w-0 flex-1 truncate text-left text-slate-200 md:block'>{fullLabel}</span>
+          </>
         )}
-        <ChevronDown size={11} className={cn('shrink-0 text-slate-500 transition-transform', isOpen && 'rotate-180')} />
+        <ChevronDown size={12} className={cn('shrink-0 text-slate-500 transition-transform', isOpen && 'rotate-180')} />
       </button>
       {isOpen && menuPosition
         ? createPortal(
@@ -314,7 +324,7 @@ const ToolbarDropdown = <T extends string>({
                       setIsOpen(false);
                     }}
                     className={cn(
-                      'w-full px-3 py-2.5 text-left text-[12px] leading-snug transition-colors sm:px-3.5 sm:text-[13px]',
+                      'w-full px-3 py-2.5 text-left text-[13px] leading-snug transition-colors sm:px-3.5 sm:text-[14px]',
                       opt.value === value
                         ? 'bg-surface-raised-hover font-medium text-slate-50'
                         : 'hover:bg-surface-raised-hover text-slate-300 hover:text-slate-50',
@@ -454,7 +464,7 @@ export const ProblemList = ({
 
   const list = (() => {
     if (filtered.length === 0) {
-      return <div className='py-6 text-[12px] text-slate-500 md:text-[13px]'>Empty list.</div>;
+      return <div className='py-6 text-[13px] text-slate-500 md:text-[14px]'>Empty list.</div>;
     }
 
     if (groupBy && groupBy !== 'none') {
@@ -502,11 +512,11 @@ export const ProblemList = ({
 
   const viewToggleAction = enableViewModeToggle ? (
     <label
-      className='border-surface-border bg-surface-raised inline-flex h-8 shrink-0 items-center gap-1 rounded-md border px-2 sm:h-9 sm:gap-1.5 sm:px-3 md:h-8'
+      className='hover:bg-surface-raised-hover/90 md:border-surface-border md:bg-surface-raised md:hover:bg-surface-raised-hover inline-flex h-8 shrink-0 items-center gap-1 rounded-md px-1.5 sm:gap-1.5 md:h-8 md:border md:px-2.5'
       title='Toggle detailed rows'
     >
       <FormSwitch checked={!compactRows} onChange={() => setCompactRows((v) => !v)} size='compact' variant='ios' />
-      <span className='text-[11px] font-medium whitespace-nowrap text-slate-300 sm:text-[13px]'>Details</span>
+      <span className='text-[12px] font-medium whitespace-nowrap text-slate-300 sm:text-[14px]'>Details</span>
     </label>
   ) : null;
 
@@ -516,7 +526,7 @@ export const ProblemList = ({
         {leading}
 
         {(showListControls || toolbarAction || viewToggleAction) && (
-          <div className='flex min-w-0 flex-nowrap items-center justify-start gap-2 overflow-hidden md:gap-2'>
+          <div className='flex min-w-0 flex-nowrap items-center justify-start gap-1 overflow-hidden sm:gap-1.5 md:gap-2'>
             {showListControls && (
               <>
                 {groupByOptions.length > 1 && (
@@ -530,11 +540,7 @@ export const ProblemList = ({
                   />
                 )}
                 <ToolbarDropdown
-                  className={
-                    groupByOptions.length > 1
-                      ? 'min-w-0 flex-1 basis-0 md:max-w-[22rem] md:flex-none md:basis-auto'
-                      : 'min-w-0 shrink-0 md:max-w-[22rem]'
-                  }
+                  className='min-w-0 flex-1 basis-0 md:max-w-[22rem] md:flex-none md:basis-auto'
                   label='Sort'
                   icon={ArrowDownWideNarrow}
                   value={order}
@@ -547,15 +553,15 @@ export const ProblemList = ({
                   aria-label={showFilter ? 'Hide filters' : 'Show filters'}
                   onClick={() => setFilterShowing((v) => !v)}
                   className={cn(
-                    // Match {@link ToolbarDropdown} default triggers: same radius, fill, and open/closed pattern.
-                    'inline-flex h-8 shrink-0 items-center justify-center gap-1 rounded-md border px-2 text-[11px] font-medium whitespace-nowrap transition-colors sm:h-9 sm:gap-1.5 sm:px-3 sm:text-[13px] md:h-8 md:gap-1.5 md:px-3',
+                    // Match ToolbarDropdown: borderless + tight on mobile; bordered from md (desktop unchanged).
+                    'inline-flex h-8 shrink-0 items-center justify-center gap-1 rounded-md px-1.5 text-[12px] font-medium transition-colors sm:gap-1.5 sm:px-2 sm:text-[13px] md:h-8 md:gap-1.5 md:border md:px-3 md:text-[14px]',
                     showFilter
-                      ? 'border-surface-border bg-surface-hover text-slate-100'
-                      : 'border-surface-border bg-surface-raised hover:border-surface-border hover:bg-surface-raised-hover text-slate-300 hover:text-slate-200',
+                      ? 'bg-surface-hover md:border-surface-border text-slate-100 md:border'
+                      : 'hover:bg-surface-raised-hover/90 md:border-surface-border md:bg-surface-raised md:hover:bg-surface-raised-hover text-slate-300 hover:text-slate-200 md:border',
                   )}
                 >
                   <Filter
-                    size={11}
+                    size={12}
                     className={cn('shrink-0', showFilter ? 'text-slate-300' : 'text-slate-400')}
                     strokeWidth={2}
                   />

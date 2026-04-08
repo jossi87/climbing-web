@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { Trash2, RotateCcw } from 'lucide-react';
 import { designContract } from '../../design/contract';
+import { twInk } from '../../design/twInk';
+import { cn } from '../../lib/utils';
 import { Card, SectionHeader } from '../../shared/ui';
 import AvatarModal from '../../shared/ui/Avatar/AvatarModal';
 
@@ -72,14 +74,19 @@ const Trash = () => {
                       </button>
                     )}
                     <div className='min-w-0'>
-                      <h4 className='truncate text-sm font-semibold text-slate-200'>{t.name}</h4>
-                      <p className='truncate text-[10px] text-slate-500'>
+                      <h4 className={cn('truncate text-sm font-semibold text-slate-200', twInk.lightTextSlate900)}>
+                        {t.name}
+                      </h4>
+                      <p className={cn('truncate text-[11px] text-slate-500', twInk.lightTextSlate700)}>
                         {mediaUrl ? (
                           <>
                             <button
                               type='button'
                               onClick={() => setOpenMedia({ mid: t.idMedia!, name: t.name ?? '' })}
-                              className='text-brand/90 hover:text-brand underline-offset-2 hover:underline'
+                              className={cn(
+                                designContract.typography.breadcrumbLink,
+                                'underline-offset-2 hover:underline',
+                              )}
                             >
                               Media
                             </button>{' '}
@@ -100,7 +107,10 @@ const Trash = () => {
                         });
                       }
                     }}
-                    className='border-surface-border/60 bg-surface-raised hover:bg-surface-hover inline-flex shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[10px] font-semibold text-slate-300 transition-colors'
+                    className={cn(
+                      'border-surface-border/60 bg-surface-raised hover:bg-surface-hover inline-flex shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[11px] font-semibold text-slate-300 transition-colors',
+                      twInk.lightTextSlate800,
+                    )}
                   >
                     <RotateCcw size={12} />
                     Restore

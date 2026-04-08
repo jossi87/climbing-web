@@ -21,7 +21,11 @@ import { twInk } from '../../design/twInk';
 
 /** Footer grid column titles — a step brighter and larger than default {@link SectionLabel} for `bg-surface-nav`. */
 const footerColumnHeadingClass =
-  'text-[11px] font-semibold tracking-[0.12em] text-slate-400 uppercase sm:text-[12px] sm:tracking-[0.1em] sm:text-slate-300';
+  'text-[12px] font-semibold tracking-[0.12em] text-slate-400 uppercase sm:text-[13px] sm:tracking-[0.1em] sm:text-slate-300';
+
+/** Under nav card titles — clearly subordinate: smaller than title, normal weight, muted (not {@link designContract.typography.label} / `type-label`, which was 13px semibold uppercase). */
+const navCardSubtitleClass =
+  'block text-[10px] font-normal leading-snug tracking-normal text-slate-500 sm:text-[11px] light:text-slate-600';
 
 type NavCardProps = {
   to?: string;
@@ -62,9 +66,7 @@ const Footer = () => {
           >
             {title}
           </span>
-          {subtitle && (
-            <span className={cn('block text-[9px] leading-tight', designContract.typography.label)}>{subtitle}</span>
-          )}
+          {subtitle && <span className={navCardSubtitleClass}>{subtitle}</span>}
         </div>
       </>
     );
@@ -157,9 +159,7 @@ const Footer = () => {
                 >
                   BRV
                 </span>
-                <span className={cn('block text-[9px] leading-tight', designContract.typography.label)}>
-                  Bratte Rogalands Venner
-                </span>
+                <span className={navCardSubtitleClass}>Bratte Rogalands Venner</span>
               </div>
             </a>
           </div>
@@ -209,7 +209,7 @@ const Footer = () => {
               <Heart size={12} /> Donate
             </a>
           </div>
-          <p className={cn('text-center text-[9px] select-none', designContract.typography.label)}>
+          <p className={cn('text-center text-[12px] select-none', designContract.typography.label)}>
             Buldreinfo / Bratte Linjer &copy; 2003-{currYear}
           </p>
         </div>

@@ -23,15 +23,17 @@ type Props = {
 
 const rowClass = cn(
   designContract.typography.body,
-  'flex min-w-0 flex-col gap-1 text-[13px] leading-normal text-slate-300 sm:flex-row sm:flex-wrap sm:items-start sm:gap-x-2 sm:gap-y-1 sm:text-sm',
+  'flex min-w-0 flex-col gap-1 text-[14px] leading-normal text-slate-300 sm:flex-row sm:flex-wrap sm:items-start sm:gap-x-2 sm:gap-y-1 sm:text-sm',
 );
 
 /** Row label (First ascent, etc.) — full width above facts on mobile; inline from sm up. */
 const leadClass =
-  'block text-[14px] font-medium leading-snug tracking-tight text-slate-50 sm:inline-flex sm:shrink-0 sm:self-start sm:text-sm';
+  'block text-[15px] font-medium leading-snug tracking-tight text-slate-50 sm:inline-flex sm:shrink-0 sm:self-start sm:text-sm';
 
 /** One style for every fact in the row (grade, type, date, names) — same size, weight, color. */
-const factClass = 'text-[13px] font-normal leading-normal text-slate-300 sm:text-sm';
+export const problemOverviewFactClass = 'text-[14px] font-normal leading-normal text-slate-300 sm:text-sm';
+
+const factClass = problemOverviewFactClass;
 
 /**
  * Shared row box for every fact segment so grade, date, icons, and avatar+name share one vertical center
@@ -194,18 +196,15 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
   }
 
   return (
-    <div className='min-w-0 space-y-3 sm:space-y-3.5'>
+    <div className='min-w-0 space-y-2 sm:space-y-2.5'>
       {showAidBlock && (
-        <div className='space-y-2'>
+        <div className='space-y-1.5'>
           <p className={rowClass}>
             <span className={leadClass}>First aid ascent:</span>
             {factsBand(aidRowBody)}
           </p>
           {aidDesc.length > 0 ? (
-            <ExpandableMarkdown
-              content={faAid!.description!}
-              contentClassName='max-w-none text-sm leading-relaxed text-slate-400'
-            />
+            <ExpandableMarkdown content={faAid!.description!} contentClassName='max-w-none text-slate-400' />
           ) : null}
         </div>
       )}
@@ -218,7 +217,7 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
       )}
 
       {showIce ? (
-        <p className={cn(designContract.typography.body, 'text-[13px] leading-normal sm:text-sm', factClass)}>
+        <p className={cn(designContract.typography.body, 'text-[14px] leading-normal sm:text-sm', factClass)}>
           {iceParts.join(' · ')}
         </p>
       ) : null}
@@ -229,14 +228,7 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
           {factsBand([
             <div key='trivia-inline' className='flex min-w-0 flex-1 flex-col gap-2 sm:gap-2.5'>
               {triviaText.length > 0 ? (
-                <ExpandableMarkdown
-                  content={data.trivia!}
-                  className='min-w-0'
-                  contentClassName={cn(
-                    factClass,
-                    'max-w-none leading-relaxed [&_p:first-child]:mt-0 [&_p:last-child]:mb-0',
-                  )}
-                />
+                <ExpandableMarkdown content={data.trivia!} className='min-w-0' contentClassName='max-w-none' />
               ) : null}
               {data.triviaMedia && data.triviaMedia.length > 0 ? (
                 <div className='w-full min-w-0'>

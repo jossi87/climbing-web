@@ -2,7 +2,7 @@ import { twInk } from './twInk';
 
 /**
  * Rail kicker: “Latest activity”, breadcrumb crumbs (matches `SectionLabel`).
- * Form field captions use `typography.label` (`type-label`, 11px).
+ * Form field captions use `typography.label` (`type-label`, 12px).
  *
  * Brand (`--color-brand` in `index.css`): primary **text, links, tab ink**. On dark panels prefer `brand-border`
  * (`index.css`) — gold mixed into `surface-border`, less “mustard frame”.
@@ -13,7 +13,7 @@ import { twInk } from './twInk';
  * A11y baseline: global `input`/`textarea` placeholders and `:focus-visible` live in `index.css`. On `surface-card`
  * (`surface-card`), prefer **`slate-400`+** for readable secondary copy; reserve **`slate-500`** for non-essential hints.
  */
-export const SECTION_EYEBROW = 'text-[10px] font-semibold tracking-[0.16em] text-slate-400 uppercase';
+export const SECTION_EYEBROW = 'text-[11px] font-semibold tracking-[0.16em] text-slate-400 uppercase';
 
 export const designContract = {
   typography: {
@@ -23,20 +23,26 @@ export const designContract = {
     subtitle: 'type-h2',
     /**
      * Primary copy & list rows (Area/Sector problem lines, Todo, Activity feed, Top table).
-     * Global: `type-body` → text-sm, sm:text-base.
+     * Global: `type-body` → 13px, sm:15px (−1px vs Tailwind sm/base step).
      */
     body: 'type-body',
     /**
-     * Secondary line: #, grades, timestamps, table de-emphasis. `type-small` → text-sm.
+     * Breadcrumb trails (Area / Sector / Problem `PageCardBreadcrumbRow`): same as {@link body} — navigation, not a
+     * title band; do not use {@link detailBody} here (that step is for intro paragraphs).
+     */
+    breadcrumb: 'type-body',
+    /**
+     * Secondary line: #, grades, timestamps, table de-emphasis. `type-small` → 13px.
      */
     meta: 'type-small',
     label: 'type-label',
     /** Extra-dense captions (badges, time-ago inline); prefer `meta` for new UI */
     micro: 'type-micro',
     /**
-     * Toolbar chips, filter pills, compact controls (matches tab strip ~11–12px).
+     * Toolbar chips, filter pills, compact controls (matches tab strip ~11–13px).
+     * Use `leading-snug` (not `leading-none`) so descenders (g, y, p) aren’t clipped in tight rows.
      */
-    uiCompact: 'text-[12px] font-medium leading-none tracking-normal sm:text-[13px]',
+    uiCompact: 'text-[12px] font-medium leading-snug tracking-normal sm:text-[13px]',
     /** Dropdown / menu rows */
     menuItem: 'text-[12px] font-medium leading-snug sm:text-[13px]',
     /** Inline links in list/table content (Top, Todo, etc.) */
@@ -77,16 +83,21 @@ export const designContract = {
      * Primary dense list copy (Area/Sector route rows, Profile ascents, Ticks, TOC) — same step as Activity feed lines.
      */
     listBody:
-      'm-0 text-[12px] font-normal leading-snug tracking-normal md:text-[13px] md:leading-snug text-pretty [overflow-wrap:anywhere]',
+      'm-0 text-[13px] font-normal leading-snug tracking-normal md:text-[14px] md:leading-snug text-pretty [overflow-wrap:anywhere]',
+    /**
+     * Same size/leading as {@link listBody} without `text-pretty` / `[overflow-wrap:anywhere]` — dense grids (problem
+     * list rows) where normal wrapping is preferred.
+     */
+    listBodyPlain: 'm-0 text-[13px] font-normal leading-snug tracking-normal md:text-[14px] md:leading-snug',
     /**
      * Paragraph blocks under titles (access restrictions, section intros) — one step above {@link listBody}.
      */
-    detailBody: 'text-[13px] leading-relaxed sm:text-[14px]',
+    detailBody: 'text-[14px] leading-relaxed sm:text-[15px]',
     /**
-     * Breadcrumb / in-card tertiary links (Area, Sector, Problem). Light hover uses {@link twInk.lightHoverSlate900}.
+     * Breadcrumb links (Areas, area name, sector name). Light hover uses {@link twInk.lightHoverSlate900}.
      */
     breadcrumbLink: `inline min-w-0 text-slate-400 transition-colors hover:text-slate-200 ${twInk.lightHoverSlate900}`,
-    /** Same as {@link breadcrumbLink} with `tracking-tight` (Problem page crumb row). */
+    /** @deprecated Prefer {@link breadcrumbLink}; kept for any legacy `tracking-tight` link crumbs. */
     breadcrumbLinkTight: `inline min-w-0 tracking-tight text-slate-400 transition-colors hover:text-slate-200 ${twInk.lightHoverSlate900}`,
   },
   layout: {
@@ -197,10 +208,11 @@ export const designContract = {
     badgeLinkHover:
       'cursor-pointer transition-colors duration-150 hover:bg-surface-raised-hover hover:text-slate-200 hover:ring-1 hover:ring-brand-border/45',
     /**
-     * Ring chip for downloads, map links, and other meta actions — matches {@link DownloadButton}.
+     * Ring chip for downloads and other meta actions — same type scale + padding as {@link Badge} so overview rows
+     * stay one rhythm next to condition chips / external links.
      */
     metaChipInteractive:
-      'inline-flex max-w-full cursor-pointer items-center gap-1 rounded-md bg-surface-raised px-2 py-0.5 text-[12px] font-medium text-slate-300 ring-1 ring-white/10 transition-colors duration-150 hover:bg-surface-raised-hover hover:text-slate-200 hover:ring-brand-border/45 sm:text-[13px]',
+      'inline-flex max-w-full min-w-0 cursor-pointer items-center gap-1 rounded-md bg-surface-raised px-2 py-0.5 text-[11px] leading-snug font-medium text-slate-300 ring-1 ring-white/10 transition-colors duration-150 hover:bg-surface-raised-hover hover:text-slate-200 hover:ring-1 hover:ring-brand-border/45 sm:text-[12px]',
   },
   controls: {
     chipButton: 'btn-glass',
@@ -212,14 +224,14 @@ export const designContract = {
      * One size token everywhere; glyph scales slightly from `sm` up.
      */
     pageHeaderIconButton:
-      'inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-colors sm:h-8 sm:w-8',
+      'inline-flex h-[1.375rem] w-[1.375rem] shrink-0 items-center justify-center rounded-full border transition-colors sm:h-6 sm:w-6',
     /** Add (+) — create entity; sky accent so it reads separately from gold **edit** actions. */
     pageHeaderIconButtonAdd:
       'border-sky-400/45 bg-sky-500/20 text-sky-300 hover:bg-sky-500/30 hover:text-sky-200 light:border-2 light:border-sky-700 light:bg-sky-100 light:text-sky-950 light:shadow-sm light:hover:border-sky-800 light:hover:bg-sky-200 light:hover:text-sky-950',
     /** Edit (pencil) — amber vs sky add; `light:*` matches `html[data-theme]` (see `index.css`). */
     pageHeaderIconButtonEdit:
       'border-amber-300/45 bg-amber-400/18 text-amber-100 hover:bg-amber-400/28 light:border-2 light:border-amber-700 light:bg-amber-100 light:text-amber-950 light:shadow-sm light:hover:border-amber-800 light:hover:bg-amber-200 light:hover:text-amber-950',
-    pageHeaderIconGlyph: 'pointer-events-none h-3.5 w-3.5 sm:h-4 sm:w-4',
+    pageHeaderIconGlyph: 'pointer-events-none h-2.5 w-2.5 sm:h-3 sm:w-3',
     /** Full-width tab row (Profile, Area, etc.): active state via short bar — no full-width rules above/below */
     tabBarRow: 'flex w-full min-w-0 flex-wrap',
     /**
@@ -241,9 +253,9 @@ export const designContract = {
     /** Inline-width tab pair (e.g. Sectors | Routes) — semibold; counts keep their own muted classes. */
     tabBarLabelInline: 'text-[12px] font-semibold leading-tight text-inherit whitespace-nowrap sm:text-[13px]',
     tabButton:
-      'flex items-center gap-2 border-b-2 px-6 py-3 text-[10px] font-semibold tracking-[0.16em] uppercase transition-colors',
+      'flex items-center gap-2 border-b-2 px-6 py-3 text-[11px] font-semibold tracking-[0.16em] uppercase transition-colors',
     navPill:
-      'flex flex-col items-center gap-2 rounded-lg px-5 py-3 text-[10px] font-semibold tracking-[0.16em] uppercase transition-colors sm:flex-row',
+      'flex flex-col items-center gap-2 rounded-lg px-5 py-3 text-[11px] font-semibold tracking-[0.16em] uppercase transition-colors sm:flex-row',
     /** Show more / Show less under ExpandableMarkdown (Area overview) */
     expandableToggle: 'text-[13px] font-medium text-slate-400 transition-colors hover:text-slate-200 sm:text-[14px]',
     /**
@@ -255,7 +267,7 @@ export const designContract = {
       'type-on-accent inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-500/45 bg-emerald-600 px-4 py-2 text-[12px] font-semibold shadow-sm transition-colors hover:border-emerald-400/55 hover:bg-emerald-500 disabled:pointer-events-none disabled:opacity-45 sm:text-[13px]',
     /** Modal footers — matches type-label weight with green fill */
     savePrimaryModal:
-      'type-on-accent inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-500/45 bg-emerald-600 px-6 py-2.5 text-[10px] font-bold tracking-widest uppercase transition-colors hover:border-emerald-400/55 hover:bg-emerald-500 disabled:pointer-events-none disabled:opacity-45',
+      'type-on-accent inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-500/45 bg-emerald-600 px-6 py-2.5 text-[11px] font-bold tracking-widest uppercase transition-colors hover:border-emerald-400/55 hover:bg-emerald-500 disabled:pointer-events-none disabled:opacity-45',
   },
   /**
    * Ascent / problem row / topo number colors (global): **green** ticked, **blue** todo, **red** dangerous.

@@ -16,6 +16,7 @@ import { googleMapsSearchUrl } from '../../utils/googleMaps';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { Stars, LockSymbol } from '../../shared/ui/Indicators';
 import { ConditionLabels } from '../../shared/components/Widgets/ConditionLabels';
+import { Badge } from '../../shared/components/Widgets/ClimbingWidgets';
 import { ExternalLinkLabels } from '../../shared/components/Widgets/ExternalLinkLabels';
 import { NoDogsAllowed } from '../../shared/components/Widgets/NoDogsAllowed';
 import { useMeta } from '../../shared/components/Meta/context';
@@ -68,7 +69,7 @@ import {
 import { compactFaPeopleNames, compactFaYear, normalizeFaPeopleSeparators } from '../../utils/firstAscentDisplay';
 import {
   problemListRowRootClass,
-  tickComment,
+  tickCommentSmall,
   tickListRowQuietMeta,
   tickProblemLinkWithStatus,
   tickWhenGrade,
@@ -114,9 +115,7 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
     ) : null;
   const rockLine = problem.rock ? <span className='not-italic'>Rock: {problem.rock}</span> : null;
   const faEl = faLine ? <span>{faLine}</span> : null;
-  const commentEl = commentTrimmed ? (
-    <span className={cn(tickComment, 'text-[12px] leading-snug sm:text-[13px]')}>{commentTrimmed}</span>
-  ) : null;
+  const commentEl = commentTrimmed ? <span className={tickCommentSmall}>{commentTrimmed}</span> : null;
 
   const metaTailBlock = compact ? (
     faEl ? (
@@ -153,7 +152,7 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
         {hasBroken ? (
           <>
             {hasLock ? ' ' : null}
-            <span className='rounded border border-red-500/25 bg-red-500/12 px-1.5 py-0.5 text-[9px] font-semibold tracking-wide text-red-300 uppercase'>
+            <span className='rounded border border-red-500/25 bg-red-500/12 px-1.5 py-0.5 text-[11px] font-semibold tracking-wide text-red-300 uppercase'>
               {problem.broken}
             </span>
           </>
@@ -281,7 +280,7 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
             Inline flow (not flex-wrap): continuation lines align with the route name under column 2.
             flex-1 meta tails made wrapped text line up under the icons/ticks instead.
           */}
-          <div className='min-w-0 text-[12px] leading-snug sm:text-[13px]'>
+          <div className='min-w-0'>
             <Link
               to={`/problem/${problem.id}`}
               className={cn(
@@ -591,7 +590,7 @@ const Sector = () => {
 
   const sectorAccessRestrictions =
     data.areaAccessClosed || data.accessClosed || data.areaAccessInfo || data.accessInfo || data.areaNoDogsAllowed ? (
-      <div className={cn('min-w-0 space-y-2', designContract.typography.detailBody)}>
+      <div className={cn('min-w-0 space-y-2', designContract.typography.body)}>
         {(data.areaAccessClosed || data.accessClosed) && (
           <p className='text-access-danger text-pretty'>
             {(data.areaAccessClosed ? 'Area' : 'Sector') + ' closed: '}
@@ -621,7 +620,7 @@ const Sector = () => {
               <nav
                 className={cn(
                   'flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-2 text-pretty break-words',
-                  designContract.typography.detailBody,
+                  designContract.typography.breadcrumb,
                 )}
               >
                 <Link to='/areas' className={designContract.typography.breadcrumbLink}>
@@ -647,7 +646,7 @@ const Sector = () => {
                         'hover:bg-surface-raised-hover/70',
                         /* Light: stronger hover wash + hairline so it reads clearly on pale cards */
                         'light:hover:bg-slate-300/85 light:hover:shadow-sm light:hover:ring-1 light:hover:ring-slate-500/25',
-                        designContract.typography.detailBody,
+                        designContract.typography.breadcrumb,
                         'focus-visible:ring-brand-border/70 focus-visible:rounded-sm focus-visible:ring-2 focus-visible:outline-none',
                         sectorPickerOpen &&
                           'bg-surface-raised-hover/70 light:bg-slate-300/85 light:shadow-sm light:ring-1 light:ring-slate-500/20',
@@ -669,7 +668,7 @@ const Sector = () => {
                     </button>
                     {sectorPickerOpen && (
                       <ul
-                        className='border-surface-border bg-surface-card ring-surface-border/50 absolute top-[calc(100%+0.35rem)] left-0 z-[100] max-h-64 min-w-[min(100vw-2rem,18rem)] overflow-auto rounded-2xl border py-1 shadow-2xl ring-1'
+                        className='border-surface-border bg-surface-card ring-surface-border/50 absolute top-[calc(100%+0.35rem)] left-0 z-[100] max-h-64 w-max max-w-[min(18rem,calc(100dvw-2rem))] min-w-0 overflow-auto rounded-2xl border py-1 shadow-2xl ring-1'
                         role='listbox'
                       >
                         {(data.sectors ?? []).map((s) => {
@@ -702,7 +701,7 @@ const Sector = () => {
                   <span
                     className={cn(
                       'light:text-slate-950 inline-flex max-w-full min-w-0 items-baseline gap-1 font-semibold text-slate-50',
-                      designContract.typography.detailBody,
+                      designContract.typography.breadcrumb,
                     )}
                   >
                     <span className='min-w-0 text-pretty break-words'>{data.name}</span>
@@ -794,7 +793,7 @@ const Sector = () => {
                       />
                     )}
 
-                    <div className='flex w-full min-w-0 flex-wrap items-center gap-x-2 gap-y-2'>
+                    <div className='flex w-full min-w-0 flex-wrap content-start items-center gap-x-2 gap-y-1 sm:gap-y-1.5'>
                       <ConditionLabels
                         lat={conditionLat > 0 ? conditionLat : undefined}
                         lng={conditionLng > 0 ? conditionLng : undefined}
@@ -813,10 +812,10 @@ const Sector = () => {
                           rel='noreferrer noopener'
                           target='_blank'
                           title='Open parking in Google Maps'
-                          className={designContract.surfaces.metaChipInteractive}
                         >
-                          <MapIcon size={11} className='shrink-0 text-slate-100' strokeWidth={2.25} />
-                          Parking
+                          <Badge icon={MapIcon} className={designContract.surfaces.badgeLinkHover}>
+                            Parking
+                          </Badge>
                         </a>
                       )}
                       {meta.isClimbing && (data.outline ?? []).length > 0 && (
@@ -828,10 +827,10 @@ const Sector = () => {
                           rel='noreferrer noopener'
                           target='_blank'
                           title='Sector location in Google Maps'
-                          className={designContract.surfaces.metaChipInteractive}
                         >
-                          <MapIcon size={11} className='shrink-0 text-slate-100' strokeWidth={2.25} />
-                          Sector
+                          <Badge icon={MapIcon} className={designContract.surfaces.badgeLinkHover}>
+                            Sector
+                          </Badge>
                         </a>
                       )}
                       <ExternalLinkLabels externalLinks={data.externalLinks} />

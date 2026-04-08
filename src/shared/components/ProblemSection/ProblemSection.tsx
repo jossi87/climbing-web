@@ -60,10 +60,13 @@ const ProblemSection = ({ sections: initSections, onSectionsUpdated }: Props) =>
     onSectionsUpdated(newSections);
   };
 
-  const inputClasses =
-    'w-full bg-surface-nav border border-surface-border rounded-lg px-9 py-1.5 text-xs text-white transition-colors focus:border-brand-border focus:outline-none focus:ring-0 focus-visible:ring-0';
-  const selectClasses =
-    'w-full cursor-pointer appearance-none bg-surface-nav border border-surface-border rounded-lg px-3 py-1.5 text-xs text-white transition-colors focus:border-brand-border focus:outline-none focus:ring-0 focus-visible:ring-0';
+  const fieldBase =
+    'w-full bg-surface-nav border border-surface-border rounded-lg py-1.5 text-xs text-white transition-colors focus:border-brand-border focus:outline-none focus:ring-0 focus-visible:ring-0';
+  /** Nr: max two digits — tight column, icon on the left. */
+  const nrInputClasses = cn(fieldBase, 'pl-7 pr-2 text-center tabular-nums sm:text-left');
+  /** Comment / info — most width; icon + comfortable padding. */
+  const commentInputClasses = cn(fieldBase, 'px-9');
+  const selectClasses = cn(fieldBase, 'cursor-pointer appearance-none px-3 pr-8');
 
   return (
     <div className='space-y-4'>
@@ -90,43 +93,51 @@ const ProblemSection = ({ sections: initSections, onSectionsUpdated }: Props) =>
           {sections.map((s, index) => (
             <div
               key={index}
-              className='border-surface-border/50 grid grid-cols-1 items-start gap-3 border-b pb-3 last:border-0 last:pb-0 sm:grid-cols-12'
+              className='border-surface-border/50 grid grid-cols-1 gap-y-3 border-b pb-3 last:border-0 last:pb-0 sm:grid-cols-12 sm:items-start sm:gap-x-3 sm:gap-y-0'
             >
-              <div className='relative sm:col-span-2'>
-                <Hash className='absolute top-1/2 left-3 -translate-y-1/2 text-slate-500' size={14} />
-                <input
-                  type='number'
-                  placeholder='Nr'
-                  className={inputClasses}
-                  value={s.nr ?? ''}
-                  onChange={(e) => updateSection(index, 'nr', parseInt(e.target.value, 10))}
-                />
+              {/*
+                Mobile: pitch # + grade on one row; description full width below.
+                sm+: 1 + 2 + 9 cols — nr fits ≤99, grade stays compact, comment uses the rest.
+              */}
+              <div className='grid min-w-0 grid-cols-[minmax(0,3.5rem)_minmax(0,11rem)] gap-2 sm:contents'>
+                <div className='relative min-w-0 sm:col-span-1'>
+                  <Hash className='absolute top-1/2 left-3 -translate-y-1/2 text-slate-500' size={14} />
+                  <input
+                    type='number'
+                    min={1}
+                    max={99}
+                    placeholder='Nr'
+                    className={nrInputClasses}
+                    value={s.nr ?? ''}
+                    onChange={(e) => updateSection(index, 'nr', parseInt(e.target.value, 10))}
+                  />
+                </div>
+
+                <div className='relative min-w-0 sm:col-span-2 sm:max-w-[10rem] sm:justify-self-start'>
+                  <select
+                    className={selectClasses}
+                    value={s.grade ?? 'n/a'}
+                    onChange={(e) => updateSection(index, 'grade', e.target.value)}
+                  >
+                    {grades.map((g, i) => (
+                      <option key={i} value={g.grade} className='bg-surface-card'>
+                        {g.grade}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown
+                    size={14}
+                    className='pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-slate-500'
+                  />
+                </div>
               </div>
 
-              <div className='relative sm:col-span-3'>
-                <select
-                  className={selectClasses}
-                  value={s.grade ?? 'n/a'}
-                  onChange={(e) => updateSection(index, 'grade', e.target.value)}
-                >
-                  {grades.map((g, i) => (
-                    <option key={i} value={g.grade} className='bg-surface-card'>
-                      {g.grade}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown
-                  size={14}
-                  className='pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-slate-500'
-                />
-              </div>
-
-              <div className='relative sm:col-span-7'>
+              <div className='relative min-w-0 sm:col-span-9'>
                 <Info className='absolute top-1/2 left-3 -translate-y-1/2 text-slate-500' size={14} />
                 <input
                   type='text'
                   placeholder='Description'
-                  className={inputClasses}
+                  className={commentInputClasses}
                   value={s.description || ''}
                   onChange={(e) => updateSection(index, 'description', e.target.value)}
                 />

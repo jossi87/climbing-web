@@ -17,19 +17,21 @@ const Top = ({ idArea, idSector }: TopProps) => {
     return <Loading />;
   }
 
-  const cellPad = 'px-2 py-1.5 align-top sm:px-3 sm:py-2';
+  /** Narrow on mobile so the Climbers column keeps room; desktop widths unchanged. */
+  const cellPadRankPct = 'px-1 py-1.5 align-top sm:px-2 sm:py-2 md:px-3 md:py-2';
+  const cellPadClimbers = 'min-w-0 px-2 py-1.5 align-top sm:px-3 sm:py-2';
   /** Matches dense list scale (profile rows); bright text for this table only. */
-  const rowType = 'text-[12px] leading-snug tracking-tight text-slate-100 md:text-[13px]';
+  const rowType = 'text-[13px] leading-snug tracking-tight text-slate-100 md:text-[14px]';
   const headerType = cn(rowType, 'font-bold text-slate-50');
 
   return (
     <div className='overflow-x-auto'>
-      <table className='w-full min-w-100 border-collapse text-left text-slate-100'>
+      <table className='w-full min-w-0 table-fixed border-collapse text-left text-slate-100 md:min-w-[25rem]'>
         <thead>
           <tr className='border-surface-border/40 border-b'>
-            <th className={cn('w-12', cellPad, headerType)}>#</th>
-            <th className={cn('w-16', cellPad, headerType)}>%</th>
-            <th className={cn(cellPad, headerType)}>
+            <th className={cn('w-8 shrink-0 md:w-12', cellPadRankPct, headerType)}>#</th>
+            <th className={cn('w-11 shrink-0 md:w-16', cellPadRankPct, headerType)}>%</th>
+            <th className={cn(cellPadClimbers, headerType)}>
               Climbers
               <span className={cn(rowType, 'ml-1.5 font-normal text-slate-200 tabular-nums')}>({top.numUsers})</span>
             </th>
@@ -38,9 +40,9 @@ const Top = ({ idArea, idSector }: TopProps) => {
         <tbody>
           {top.rows?.map((t) => (
             <tr key={t.percentage} className='hover:bg-surface-raised-hover transition-colors'>
-              <td className={cn(cellPad, rowType, 'font-mono text-slate-100 tabular-nums')}>{t.rank}</td>
-              <td className={cn(cellPad, rowType, 'text-slate-100 tabular-nums')}>{t.percentage}%</td>
-              <td className={cn(cellPad, rowType)}>
+              <td className={cn(cellPadRankPct, rowType, 'font-mono text-slate-100 tabular-nums')}>{t.rank}</td>
+              <td className={cn(cellPadRankPct, rowType, 'text-slate-100 tabular-nums')}>{t.percentage}%</td>
+              <td className={cn(cellPadClimbers, rowType)}>
                 <span className='inline-flex min-w-0 flex-wrap content-start items-center gap-x-2 gap-y-1.5'>
                   {(t.users ?? []).map((u) => (
                     <Link

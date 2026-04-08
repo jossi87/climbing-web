@@ -441,7 +441,7 @@ const MediaModal = ({
                     <div
                       className={cn(
                         'flex min-w-0 items-baseline gap-x-1.5 leading-tight sm:gap-x-2 sm:leading-snug',
-                        'text-[10px] font-medium sm:text-[12px] md:text-[13px]',
+                        'text-[11px] font-medium sm:text-[13px] md:text-[14px]',
                       )}
                     >
                       <span
@@ -458,7 +458,7 @@ const MediaModal = ({
                         {svg.problemName}
                       </span>
                       {grade != null ? (
-                        <span className={cn(designContract.typography.grade, 'shrink-0 text-[10px] sm:text-[12px]')}>
+                        <span className={cn(designContract.typography.grade, 'shrink-0 text-[11px] sm:text-[13px]')}>
                           {grade}
                         </span>
                       ) : null}
@@ -799,7 +799,7 @@ const MediaModal = ({
                   });
                 if (chunks.length === 0) return null;
                 return (
-                  <div className='ring-surface-border/40 inline-block rounded-2xl bg-slate-900 px-3 py-1.5 text-right text-[11px] leading-snug font-semibold tracking-normal text-pretty text-[#f1f5f9] normal-case shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1 sm:px-3.5 sm:py-2 sm:text-[12px]'>
+                  <div className='ring-surface-border/40 inline-block rounded-2xl bg-slate-900 px-3 py-1.5 text-right text-[12px] leading-snug font-semibold tracking-normal text-pretty text-[#f1f5f9] normal-case shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1 sm:px-3.5 sm:py-2 sm:text-[13px]'>
                     {chunks.map(({ key, node }, i) => (
                       <Fragment key={key}>
                         {i > 0 ? <span className='text-[#64748b]'> · </span> : null}
@@ -917,7 +917,7 @@ const MediaModal = ({
             <div className='grid grid-cols-1 gap-12 md:grid-cols-2'>
               <div className='space-y-8'>
                 <div>
-                  <h4 className='text-brand mb-4 text-[10px] font-black tracking-widest uppercase'>Line Shapes</h4>
+                  <h4 className='text-brand mb-4 text-[11px] font-black tracking-widest uppercase'>Line Shapes</h4>
                   <ul className='space-y-4'>
                     <li className='flex items-center gap-4'>
                       <div className='h-0.5 w-12 border-t-2 border-dashed border-white' />{' '}
@@ -936,7 +936,7 @@ const MediaModal = ({
                   </ul>
                 </div>
                 <div>
-                  <h4 className='text-brand mb-4 text-[10px] font-black tracking-widest uppercase'>
+                  <h4 className='text-brand mb-4 text-[11px] font-black tracking-widest uppercase'>
                     Line Colors (Difficulty)
                   </h4>
                   <ul className='grid grid-cols-2 gap-4'>
@@ -969,11 +969,11 @@ const MediaModal = ({
               </div>
               <div className='space-y-8'>
                 <div>
-                  <h4 className='text-brand mb-4 text-[10px] font-black tracking-widest uppercase'>Number Colors</h4>
+                  <h4 className='text-brand mb-4 text-[11px] font-black tracking-widest uppercase'>Number Colors</h4>
                   <ul className='space-y-3'>
                     <li className='flex items-center gap-3'>
                       <div
-                        className='flex h-4 w-4 items-center justify-center rounded border-2 text-[8px] font-black'
+                        className='flex h-4 w-4 items-center justify-center rounded border-2 text-[9px] font-black'
                         style={{
                           borderColor: 'var(--color-status-ticked)',
                           color: 'var(--color-status-ticked)',
@@ -985,7 +985,7 @@ const MediaModal = ({
                     </li>
                     <li className='flex items-center gap-3'>
                       <div
-                        className='flex h-4 w-4 items-center justify-center rounded border-2 text-[8px] font-black'
+                        className='flex h-4 w-4 items-center justify-center rounded border-2 text-[9px] font-black'
                         style={{
                           borderColor: 'var(--color-status-todo)',
                           color: 'var(--color-status-todo)',
@@ -997,7 +997,7 @@ const MediaModal = ({
                     </li>
                     <li className='flex items-center gap-3'>
                       <div
-                        className='flex h-4 w-4 items-center justify-center rounded border-2 text-[8px] font-black'
+                        className='flex h-4 w-4 items-center justify-center rounded border-2 text-[9px] font-black'
                         style={{
                           borderColor: 'var(--color-status-danger)',
                           color: 'var(--color-status-danger)',
@@ -1008,7 +1008,7 @@ const MediaModal = ({
                       <span className='text-xs font-bold text-slate-300'>Red: Dangerous</span>
                     </li>
                     <li className='flex items-center gap-3'>
-                      <div className='flex h-4 w-4 items-center justify-center rounded border border-slate-200/90 text-[8px] font-black text-slate-200'>
+                      <div className='flex h-4 w-4 items-center justify-center rounded border border-slate-200/90 text-[9px] font-black text-slate-200'>
                         1
                       </div>
                       <span className='text-xs font-bold text-slate-300'>White: Default color</span>
@@ -1016,7 +1016,7 @@ const MediaModal = ({
                   </ul>
                 </div>
                 <div>
-                  <h4 className='text-brand mb-4 text-[10px] font-black tracking-widest uppercase'>Other Symbols</h4>
+                  <h4 className='text-brand mb-4 text-[11px] font-black tracking-widest uppercase'>Other Symbols</h4>
                   <ul className='space-y-6'>
                     <li className='flex items-center gap-4'>
                       <svg width='60' height='20' className='bg-surface-nav rounded'>

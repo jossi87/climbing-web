@@ -23,7 +23,7 @@ export default function AvatarModal({
           className='border-surface-border h-auto max-h-full w-auto max-w-full rounded-xl border object-contain shadow-2xl'
         />
         <button
-          className='bg-surface-hover hover:bg-surface-border border-surface-border mt-8 rounded-full border px-8 py-2.5 text-[10px] font-bold tracking-widest text-slate-200 uppercase transition-all'
+          className='bg-surface-hover hover:bg-surface-border border-surface-border mt-8 rounded-full border px-8 py-2.5 text-[11px] font-bold tracking-widest text-slate-200 uppercase transition-all'
           onClick={onClose}
         >
           Close

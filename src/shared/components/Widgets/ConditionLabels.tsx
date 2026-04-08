@@ -75,7 +75,7 @@ export function ConditionLabels({
       className={cn(designContract.typography.menuItem, 'inline-flex max-w-full items-center gap-1 text-slate-300')}
       title='Approximate page views (visits)'
     >
-      <MousePointerClick size={11} strokeWidth={2} className='shrink-0 text-slate-100' />
+      <MousePointerClick size={12} strokeWidth={2} className='shrink-0 text-slate-100' />
       <span className='font-medium'>{viewsText}</span>
     </span>
   ) : null;
@@ -104,7 +104,7 @@ export function ConditionLabels({
               designContract.surfaces.badgeLinkHover,
             )}
           >
-            <Video size={11} strokeWidth={2} className='shrink-0 text-slate-100' />
+            <Video size={12} strokeWidth={2} className='shrink-0 text-slate-100' />
             Webcams
           </span>
         </a>,
@@ -124,7 +124,7 @@ export function ConditionLabels({
               designContract.surfaces.badgeLinkHover,
             )}
           >
-            <ExternalLink size={11} strokeWidth={2} className='shrink-0 text-slate-100' />
+            <ExternalLink size={12} strokeWidth={2} className='shrink-0 text-slate-100' />
             SunCalc
           </span>
         </a>,

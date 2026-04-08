@@ -110,7 +110,7 @@ export const PolylineEditor = ({ coordinates, parking, onChange, upload }: Props
                 return (
                   <span
                     key={`${c.latitude}-${c.longitude}-${i}`}
-                    className='inline-flex items-center gap-2 rounded-md border px-2.5 py-1 text-[10px] font-bold'
+                    className='inline-flex items-center gap-2 rounded-md border px-2.5 py-1 text-[11px] font-bold'
                     style={{ backgroundColor: bg, borderColor: bg, color: fg }}
                   >
                     Point #{i}

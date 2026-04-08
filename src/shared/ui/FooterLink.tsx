@@ -25,7 +25,7 @@ export const FooterLink = ({ href, icon: Icon, title, subtitle, hoverColor = 'br
       </div>
       <div className='flex flex-col'>
         <span className={cn('type-body leading-none font-semibold transition-colors', titleHover)}>{title}</span>
-        <span className='font-mono text-[9px] text-slate-500'>{subtitle}</span>
+        <span className='font-mono text-[12px] text-slate-500'>{subtitle}</span>
       </div>
     </a>
   );
