@@ -46,6 +46,40 @@ export function invalidateProblemQueries(client: QueryClient, problemId: number)
   });
 }
 
+/**
+ * Refetch every cached problem payload (`/media/svg` overlays update `mediaSvgs` only — those rows are not listed in
+ * `svgs[]`, so per-id {@link invalidateProblemQueries} misses the problems that embed this image).
+ */
+export function invalidateAllProblemQueries(client: QueryClient) {
+  return client.invalidateQueries({ queryKey: ['/problem'] });
+}
+
+/** After topo/SVG edits on a shared image — `useMedia` / modals refetch. Query key matches {@link useMediaSvg}. */
+export function invalidateMediaQueries(client: QueryClient, idMedia: number) {
+  return client.invalidateQueries({
+    predicate: (q) => {
+      const key = q.queryKey;
+      if (!Array.isArray(key) || key[0] !== '/media') return false;
+      const meta = key[1];
+      if (meta == null || typeof meta !== 'object') return false;
+      return 'idMedia' in meta && (meta as { idMedia: number }).idMedia === idMedia;
+    },
+  });
+}
+
+/** Sector problem lists (`hasTopo`, etc.) — invalidate after edits that change problem-level topo flags. */
+export function invalidateSectorQueries(client: QueryClient, sectorId: number) {
+  return client.invalidateQueries({
+    predicate: (q) => {
+      const key = q.queryKey;
+      if (!Array.isArray(key) || key[0] !== '/sectors') return false;
+      const meta = key[1];
+      if (meta == null || typeof meta !== 'object') return false;
+      return 'id' in meta && (meta as { id: number }).id === sectorId;
+    },
+  });
+}
+
 export function usePostData<TVariables, TData = Response>(
   urlSuffix: string,
   {

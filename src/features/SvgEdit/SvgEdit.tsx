@@ -1,7 +1,18 @@
 import { useState, useEffect, useRef, useCallback, type MouseEventHandler, useReducer } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { useMeta } from '../../shared/components/Meta';
-import { type EditableSvg, getMediaFileUrl, postProblemSvg, useAccessToken, useProblem, useSvgEdit } from '../../api';
+import {
+  type EditableSvg,
+  getMediaFileUrl,
+  invalidateMediaQueries,
+  invalidateProblemQueries,
+  invalidateSectorQueries,
+  postProblemSvg,
+  useAccessToken,
+  useProblem,
+  useSvgEdit,
+} from '../../api';
 import { parseReadOnlySvgs, parsePath, isCubicPoint, type ParsedEntry } from '../../utils/svg-helpers';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { Card } from '../../shared/ui';
@@ -46,6 +57,7 @@ const useIds = (): { problemId: number; pitch: number; mediaId: number } => {
 export const SvgEditLoader = () => {
   const { problemId, pitch, mediaId } = useIds();
   const meta = useMeta();
+  const queryClient = useQueryClient();
   const [customMediaRegion, setCustomMediaRegion] = useState<MediaRegion | null>(null);
   const { data: problem } = useProblem(problemId, true);
   const data = useSvgEdit(problemId, pitch, mediaId, customMediaRegion);
@@ -72,7 +84,13 @@ export const SvgEditLoader = () => {
         JSON.stringify(updated.tradBelayStations),
         JSON.stringify(updated.texts),
       )
-        .then(() => {
+        .then(async () => {
+          await invalidateProblemQueries(queryClient, problemId);
+          await invalidateMediaQueries(queryClient, mediaId);
+          const sid = problem?.sectorId;
+          if (typeof sid === 'number' && sid > 0) {
+            await invalidateSectorQueries(queryClient, sid);
+          }
           if (pitch > 0) {
             navigate(0);
           } else {
@@ -85,7 +103,7 @@ export const SvgEditLoader = () => {
         })
         .finally(() => setSaving(false));
     },
-    [accessToken, problemId, pitch, mediaId, data?.svgId, data?.mediaRegion, navigate],
+    [accessToken, problemId, pitch, mediaId, data?.svgId, data?.mediaRegion, navigate, queryClient, problem?.sectorId],
   );
 
   if (!problem || !data) return <Loading />;

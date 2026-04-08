@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, type MouseEvent, type JSX } from 'react';
-import { getMediaFileUrl, useMediaSvg } from '../../api';
+import { getMediaFileUrl, invalidateAllProblemQueries, invalidateMediaQueries, useMediaSvg } from '../../api';
 import { Rappel } from '../../utils/svg-utils';
 import {
   parseReadOnlySvgs,
@@ -12,6 +12,7 @@ import {
 } from '../../utils/svg-helpers';
 
 import { useNavigate, useParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { Card } from '../../shared/ui';
 import { useMeta } from '../../shared/components/Meta';
@@ -35,6 +36,7 @@ const pageActionIconBtnBrand = 'border-brand-border btn-brand-solid shadow-sm ho
 
 const MediaSvgEdit = () => {
   const meta = useMeta();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { mediaId } = useParams();
   const { outerWidth, outerHeight } = window;
@@ -87,7 +89,11 @@ const MediaSvgEdit = () => {
   const getMediaSvgs = () => (data.mediaSvgs = data.mediaSvgs ?? []) as EditableSvg[];
 
   function handleSave() {
-    newSave(modifiedData).then(() => navigate(-1));
+    void newSave(modifiedData).then(async () => {
+      await invalidateMediaQueries(queryClient, mediaIdNum);
+      await invalidateAllProblemQueries(queryClient);
+      navigate(-1);
+    });
   }
 
   function cancelDragging() {
