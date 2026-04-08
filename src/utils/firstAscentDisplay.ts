@@ -23,7 +23,7 @@ export function compactFaPeopleNames(fa: string): string {
         .join(''),
     )
     .filter(Boolean)
-    .join(', ');
+    .join(',');
 }
 
 export function compactFaYear(faDate?: string | null): string {

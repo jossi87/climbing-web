@@ -21,7 +21,7 @@ export const problemListRowStarsWrapClass = 'inline-flex shrink-0 translate-y-[0
 
 /** Lucide 12px icons sit optically high vs star points — nudge down to align with star bottoms. */
 export const problemListRowMediaGlyphClass = cn(
-  tickListRowQuietMeta,
+  'font-normal text-slate-200 antialiased light:text-slate-700',
   'shrink-0 translate-y-[0.085em] opacity-95 light:opacity-100',
 );
 

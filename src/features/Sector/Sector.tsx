@@ -103,7 +103,7 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
   const faNamesCompact = compactFaPeopleNames((problem.fa ?? '').trim());
   const faYear = problem.faDate && problem.faDate.length >= 4 ? problem.faDate.slice(0, 4) : '';
   const faYearCompact = compactFaYear(problem.faDate);
-  const faLine = [compact ? faNamesCompact : faNames, compact ? faYearCompact : faYear].filter(Boolean).join(' ');
+  const faLine = compact ? `${faNamesCompact}${faYearCompact}` : [faNames, faYear].filter(Boolean).join(' ');
 
   const tickCount = problem.numTicks ?? 0;
   const commentTrimmed = (problem.comment ?? '').trim();
