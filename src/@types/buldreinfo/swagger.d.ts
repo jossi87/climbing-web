@@ -1299,10 +1299,10 @@ export type components = {
             isIce?: boolean;
             url?: string;
             types?: components["schemas"]["Type"][];
-            sites?: components["schemas"]["Site"][];
+            regions?: components["schemas"]["Region"][];
             compassDirections?: components["schemas"]["CompassDirection"][];
         };
-        Site: {
+        Region: {
             group?: string;
             name?: string;
             url?: string;
@@ -1620,8 +1620,6 @@ export type components = {
             externalLinks?: components["schemas"]["ExternalLink"][];
             pageViews?: string;
             siblings?: components["schemas"]["SectorJump"][];
-            /** Aggregate tick/todo counts by type (same shape as `AreaSector`) — optional on sector detail. */
-            typeNumTickedTodo?: components["schemas"]["TypeNumTickedTodo"][];
         };
         SectorJump: {
             /** Format: int32 */
@@ -1910,8 +1908,8 @@ export type components = {
             parameters?: {
                 [key: string]: string;
             };
-            wildcardType?: boolean;
             wildcardSubtype?: boolean;
+            wildcardType?: boolean;
         };
         MessageBodyWorkers: Record<string, never>;
         MultiPart: {
@@ -2270,7 +2268,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FrontpageRandomMedia"];
+                    "application/json": components["schemas"]["FrontpageRandomMedia"][];
                 };
             };
         };

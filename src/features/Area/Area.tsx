@@ -1,4 +1,4 @@
-import { Fragment, type ComponentProps, type ReactNode, useMemo, useState } from 'react';
+import { type ComponentProps, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import ChartGradeDistribution from '../../shared/components/ChartGradeDistribution/ChartGradeDistribution';
 import Top from '../../shared/components/Top/Top';
@@ -22,6 +22,7 @@ import { DownloadButton } from '../../shared/ui/DownloadButton';
 import { Card, PageCardBreadcrumbRow } from '../../shared/ui';
 import { TradGearMarker } from '../../shared/ui/TradGearMarker';
 import { climbingRouteUsesPassiveGear, formatRouteTypeLabel } from '../../utils/routeTradGear';
+import { normalizeFaPeopleSeparators } from '../../utils/firstAscentDisplay';
 import {
   Check,
   ChevronRight,
@@ -29,13 +30,13 @@ import {
   Edit,
   AlertTriangle,
   Image as ImageIcon,
+  MapPin,
   Map as MapIcon,
   MapPinned,
+  Spline,
   BarChart2,
   Trophy,
   Bookmark,
-  MapPin,
-  Spline,
   Film,
   LayoutGrid,
   LayoutDashboard,
@@ -52,11 +53,22 @@ import {
   tabBarStripContainerClassName,
   TAB_BAR_ICON_SIZE,
 } from '../../design/tabBar';
-import { ProfileRowTextSep } from '../../shared/components/Profile/ProfileRowTextSep';
 import {
-  profileRowRootClass,
-  tickCommentSmall,
-  tickFlags,
+  problemListRowFaPlainClass,
+  problemListRowMediaClusterClass,
+  problemListRowMediaGlyphClass,
+  problemListRowMetaTailClass,
+  problemListRowPipeSepClass,
+  problemListRowRatingIconsClass,
+  problemListRowStarsWrapClass,
+  problemListRowTicksMetaClass,
+  problemListTradGearIconClass,
+  problemListTradGearWrapClass,
+} from '../../shared/components/Profile/problemListRowChrome';
+import {
+  problemListRowRootClass,
+  tickComment,
+  tickListRowQuietMeta,
   tickProblemLinkWithStatus,
   tickWhenGrade,
 } from '../../shared/components/Profile/profileRowTypography';
@@ -78,60 +90,32 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
       ? (() => {
           const typeLabel = formatRouteTypeLabel(problem.t.type, problem.t.subType);
           if (!typeLabel || !climbingRouteUsesPassiveGear(typeLabel)) return null;
-          return <TradGearMarker line={typeLabel} />;
+          return (
+            <TradGearMarker
+              line={typeLabel}
+              className={problemListTradGearWrapClass}
+              iconClassName={problemListTradGearIconClass}
+            />
+          );
         })()
       : null;
 
-  const faMetaBlock = (() => {
-    const segments: { key: string; node: ReactNode }[] = [];
-    const faText = (problem.fa ?? '').trim();
-    const faYear = problem.faDate ? problem.faDate.substring(0, 4) : '';
-    const faLine = [faText, faYear].filter(Boolean).join(' ');
-    if (faLine) {
-      segments.push({ key: 'fa', node: faLine });
-    }
-    if (isClimbing) {
-      if ((problem.numPitches ?? 1) > 1) {
-        segments.push({
-          key: 'pitches',
-          node: (
-            <>
-              <span className='tabular-nums'>{problem.numPitches}</span> pitches
-            </>
-          ),
-        });
-      }
-    }
-    const n = problem.numTicks ?? 0;
-    if (n > 0) {
-      segments.push({
-        key: 'ascents',
-        node: (
-          <>
-            <span className='tabular-nums'>{n}</span>
-            {n === 1 ? ' ascent' : ' ascents'}
-          </>
-        ),
-      });
-    }
+  const faNames = normalizeFaPeopleSeparators((problem.fa ?? '').trim());
+  const faYear = problem.faDate && problem.faDate.length >= 4 ? problem.faDate.slice(0, 4) : '';
+  const faLine = [faNames, faYear].filter(Boolean).join(' ');
 
-    if (segments.length === 0) return null;
+  const tickCount = problem.numTicks ?? 0;
+  const commentTrimmed = (problem.comment ?? '').trim();
 
-    const metaMuted = tickFlags;
-
-    return (
-      <>
-        {segments.map((seg, i) => (
-          <Fragment key={seg.key}>
-            {i > 0 ? <ProfileRowTextSep /> : null}
-            <span className={metaMuted}>{seg.node}</span>
-          </Fragment>
-        ))}
-      </>
-    );
-  })();
-
-  const hasMediaTrail = !!problem.coordinates || !!problem.hasTopo || !!problem.hasImages || !!problem.hasMovies;
+  const pitchLine =
+    isClimbing && (problem.numPitches ?? 1) > 1 ? (
+      <span className={cn(tickListRowQuietMeta, 'align-baseline whitespace-nowrap')}>{problem.numPitches} pitches</span>
+    ) : null;
+  const rockLine = problem.rock ? <span className='not-italic'>Rock: {problem.rock}</span> : null;
+  const faEl = faLine ? <span>{faLine}</span> : null;
+  const commentEl = commentTrimmed ? (
+    <span className={cn(tickComment, 'text-[12px] leading-snug sm:text-[13px]')}>{commentTrimmed}</span>
+  ) : null;
 
   const hasLock = !!(problem.lockedAdmin || problem.lockedSuperadmin);
   const hasBroken = !!problem.broken;
@@ -139,7 +123,7 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
     hasLock || hasBroken ? (
       <>
         {hasLock ? (
-          <span className={areaListLockInlineClass}>
+          <span className={cn(areaListLockInlineClass, 'opacity-[0.68]')}>
             <LockSymbol lockedAdmin={!!problem.lockedAdmin} lockedSuperadmin={!!problem.lockedSuperadmin} />
           </span>
         ) : null}
@@ -154,122 +138,239 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
       </>
     ) : null;
 
-  const mediaTrailBlock = hasMediaTrail ? (
-    <span className='inline text-slate-500'>
-      {problem.coordinates ? (
-        <span className='inline' title='Coordinates'>
-          <MapPin size={12} strokeWidth={2} className='inline-block align-[-0.125em]' />
-        </span>
-      ) : null}
-      {problem.hasTopo ? (
-        <span className='inline pl-1' title='Topo line'>
-          <Spline size={12} strokeWidth={2} className='inline-block align-[-0.125em]' />
-        </span>
-      ) : null}
-      {problem.hasImages ? (
-        <span className='inline pl-1' title='Images'>
-          <ImageIcon size={12} strokeWidth={2} className='inline-block align-[-0.125em]' />
-        </span>
-      ) : null}
-      {problem.hasMovies ? (
-        <span className='inline pl-1' title='Movies'>
-          <Film size={12} strokeWidth={2} className='inline-block align-[-0.125em]' />
-        </span>
-      ) : null}
+  const showImages = !!problem.hasImages;
+  const showMovies = !!problem.hasMovies;
+  const hasTopo = !!problem.hasTopo;
+  const hasCoordinates = !!(
+    problem.coordinates &&
+    problem.coordinates.latitude != null &&
+    problem.coordinates.longitude != null
+  );
+  const hasRouteMetaIcons = hasTopo || hasCoordinates || showImages || showMovies;
+  /** Stars (incl. 0★ outline) only once the route has community ticks — avoids noise on unclimbed lines. */
+  const showStarsWidget = tickCount > 0;
+  const hasRatingVisuals = !!(showStarsWidget || hasRouteMetaIcons);
+  const ratingIconsBlock = hasRatingVisuals ? (
+    <span className={problemListRowRatingIconsClass}>
+      <span className={problemListRowMediaClusterClass}>
+        {showStarsWidget ? (
+          <span className={problemListRowStarsWrapClass}>
+            <Stars muted numStars={problem.stars ?? 0} size={12} />
+          </span>
+        ) : null}
+        {hasTopo ? (
+          <span className='inline-flex items-end' title='Topo line'>
+            <Spline size={12} strokeWidth={2.5} className={problemListRowMediaGlyphClass} aria-hidden />
+          </span>
+        ) : null}
+        {hasCoordinates ? (
+          <span className='inline-flex items-end' title='Coordinates'>
+            <MapPin size={12} strokeWidth={2.5} className={problemListRowMediaGlyphClass} aria-hidden />
+          </span>
+        ) : null}
+        {showImages ? (
+          <span className='inline-flex items-end' title='Images'>
+            <ImageIcon size={12} strokeWidth={2.5} className={problemListRowMediaGlyphClass} aria-hidden />
+          </span>
+        ) : null}
+        {showMovies ? (
+          <span className='inline-flex items-end' title='Movies'>
+            <Film size={12} strokeWidth={2.5} className={problemListRowMediaGlyphClass} aria-hidden />
+          </span>
+        ) : null}
+      </span>
     </span>
   ) : null;
 
-  const lockAndMedia =
-    lockBrokenBlock || mediaTrailBlock ? (
-      <>
-        {lockBrokenBlock}
-        {lockBrokenBlock && mediaTrailBlock ? ' ' : null}
-        {mediaTrailBlock}
-      </>
+  const ticksMetaBlock =
+    tickCount > 0 ? (
+      <span className={problemListRowTicksMetaClass}>{tickCount === 1 ? '1 tick' : `${tickCount} ticks`}</span>
     ) : null;
 
-  const iconRunBeforeSector = !!(passiveGearAfterGrade || (problem.stars && problem.stars > 0) || lockAndMedia);
-  /** Middle dot only between text segments; plain space after star / lock / media icons. */
-  const faMetaLead = sectorName || !iconRunBeforeSector ? <ProfileRowTextSep /> : ' ';
+  const sectorMeta = sectorName ? (
+    sectorId > 0 ? (
+      <Link
+        to={`/sector/${sectorId}`}
+        className={cn(
+          problemListRowFaPlainClass,
+          designContract.typography.listLinkMuted,
+          'underline-offset-2 hover:underline',
+        )}
+      >
+        {sectorName}
+      </Link>
+    ) : (
+      <span className={problemListRowFaPlainClass}>{sectorName}</span>
+    )
+  ) : null;
 
-  return (
-    <div className={cn(profileRowRootClass, 'min-w-0 py-1 sm:py-1.5')}>
-      <div className='min-w-0 leading-snug'>
-        {problem.danger ? (
-          <AlertTriangle
-            size={12}
-            className={cn('mr-1 inline-block shrink-0 align-[-0.125em]', designContract.ascentStatus.dangerous)}
-            strokeWidth={2.25}
-          />
-        ) : null}
-        <span
-          className={cn(
-            'mr-1.5 inline-block font-normal tabular-nums antialiased sm:mr-2',
-            problem.ticked
-              ? cn(designContract.ascentStatus.ticked, 'font-semibold')
-              : problem.todo
-                ? cn(designContract.ascentStatus.todo, 'font-semibold')
-                : tickWhenGrade,
-          )}
-          title={
-            problem.ticked ? 'Ticked' : problem.todo ? 'On to-do list' : `${isBouldering ? 'Boulder' : 'Route'} number`
-          }
-        >
-          #{problem.nr}
-        </span>
-        <Link
-          to={`/problem/${problem.id}`}
-          className={tickProblemLinkWithStatus({
-            ticked: !!problem.ticked,
-            todo: !!problem.todo,
-            broken: !!problem.broken,
-          })}
-        >
-          {problem.name}
-        </Link>
-        {problem.grade ? (
-          <span className={cn(tickWhenGrade, 'ml-1 whitespace-nowrap tabular-nums')}>{problem.grade}</span>
-        ) : null}
-        {passiveGearAfterGrade}
-        {problem.stars ? (
-          <span className='ml-1 inline-block align-[-0.15em] opacity-90'>
-            <Stars numStars={problem.stars} size={11} />
+  const metaTailBlock =
+    sectorMeta || rockLine || faEl || commentEl ? (
+      <span className={problemListRowMetaTailClass}>
+        {sectorMeta}
+        {sectorMeta && (rockLine || faEl || commentEl) ? (
+          <span className={problemListRowPipeSepClass} aria-hidden>
+            |
           </span>
         ) : null}
-        {lockAndMedia ? <> {lockAndMedia}</> : null}
-        {sectorName ? (
-          <>
-            {iconRunBeforeSector ? ' ' : <ProfileRowTextSep />}
-            {sectorId > 0 ? (
-              <Link
-                to={`/sector/${sectorId}`}
-                className={cn(tickFlags, designContract.typography.listLinkMuted, 'underline-offset-2 hover:underline')}
-              >
-                {sectorName}
-              </Link>
-            ) : (
-              <span className={cn(tickFlags, 'text-slate-300')}>{sectorName}</span>
-            )}
-          </>
+        {rockLine}
+        {rockLine && (faEl || commentEl) ? (
+          <span className={problemListRowPipeSepClass} aria-hidden>
+            |
+          </span>
         ) : null}
-        {faMetaBlock ? (
-          <>
-            {faMetaLead}
-            {faMetaBlock}
-          </>
+        {faEl}
+        {faEl && commentEl ? (
+          <span className={problemListRowPipeSepClass} aria-hidden>
+            |
+          </span>
         ) : null}
-        {problem.rock ? (
-          <>
-            <ProfileRowTextSep />
-            <span className={cn(tickFlags, 'not-italic')}>Rock: {problem.rock}</span>
-          </>
-        ) : null}
-        {problem.comment ? (
-          <>
-            <ProfileRowTextSep />
-            <span className={tickCommentSmall}>{problem.comment}</span>
-          </>
-        ) : null}
+        {commentEl}
+      </span>
+    ) : null;
+
+  /** `|` between grade and trad + stars/topo/media cluster (only when a grade is shown). */
+  const showPipeAfterGradeBeforeMediaCluster = !!problem.grade && (!!passiveGearAfterGrade || !!ratingIconsBlock);
+
+  /** Pipe after stars/media when pitches and/or ticks follow (pitches listed first). */
+  const showPipeAfterRatingIcons = hasRatingVisuals && (!!pitchLine || tickCount > 0);
+  const showPipeBeforePitchNoIcons = !!pitchLine && !ratingIconsBlock && (!!problem.grade || !!passiveGearAfterGrade);
+  const showPipeBetweenPitchAndTicks = !!pitchLine && tickCount > 0;
+
+  const hasContentBeforeMetaTail =
+    !!problem.grade ||
+    !!passiveGearAfterGrade ||
+    !!ratingIconsBlock ||
+    !!pitchLine ||
+    !!ticksMetaBlock ||
+    !!lockBrokenBlock;
+  const showPipeBeforeMetaTail = !!metaTailBlock && hasContentBeforeMetaTail;
+
+  const listRowTitle = useMemo(() => {
+    const parts: string[] = [];
+    const faNamesTitle = normalizeFaPeopleSeparators((problem.fa ?? '').trim());
+    const faYearTitle = problem.faDate && problem.faDate.length >= 4 ? problem.faDate.slice(0, 4) : '';
+    const faLineTitle = [faNamesTitle, faYearTitle].filter(Boolean).join(' ');
+    if (faLineTitle) parts.push(faLineTitle);
+    if (isClimbing && (problem.numPitches ?? 1) > 1) {
+      parts.push(`${problem.numPitches} pitches`);
+    }
+    const n = problem.numTicks ?? 0;
+    if (n > 0) parts.push(n === 1 ? '1 tick' : `${n} ticks`);
+    if (problem.rock) parts.push(`Rock: ${problem.rock}`);
+    if (commentTrimmed) parts.push(commentTrimmed);
+    return parts.join(' | ');
+  }, [commentTrimmed, isClimbing, problem.fa, problem.faDate, problem.numPitches, problem.numTicks, problem.rock]);
+
+  return (
+    <div className={cn(problemListRowRootClass, 'min-w-0 py-0.5 sm:py-1')}>
+      <div className='grid min-w-0 grid-cols-[auto_1fr] items-baseline gap-x-1.5 sm:gap-x-2'>
+        <div className='flex shrink-0 items-baseline justify-end gap-0.5'>
+          {problem.danger ? (
+            <AlertTriangle
+              size={12}
+              className={cn('shrink-0', designContract.ascentStatus.dangerous)}
+              strokeWidth={2.25}
+              aria-hidden
+            />
+          ) : null}
+          <span
+            className={cn(tickWhenGrade, 'shrink-0 leading-snug tabular-nums antialiased')}
+            title={
+              problem.ticked
+                ? 'Ticked'
+                : problem.todo
+                  ? 'On to-do list'
+                  : `${isBouldering ? 'Boulder' : 'Route'} number`
+            }
+          >
+            #{problem.nr}
+          </span>
+        </div>
+
+        <div className='min-w-0 leading-snug' title={listRowTitle || undefined}>
+          <div className='min-w-0 text-[12px] leading-snug sm:text-[13px]'>
+            <Link
+              to={`/problem/${problem.id}`}
+              className={cn(
+                tickProblemLinkWithStatus({
+                  ticked: !!problem.ticked,
+                  todo: !!problem.todo,
+                  broken: !!problem.broken,
+                }),
+              )}
+            >
+              {problem.name}
+            </Link>
+            {problem.grade ? (
+              <span className={cn(tickWhenGrade, 'ml-1 align-baseline whitespace-nowrap tabular-nums')}>
+                {problem.grade}
+              </span>
+            ) : null}
+            {showPipeAfterGradeBeforeMediaCluster ? (
+              <span className={problemListRowPipeSepClass} aria-hidden>
+                |
+              </span>
+            ) : null}
+            {passiveGearAfterGrade ? (
+              <>
+                {!showPipeAfterGradeBeforeMediaCluster ? ' ' : null}
+                {passiveGearAfterGrade}
+              </>
+            ) : null}
+            {ratingIconsBlock ? (
+              <>
+                {!!passiveGearAfterGrade || !showPipeAfterGradeBeforeMediaCluster ? ' ' : null}
+                <span className='inline-flex align-baseline'>{ratingIconsBlock}</span>
+              </>
+            ) : null}
+            {showPipeAfterRatingIcons ? (
+              <span className={problemListRowPipeSepClass} aria-hidden>
+                |
+              </span>
+            ) : null}
+            {showPipeBeforePitchNoIcons ? (
+              <span className={problemListRowPipeSepClass} aria-hidden>
+                |
+              </span>
+            ) : null}
+            {pitchLine}
+            {showPipeBetweenPitchAndTicks ? (
+              <span className={problemListRowPipeSepClass} aria-hidden>
+                |
+              </span>
+            ) : null}
+            {ticksMetaBlock ? (
+              <>
+                {!pitchLine && !showPipeAfterRatingIcons ? ' ' : null}
+                {ticksMetaBlock}
+                {lockBrokenBlock ? (
+                  <span className={problemListRowPipeSepClass} aria-hidden>
+                    |
+                  </span>
+                ) : null}
+              </>
+            ) : null}
+            {lockBrokenBlock ? (
+              <>
+                {!ticksMetaBlock ? ' ' : null}
+                <span className='inline-flex align-baseline'>{lockBrokenBlock}</span>
+              </>
+            ) : null}
+            {metaTailBlock ? (
+              <>
+                {showPipeBeforeMetaTail ? (
+                  <span className={problemListRowPipeSepClass} aria-hidden>
+                    |
+                  </span>
+                ) : (
+                  ' '
+                )}
+                {metaTailBlock}
+              </>
+            ) : null}
+          </div>
+        </div>
       </div>
     </div>
   );

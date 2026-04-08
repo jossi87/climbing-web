@@ -329,8 +329,11 @@ const ToolbarDropdown = <T extends string>({
   );
 };
 
-/** Hide group/sort/filter when the list is tiny — sorting or filtering a handful of rows adds noise. */
-const MIN_ROWS_FOR_LIST_CONTROLS = 4;
+/**
+ * Hide the sort/filter toolbar for a single row only — one item has nothing to reorder.
+ * The Group control is shown only when at least one grouping dimension has 2+ values (`groupByOptions.length > 1`).
+ */
+const MIN_ROWS_FOR_LIST_CONTROLS = 2;
 
 const GradeRangeControl = ({
   low,
@@ -424,7 +427,7 @@ export const ProblemList = ({
   const highestGradeOptions = easyToHard
     .filter((label) => (mapping[label] ?? maxGradeIndex) > (mapping[currentLow] ?? 0))
     .map((label) => ({ key: `high-${label}`, text: label, shortText: label, value: label }));
-  const showListControls = filtered.length > MIN_ROWS_FOR_LIST_CONTROLS;
+  const showListControls = filtered.length >= MIN_ROWS_FOR_LIST_CONTROLS;
 
   if (!allRows?.length) {
     return null;

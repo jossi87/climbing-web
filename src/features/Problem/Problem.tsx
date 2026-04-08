@@ -48,6 +48,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
+import { tickWhenGrade } from '../../shared/components/Profile/profileRowTypography';
 
 /** Shared header for ticks / comments: icon + title + count as quiet typography (no badge chrome). */
 function ProblemSocialCardHeader({
@@ -412,22 +413,17 @@ export const Problem = () => {
                     />
                   </span>
                 ) : null}
-                <span
-                  className={cn(
-                    /* Inherit row `detailBody` size — `text-sm` here lifted the whole current crumb vs links. */
-                    'shrink-0 font-mono tabular-nums',
-                    isTicked
-                      ? cn(designContract.ascentStatus.ticked, 'font-semibold')
-                      : optimisticTodo
-                        ? cn(designContract.ascentStatus.todo, 'font-semibold')
-                        : 'font-medium text-slate-300',
-                  )}
-                >
-                  #{data.nr}
-                </span>
+                <span className={cn(tickWhenGrade, 'shrink-0 font-mono tabular-nums')}>#{data.nr}</span>
                 <span className='inline-flex max-w-[min(100%,24rem)] min-w-0 items-baseline gap-x-1.5 sm:max-w-[min(100%,36rem)]'>
                   <span
-                    className='light:text-slate-950 min-w-0 truncate font-semibold tracking-tight text-slate-50'
+                    className={cn(
+                      'min-w-0 truncate font-semibold tracking-tight',
+                      data.ticked
+                        ? designContract.ascentStatus.ticked
+                        : optimisticTodo
+                          ? designContract.ascentStatus.todo
+                          : 'light:text-slate-950 text-slate-50',
+                    )}
                     title={data.name}
                   >
                     {data.name}

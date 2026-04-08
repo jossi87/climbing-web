@@ -114,7 +114,7 @@ type FrontpageStatsProps = {
   stats?: components['schemas']['FrontpageStats'];
   /** e.g. `/regions/bouldering` — must match `Regions` tab slugs. */
   regionsTo: string;
-  /** From meta.sites (count of sites in the active group), not from stats API. */
+  /** From meta.regions (count of regions in the active group), not from stats API. */
   numRegions: number;
   regionsLoading: boolean;
   statsLoading: boolean;

@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
+import { twInk } from '../../design/twInk';
 import type { components } from '../../@types/buldreinfo/swagger';
+import { tickWhenGrade } from '../../shared/components/Profile/profileRowTypography';
 import { problemSurroundingsLeadClass, problemSurroundingsRowClass } from './problemSurroundingsLayout';
 
 type SectorProblem = components['schemas']['SectorProblem'];
@@ -38,6 +40,8 @@ export function SectorProblemLink({
         ? `Next route: number ${nr}, ${name}, grade ${grade}`
         : `Route on same rock: number ${nr}, ${name}, grade ${grade}`;
   const isCurrent = currentProblemId != null && id === currentProblemId;
+  const routeTicked = !!problem.ticked;
+  const routeTodo = !!problem.todo && !routeTicked;
 
   return (
     <Link
@@ -47,21 +51,32 @@ export function SectorProblemLink({
       aria-current={isCurrent ? 'page' : undefined}
       className={cn(
         factClass,
-        designContract.typography.listLink,
         'inline-flex max-w-[min(100%,15rem)] min-w-0 items-baseline gap-1 sm:max-w-[18rem]',
-        isCurrent && 'text-slate-100',
+        routeTicked || routeTodo
+          ? 'transition-opacity hover:opacity-90'
+          : cn(designContract.typography.listLink, isCurrent && 'text-slate-100'),
       )}
     >
+      {/*
+        Do not use typography.meta (type-small) on # — light theme forces .type-small to slate and overrides
+        text-status-ticked / text-status-todo on the same node.
+        Status color on **name** only; # stays {@link tickWhenGrade} like grade.
+      */}
+      <span className={cn(tickWhenGrade, 'shrink-0 leading-snug tabular-nums antialiased')}>#{nr}</span>
       <span
         className={cn(
-          designContract.typography.meta,
-          'shrink-0 font-mono tabular-nums',
-          isCurrent ? 'text-slate-200' : 'text-slate-400',
+          'min-w-0 flex-1 truncate leading-snug font-medium antialiased',
+          routeTicked
+            ? designContract.ascentStatus.ticked
+            : routeTodo
+              ? designContract.ascentStatus.todo
+              : isCurrent
+                ? cn('text-slate-50', twInk.lightTextSlate900)
+                : 'text-slate-400',
         )}
       >
-        #{nr}
+        {name}
       </span>
-      <span className={cn('min-w-0 flex-1 truncate', isCurrent && 'font-medium text-slate-50')}>{name}</span>
       <span className={cn(designContract.typography.grade, 'shrink-0 font-medium')}>{grade}</span>
     </Link>
   );

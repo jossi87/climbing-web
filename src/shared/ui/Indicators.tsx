@@ -71,11 +71,14 @@ export const Stars = ({
   numStars = -1,
   includeStarOutlines = true,
   size = 14,
+  muted = false,
 }: {
   numStars?: number;
   /** When true, empty slots show a light outline so the row reads as 3 stars (default). */
   includeStarOutlines?: boolean;
   size?: number;
+  /** Dense lists: softer star ink (avoid whole-row opacity). */
+  muted?: boolean;
 }) => {
   if (numStars === -1) return null;
   const fullStars = Math.floor(numStars);
@@ -94,5 +97,9 @@ export const Stars = ({
         <Star key={i} size={size} strokeWidth={2.5} fill='none' stroke='currentColor' className={outlineClass} />,
       );
   }
-  return <div className='stars-rating inline-flex items-center gap-0.5'>{stars}</div>;
+  return (
+    <div className={cn('stars-rating inline-flex gap-0.5', muted ? 'stars-rating--muted items-end' : 'items-center')}>
+      {stars}
+    </div>
+  );
 };

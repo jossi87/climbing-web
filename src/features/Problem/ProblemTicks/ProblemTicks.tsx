@@ -28,9 +28,9 @@ function joinDates(dates: (string | undefined | null)[]) {
   return dates.filter(nonEmptyDate).join(' · ');
 }
 
-/** Same inset + vertical rhythm as activity feed rows in `Activity.tsx` — spacing between ticks is stacked padding, not `gap`. */
-const activityRowPad = 'px-4 py-4 md:px-5 md:py-3.5';
-const activityAvatarGap = 'gap-3.5 md:gap-3.5';
+/** Tighter vertical padding than frontpage {@link Activity} rows so stacked entries don’t read as overly airy. */
+const activityRowPad = 'px-4 py-2.5 md:px-5 md:py-2.5';
+const activityAvatarGap = 'gap-3 md:gap-3';
 
 const quoteBlock = cn(
   tickCommentSmall,

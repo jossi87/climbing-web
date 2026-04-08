@@ -498,6 +498,20 @@ html[data-theme='light']
     stroke: currentColor !important;
   }
 
+  /** Sector/Area problem rows — list stars track grade ink (still quieter than trad chip). */
+  .stars-rating.stars-rating--muted .stars-rating-filled {
+    color: rgb(255 255 255 / 0.9);
+  }
+  html[data-theme='light'] .stars-rating.stars-rating--muted .stars-rating-filled {
+    color: rgb(30 41 59);
+  }
+  .stars-rating.stars-rating--muted .stars-rating-empty {
+    color: rgb(255 255 255 / 0.4);
+  }
+  html[data-theme='light'] .stars-rating.stars-rating--muted .stars-rating-empty {
+    color: rgb(100 116 139);
+  }
+
   /* Passive-gear marker chip (`TradGearMarker`): monochrome fill + shadow; horizontal padding only (aligns with stars). */
   .trad-gear-marker-wrap {
     border-radius: 0.25rem;
@@ -510,6 +524,35 @@ html[data-theme='light']
   html:not([data-theme='light']) .trad-gear-marker-wrap {
     background-color: rgb(248 250 252 / 0.13);
     box-shadow: 0 1px 4px rgb(0 0 0 / 0.3);
+  }
+
+  /**
+   * Sector/Area problem rows: trad must read clearly above the dimmed stars/media cluster.
+   * Beats the neutral chip rules above via extra class (same specificity + later source order).
+   */
+  html:not([data-theme='light']) .trad-gear-marker-wrap.trad-gear-marker-wrap--list-emphasis {
+    background-color: color-mix(in srgb, var(--color-brand) 16%, rgb(30 41 59 / 0.94));
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-brand) 34%, rgb(255 255 255 / 0.07)),
+      0 1px 2px rgb(0 0 0 / 0.3);
+    padding: 0 3px;
+  }
+  html[data-theme='light'] .trad-gear-marker-wrap.trad-gear-marker-wrap--list-emphasis {
+    background-color: color-mix(in srgb, var(--color-brand) 12%, rgb(255 255 255));
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-brand) 30%, rgb(15 23 42 / 0.1)),
+      0 1px 2px rgb(15 23 42 / 0.08);
+    padding: 0 3px;
+  }
+  html:not([data-theme='light']) .trad-gear-marker-wrap.trad-gear-marker-wrap--list-emphasis .trad-gear-wire-icon {
+    height: 0.95em;
+    max-width: 0.92em;
+    filter: brightness(0) invert(1) contrast(1.08) drop-shadow(0 0 2px rgb(201 172 98 / 0.35));
+  }
+  html[data-theme='light'] .trad-gear-marker-wrap.trad-gear-marker-wrap--list-emphasis .trad-gear-wire-icon {
+    height: 0.95em;
+    max-width: 0.92em;
+    filter: contrast(1.05) drop-shadow(0 0 2px rgb(201 172 98 / 0.22));
   }
 
   /* `public/svg/wire.svg` — light: as drawn; dark: invert for contrast. */

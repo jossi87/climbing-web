@@ -5,11 +5,11 @@ export const profileRowMiddleDotClass = 'text-slate-300/95 light:text-slate-500'
 
 /**
  * Separates adjacent text in the same profile/activity row (middle dot).
- * Uses horizontal margin only — avoids `{' '}` + lock wrappers stacking into uneven gaps before `·`.
+ * Horizontal margin only — avoids `{' '}` + lock wrappers stacking into uneven gaps before `·`.
  */
 export function ProfileRowTextSep() {
   return (
-    <span className={cn(profileRowMiddleDotClass, 'mx-0.5 inline')} aria-hidden>
+    <span className={cn(profileRowMiddleDotClass, 'mx-1.5 inline sm:mx-2')} aria-hidden>
       ·
     </span>
   );

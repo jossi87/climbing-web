@@ -11,7 +11,7 @@ import {
   tickCragLinkArea,
   tickCragLinkSector,
   tickFlags,
-  tickProblemLinkWithStatus,
+  tickProblemLink,
   tickWhenGrade,
 } from './profileRowTypography';
 import { cn } from '../../../lib/utils';
@@ -61,7 +61,7 @@ const TodoListItem = ({ item }: { item: TodoItem }) => (
     </Link>
     <LockSymbol lockedAdmin={item.sectorLockedAdmin} lockedSuperadmin={item.sectorLockedSuperadmin} />
     {item.sectorLockedAdmin || item.sectorLockedSuperadmin ? ' ' : <ProfileRowTextSep />}
-    <Link to={`/problem/${item.id}`} className={tickProblemLinkWithStatus({ todo: true })}>
+    <Link to={`/problem/${item.id}`} className={tickProblemLink}>
       {item.problemName}
     </Link>
     {item.grade ? (

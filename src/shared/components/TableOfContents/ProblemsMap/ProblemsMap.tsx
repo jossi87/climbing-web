@@ -12,6 +12,7 @@ import { LockSymbol } from '../../../ui/Indicators';
 import { ChevronRight } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
 import { designContract } from '../../../../design/contract';
+import { tickProblemLinkWithStatus, tickWhenGrade } from '../../Profile/profileRowTypography';
 
 type Props = Pick<TocProps, 'areas'>;
 
@@ -101,15 +102,18 @@ const useMarkers = (areas: Props['areas']): MarkerDef[] => {
                   <LockSymbol lockedAdmin={sector.lockedAdmin} lockedSuperadmin={sector.lockedSuperadmin} />
                 </nav>
                 <div className='border-surface-border/40 flex flex-wrap items-baseline gap-x-2 gap-y-1 border-t border-dashed pt-2.5'>
-                  <span className={cn(designContract.typography.meta, 'font-mono text-slate-500 tabular-nums')}>
-                    #{problem.nr}
-                  </span>
+                  <span className={cn(tickWhenGrade, 'font-mono tabular-nums')}>#{problem.nr}</span>
                   <Link
                     to={`/problem/${problem.id}`}
                     className={cn(
                       designContract.typography.body,
                       designContract.typography.listEmphasis,
                       'buldreinfo-popup-primary-link transition-colors',
+                      tickProblemLinkWithStatus({
+                        ticked: !!problem.ticked,
+                        todo: !!problem.todo,
+                        broken: !!problem.broken,
+                      }),
                     )}
                   >
                     {problem.name}

@@ -17,9 +17,9 @@ import {
   tickProblemLink,
 } from '../../../shared/components/Profile/profileRowTypography';
 
-/** Match activity feed rows in `Activity.tsx` — padding stack, not inter-row `gap`. */
-const activityRowPad = 'px-4 py-4 md:px-5 md:py-3.5';
-const activityAvatarGap = 'gap-3.5 md:gap-3.5';
+/** See `ProblemTicks` — denser row padding without extra chrome between rows. */
+const activityRowPad = 'px-4 py-2.5 md:px-5 md:py-2.5';
+const activityAvatarGap = 'gap-3 md:gap-3';
 
 const actionIconBtn =
   'rounded-md p-1.5 text-slate-400 transition-colors hover:bg-surface-raised-hover hover:text-slate-200';
@@ -180,7 +180,7 @@ export const ProblemComments = ({
                 </div>
 
                 {(c.media ?? []).length > 0 && (
-                  <div className='mt-2.5 md:mt-3'>
+                  <div className='mt-2 md:mt-2.5'>
                     <Media
                       pitches={sections}
                       media={c.media ?? []}

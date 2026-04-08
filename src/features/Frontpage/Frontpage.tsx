@@ -19,9 +19,9 @@ const Frontpage = () => {
   const asideReady = Boolean(meta?.title) && !statsPending && !randomMediaPending;
 
   const type = meta.isBouldering ? 'bouldering problems' : 'climbing routes';
-  /** Entries in meta.sites for the active site’s group (header region list scope). */
-  const activeSite = meta.sites?.find((s) => s.active);
-  const numRegions = activeSite ? (meta.sites?.filter((s) => s.group === activeSite.group).length ?? 0) : 0;
+  /** Entries in meta.regions for the active region’s group (header region list scope). */
+  const activeRegion = meta.regions?.find((r) => r.active);
+  const numRegions = activeRegion ? (meta.regions?.filter((r) => r.group === activeRegion.group).length ?? 0) : 0;
   /** Matches `/regions/:type` tabs in Regions.tsx (bouldering | climbing | ice). */
   const regionsTo = `/regions/${meta.isIce ? 'ice' : meta.isBouldering ? 'bouldering' : 'climbing'}`;
   const description = `${numRegions} regions, ${stats?.areas ?? 0} areas, ${stats?.problems ?? 0} ${type}, ${stats?.ticks ?? 0} public ascents.`;

@@ -24,9 +24,9 @@ import {
   tickCrag,
   tickCragLinkArea,
   tickCragLinkSector,
-  tickFa,
   tickFlags,
-  tickProblemLinkWithStatus,
+  tickListRowQuietMeta,
+  tickProblemLink,
   tickWhenGrade,
 } from './profileRowTypography';
 
@@ -77,19 +77,19 @@ const TickListItemInner = ({ tick }: TickListItemProps) => {
         </>
       ) : null}
       <ProfileRowTextSep />
-      <Link to={`/problem/${tick.idProblem}`} className={tickProblemLinkWithStatus({ ticked: true })}>
+      <Link to={`/problem/${tick.idProblem}`} className={tickProblemLink}>
         {tick.name}
       </Link>{' '}
       <span className={cn(tickWhenGrade, 'whitespace-nowrap tabular-nums')}>{tick.grade}</span>
       {showPassiveGear ? <TradGearMarker line={passiveGearLine} /> : null}
       <LockSymbol lockedAdmin={!!tick.lockedAdmin} lockedSuperadmin={!!tick.lockedSuperadmin} />{' '}
       <span className='inline-flex align-middle'>
-        <Stars numStars={tick.stars ?? 0} size={12} />
+        <Stars muted numStars={tick.stars ?? 0} size={12} />
       </span>
       {tick.fa ? (
         <>
           {' '}
-          <span className={tickFa}>FA</span>
+          <span className={cn(tickListRowQuietMeta, 'font-medium')}>FA</span>
         </>
       ) : null}
       {isClimbing && tick.idTickRepeat ? (

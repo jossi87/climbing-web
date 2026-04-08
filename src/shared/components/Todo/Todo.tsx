@@ -3,7 +3,6 @@ import { Loading } from '../../ui/StatusWidgets';
 import { LockSymbol } from '../../ui/Indicators';
 import { useTodo } from '../../../api';
 import { cn } from '../../../lib/utils';
-import { designContract } from '../../../design/contract';
 import {
   profileRowRootClass,
   tickCragLinkSector,
@@ -43,11 +42,7 @@ const Todo = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
           <div className='flex flex-col gap-y-2'>
             {(sector.problems ?? []).map((problem) => (
               <div key={problem.id} className={cn(profileRowRootClass, 'min-w-0 text-pretty [overflow-wrap:anywhere]')}>
-                <span
-                  className={cn('font-mono font-normal tabular-nums antialiased', designContract.ascentStatus.todo)}
-                >
-                  #{problem.nr}
-                </span>{' '}
+                <span className={cn(tickWhenGrade, 'font-mono tabular-nums antialiased')}>#{problem.nr}</span>{' '}
                 <Link to={`/problem/${problem.id}`} className={tickProblemLinkWithStatus({ todo: true })}>
                   {problem.name}
                 </Link>

@@ -12,13 +12,13 @@ const Regions = () => {
   const { type } = useParams();
   const selectedType = type ?? 'bouldering';
 
-  if (!meta || !meta.sites || meta.sites.length === 0) return <Loading />;
+  if (!meta || !meta.regions || meta.regions.length === 0) return <Loading />;
 
-  const outlines = meta.sites
+  const outlines = meta.regions
     .filter((s) => s.group.toLowerCase() === selectedType)
     .map((s) => ({ url: s.url, label: s.name, outline: s.outline }));
 
-  const regionCount = meta.sites.filter((s) => s.group.toLowerCase() === selectedType).length;
+  const regionCount = meta.regions.filter((s) => s.group.toLowerCase() === selectedType).length;
   const description = `${regionCount} ${
     selectedType === 'bouldering' ? 'bouldering' : selectedType === 'climbing' ? 'rock climbing' : 'ice climbing'
   } regions`;

@@ -7,6 +7,7 @@ import { ArrowUpCircle, Compass, Sun } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 import { profileRowMiddleDotClass } from '../Profile/ProfileRowTextSep';
+import { tickProblemLinkWithStatus } from '../Profile/profileRowTypography';
 import { TradGearMarker } from '../../ui/TradGearMarker';
 
 const JumpToTop = ({ compact = false }: { compact?: boolean }) => (
@@ -241,7 +242,11 @@ export const TableOfContents = ({ areas, header, subHeader, compact = false, sho
                                 'font-medium transition-colors',
                                 problem.broken
                                   ? 'text-slate-300 line-through opacity-70'
-                                  : 'hover:text-brand text-slate-200',
+                                  : tickProblemLinkWithStatus({
+                                      ticked: !!problem.ticked,
+                                      todo: !!problem.todo,
+                                      broken: false,
+                                    }),
                               )}
                             >
                               {problem.name}

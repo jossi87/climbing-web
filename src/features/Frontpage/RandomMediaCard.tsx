@@ -1,3 +1,5 @@
+import { useMemo, useRef, useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { getMediaFileUrl, getMediaFileUrlSrcSet } from '../../api';
 import { cn } from '../../lib/utils';
@@ -29,7 +31,7 @@ function randomMediaImageAlt(m: RandomMedia): string {
 }
 
 type Props = {
-  randomMedia?: RandomMedia;
+  randomMedia?: RandomMedia[];
   /** While true, show placeholder card (frontpage waits for stats + media + meta together to avoid staggered CLS). */
   isLoading?: boolean;
 };
@@ -39,9 +41,70 @@ const mediaFrameClass = 'relative aspect-[275/250] w-full overflow-hidden bg-sur
 
 const desktopCopyMin = 'hidden min-h-[5.25rem] bg-surface-card p-4 md:block md:min-h-[5.5rem]';
 
+const SWIPE_PX = 48;
+/** Subtle carousel controls: readable on photos, stronger on card hover / focus. */
+const arrowNavClass =
+  'absolute top-1/2 z-[3] flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border-0 bg-black/35 p-0 text-white/90 shadow-sm outline-none backdrop-blur-[1px] transition-[opacity,background-color,color] hover:bg-black/50 focus-visible:ring-2 focus-visible:ring-white/45 max-md:opacity-90 md:opacity-55 md:group-hover:opacity-90';
+
 export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
   /** Explicit `bg-surface-card` so the shell never reads as white next to `app-card` shadow merge / aside. */
   const cardShellClass = 'group bg-surface-card overflow-hidden border-0 text-left';
+
+  const items = randomMedia?.length ? randomMedia : undefined;
+  const listKey = useMemo(() => items?.map((m) => `${m.idProblem}-${m.idMedia}`).join('|') ?? '', [items]);
+
+  const [carousel, setCarousel] = useState<{ key: string; index: number }>(() => ({
+    key: listKey,
+    index: 0,
+  }));
+
+  if (carousel.key !== listKey) {
+    setCarousel({ key: listKey, index: 0 });
+  }
+
+  const n = items?.length ?? 0;
+  const rawIndex = carousel.key === listKey ? carousel.index : 0;
+  const safeIndex = n > 0 ? Math.min(rawIndex, n - 1) : 0;
+
+  const blockLinkNavigation = useRef(false);
+  const touchStartX = useRef<number | null>(null);
+
+  const go = (dir: -1 | 1) => {
+    if (!items || items.length < 2) return;
+    const len = items.length;
+    setCarousel((c) => {
+      if (c.key !== listKey) return { key: listKey, index: 0 };
+      const base = Math.min(c.index, len - 1);
+      return { key: listKey, index: (base + dir + len) % len };
+    });
+  };
+
+  const armBlockLinkNavigation = () => {
+    blockLinkNavigation.current = true;
+    window.setTimeout(() => {
+      blockLinkNavigation.current = false;
+    }, 320);
+  };
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.targetTouches[0]?.clientX ?? null;
+  };
+
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current == null || !items || items.length < 2) return;
+    const x = e.changedTouches[0]?.clientX;
+    if (x == null) return;
+    const dx = x - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(dx) < SWIPE_PX) return;
+    armBlockLinkNavigation();
+    if (dx > 0) go(-1);
+    else go(1);
+  };
+
+  const onLinkClick = (e: React.MouseEvent) => {
+    if (blockLinkNavigation.current) e.preventDefault();
+  };
 
   if (isLoading)
     return (
@@ -61,7 +124,7 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
       </Card>
     );
 
-  if (!randomMedia)
+  if (!items)
     return (
       <Card flush className={cardShellClass}>
         <div className={cn(mediaFrameClass, 'flex items-center justify-center text-center text-sm text-slate-400')}>
@@ -73,8 +136,9 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
       </Card>
     );
 
-  const taggedUsers = randomMedia.tagged || [];
-  const photographer = randomMedia.photographer;
+  const randomMediaItem = items[safeIndex];
+  const taggedUsers = randomMediaItem.tagged || [];
+  const photographer = randomMediaItem.photographer;
   const photographerId = photographer?.id ?? null;
   const photographerAlsoTagged = photographerId != null && taggedUsers.some((u) => u.id === photographerId);
   /** Separate “By …” block only when the photographer isn’t already listed as tagged (avoids duplicate names). */
@@ -92,48 +156,89 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
   const mobileProblemTitleClass = 'photo-overlay-fg text-[15px] font-semibold leading-tight';
   const mobileGradeClass = 'photo-overlay-fg-muted text-[13px] font-light tabular-nums tracking-tight leading-none';
   const mobileLocationClass = 'photo-overlay-fg-muted text-[11px] font-normal leading-tight';
+  const multi = items.length > 1;
 
   return (
     <Card flush className={cardShellClass}>
-      <div className={mediaFrameClass}>
+      <div
+        className={mediaFrameClass}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+        onTouchCancel={() => {
+          touchStartX.current = null;
+        }}
+      >
         <Link
-          to={`/problem/${randomMedia.idProblem}`}
-          className='focus-visible:ring-brand-border/80 absolute inset-0 block transition-[filter,transform] duration-300 outline-none hover:brightness-110 focus-visible:ring-2 focus-visible:ring-inset'
+          to={`/problem/${randomMediaItem.idProblem}`}
+          onClick={onLinkClick}
+          className='focus-visible:ring-brand-border/80 absolute inset-0 z-0 block transition-[filter,transform] duration-300 outline-none hover:brightness-110 focus-visible:ring-2 focus-visible:ring-inset'
         >
           <img
+            key={`${randomMediaItem.idProblem}-${randomMediaItem.idMedia}-${safeIndex}`}
             className='h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105'
-            src={getMediaFileUrl(Number(randomMedia.idMedia ?? 0), randomMedia.versionStamp || 0, false, {
+            src={getMediaFileUrl(Number(randomMediaItem.idMedia ?? 0), randomMediaItem.versionStamp || 0, false, {
               minDimension: 400,
             })}
             srcSet={getMediaFileUrlSrcSet(
-              Number(randomMedia.idMedia ?? 0),
-              randomMedia.versionStamp || 0,
-              randomMedia.width ?? 2560,
+              Number(randomMediaItem.idMedia ?? 0),
+              randomMediaItem.versionStamp || 0,
+              randomMediaItem.width ?? 2560,
             )}
             sizes='(max-width: 767px) 100vw, 400px'
-            alt={randomMediaImageAlt(randomMedia)}
+            alt={randomMediaImageAlt(randomMediaItem)}
             width={400}
             height={364}
             decoding='async'
-            fetchPriority='high'
-            loading='eager'
+            fetchPriority={safeIndex === 0 ? 'high' : 'low'}
+            loading={safeIndex === 0 ? 'eager' : 'lazy'}
           />
         </Link>
+        {multi && (
+          <>
+            <button
+              type='button'
+              aria-label='Previous featured photo'
+              className={cn(arrowNavClass, 'left-2 max-md:left-1.5')}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                go(-1);
+              }}
+            >
+              <ChevronLeft className='h-5 w-5 shrink-0' strokeWidth={2} aria-hidden />
+            </button>
+            <button
+              type='button'
+              aria-label='Next featured photo'
+              className={cn(arrowNavClass, 'right-2 max-md:right-1.5')}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                go(1);
+              }}
+            >
+              <ChevronRight className='h-5 w-5 shrink-0' strokeWidth={2} aria-hidden />
+            </button>
+          </>
+        )}
         <div className='pointer-events-none absolute inset-0 bg-linear-to-t from-black/44 via-black/14 to-transparent md:hidden' />
-        <div className='absolute inset-x-0 bottom-0 z-[1] px-3 pt-1 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:hidden'>
-          <Link to={`/problem/${randomMedia.idProblem}`} className={`${overlayLinkClass} flex items-baseline gap-1.5`}>
-            <h3 className={mobileProblemTitleClass}>{randomMedia.problem}</h3>
-            <span className={mobileGradeClass}>{randomMedia.grade}</span>
+        <div className='pointer-events-none absolute inset-x-0 bottom-0 z-[1] px-3 pt-1 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:hidden'>
+          <Link
+            to={`/problem/${randomMediaItem.idProblem}`}
+            className={`${overlayLinkClass} pointer-events-auto flex items-baseline gap-1.5`}
+          >
+            <h3 className={mobileProblemTitleClass}>{randomMediaItem.problem}</h3>
+            <span className={mobileGradeClass}>{randomMediaItem.grade}</span>
           </Link>
           <div className='mt-1 leading-none'>
-            <Link to={`/area/${randomMedia.idArea}`} className={overlayLinkClass}>
-              <span className={mobileLocationClass}>{randomMedia.area}</span>
+            <Link to={`/area/${randomMediaItem.idArea}`} className={`${overlayLinkClass} pointer-events-auto`}>
+              <span className={mobileLocationClass}>{randomMediaItem.area}</span>
             </Link>
             <span className='photo-overlay-sep mx-1' aria-hidden>
               ·
             </span>
-            <Link to={`/sector/${randomMedia.idSector}`} className={overlayLinkClass}>
-              <span className={mobileLocationClass}>{randomMedia.sector}</span>
+            <Link to={`/sector/${randomMediaItem.idSector}`} className={`${overlayLinkClass} pointer-events-auto`}>
+              <span className={mobileLocationClass}>{randomMediaItem.sector}</span>
             </Link>
           </div>
         </div>
@@ -142,21 +247,21 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
       <div className={desktopCopyMin}>
         <div className='space-y-3'>
           <Link
-            to={`/problem/${randomMedia.idProblem}`}
+            to={`/problem/${randomMediaItem.idProblem}`}
             className={`${interactiveLinkClass} inline-flex flex-wrap items-baseline gap-x-2 gap-y-1`}
           >
-            <span className={problemTitleClass}>{randomMedia.problem}</span>
-            <span className={gradeClass}>{randomMedia.grade}</span>
+            <span className={problemTitleClass}>{randomMediaItem.problem}</span>
+            <span className={gradeClass}>{randomMediaItem.grade}</span>
           </Link>
           <div className='leading-snug'>
-            <Link to={`/area/${randomMedia.idArea}`} className={interactiveLinkClass}>
-              <span className={locationClass}>{randomMedia.area}</span>
+            <Link to={`/area/${randomMediaItem.idArea}`} className={interactiveLinkClass}>
+              <span className={locationClass}>{randomMediaItem.area}</span>
             </Link>
             <span className='mx-1 text-slate-500' aria-hidden>
               ·
             </span>
-            <Link to={`/sector/${randomMedia.idSector}`} className={interactiveLinkClass}>
-              <span className={locationClass}>{randomMedia.sector}</span>
+            <Link to={`/sector/${randomMediaItem.idSector}`} className={interactiveLinkClass}>
+              <span className={locationClass}>{randomMediaItem.sector}</span>
             </Link>
           </div>
         </div>

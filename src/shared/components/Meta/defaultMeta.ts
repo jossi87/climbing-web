@@ -16,13 +16,16 @@ export type Type = {
   subType: string;
 };
 
-export type Site = {
+export type Region = {
   group: string;
   name: string;
   url: string;
   outline: components['schemas']['Coordinates'][];
   active: boolean;
 };
+
+/** @deprecated Use `Region` (API field renamed from `sites` to `regions`). */
+export type Site = Region;
 
 export type Metadata = {
   isAuthenticated: boolean;
@@ -40,7 +43,7 @@ export type Metadata = {
   isClimbing: boolean;
   isIce: boolean;
   types: Type[];
-  sites: Site[];
+  regions: Region[];
   compassDirections: CompassDirection[];
 };
 
@@ -109,6 +112,6 @@ export const DEFAULT_META: Metadata = {
   isClimbing: true,
   isIce: false,
   types: [],
-  sites: [],
+  regions: [],
   compassDirections: [],
 };

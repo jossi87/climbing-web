@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { MapPin, Spline, Camera, Film, Check, Bookmark } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
+import { tickWhenGrade } from '../../../shared/components/Profile/profileRowTypography';
 import { useProblemsOnRock } from './useProblemsOnRock';
 
 export const ProblemsOnRock = ({
@@ -35,17 +36,19 @@ export const ProblemsOnRock = ({
           )}
         >
           <span className='flex min-w-0 flex-wrap items-baseline gap-x-1'>
+            <span className={cn(tickWhenGrade, 'font-mono tabular-nums')}>#{p.nr}</span>
             <span
               className={cn(
-                'font-medium',
-                problemId === p.id ? 'text-slate-200' : 'text-slate-400',
-                designContract.typography.meta,
-                'font-mono tabular-nums',
+                'min-w-0 font-medium',
+                p.ticked
+                  ? designContract.ascentStatus.ticked
+                  : p.todo
+                    ? designContract.ascentStatus.todo
+                    : 'text-slate-200',
               )}
             >
-              #{p.nr}
+              {p.name}
             </span>
-            <span className='min-w-0 font-medium text-slate-200'>{p.name}</span>
             <span className={cn(designContract.typography.grade, problemId === p.id && 'text-slate-300')}>
               {p.grade}
             </span>

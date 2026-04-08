@@ -9,6 +9,8 @@ export const twInk = {
   lightTextSlate900: 'light:text-[rgb(15_23_42)]',
   lightGroupHoverSlate900: 'light:group-hover:text-[rgb(15_23_42)]',
   lightTextSlate800: 'light:text-[rgb(30_41_59)]',
+  /** Secondary body / descriptions on white cards — between 800 and 900 for comfortable long reads. */
+  lightTextSlate700: 'light:text-[rgb(51_65_85)]',
   lightHoverSlate800: 'light:hover:text-[rgb(30_41_59)]',
   lightGroupHoverSlate700: 'light:group-hover:text-[rgb(51_65_85)]',
   lightGroupHoverSlate800: 'light:group-hover:text-[rgb(30_41_59)]',
