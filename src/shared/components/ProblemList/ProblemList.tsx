@@ -9,6 +9,7 @@ import { designContract } from '../../../design/contract';
 import { twInk } from '../../../design/twInk';
 import { useGrades } from '../Meta';
 import { FormSwitch } from '../../ui';
+import { ProblemListCompactContext } from './compactViewContext';
 
 type Props = {
   rows: Row[];
@@ -19,6 +20,8 @@ type Props = {
   /** Renders above the toolbar (e.g. map) so group/sort/filter stay between map and list. */
   contentBeforeList?: React.ReactNode | ((filteredRows: Row[]) => React.ReactNode);
   excludedSortOptions?: OrderOption[];
+  /** Optional compact/detailed toggle in toolbar (default view: compact). */
+  enableViewModeToggle?: boolean;
 };
 
 type OrderByOption = { key: string; text: string; shortText: string; value: OrderOption };
@@ -263,7 +266,7 @@ const ToolbarDropdown = <T extends string>({
             ? 'inline-flex h-8 w-full min-w-0 items-center justify-between gap-1 rounded-lg px-2 text-[12px] leading-none font-medium transition-colors sm:px-2.5 sm:text-[13px]'
             : compact
               ? 'inline-flex h-7 w-full min-w-0 items-center justify-between gap-0.5 rounded-md border px-1.5 text-[11px] leading-none font-medium transition-colors sm:gap-1 sm:px-2 sm:text-[12px] md:h-7'
-              : 'inline-flex h-9 w-full max-w-full min-w-0 items-center justify-between gap-1.5 rounded-md border px-3 text-[12px] leading-none font-medium whitespace-nowrap transition-colors sm:text-[13px] md:h-8 md:w-auto md:max-w-[22rem] md:gap-1 md:px-2.5',
+              : 'inline-flex h-8 w-full max-w-full min-w-0 items-center justify-between gap-1 rounded-md border px-2 text-[11px] leading-none font-medium whitespace-nowrap transition-colors sm:h-9 sm:gap-1.5 sm:px-3 sm:text-[13px] md:h-8 md:w-auto md:max-w-[22rem] md:gap-1 md:px-2.5',
           fullWidth && !compact ? 'w-full md:w-auto' : fullWidth && compact ? 'w-full' : '',
           variant === 'ghost'
             ? isOpen
@@ -334,6 +337,7 @@ const ToolbarDropdown = <T extends string>({
  * The Group control is shown only when at least one grouping dimension has 2+ values (`groupByOptions.length > 1`).
  */
 const MIN_ROWS_FOR_LIST_CONTROLS = 2;
+const GLOBAL_VIEW_MODE_KEY = 'problemList.detailed';
 
 const GradeRangeControl = ({
   low,
@@ -380,9 +384,24 @@ export const ProblemList = ({
   toolbarAction,
   contentBeforeList,
   excludedSortOptions,
+  enableViewModeToggle = false,
 }: Props) => {
   const [showFilter, setFilterShowing] = useState(false);
+  const [compactRows, setCompactRows] = useState<boolean>(() => {
+    if (!enableViewModeToggle) return false;
+    const savedDetailed = window.localStorage.getItem(GLOBAL_VIEW_MODE_KEY);
+    return savedDetailed !== '1';
+  });
   const { easyToHard, mapping } = useGrades();
+
+  useEffect(() => {
+    if (!enableViewModeToggle) return;
+    if (compactRows) {
+      window.localStorage.removeItem(GLOBAL_VIEW_MODE_KEY);
+      return;
+    }
+    window.localStorage.setItem(GLOBAL_VIEW_MODE_KEY, '1');
+  }, [compactRows, enableViewModeToggle]);
 
   const [allTypes, lookup] = useMemo(() => {
     const types = new Set<string>();
@@ -481,120 +500,133 @@ export const ProblemList = ({
 
   const leading = typeof contentBeforeList === 'function' ? contentBeforeList(filtered) : contentBeforeList;
 
+  const viewToggleAction = enableViewModeToggle ? (
+    <label
+      className='border-surface-border bg-surface-raised inline-flex h-8 shrink-0 items-center gap-1 rounded-md border px-2 sm:h-9 sm:gap-1.5 sm:px-3 md:h-8'
+      title='Toggle detailed rows'
+    >
+      <FormSwitch checked={!compactRows} onChange={() => setCompactRows((v) => !v)} size='compact' variant='ios' />
+      <span className='text-[11px] font-medium whitespace-nowrap text-slate-300 sm:text-[13px]'>Details</span>
+    </label>
+  ) : null;
+
   return (
-    <div className='flex flex-col gap-4'>
-      {leading}
+    <ProblemListCompactContext.Provider value={compactRows}>
+      <div className='flex flex-col gap-4'>
+        {leading}
 
-      {(showListControls || toolbarAction) && (
-        <div className='flex min-w-0 flex-nowrap items-center justify-start gap-2 overflow-hidden md:gap-2'>
-          {showListControls && (
-            <>
-              {groupByOptions.length > 1 && (
-                <ToolbarDropdown
-                  className='min-w-0 flex-1 basis-0 md:max-w-[12rem] md:flex-none md:basis-auto'
-                  label='Group'
-                  icon={FolderTree}
-                  value={groupBy}
-                  options={orderedGroupByOptions}
-                  onSelect={(next) => dispatch({ action: 'group-by', groupBy: next })}
-                />
-              )}
-              <ToolbarDropdown
-                className={
-                  groupByOptions.length > 1
-                    ? 'min-w-0 flex-1 basis-0 md:max-w-[22rem] md:flex-none md:basis-auto'
-                    : 'min-w-0 shrink-0 md:max-w-[22rem]'
-                }
-                label='Sort'
-                icon={ArrowDownWideNarrow}
-                value={order}
-                options={orderedSortOptions}
-                onSelect={(next) => dispatch({ action: 'order-by', order: next })}
-              />
-              <button
-                type='button'
-                aria-expanded={showFilter}
-                aria-label={showFilter ? 'Hide filters' : 'Show filters'}
-                onClick={() => setFilterShowing((v) => !v)}
-                className={cn(
-                  // Match {@link ToolbarDropdown} default triggers: same radius, fill, and open/closed pattern.
-                  'inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-md border px-3 text-[12px] font-medium whitespace-nowrap transition-colors sm:text-[13px] md:h-8 md:gap-1.5 md:px-3',
-                  showFilter
-                    ? 'border-surface-border bg-surface-hover text-slate-100'
-                    : 'border-surface-border bg-surface-raised hover:border-surface-border hover:bg-surface-raised-hover text-slate-300 hover:text-slate-200',
+        {(showListControls || toolbarAction || viewToggleAction) && (
+          <div className='flex min-w-0 flex-nowrap items-center justify-start gap-2 overflow-hidden md:gap-2'>
+            {showListControls && (
+              <>
+                {groupByOptions.length > 1 && (
+                  <ToolbarDropdown
+                    className='min-w-0 flex-1 basis-0 md:max-w-[12rem] md:flex-none md:basis-auto'
+                    label='Group'
+                    icon={FolderTree}
+                    value={groupBy}
+                    options={orderedGroupByOptions}
+                    onSelect={(next) => dispatch({ action: 'group-by', groupBy: next })}
+                  />
                 )}
-              >
-                <Filter
-                  size={11}
-                  className={cn('shrink-0', showFilter ? 'text-slate-300' : 'text-slate-400')}
-                  strokeWidth={2}
-                />
-                <span>Filters</span>
-              </button>
-            </>
-          )}
-          {toolbarAction}
-        </div>
-      )}
-
-      {showListControls && showFilter && (
-        <div
-          className={cn(
-            'border-surface-border/55 bg-surface-raised/30 mt-2.5 flex flex-col gap-2.5 rounded-lg border-y border-r py-2.5 pr-3 pl-3 sm:gap-2.5 sm:py-3 sm:pr-4 sm:pl-4',
-            'border-l-[3px] border-l-[color:var(--color-brand)]',
-            'light:border-r-slate-300/65 light:border-t-slate-300/65 light:border-b-slate-300/65 light:bg-slate-100/80',
-          )}
-          role='region'
-          aria-label='List filters'
-        >
-          <div className='flex flex-wrap items-center gap-x-3 gap-y-2'>
-            <GradeRangeControl
-              low={currentLow}
-              high={currentHigh}
-              lowOptions={lowestGradeOptions}
-              highOptions={highestGradeOptions}
-              onLowSelect={(next) => dispatch({ action: 'set-grade', low: next })}
-              onHighSelect={(next) => dispatch({ action: 'set-grade', high: next })}
-            />
-          </div>
-          {allTypes.length > 1 && (
-            <div className='flex flex-wrap items-center gap-x-4 gap-y-1.5'>
-              {allTypes.map((type) => (
-                <ToggleLabel
-                  key={type}
-                  label={`${type} (${lookup[type]})`}
-                  checked={types[type] !== false}
-                  onChange={() =>
-                    dispatch({
-                      action: 'type',
-                      type,
-                      enabled: !(types[type] ?? true),
-                    })
+                <ToolbarDropdown
+                  className={
+                    groupByOptions.length > 1
+                      ? 'min-w-0 flex-1 basis-0 md:max-w-[22rem] md:flex-none md:basis-auto'
+                      : 'min-w-0 shrink-0 md:max-w-[22rem]'
                   }
+                  label='Sort'
+                  icon={ArrowDownWideNarrow}
+                  value={order}
+                  options={orderedSortOptions}
+                  onSelect={(next) => dispatch({ action: 'order-by', order: next })}
                 />
-              ))}
-            </div>
-          )}
+                <button
+                  type='button'
+                  aria-expanded={showFilter}
+                  aria-label={showFilter ? 'Hide filters' : 'Show filters'}
+                  onClick={() => setFilterShowing((v) => !v)}
+                  className={cn(
+                    // Match {@link ToolbarDropdown} default triggers: same radius, fill, and open/closed pattern.
+                    'inline-flex h-8 shrink-0 items-center justify-center gap-1 rounded-md border px-2 text-[11px] font-medium whitespace-nowrap transition-colors sm:h-9 sm:gap-1.5 sm:px-3 sm:text-[13px] md:h-8 md:gap-1.5 md:px-3',
+                    showFilter
+                      ? 'border-surface-border bg-surface-hover text-slate-100'
+                      : 'border-surface-border bg-surface-raised hover:border-surface-border hover:bg-surface-raised-hover text-slate-300 hover:text-slate-200',
+                  )}
+                >
+                  <Filter
+                    size={11}
+                    className={cn('shrink-0', showFilter ? 'text-slate-300' : 'text-slate-400')}
+                    strokeWidth={2}
+                  />
+                  <span>Filters</span>
+                </button>
+              </>
+            )}
+            {viewToggleAction}
+            {toolbarAction}
+          </div>
+        )}
 
-          {(mode === 'sector' && containsTicked) || (mode === 'user' && containsFa) ? (
-            <div className='flex flex-wrap gap-x-4 gap-y-1.5'>
-              {mode === 'sector' && containsTicked && (
-                <ToggleLabel
-                  label='Hide ticked'
-                  checked={hideTicked}
-                  onChange={() => dispatch({ action: 'hide-ticked' })}
-                />
-              )}
-              {mode === 'user' && containsFa && (
-                <ToggleLabel label='Only FA' checked={onlyFa} onChange={() => dispatch({ action: 'only-fa' })} />
-              )}
+        {showListControls && showFilter && (
+          <div
+            className={cn(
+              'border-surface-border/55 bg-surface-raised/30 mt-2.5 flex flex-col gap-2.5 rounded-lg border-y border-r py-2.5 pr-3 pl-3 sm:gap-2.5 sm:py-3 sm:pr-4 sm:pl-4',
+              'border-l-[3px] border-l-[color:var(--color-brand)]',
+              'light:border-r-slate-300/65 light:border-t-slate-300/65 light:border-b-slate-300/65 light:bg-slate-100/80',
+            )}
+            role='region'
+            aria-label='List filters'
+          >
+            <div className='flex flex-wrap items-center gap-x-3 gap-y-2'>
+              <GradeRangeControl
+                low={currentLow}
+                high={currentHigh}
+                lowOptions={lowestGradeOptions}
+                highOptions={highestGradeOptions}
+                onLowSelect={(next) => dispatch({ action: 'set-grade', low: next })}
+                onHighSelect={(next) => dispatch({ action: 'set-grade', high: next })}
+              />
             </div>
-          ) : null}
-        </div>
-      )}
+            {allTypes.length > 1 && (
+              <div className='flex flex-wrap items-center gap-x-4 gap-y-1.5'>
+                {allTypes.map((type) => (
+                  <ToggleLabel
+                    key={type}
+                    label={`${type} (${lookup[type]})`}
+                    checked={types[type] !== false}
+                    onChange={() =>
+                      dispatch({
+                        action: 'type',
+                        type,
+                        enabled: !(types[type] ?? true),
+                      })
+                    }
+                  />
+                ))}
+              </div>
+            )}
 
-      {list}
-    </div>
+            {(mode === 'sector' && containsTicked) || (mode === 'user' && containsFa) ? (
+              <div className='flex flex-wrap gap-x-4 gap-y-1.5'>
+                {mode === 'sector' && containsTicked && (
+                  <ToggleLabel
+                    label='Hide ticked'
+                    checked={hideTicked}
+                    onChange={() => dispatch({ action: 'hide-ticked' })}
+                  />
+                )}
+                {mode === 'user' && containsFa && (
+                  <ToggleLabel label='Only FA' checked={onlyFa} onChange={() => dispatch({ action: 'only-fa' })} />
+                )}
+              </div>
+            ) : null}
+          </div>
+        )}
+
+        {list}
+      </div>
+    </ProblemListCompactContext.Provider>
   );
 };
 

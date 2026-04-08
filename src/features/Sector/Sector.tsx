@@ -1,7 +1,7 @@
 import { type ComponentProps, useEffect, useMemo, useRef, useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
-import ProblemList from '../../shared/components/ProblemList';
+import ProblemList, { useProblemListCompact } from '../../shared/components/ProblemList';
 import ChartGradeDistribution from '../../shared/components/ChartGradeDistribution/ChartGradeDistribution';
 import { SlopeProfile } from '../../shared/components/SlopeProfile';
 import { SLOPE_APPROACH_COLOR, SLOPE_DESCENT_COLOR } from '../../shared/slopePolylineColors';
@@ -65,7 +65,7 @@ import {
   problemListTradGearIconClass,
   problemListTradGearWrapClass,
 } from '../../shared/components/Profile/problemListRowChrome';
-import { normalizeFaPeopleSeparators } from '../../utils/firstAscentDisplay';
+import { compactFaPeopleNames, compactFaYear, normalizeFaPeopleSeparators } from '../../utils/firstAscentDisplay';
 import {
   problemListRowRootClass,
   tickComment,
@@ -76,14 +76,13 @@ import {
 
 type SectorProblemRow = NonNullable<components['schemas']['Sector']['problems']>[number];
 
-type SectorListItemProps = {
-  problem: SectorProblemRow;
-};
+type SectorListItemProps = { problem: SectorProblemRow };
 
 const lockInlineClass = 'ml-0.5 inline-block align-middle';
 
 export const SectorListItem = ({ problem }: SectorListItemProps) => {
   const { isClimbing, isBouldering } = useMeta();
+  const compact = useProblemListCompact();
 
   const passiveGearAfterGrade =
     isClimbing && problem.t
@@ -101,8 +100,10 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
       : null;
 
   const faNames = normalizeFaPeopleSeparators((problem.fa ?? '').trim());
+  const faNamesCompact = compactFaPeopleNames((problem.fa ?? '').trim());
   const faYear = problem.faDate && problem.faDate.length >= 4 ? problem.faDate.slice(0, 4) : '';
-  const faLine = [faNames, faYear].filter(Boolean).join(' ');
+  const faYearCompact = compactFaYear(problem.faDate);
+  const faLine = [compact ? faNamesCompact : faNames, compact ? faYearCompact : faYear].filter(Boolean).join(' ');
 
   const tickCount = problem.numTicks ?? 0;
   const commentTrimmed = (problem.comment ?? '').trim();
@@ -117,24 +118,27 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
     <span className={cn(tickComment, 'text-[12px] leading-snug sm:text-[13px]')}>{commentTrimmed}</span>
   ) : null;
 
-  const metaTailBlock =
-    rockLine || faEl || commentEl ? (
-      <span className={problemListRowMetaTailClass}>
-        {rockLine}
-        {rockLine && (faEl || commentEl) ? (
-          <span className={problemListRowPipeSepClass} aria-hidden>
-            |
-          </span>
-        ) : null}
-        {faEl}
-        {faEl && commentEl ? (
-          <span className={problemListRowPipeSepClass} aria-hidden>
-            |
-          </span>
-        ) : null}
-        {commentEl}
-      </span>
-    ) : null;
+  const metaTailBlock = compact ? (
+    faEl ? (
+      <span className={problemListRowMetaTailClass}>{faEl}</span>
+    ) : null
+  ) : rockLine || faEl || commentEl ? (
+    <span className={problemListRowMetaTailClass}>
+      {rockLine}
+      {rockLine && (faEl || commentEl) ? (
+        <span className={problemListRowPipeSepClass} aria-hidden>
+          |
+        </span>
+      ) : null}
+      {faEl}
+      {faEl && commentEl ? (
+        <span className={problemListRowPipeSepClass} aria-hidden>
+          |
+        </span>
+      ) : null}
+      {commentEl}
+    </span>
+  ) : null;
 
   const hasLock = !!(problem.lockedAdmin || problem.lockedSuperadmin);
   const hasBroken = !!problem.broken;
@@ -159,12 +163,10 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
 
   const showImages = !!problem.hasImages;
   const showMovies = !!problem.hasMovies;
-  const hasTopo = !!problem.hasTopo;
-  const hasCoordinates = !!(
-    problem.coordinates &&
-    problem.coordinates.latitude != null &&
-    problem.coordinates.longitude != null
-  );
+  const hasTopo = !compact && !!problem.hasTopo;
+  const hasCoordinates =
+    !compact &&
+    !!(problem.coordinates && problem.coordinates.latitude != null && problem.coordinates.longitude != null);
   const hasRouteMetaIcons = hasTopo || hasCoordinates || showImages || showMovies;
   /** Stars (incl. 0★ outline) only once the route has community ticks — avoids noise on unclimbed lines. */
   const showStarsWidget = tickCount > 0;
@@ -234,10 +236,19 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
     }
     const n = problem.numTicks ?? 0;
     if (n > 0) parts.push(n === 1 ? '1 tick' : `${n} ticks`);
-    if (problem.rock) parts.push(`Rock: ${problem.rock}`);
-    if (commentTrimmed) parts.push(commentTrimmed);
+    if (!compact && problem.rock) parts.push(`Rock: ${problem.rock}`);
+    if (!compact && commentTrimmed) parts.push(commentTrimmed);
     return parts.join(' | ');
-  }, [commentTrimmed, isClimbing, problem.fa, problem.faDate, problem.numPitches, problem.numTicks, problem.rock]);
+  }, [
+    commentTrimmed,
+    compact,
+    isClimbing,
+    problem.fa,
+    problem.faDate,
+    problem.numPitches,
+    problem.numTicks,
+    problem.rock,
+  ]);
 
   return (
     <div className={cn(problemListRowRootClass, 'min-w-0 py-0.5 sm:py-1')}>
@@ -927,6 +938,7 @@ const Sector = () => {
               mode='sector'
               defaultOrder={data.orderByGrade ? 'grade-desc' : 'number'}
               rows={sectorProblemListRows}
+              enableViewModeToggle
               contentBeforeList={
                 sectorTypeSummaries.length > 1 ? (
                   <div

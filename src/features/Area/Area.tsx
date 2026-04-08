@@ -16,13 +16,13 @@ import { NoDogsAllowed } from '../../shared/components/Widgets/NoDogsAllowed';
 import { useMeta } from '../../shared/components/Meta/context';
 import { getMediaFileUrl, useArea } from '../../api';
 import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
-import ProblemList from '../../shared/components/ProblemList';
+import ProblemList, { useProblemListCompact } from '../../shared/components/ProblemList';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { DownloadButton } from '../../shared/ui/DownloadButton';
 import { Card, PageCardBreadcrumbRow } from '../../shared/ui';
 import { TradGearMarker } from '../../shared/ui/TradGearMarker';
 import { climbingRouteUsesPassiveGear, formatRouteTypeLabel } from '../../utils/routeTradGear';
-import { normalizeFaPeopleSeparators } from '../../utils/firstAscentDisplay';
+import { compactFaPeopleNames, compactFaYear, normalizeFaPeopleSeparators } from '../../utils/firstAscentDisplay';
 import {
   Check,
   ChevronRight,
@@ -84,6 +84,7 @@ const areaListLockInlineClass = 'ml-0.5 inline-block align-middle';
 /** Area Routes tab row — same typography/layout as the sector problem list; includes sector name for context. */
 const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
   const { isClimbing, isBouldering } = useMeta();
+  const compact = useProblemListCompact();
 
   const passiveGearAfterGrade =
     isClimbing && problem.t
@@ -101,8 +102,11 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
       : null;
 
   const faNames = normalizeFaPeopleSeparators((problem.fa ?? '').trim());
+  const faNamesCompact = compactFaPeopleNames((problem.fa ?? '').trim());
   const faYear = problem.faDate && problem.faDate.length >= 4 ? problem.faDate.slice(0, 4) : '';
-  const faLine = [faNames, faYear].filter(Boolean).join(' ');
+  const faLine = [compact ? faNamesCompact : faNames, compact ? compactFaYear(problem.faDate) : faYear]
+    .filter(Boolean)
+    .join(' ');
 
   const tickCount = problem.numTicks ?? 0;
   const commentTrimmed = (problem.comment ?? '').trim();
@@ -140,12 +144,10 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
 
   const showImages = !!problem.hasImages;
   const showMovies = !!problem.hasMovies;
-  const hasTopo = !!problem.hasTopo;
-  const hasCoordinates = !!(
-    problem.coordinates &&
-    problem.coordinates.latitude != null &&
-    problem.coordinates.longitude != null
-  );
+  const hasTopo = !compact && !!problem.hasTopo;
+  const hasCoordinates =
+    !compact &&
+    !!(problem.coordinates && problem.coordinates.latitude != null && problem.coordinates.longitude != null);
   const hasRouteMetaIcons = hasTopo || hasCoordinates || showImages || showMovies;
   /** Stars (incl. 0★ outline) only once the route has community ticks — avoids noise on unclimbed lines. */
   const showStarsWidget = tickCount > 0;
@@ -204,30 +206,41 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
     )
   ) : null;
 
-  const metaTailBlock =
-    sectorMeta || rockLine || faEl || commentEl ? (
+  const metaTailBlock = compact ? (
+    sectorMeta || faEl ? (
       <span className={problemListRowMetaTailClass}>
         {sectorMeta}
-        {sectorMeta && (rockLine || faEl || commentEl) ? (
-          <span className={problemListRowPipeSepClass} aria-hidden>
-            |
-          </span>
-        ) : null}
-        {rockLine}
-        {rockLine && (faEl || commentEl) ? (
+        {sectorMeta && faEl ? (
           <span className={problemListRowPipeSepClass} aria-hidden>
             |
           </span>
         ) : null}
         {faEl}
-        {faEl && commentEl ? (
-          <span className={problemListRowPipeSepClass} aria-hidden>
-            |
-          </span>
-        ) : null}
-        {commentEl}
       </span>
-    ) : null;
+    ) : null
+  ) : sectorMeta || rockLine || faEl || commentEl ? (
+    <span className={problemListRowMetaTailClass}>
+      {sectorMeta}
+      {sectorMeta && (rockLine || faEl || commentEl) ? (
+        <span className={problemListRowPipeSepClass} aria-hidden>
+          |
+        </span>
+      ) : null}
+      {rockLine}
+      {rockLine && (faEl || commentEl) ? (
+        <span className={problemListRowPipeSepClass} aria-hidden>
+          |
+        </span>
+      ) : null}
+      {faEl}
+      {faEl && commentEl ? (
+        <span className={problemListRowPipeSepClass} aria-hidden>
+          |
+        </span>
+      ) : null}
+      {commentEl}
+    </span>
+  ) : null;
 
   /** `|` between grade and trad + stars/topo/media cluster (only when a grade is shown). */
   const showPipeAfterGradeBeforeMediaCluster = !!problem.grade && (!!passiveGearAfterGrade || !!ratingIconsBlock);
@@ -250,17 +263,31 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
     const parts: string[] = [];
     const faNamesTitle = normalizeFaPeopleSeparators((problem.fa ?? '').trim());
     const faYearTitle = problem.faDate && problem.faDate.length >= 4 ? problem.faDate.slice(0, 4) : '';
-    const faLineTitle = [faNamesTitle, faYearTitle].filter(Boolean).join(' ');
+    const faLineTitle = [
+      compact ? compactFaPeopleNames((problem.fa ?? '').trim()) : faNamesTitle,
+      compact ? compactFaYear(problem.faDate) : faYearTitle,
+    ]
+      .filter(Boolean)
+      .join(' ');
     if (faLineTitle) parts.push(faLineTitle);
     if (isClimbing && (problem.numPitches ?? 1) > 1) {
       parts.push(`${problem.numPitches} pitches`);
     }
     const n = problem.numTicks ?? 0;
     if (n > 0) parts.push(n === 1 ? '1 tick' : `${n} ticks`);
-    if (problem.rock) parts.push(`Rock: ${problem.rock}`);
-    if (commentTrimmed) parts.push(commentTrimmed);
+    if (!compact && problem.rock) parts.push(`Rock: ${problem.rock}`);
+    if (!compact && commentTrimmed) parts.push(commentTrimmed);
     return parts.join(' | ');
-  }, [commentTrimmed, isClimbing, problem.fa, problem.faDate, problem.numPitches, problem.numTicks, problem.rock]);
+  }, [
+    commentTrimmed,
+    compact,
+    isClimbing,
+    problem.fa,
+    problem.faDate,
+    problem.numPitches,
+    problem.numTicks,
+    problem.rock,
+  ]);
 
   return (
     <div className={cn(problemListRowRootClass, 'min-w-0 py-0.5 sm:py-1')}>
@@ -964,7 +991,13 @@ const Area = () => {
                 })}
               </div>
             ) : (
-              <ProblemList storageKey={`area/${areaId}`} mode='sector' defaultOrder='grade-desc' rows={problemRows} />
+              <ProblemList
+                storageKey={`area/${areaId}`}
+                mode='sector'
+                defaultOrder='grade-desc'
+                rows={problemRows}
+                enableViewModeToggle
+              />
             )}
           </div>
         </Card>
