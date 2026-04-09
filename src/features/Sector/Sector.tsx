@@ -612,7 +612,7 @@ const Sector = () => {
       <title>{`${data.name} (${data.areaName}) | ${meta?.title}`}</title>
       <meta name='description' content={data.comment} />
 
-      <div className='mb-3 min-w-0 space-y-3 pt-1 sm:mb-4 sm:space-y-2 sm:pt-1 lg:pt-0'>
+      <div className='mb-3 min-w-0 space-y-2 pt-1 sm:mb-4 sm:space-y-2 sm:pt-1 lg:pt-0'>
         <PageCardBreadcrumbRow
           className='mb-0'
           breadcrumb={
@@ -631,83 +631,6 @@ const Sector = () => {
                   {data.areaName}
                 </Link>
                 <LockSymbol lockedAdmin={!!data.areaLockedAdmin} lockedSuperadmin={!!data.areaLockedSuperadmin} />
-                <ChevronRight size={12} className='shrink-0 translate-y-px opacity-30' aria-hidden />
-                {(data.sectors ?? []).length > 1 ? (
-                  <div className='relative inline-flex max-w-full min-w-0' ref={sectorPickerRef}>
-                    <button
-                      type='button'
-                      aria-expanded={sectorPickerOpen}
-                      aria-haspopup='listbox'
-                      aria-label={`Sector: ${data.name}. Open list of sectors in this area.`}
-                      onClick={() => setSectorPickerOpen((o) => !o)}
-                      className={cn(
-                        'group inline-flex max-w-full min-w-0 items-baseline gap-1 rounded-md border-0 bg-transparent py-0.5 text-left font-semibold text-slate-50 transition-[color,background-color,box-shadow]',
-                        'light:text-slate-950 light:hover:text-slate-950 hover:text-slate-100',
-                        'hover:bg-surface-raised-hover/70',
-                        /* Light: stronger hover wash + hairline so it reads clearly on pale cards */
-                        'light:hover:bg-slate-300/85 light:hover:shadow-sm light:hover:ring-1 light:hover:ring-slate-500/25',
-                        designContract.typography.breadcrumb,
-                        'focus-visible:ring-brand-border/70 focus-visible:rounded-sm focus-visible:ring-2 focus-visible:outline-none',
-                        sectorPickerOpen &&
-                          'bg-surface-raised-hover/70 light:bg-slate-300/85 light:shadow-sm light:ring-1 light:ring-slate-500/20',
-                      )}
-                    >
-                      <span className='min-w-0 text-pretty break-words'>{data.name}</span>
-                      <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
-                      <ChevronDown
-                        size={11}
-                        strokeWidth={2.25}
-                        className={cn(
-                          'shrink-0 text-slate-500 transition-transform group-hover:text-slate-300',
-                          'light:text-slate-600',
-                          twInk.lightGroupHoverSlate900,
-                          sectorPickerOpen && 'rotate-180',
-                        )}
-                        aria-hidden
-                      />
-                    </button>
-                    {sectorPickerOpen && (
-                      <ul
-                        className='border-surface-border bg-surface-card ring-surface-border/50 absolute top-[calc(100%+0.35rem)] left-0 z-[100] max-h-64 w-max max-w-[min(18rem,calc(100dvw-2rem))] min-w-0 overflow-auto rounded-2xl border py-1 shadow-2xl ring-1'
-                        role='listbox'
-                      >
-                        {(data.sectors ?? []).map((s) => {
-                          const current = data.id === s.id;
-                          return (
-                            <li key={s.id} role='option' aria-selected={current}>
-                              <Link
-                                to={`/sector/${s.id}`}
-                                className={cn(
-                                  'flex min-w-0 items-center gap-2 px-3 py-2 text-sm transition-colors',
-                                  current
-                                    ? 'bg-surface-raised-hover light:text-slate-950 font-medium text-slate-100'
-                                    : cn(
-                                        'hover:bg-surface-raised-hover text-slate-400 hover:text-slate-200',
-                                        twInk.lightHoverSlate900,
-                                      ),
-                                )}
-                                onClick={() => setSectorPickerOpen(false)}
-                              >
-                                <LockSymbol lockedAdmin={!!s.lockedAdmin} lockedSuperadmin={!!s.lockedSuperadmin} />
-                                <span className='min-w-0 truncate'>{s.name}</span>
-                              </Link>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    )}
-                  </div>
-                ) : (
-                  <span
-                    className={cn(
-                      'light:text-slate-950 inline-flex max-w-full min-w-0 items-baseline gap-1 font-semibold text-slate-50',
-                      designContract.typography.breadcrumb,
-                    )}
-                  >
-                    <span className='min-w-0 text-pretty break-words'>{data.name}</span>
-                    <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
-                  </span>
-                )}
               </nav>
             </>
           }
@@ -742,6 +665,75 @@ const Sector = () => {
             ) : null
           }
         />
+        {(data.sectors ?? []).length > 1 ? (
+          <h1 className='relative m-0 inline-flex max-w-full min-w-0' ref={sectorPickerRef}>
+            <button
+              type='button'
+              aria-expanded={sectorPickerOpen}
+              aria-haspopup='listbox'
+              aria-label={`Sector: ${data.name}. Open list of sectors in this area.`}
+              onClick={() => setSectorPickerOpen((o) => !o)}
+              className={cn(
+                'group inline-flex max-w-full min-w-0 items-baseline gap-1 rounded-md border-0 bg-transparent py-0.5 text-left text-[15px] leading-snug font-semibold tracking-tight text-slate-50 transition-[color,background-color,box-shadow] sm:text-[16px]',
+                'light:text-slate-950 light:hover:text-slate-950 hover:text-slate-100',
+                'hover:bg-surface-raised-hover/70',
+                'light:hover:bg-slate-300/85 light:hover:shadow-sm light:hover:ring-1 light:hover:ring-slate-500/25',
+                'focus-visible:ring-brand-border/70 focus-visible:rounded-sm focus-visible:ring-2 focus-visible:outline-none',
+                sectorPickerOpen &&
+                  'bg-surface-raised-hover/70 light:bg-slate-300/85 light:shadow-sm light:ring-1 light:ring-slate-500/20',
+              )}
+            >
+              <span className='min-w-0 text-pretty break-words'>{data.name}</span>
+              <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
+              <ChevronDown
+                size={11}
+                strokeWidth={2.25}
+                className={cn(
+                  'shrink-0 text-slate-500 transition-transform group-hover:text-slate-300',
+                  'light:text-slate-600',
+                  twInk.lightGroupHoverSlate900,
+                  sectorPickerOpen && 'rotate-180',
+                )}
+                aria-hidden
+              />
+            </button>
+            {sectorPickerOpen && (
+              <ul
+                className='border-surface-border bg-surface-card ring-surface-border/50 absolute top-[calc(100%+0.35rem)] left-0 z-[100] max-h-64 w-max max-w-[min(18rem,calc(100dvw-2rem))] min-w-0 overflow-auto rounded-2xl border py-1 shadow-2xl ring-1'
+                role='listbox'
+              >
+                {(data.sectors ?? []).map((s) => {
+                  const current = data.id === s.id;
+                  return (
+                    <li key={s.id} role='option' aria-selected={current}>
+                      <Link
+                        to={`/sector/${s.id}`}
+                        className={cn(
+                          'flex min-w-0 items-center gap-2 px-3 py-2 text-sm transition-colors',
+                          current
+                            ? 'bg-surface-raised-hover light:text-slate-950 font-medium text-slate-100'
+                            : cn(
+                                'hover:bg-surface-raised-hover text-slate-400 hover:text-slate-200',
+                                twInk.lightHoverSlate900,
+                              ),
+                        )}
+                        onClick={() => setSectorPickerOpen(false)}
+                      >
+                        <LockSymbol lockedAdmin={!!s.lockedAdmin} lockedSuperadmin={!!s.lockedSuperadmin} />
+                        <span className='min-w-0 truncate'>{s.name}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </h1>
+        ) : (
+          <h1 className='light:text-slate-950 m-0 inline-flex max-w-full min-w-0 items-baseline gap-1.5 text-[15px] leading-snug font-semibold tracking-tight text-slate-50 sm:text-[16px]'>
+            <span className='min-w-0 text-pretty break-words'>{data.name}</span>
+            <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
+          </h1>
+        )}
       </div>
 
       <Card flush className='min-w-0 border-0 shadow-sm'>

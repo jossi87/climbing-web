@@ -27,7 +27,7 @@ import { ProblemAscentOverview } from './ProblemAscentOverview';
 import { ProblemNeighboursRow } from './ProblemNeighboursRow';
 import { ProblemBoulderRockOrNeighboursRow } from './ProblemBoulderRockOrNeighboursRow';
 import { DownloadButton } from '../../shared/ui/DownloadButton';
-import { Card } from '../../shared/ui';
+import { Card, PageCardBreadcrumbRow } from '../../shared/ui';
 import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
 import {
   tabBarButtonClassName,
@@ -376,168 +376,161 @@ export const Problem = () => {
         />
       )}
 
-      <nav aria-label='Breadcrumb' className='mb-3 min-w-0 pt-1 sm:mb-4 sm:pt-1 lg:pt-0'>
-        {/*
-         * Float actions right; breadcrumb links + # / name / grade flow like a paragraph. The title (`#` + name +
-         * grade) is an `inline-block` so it wraps as one unit beside the float. **Keep actions on a single row** —
-         * if the float spans multiple rows, text stays indented beside it (no full-width lines under the buttons).
-         */}
-        <div className='flow-root min-w-0'>
-          {meta.isAuthenticated ? (
-            <div
+      <div className='mb-3 min-w-0 space-y-2 pt-1 sm:mb-4 sm:pt-1 lg:pt-0'>
+        <PageCardBreadcrumbRow
+          className='mb-0'
+          breadcrumb={
+            <nav
               className={cn(
-                'float-right ml-1.5 flex max-w-full flex-nowrap items-center justify-end gap-0.5 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] sm:ml-2 sm:gap-1 sm:pt-0.5 [&::-webkit-scrollbar]:hidden',
-                '[&_a]:max-sm:h-5 [&_a]:max-sm:w-5 [&_button]:max-sm:h-5 [&_button]:max-sm:w-5 [&_svg]:max-sm:!h-2 [&_svg]:max-sm:!w-2',
+                'flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-2 text-pretty break-words',
+                designContract.typography.breadcrumb,
               )}
+              aria-label='Breadcrumb'
             >
-              {!isTicked && (
+              <Link to='/areas' className={designContract.typography.breadcrumbLink}>
+                Areas
+              </Link>
+              <ChevronRight size={12} className='shrink-0 translate-y-px opacity-30' aria-hidden />
+              <Link to={`/area/${data.areaId}`} className={designContract.typography.breadcrumbLink}>
+                {data.areaName}
+              </Link>
+              <LockSymbol lockedAdmin={!!data.areaLockedAdmin} lockedSuperadmin={!!data.areaLockedSuperadmin} />
+              <ChevronRight size={12} className='shrink-0 translate-y-px opacity-30' aria-hidden />
+              <Link to={`/sector/${data.sectorId}`} className={designContract.typography.breadcrumbLink}>
+                {data.sectorName}
+              </Link>
+              <LockSymbol lockedAdmin={!!data.sectorLockedAdmin} lockedSuperadmin={!!data.sectorLockedSuperadmin} />
+            </nav>
+          }
+          actions={
+            meta.isAuthenticated ? (
+              <>
+                {!isTicked && (
+                  <button
+                    type='button'
+                    title='Todo'
+                    data-ph-action={optimisticTodo ? 'todo-on' : undefined}
+                    onClick={handleToggleTodo}
+                    disabled={isPending}
+                    className={cn(
+                      designContract.controls.pageHeaderIconButton,
+                      optimisticTodo
+                        ? designContract.ascentStatus.todoButtonOn
+                        : 'bg-surface-raised hover:bg-surface-raised-hover border-white/12 text-slate-300 hover:border-white/18',
+                    )}
+                  >
+                    <Bookmark
+                      className={designContract.controls.pageHeaderIconGlyph}
+                      fill={optimisticTodo ? 'currentColor' : 'none'}
+                      strokeWidth={2.25}
+                    />
+                  </button>
+                )}
                 <button
                   type='button'
-                  title='Todo'
-                  data-ph-action={optimisticTodo ? 'todo-on' : undefined}
-                  onClick={handleToggleTodo}
-                  disabled={isPending}
+                  title={isTicked ? 'Edit tick' : 'Tick'}
+                  data-ph-action={isTicked ? 'tick-on' : undefined}
+                  onClick={() => setShowTickModal(true)}
                   className={cn(
                     designContract.controls.pageHeaderIconButton,
-                    optimisticTodo
-                      ? designContract.ascentStatus.todoButtonOn
+                    isTicked
+                      ? designContract.ascentStatus.tickButtonOn
                       : 'bg-surface-raised hover:bg-surface-raised-hover border-white/12 text-slate-300 hover:border-white/18',
                   )}
                 >
-                  <Bookmark
-                    className={designContract.controls.pageHeaderIconGlyph}
-                    fill={optimisticTodo ? 'currentColor' : 'none'}
-                    strokeWidth={2.25}
-                  />
+                  <Check className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
                 </button>
-              )}
-              <button
-                type='button'
-                title={isTicked ? 'Edit tick' : 'Tick'}
-                data-ph-action={isTicked ? 'tick-on' : undefined}
-                onClick={() => setShowTickModal(true)}
-                className={cn(
-                  designContract.controls.pageHeaderIconButton,
-                  isTicked
-                    ? designContract.ascentStatus.tickButtonOn
-                    : 'bg-surface-raised hover:bg-surface-raised-hover border-white/12 text-slate-300 hover:border-white/18',
-                )}
-              >
-                <Check className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
-              </button>
-              <button
-                type='button'
-                title='Comment'
-                onClick={() => setShowCommentModal({ id: -1, danger: false, resolved: false })}
-                className={cn(
-                  designContract.controls.pageHeaderIconButton,
-                  'bg-surface-raised hover:bg-surface-raised-hover border-white/12 text-slate-300 hover:border-white/18',
-                )}
-              >
-                <MessageSquare className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.25} />
-              </button>
-              {(meta.isAdmin || meta.isSuperAdmin) && (
                 <button
                   type='button'
-                  title={showHiddenMedia ? 'Showing hidden media' : 'Show hidden media'}
-                  onClick={() => setShowHiddenMedia(!showHiddenMedia)}
+                  title='Comment'
+                  onClick={() => setShowCommentModal({ id: -1, danger: false, resolved: false })}
                   className={cn(
                     designContract.controls.pageHeaderIconButton,
-                    showHiddenMedia
-                      ? 'border-brand-border bg-brand/20 text-brand hover:bg-brand/30'
-                      : 'bg-surface-raised hover:bg-surface-raised-hover border-white/12 text-slate-300 hover:border-white/18',
+                    'bg-surface-raised hover:bg-surface-raised-hover border-white/12 text-slate-300 hover:border-white/18',
                   )}
                 >
-                  <Eye className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.25} />
+                  <MessageSquare className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.25} />
                 </button>
-              )}
-              {(meta.isAdmin || meta.isSuperAdmin) && (
-                <Link
-                  to={`/problem/edit/${data.sectorId}/${data.id}`}
-                  title='Edit problem'
-                  aria-label='Edit problem'
-                  data-ph-action='edit'
-                  className={cn(
-                    designContract.controls.pageHeaderIconButton,
-                    designContract.controls.pageHeaderIconButtonEdit,
-                  )}
-                >
-                  <Edit className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
-                </Link>
-              )}
-              {!meta.isAdmin && !meta.isSuperAdmin && (
-                <Link
-                  to={`/problem/edit/media/${data.id}`}
-                  title='Add media'
-                  aria-label='Add media'
-                  data-ph-action='add'
-                  className={cn(
-                    designContract.controls.pageHeaderIconButton,
-                    designContract.controls.pageHeaderIconButtonAdd,
-                  )}
-                >
-                  <Plus className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
-                </Link>
-              )}
-            </div>
-          ) : null}
-          <p
-            className={cn('m-0 min-w-0 [overflow-wrap:anywhere] break-words', designContract.typography.breadcrumb)}
-            aria-current='page'
-          >
-            <Link to='/areas' className={designContract.typography.breadcrumbLink}>
-              Areas
-            </Link>{' '}
-            <ChevronRight size={12} className='inline-block shrink-0 translate-y-px opacity-30' aria-hidden />{' '}
-            <Link to={`/area/${data.areaId}`} className={designContract.typography.breadcrumbLink}>
-              {data.areaName}
-            </Link>
-            <LockSymbol lockedAdmin={!!data.areaLockedAdmin} lockedSuperadmin={!!data.areaLockedSuperadmin} />{' '}
-            <ChevronRight size={12} className='inline-block shrink-0 translate-y-px opacity-30' aria-hidden />{' '}
-            <Link to={`/sector/${data.sectorId}`} className={designContract.typography.breadcrumbLink}>
-              {data.sectorName}
-            </Link>
-            <LockSymbol lockedAdmin={!!data.sectorLockedAdmin} lockedSuperadmin={!!data.sectorLockedSuperadmin} />{' '}
-            <ChevronRight size={12} className='inline-block shrink-0 translate-y-px opacity-30' aria-hidden />{' '}
-            {hasDanger ? (
-              <span
-                className='inline-block align-baseline'
-                role='img'
-                aria-label='Danger reported for this route'
-                title='Danger reported for this route'
-              >
-                <AlertTriangle
-                  size={14}
-                  className={cn('inline-block shrink-0', designContract.ascentStatus.dangerous)}
-                  strokeWidth={2.25}
-                  aria-hidden
-                />
-              </span>
-            ) : null}{' '}
-            {/*
-             * `inline-block` keeps # + name + grade (+ lock) one wrapping unit next to the floated actions: the chunk
-             * moves down together instead of splitting `#11` from the title on the previous line.
-             */}
-            <span className='inline-block max-w-full align-baseline [overflow-wrap:anywhere] break-words'>
-              <span className='font-mono text-slate-400 tabular-nums'>#{data.nr}</span>{' '}
-              <span
-                className={cn(
-                  'font-semibold tracking-tight',
-                  data.ticked
-                    ? designContract.ascentStatus.ticked
-                    : optimisticTodo
-                      ? designContract.ascentStatus.todo
-                      : 'light:text-slate-950 text-slate-50',
+                {(meta.isAdmin || meta.isSuperAdmin) && (
+                  <button
+                    type='button'
+                    title={showHiddenMedia ? 'Showing hidden media' : 'Show hidden media'}
+                    onClick={() => setShowHiddenMedia(!showHiddenMedia)}
+                    className={cn(
+                      designContract.controls.pageHeaderIconButton,
+                      showHiddenMedia
+                        ? 'border-brand-border bg-brand/20 text-brand hover:bg-brand/30'
+                        : 'bg-surface-raised hover:bg-surface-raised-hover border-white/12 text-slate-300 hover:border-white/18',
+                    )}
+                  >
+                    <Eye className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.25} />
+                  </button>
                 )}
-              >
-                {data.name}
-              </span>{' '}
-              <span className='font-mono font-medium text-slate-300 tabular-nums'>{data.grade}</span>{' '}
-              <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
+                {(meta.isAdmin || meta.isSuperAdmin) && (
+                  <Link
+                    to={`/problem/edit/${data.sectorId}/${data.id}`}
+                    title='Edit problem'
+                    aria-label='Edit problem'
+                    data-ph-action='edit'
+                    className={cn(
+                      designContract.controls.pageHeaderIconButton,
+                      designContract.controls.pageHeaderIconButtonEdit,
+                    )}
+                  >
+                    <Edit className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
+                  </Link>
+                )}
+                {!meta.isAdmin && !meta.isSuperAdmin && (
+                  <Link
+                    to={`/problem/edit/media/${data.id}`}
+                    title='Add media'
+                    aria-label='Add media'
+                    data-ph-action='add'
+                    className={cn(
+                      designContract.controls.pageHeaderIconButton,
+                      designContract.controls.pageHeaderIconButtonAdd,
+                    )}
+                  >
+                    <Plus className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
+                  </Link>
+                )}
+              </>
+            ) : null
+          }
+        />
+        <h1 className='light:text-slate-950 m-0 inline-flex max-w-full min-w-0 items-baseline gap-1.5 text-[15px] leading-snug font-semibold tracking-tight text-slate-50 sm:text-[16px]'>
+          {hasDanger ? (
+            <span
+              className='inline-block align-baseline'
+              role='img'
+              aria-label='Danger reported for this route'
+              title='Danger reported for this route'
+            >
+              <AlertTriangle
+                size={14}
+                className={cn('inline-block shrink-0', designContract.ascentStatus.dangerous)}
+                strokeWidth={2.25}
+                aria-hidden
+              />
             </span>
-          </p>
-        </div>
-      </nav>
+          ) : null}
+          <span className='font-mono font-medium text-slate-300 tabular-nums'>#{data.nr}</span>
+          <span
+            className={cn(
+              'min-w-0 text-pretty break-words',
+              data.ticked
+                ? designContract.ascentStatus.ticked
+                : optimisticTodo
+                  ? designContract.ascentStatus.todo
+                  : 'light:text-slate-950 text-slate-50',
+            )}
+          >
+            {data.name}
+          </span>
+          <span className='font-mono font-medium text-slate-300 tabular-nums'>{data.grade}</span>
+          <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
+        </h1>
+      </div>
 
       <Card flush className='min-w-0 border-0 shadow-sm'>
         {showMapTab ? (

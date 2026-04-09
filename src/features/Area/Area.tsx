@@ -25,7 +25,6 @@ import { climbingRouteUsesPassiveGear, formatRouteTypeLabel } from '../../utils/
 import { compactFaPeopleNames, compactFaYear, normalizeFaPeopleSeparators } from '../../utils/firstAscentDisplay';
 import {
   Check,
-  ChevronRight,
   Plus,
   Edit,
   AlertTriangle,
@@ -602,7 +601,7 @@ const Area = () => {
       <title>{`${data.name} | ${meta?.title}`}</title>
       <meta name='description' content={data.comment} />
 
-      <div className='mb-3 min-w-0 space-y-3 pt-1 sm:mb-4 sm:space-y-2 sm:pt-1 lg:pt-0'>
+      <div className='mb-3 min-w-0 space-y-2 pt-1 sm:mb-4 sm:space-y-2 sm:pt-1 lg:pt-0'>
         <PageCardBreadcrumbRow
           className='mb-0'
           breadcrumb={
@@ -615,11 +614,6 @@ const Area = () => {
               <Link to='/areas' className={designContract.typography.breadcrumbLink}>
                 Areas
               </Link>
-              <ChevronRight size={12} className='shrink-0 translate-y-px opacity-30' aria-hidden />
-              <span className='inline-flex max-w-full min-w-0 items-baseline gap-1.5'>
-                <span className='light:text-slate-950 min-w-0 font-semibold text-slate-50'>{data.name}</span>
-                <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
-              </span>
             </nav>
           }
           actions={
@@ -653,6 +647,10 @@ const Area = () => {
             ) : null
           }
         />
+        <h1 className='light:text-slate-950 m-0 inline-flex max-w-full min-w-0 items-baseline gap-1.5 text-[15px] leading-snug font-semibold tracking-tight text-slate-50 sm:text-[16px]'>
+          <span className='min-w-0 text-pretty break-words'>{data.name}</span>
+          <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
+        </h1>
       </div>
 
       <Card flush className='min-w-0 border-0'>

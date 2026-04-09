@@ -237,7 +237,7 @@ const activityRowClass = cn(designContract.typography.listBody, designContract.t
 
 const activityCommentClass = cn(
   designContract.typography.listBody,
-  'break-words italic text-slate-50 antialiased light:text-slate-800',
+  'break-words text-slate-300 antialiased light:text-slate-800',
 );
 
 const FilterButton = ({ active, onClick, icon: Icon, label, labelNarrow }: FilterButtonProps) => (
@@ -314,12 +314,13 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
   const hasText = hasComment || hasDescription;
   const hasFaUsers = !!(a.users && a.users.length > 0);
   const faAuthorsInHeadline = !!(a.users && a.users.length > 0 && !a.repeat);
-  const hasStarsCommentLine = hasStars || hasText;
-  const hasSecondaryBlock = hasStarsCommentLine || (hasFaUsers && !faAuthorsInHeadline);
+  const hasStarsLine = hasStars;
+  const hasTextLine = hasText;
+  const hasSecondaryBlock = hasStarsLine || hasTextLine || (hasFaUsers && !faAuthorsInHeadline);
   const gapAfterHeadline = 'mt-1';
   const faLineGap = 'mt-1 md:mt-1';
   const gapAfterBlock = hasSecondaryBlock ? 'mt-2 md:mt-2' : 'mt-1.5';
-  const commentCellClass = cn(activityCommentClass, hasText && 'w-fit max-w-full min-w-0');
+  const commentCellClass = cn(activityCommentClass, hasText && 'w-full min-w-0');
 
   return (
     <div className={cn('group', designContract.surfaces.panelRow, pad)}>
@@ -339,18 +340,16 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
             userLinkClass={userLinkClass}
           />
 
-          {hasStarsCommentLine ? (
-            <div
-              className={cn(
-                'flex w-full min-w-0 flex-wrap items-baseline justify-start gap-x-2 gap-y-0.5',
-                gapAfterHeadline,
-              )}
-            >
-              {hasStars ? (
-                <span className='inline-flex shrink-0 items-center leading-none'>
-                  <Stars numStars={a.stars!} size={12} />
-                </span>
-              ) : null}
+          {hasStarsLine ? (
+            <div className={cn('flex w-full min-w-0 items-baseline justify-start', gapAfterHeadline)}>
+              <span className='inline-flex shrink-0 items-center leading-none'>
+                <Stars numStars={a.stars!} size={12} />
+              </span>
+            </div>
+          ) : null}
+
+          {hasTextLine ? (
+            <div className={cn('w-full min-w-0', hasStarsLine ? 'mt-1' : gapAfterHeadline)}>
               {hasComment ? (
                 <div className={commentCellClass}>
                   <Linkify>{a.message}</Linkify>
@@ -362,7 +361,7 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
           ) : null}
 
           {hasFaUsers && !faAuthorsInHeadline ? (
-            <div className={cn('w-full min-w-0', hasStarsCommentLine ? faLineGap : gapAfterHeadline)}>
+            <div className={cn('w-full min-w-0', hasStarsLine || hasTextLine ? faLineGap : gapAfterHeadline)}>
               <span
                 className={cn(
                   activityRowClass,
