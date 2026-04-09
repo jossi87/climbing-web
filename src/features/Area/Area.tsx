@@ -836,9 +836,9 @@ const Area = () => {
               </span>
             </button>
           </div>
-          <div className='min-w-0 p-4 sm:p-5'>
+          <div className='min-w-0'>
             {activeSectorTab === 'sectors' ? (
-              <div className={cn('min-w-0', designContract.layout.areaSectorCardGrid)}>
+              <div className={cn('min-w-0 p-4 sm:p-5', designContract.layout.areaSectorCardGrid)}>
                 {data.sectors?.map((sector) => {
                   const sectorHasThumb = !!sector.randomMediaId;
                   /** Thumbnails + dark placeholders: light ink remaps break `text-slate-*`; use overlay tokens or `light:` for empty tiles. */
@@ -987,6 +987,8 @@ const Area = () => {
               </div>
             ) : (
               <ProblemList
+                detachToolbar
+                wrapDetachedContent={(inner) => <div className='p-4 sm:p-5'>{inner}</div>}
                 storageKey={`area/${areaId}`}
                 mode='sector'
                 defaultOrder='grade-desc'

@@ -9,7 +9,11 @@ import { Avatar, AvatarGroup, Card, SectionLabel } from '../../ui';
 import { Stars } from '../../ui/Indicators';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
-import { twInk } from '../../../design/twInk';
+import {
+  activityFilterChipBase,
+  activityFilterChipOff,
+  activityFilterChipOn,
+} from '../../../design/activityFilterChips';
 import { ActivityFeedMetaRow } from './ActivityFeedMetaRow';
 import { LazyMedia } from './components/LazyMedia';
 import type { components } from '../../../@types/buldreinfo/swagger';
@@ -107,7 +111,7 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
           <div className='relative shrink-0' ref={filterRef}>
             <button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
-              className={cn(activityChipBase, filterTypeChipOn, 'min-w-0 max-sm:max-w-[min(100%,8.5rem)]')}
+              className={cn(activityFilterChipBase, activityFilterChipOn, 'min-w-0 max-sm:max-w-[min(100%,8.5rem)]')}
               aria-expanded={isFilterOpen}
               type='button'
             >
@@ -228,22 +232,6 @@ type FilterButtonProps = {
   labelNarrow?: string;
 };
 
-/** Roomier pills on `sm+`; keep phones compact so one row still fits. */
-const activityChipBase = cn(
-  'inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full border px-2.5 leading-none transition-[background-color,color,transform,border-color] duration-200 active:scale-95 sm:h-8 sm:gap-2 sm:px-4',
-  designContract.typography.uiCompact,
-);
-/**
- * Type toggles (FA / Ticks / Media / Com): same neutral “on” as before; “off” reads clearly recessed vs {@link filterTypeChipOn}.
- */
-const filterTypeChipOff = cn(
-  'border border-surface-border/70 bg-surface-raised/55 text-slate-500 hover:border-surface-border hover:bg-surface-raised hover:text-slate-300 light:border-slate-300/90 light:bg-slate-100/70 light:text-slate-600 light:hover:border-slate-400 light:hover:bg-slate-200',
-  twInk.lightHoverSlate800,
-);
-const filterTypeChipOn = cn(
-  'border-surface-border bg-surface-card text-slate-100 shadow-sm transition-[background-color,border-color,color] hover:border-white/25 light:border-slate-400/75 light:bg-surface-card light:text-slate-950 light:hover:border-slate-500/80',
-);
-
 /** Single rhythm + {@link designContract.typography.feed} body tone (calm on dark `surface-card`). */
 const activityRowClass = cn(designContract.typography.listBody, designContract.typography.feed.sentence);
 
@@ -252,7 +240,7 @@ const activityCommentClass = cn(designContract.typography.listBody, 'break-words
 const FilterButton = ({ active, onClick, icon: Icon, label, labelNarrow }: FilterButtonProps) => (
   <button
     onClick={onClick}
-    className={cn(activityChipBase, active ? filterTypeChipOn : filterTypeChipOff)}
+    className={cn(activityFilterChipBase, active ? activityFilterChipOn : activityFilterChipOff)}
     aria-pressed={active}
     {...(labelNarrow ? { 'aria-label': label } : {})}
     type='button'

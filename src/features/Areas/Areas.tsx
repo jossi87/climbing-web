@@ -84,7 +84,7 @@ const Areas = () => {
                   designContract.controls.pageHeaderIconButtonAdd,
                 )}
               >
-                <Plus size={12} />
+                <Plus className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
               </Link>
             )}
           </div>

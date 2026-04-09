@@ -27,6 +27,9 @@ const footerColumnHeadingClass =
 const navCardSubtitleClass =
   'block text-[10px] font-normal leading-snug tracking-normal text-slate-500 sm:text-[11px] light:text-slate-600';
 
+/** Legal links + copyright: one step under default `type-label` (12px); shared scale so the row matches the line below. */
+const footerLegalTextClass = cn(designContract.typography.label, 'text-[11px] leading-tight sm:text-[12px]');
+
 type NavCardProps = {
   to?: string;
   href?: string;
@@ -181,35 +184,40 @@ const Footer = () => {
             designContract.surfaces.shellHairlineInner,
           )}
         >
-          <div className={cn('flex flex-wrap justify-center gap-x-6 gap-y-3', designContract.typography.label)}>
+          <div
+            className={cn(
+              'flex max-w-full min-w-0 flex-nowrap items-center justify-center gap-x-1 sm:gap-x-3 md:gap-x-5',
+              footerLegalTextClass,
+            )}
+          >
             <a
               href='mailto:jostein.oygarden@gmail.com'
-              className='hover:text-brand hover:decoration-brand/55 light:text-slate-600 light:decoration-slate-400/55 light:hover:bg-slate-300/55 light:hover:decoration-brand/60 flex items-center gap-1.5 rounded-md px-1.5 py-0.5 font-bold text-slate-300 underline decoration-white/22 underline-offset-4 transition-[color,background-color,text-decoration-color] duration-200 hover:bg-white/[0.07]'
+              className='hover:text-brand hover:decoration-brand/55 light:text-slate-600 light:decoration-slate-400/55 light:hover:bg-slate-300/55 light:hover:decoration-brand/60 flex shrink-0 items-center gap-1 rounded-md px-1 py-0.5 font-bold text-slate-300 underline decoration-white/22 underline-offset-[3px] transition-[color,background-color,text-decoration-color] duration-200 hover:bg-white/[0.07] sm:px-1.5'
             >
-              <Mail size={12} /> Contact
+              <Mail className='h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5' strokeWidth={2} /> Contact
             </a>
             <a
               href='/gpl-3.0.txt'
               target='_blank'
               rel='noreferrer'
-              className='hover:text-brand hover:decoration-brand/55 light:text-slate-600 light:decoration-slate-400/55 light:hover:bg-slate-300/55 light:hover:decoration-brand/60 flex items-center gap-1.5 rounded-md px-1.5 py-0.5 font-bold text-slate-300 underline decoration-white/22 underline-offset-4 transition-[color,background-color,text-decoration-color] duration-200 hover:bg-white/[0.07]'
+              className='hover:text-brand hover:decoration-brand/55 light:text-slate-600 light:decoration-slate-400/55 light:hover:bg-slate-300/55 light:hover:decoration-brand/60 flex shrink-0 items-center gap-1 rounded-md px-1 py-0.5 font-bold text-slate-300 underline decoration-white/22 underline-offset-[3px] transition-[color,background-color,text-decoration-color] duration-200 hover:bg-white/[0.07] sm:px-1.5'
             >
-              <FileText size={12} /> License
+              <FileText className='h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5' strokeWidth={2} /> License
             </a>
             <a
               href='/privacy-policy'
-              className='hover:text-brand hover:decoration-brand/55 light:text-slate-600 light:decoration-slate-400/55 light:hover:bg-slate-300/55 light:hover:decoration-brand/60 flex items-center gap-1.5 rounded-md px-1.5 py-0.5 font-bold text-slate-300 underline decoration-white/22 underline-offset-4 transition-[color,background-color,text-decoration-color] duration-200 hover:bg-white/[0.07]'
+              className='hover:text-brand hover:decoration-brand/55 light:text-slate-600 light:decoration-slate-400/55 light:hover:bg-slate-300/55 light:hover:decoration-brand/60 flex shrink-0 items-center gap-1 rounded-md px-1 py-0.5 font-bold text-slate-300 underline decoration-white/22 underline-offset-[3px] transition-[color,background-color,text-decoration-color] duration-200 hover:bg-white/[0.07] sm:px-1.5'
             >
-              <ShieldCheck size={12} /> Privacy
+              <ShieldCheck className='h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5' strokeWidth={2} /> Privacy
             </a>
             <a
               href='/donate'
-              className='hover:text-brand hover:decoration-brand/55 light:text-slate-600 light:decoration-slate-400/55 light:hover:bg-slate-300/55 light:hover:decoration-brand/60 flex items-center gap-1.5 rounded-md px-1.5 py-0.5 font-bold text-slate-300 underline decoration-white/22 underline-offset-4 transition-[color,background-color,text-decoration-color] duration-200 hover:bg-white/[0.07]'
+              className='hover:text-brand hover:decoration-brand/55 light:text-slate-600 light:decoration-slate-400/55 light:hover:bg-slate-300/55 light:hover:decoration-brand/60 flex shrink-0 items-center gap-1 rounded-md px-1 py-0.5 font-bold text-slate-300 underline decoration-white/22 underline-offset-[3px] transition-[color,background-color,text-decoration-color] duration-200 hover:bg-white/[0.07] sm:px-1.5'
             >
-              <Heart size={12} /> Donate
+              <Heart className='h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5' strokeWidth={2} /> Donate
             </a>
           </div>
-          <p className={cn('text-center text-[12px] select-none', designContract.typography.label)}>
+          <p className={cn('text-center select-none', footerLegalTextClass)}>
             Buldreinfo / Bratte Linjer &copy; 2003-{currYear}
           </p>
         </div>

@@ -35,6 +35,7 @@ const Header = () => {
   }));
   const lastScrollYRef = useRef(0);
 
+  /** Keep in sync with `designContract.layout.asideStack` sticky media (Frontpage left column). */
   const isDesktop = viewport.width >= 1024;
   const isTallEnough = viewport.height >= 900;
   const shouldStickHeader = !isDesktop || isTallEnough;

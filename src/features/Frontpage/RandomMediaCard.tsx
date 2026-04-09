@@ -39,7 +39,7 @@ type Props = {
 /** Matches API crop; img is `absolute` so decode/intrinsic size cannot collapse the frame (CLS). */
 const mediaFrameClass = 'relative aspect-[275/250] w-full overflow-hidden bg-surface-card';
 
-const desktopCopyMin = 'hidden min-h-[5.25rem] bg-surface-card p-4 md:block md:min-h-[5.5rem]';
+const desktopCopyMin = 'hidden min-h-[5.25rem] bg-surface-card p-4 md:block md:min-h-[4.75rem] md:px-4 md:py-3';
 
 const SWIPE_PX = 48;
 /** Subtle carousel controls: readable on photos, stronger on card hover / focus. */
@@ -113,7 +113,7 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
           <div className='skeleton-bar absolute inset-0 animate-pulse' />
         </div>
         <div className={desktopCopyMin}>
-          <div className='space-y-3'>
+          <div className='space-y-3 md:space-y-1.5'>
             <div className='flex flex-wrap items-baseline gap-x-2 gap-y-1'>
               <div className='skeleton-bar h-[1.125rem] max-w-[min(100%,14rem)] flex-1 animate-pulse rounded sm:h-5' />
               <div className='skeleton-bar-muted h-3.5 w-10 shrink-0 animate-pulse rounded md:h-4 md:w-11' />
@@ -245,7 +245,7 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
       </div>
 
       <div className={desktopCopyMin}>
-        <div className='space-y-3'>
+        <div className='space-y-3 md:space-y-1.5'>
           <Link
             to={`/problem/${randomMediaItem.idProblem}`}
             className={`${interactiveLinkClass} inline-flex flex-wrap items-baseline gap-x-2 gap-y-1`}
@@ -267,9 +267,9 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
         </div>
 
         {(taggedUsers.length > 0 || showPhotographerByRow) && (
-          <div className='border-surface-border/50 mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 border-t pt-5'>
+          <div className='border-surface-border/50 mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 border-t pt-5 md:mt-4 md:gap-y-2 md:pt-3'>
             {taggedUsers.length > 0 && (
-              <div className='flex items-center gap-3'>
+              <div className='flex items-center gap-3 md:gap-2.5'>
                 <AvatarGroup items={taggedUsers.map((u) => ({ ...u, mediaId: u.mediaId ?? 0 }))} size='mini' max={3} />
                 <div className={metaTextClass}>
                   <Link to={`/user/${taggedUsers[0].id}`} className={interactiveLinkClass}>
@@ -285,7 +285,7 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
               </div>
             )}
             {showPhotographerByRow && photographer ? (
-              <div className='flex items-center gap-2.5'>
+              <div className='flex items-center gap-2.5 md:gap-2'>
                 <ClickableAvatar
                   name={photographer.name}
                   mediaId={photographer.mediaId}

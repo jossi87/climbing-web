@@ -174,7 +174,11 @@ export const SvgViewer = ({
         overflow='visible'
         className={cn(
           'buldreinfo-svg absolute inset-0 h-full w-full select-none',
-          thumb ? 'touch-none' : 'touch-pan-pinch',
+          /**
+           * Thumbs: `touch-none` blocked vertical page scroll on mobile (SVG ate the gesture). Match photo tiles:
+           * don’t capture pointers — the card wrapper handles open; scrolling uses the document/body chain.
+           */
+          thumb ? 'pointer-events-none' : 'touch-pan-pinch',
         )}
         viewBox={`0 0 ${imgW} ${imgH}`}
         /** Thumbs: `meet` (like `object-contain`) so portrait SVG topos aren’t cropped; full view keeps `slice`. */

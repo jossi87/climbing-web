@@ -378,9 +378,9 @@ export const Problem = () => {
 
       <nav aria-label='Breadcrumb' className='mb-3 min-w-0 pt-1 sm:mb-4 sm:pt-1 lg:pt-0'>
         {/*
-         * One continuous text line: float actions right; inline links + # + name + grade flow and wrap like a
-         * paragraph. **Keep actions on a single row** — if the float wraps to multiple rows, its box stays tall and
-         * every line of text stays indented beside it (no full-width lines below the buttons).
+         * Float actions right; breadcrumb links + # / name / grade flow like a paragraph. The title (`#` + name +
+         * grade) is an `inline-block` so it wraps as one unit beside the float. **Keep actions on a single row** —
+         * if the float spans multiple rows, text stays indented beside it (no full-width lines under the buttons).
          */}
         <div className='flow-root min-w-0'>
           {meta.isAuthenticated ? (
@@ -514,21 +514,27 @@ export const Problem = () => {
                 />
               </span>
             ) : null}{' '}
-            <span className='font-mono text-slate-400 tabular-nums'>#{data.nr}</span>{' '}
-            <span
-              className={cn(
-                'font-semibold tracking-tight',
-                data.ticked
-                  ? designContract.ascentStatus.ticked
-                  : optimisticTodo
-                    ? designContract.ascentStatus.todo
-                    : 'light:text-slate-950 text-slate-50',
-              )}
-            >
-              {data.name}
-            </span>{' '}
-            <span className='font-mono font-medium text-slate-300 tabular-nums'>{data.grade}</span>{' '}
-            <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
+            {/*
+             * `inline-block` keeps # + name + grade (+ lock) one wrapping unit next to the floated actions: the chunk
+             * moves down together instead of splitting `#11` from the title on the previous line.
+             */}
+            <span className='inline-block max-w-full align-baseline [overflow-wrap:anywhere] break-words'>
+              <span className='font-mono text-slate-400 tabular-nums'>#{data.nr}</span>{' '}
+              <span
+                className={cn(
+                  'font-semibold tracking-tight',
+                  data.ticked
+                    ? designContract.ascentStatus.ticked
+                    : optimisticTodo
+                      ? designContract.ascentStatus.todo
+                      : 'light:text-slate-950 text-slate-50',
+                )}
+              >
+                {data.name}
+              </span>{' '}
+              <span className='font-mono font-medium text-slate-300 tabular-nums'>{data.grade}</span>{' '}
+              <LockSymbol lockedAdmin={!!data.lockedAdmin} lockedSuperadmin={!!data.lockedSuperadmin} />
+            </span>
           </p>
         </div>
       </nav>

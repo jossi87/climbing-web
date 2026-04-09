@@ -930,66 +930,68 @@ const Sector = () => {
       )}
 
       {effectiveTab === 'overview' && (data.problems?.length ?? 0) > 0 && (
-        <Card flush className='min-w-0 border-0 shadow-sm'>
-          <div className='p-4 sm:p-5'>
-            <ProblemList
-              storageKey={`sector/${sectorId}`}
-              mode='sector'
-              defaultOrder={data.orderByGrade ? 'grade-desc' : 'number'}
-              rows={sectorProblemListRows}
-              enableViewModeToggle
-              contentBeforeList={
-                sectorTypeSummaries.length > 1 ? (
-                  <div
-                    className='min-w-0'
-                    role='status'
-                    aria-label={sectorTypeSummaries
-                      .map((s) =>
-                        s.numTicked > 0
-                          ? `${s.header}: ${s.count} routes, ${s.numTicked} ticked`
-                          : `${s.header}: ${s.count} routes`,
-                      )
-                      .join('. ')}
-                  >
-                    <div className='flex flex-wrap items-center gap-x-4 gap-y-2.5 text-[13px] leading-snug sm:gap-x-6 sm:text-sm'>
-                      {sectorTypeSummaries.map((s, i) => (
-                        <div
-                          key={s.key}
-                          className={cn(
-                            'inline-flex max-w-full min-w-0 items-center gap-x-2 sm:whitespace-nowrap',
-                            i > 0 && 'border-surface-border border-l pl-3 sm:pl-4',
-                          )}
-                          title={
-                            s.numTicked > 0
-                              ? `${s.header}: ${s.count} routes, ${s.numTicked} ticked`
-                              : `${s.header}: ${s.count} routes`
-                          }
-                        >
-                          <span className='font-semibold text-slate-200'>{s.header}:</span>
-                          <span className='text-slate-300 tabular-nums'>{s.count}</span>
-                          {s.numTicked > 0 ? (
-                            <span className='inline-flex items-center gap-0.5 tabular-nums'>
-                              <Check
-                                size={12}
-                                strokeWidth={2.5}
-                                className={cn('shrink-0', designContract.ascentStatus.ticked)}
-                                aria-hidden
-                              />
-                              <span className={cn('font-medium', designContract.ascentStatus.ticked)}>
-                                {s.numTicked}
-                              </span>
-                              <span className='sr-only'> ticked</span>
-                            </span>
-                          ) : null}
-                        </div>
-                      ))}
-                    </div>
+        <div className='min-w-0'>
+          <ProblemList
+            detachToolbar
+            wrapDetachedContent={(inner) => (
+              <Card flush className='min-w-0 border-0 shadow-sm'>
+                <div className='p-4 sm:p-5'>{inner}</div>
+              </Card>
+            )}
+            storageKey={`sector/${sectorId}`}
+            mode='sector'
+            defaultOrder={data.orderByGrade ? 'grade-desc' : 'number'}
+            rows={sectorProblemListRows}
+            enableViewModeToggle
+            contentBeforeList={
+              sectorTypeSummaries.length > 1 ? (
+                <div
+                  className='min-w-0'
+                  role='status'
+                  aria-label={sectorTypeSummaries
+                    .map((s) =>
+                      s.numTicked > 0
+                        ? `${s.header}: ${s.count} routes, ${s.numTicked} ticked`
+                        : `${s.header}: ${s.count} routes`,
+                    )
+                    .join('. ')}
+                >
+                  <div className='flex flex-wrap items-center gap-x-4 gap-y-2.5 text-[13px] leading-snug sm:gap-x-6 sm:text-sm'>
+                    {sectorTypeSummaries.map((s, i) => (
+                      <div
+                        key={s.key}
+                        className={cn(
+                          'inline-flex max-w-full min-w-0 items-center gap-x-2 sm:whitespace-nowrap',
+                          i > 0 && 'border-surface-border border-l pl-3 sm:pl-4',
+                        )}
+                        title={
+                          s.numTicked > 0
+                            ? `${s.header}: ${s.count} routes, ${s.numTicked} ticked`
+                            : `${s.header}: ${s.count} routes`
+                        }
+                      >
+                        <span className='font-semibold text-slate-200'>{s.header}:</span>
+                        <span className='text-slate-300 tabular-nums'>{s.count}</span>
+                        {s.numTicked > 0 ? (
+                          <span className='inline-flex items-center gap-0.5 tabular-nums'>
+                            <Check
+                              size={12}
+                              strokeWidth={2.5}
+                              className={cn('shrink-0', designContract.ascentStatus.ticked)}
+                              aria-hidden
+                            />
+                            <span className={cn('font-medium', designContract.ascentStatus.ticked)}>{s.numTicked}</span>
+                            <span className='sr-only'> ticked</span>
+                          </span>
+                        ) : null}
+                      </div>
+                    ))}
                   </div>
-                ) : null
-              }
-            />
-          </div>
-        </Card>
+                </div>
+              ) : null
+            }
+          />
+        </div>
       )}
 
       {effectiveTab === 'activity' && (

@@ -166,10 +166,12 @@ const Media = ({
         ref={ref}
         onClick={() => openModal(x)}
         className={cn(
-          'group relative w-full min-w-0 cursor-pointer overflow-hidden border transition-all duration-300',
+          'group relative w-full min-w-0 cursor-pointer overflow-hidden transition-all duration-300',
           tileCompact ? 'rounded-lg' : 'rounded-xl',
-          'border-surface-border bg-surface-nav hover:border-brand-border hover:shadow-lg',
-          x.inherited && 'border-slate-700',
+          'bg-surface-nav hover:shadow-lg',
+          hasSvgs
+            ? 'border-0'
+            : cn('border-surface-border hover:border-brand-border border', x.inherited && 'border-slate-700'),
         )}
       >
         {' '}

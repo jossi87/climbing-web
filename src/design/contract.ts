@@ -105,7 +105,13 @@ export const designContract = {
     /** Home: fluid column only below `md` (phones); tablet / iPad / desktop share 12-col sidebar layout. */
     /** `md:items-stretch`: left column matches feed height so `asideStack` sticky works (see Frontpage aside `md:h-full`). */
     frontpageGrid: 'grid grid-cols-1 items-start gap-6 md:grid-cols-12 md:items-stretch md:gap-8',
-    asideStack: 'w-full space-y-5 md:space-y-6 md:sticky md:top-20',
+    /**
+     * Frontpage aside (stats + random media): **`position: sticky`** only when the shell header is sticky — same rule as
+     * `Header.tsx` (`shouldStickHeader` = `!isDesktop || isTallEnough`, i.e. width &lt; 1024 **or** height ≥ 900px). For the
+     * `md+` sidebar that is: `(min-width: 768px) and ((max-width: 1023px) or (min-height: 900px))`.
+     */
+    asideStack:
+      'w-full space-y-5 md:space-y-6 [@media(min-width:768px)_and_((max-width:1023px)_or_(min-height:900px))]:sticky [@media(min-width:768px)_and_((max-width:1023px)_or_(min-height:900px))]:top-20',
     toolbar: 'mb-4 flex flex-col items-center justify-between gap-3 px-4 sm:flex-row sm:px-0',
     /**
      * Activity toolbar: below `md`, negate `main` horizontal padding so filter chips align with the activity
@@ -117,6 +123,18 @@ export const designContract = {
       'flex w-full flex-nowrap items-center justify-center gap-0.5 sm:gap-1.5 md:w-auto md:justify-end',
     /** Activity filters: one row; compact chips; labels always visible (tight gap on narrow screens). */
     toolbarActions: 'flex w-full flex-nowrap items-center justify-center gap-0.5 sm:gap-1.5 sm:w-auto sm:justify-end',
+    /**
+     * ProblemList toolbar (Group / Sort / …): same rhythm as {@link activityToolbarActionsFrontpage} but **full-width**
+     * wrapper so chips **center** on phones and **align end** on `md+` without a sibling label (Activity uses
+     * `justify-between` on the parent row instead).
+     */
+    /**
+     * ProblemList chips above the card: like {@link activityToolbarActionsFrontpage} — **`md:w-auto`** so the parent
+     * (`justify-end` + shared `px-4 sm:px-5` with the list card) can pin the cluster flush to the **right** inset.
+     * Full-width + `overflow-x-auto` only below `md` (one scrollable line on phones).
+     */
+    problemListToolbarRow:
+      'no-scrollbar flex min-w-0 w-full max-w-full flex-nowrap items-center justify-center gap-0.5 overflow-x-auto sm:gap-1.5 md:ml-auto md:w-auto md:max-w-full md:flex-none md:justify-end md:overflow-visible',
     pageShell: 'max-w-container mx-auto space-y-6 px-4 py-6 text-left',
     pageHeaderRow:
       'border-surface-border flex flex-col justify-between gap-4 border-b pb-4 lg:flex-row lg:items-center',
@@ -220,18 +238,18 @@ export const designContract = {
     listRow:
       'group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-surface-raised-hover',
     /**
-     * Round icon buttons in the page header breadcrumb row (Problem, Area, Sector).
-     * One size token everywhere; glyph scales slightly from `sm` up.
+     * Round icon buttons in the page header breadcrumb row (Areas, Area, Sector, Problem).
+     * Compact on phones; `sm` nudges up; **`md`+** is the comfortable desktop hit target.
      */
     pageHeaderIconButton:
-      'inline-flex h-[1.375rem] w-[1.375rem] shrink-0 items-center justify-center rounded-full border transition-colors sm:h-6 sm:w-6',
+      'inline-flex h-[1.375rem] w-[1.375rem] shrink-0 items-center justify-center rounded-full border transition-colors sm:h-6 sm:w-6 md:h-8 md:w-8',
     /** Add (+) — create entity; sky accent so it reads separately from gold **edit** actions. */
     pageHeaderIconButtonAdd:
       'border-sky-400/45 bg-sky-500/20 text-sky-300 hover:bg-sky-500/30 hover:text-sky-200 light:border-2 light:border-sky-700 light:bg-sky-100 light:text-sky-950 light:shadow-sm light:hover:border-sky-800 light:hover:bg-sky-200 light:hover:text-sky-950',
     /** Edit (pencil) — amber vs sky add; `light:*` matches `html[data-theme]` (see `index.css`). */
     pageHeaderIconButtonEdit:
       'border-amber-300/45 bg-amber-400/18 text-amber-100 hover:bg-amber-400/28 light:border-2 light:border-amber-700 light:bg-amber-100 light:text-amber-950 light:shadow-sm light:hover:border-amber-800 light:hover:bg-amber-200 light:hover:text-amber-950',
-    pageHeaderIconGlyph: 'pointer-events-none h-2.5 w-2.5 sm:h-3 sm:w-3',
+    pageHeaderIconGlyph: 'pointer-events-none h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-4 md:w-4',
     /** Full-width tab row (Profile, Area, etc.): active state via short bar — no full-width rules above/below */
     tabBarRow: 'flex w-full min-w-0 flex-wrap',
     /**

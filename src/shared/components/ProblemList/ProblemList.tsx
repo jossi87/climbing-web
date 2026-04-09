@@ -1,4 +1,4 @@
-import { type ComponentProps, useMemo, useState, useEffect, useRef } from 'react';
+import { type ComponentProps, type ReactNode, useMemo, useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import AccordionContainer from './AccordionContainer';
 import { rowListTypeKey, type Row } from './types';
@@ -6,6 +6,7 @@ import { type GroupOption, type OrderOption, type State, useProblemListState } f
 import { ChevronDown, Filter, FolderTree, ArrowDownWideNarrow } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
+import { activityFilterChipBase, activityFilterChipOn } from '../../../design/activityFilterChips';
 import { twInk } from '../../../design/twInk';
 import { useGrades } from '../Meta';
 import { FormSwitch } from '../../ui';
@@ -22,6 +23,12 @@ type Props = {
   excludedSortOptions?: OrderOption[];
   /** Optional compact/detailed toggle in toolbar (default view: compact). */
   enableViewModeToggle?: boolean;
+  /**
+   * Toolbar + filter row above the card; `wrapDetachedContent` wraps summary + list only.
+   * Use the same horizontal padding as the card body (`px-4 sm:px-5`) so columns line up.
+   */
+  detachToolbar?: boolean;
+  wrapDetachedContent?: (content: ReactNode) => ReactNode;
 };
 
 type OrderByOption = { key: string; text: string; shortText: string; value: OrderOption };
@@ -263,11 +270,15 @@ const ToolbarDropdown = <T extends string>({
         title={selected?.text ? `${label}: ${selected.text}` : label}
         className={cn(
           variant === 'ghost'
-            ? 'inline-flex h-8 w-full min-w-0 items-center justify-between gap-1 rounded-lg px-2 text-[13px] leading-none font-medium transition-colors sm:px-2.5 sm:text-[14px]'
+            ? 'inline-flex h-8 w-full min-w-0 items-center justify-start gap-1.5 rounded-lg px-2 text-[13px] leading-none font-medium transition-colors sm:px-2.5 sm:text-[14px]'
             : compact
-              ? 'inline-flex h-7 w-full min-w-0 items-center justify-between gap-0.5 rounded-md border px-1.5 text-[12px] leading-none font-medium transition-colors sm:gap-1 sm:px-2 sm:text-[13px] md:h-7'
-              : // Sector list toolbar: borderless + fluid below md; bordered “card” controls from md up (desktop unchanged).
-                'inline-flex h-8 w-full max-w-full min-w-0 items-center justify-between gap-0.5 rounded-md px-1.5 text-[12px] leading-none font-medium transition-colors sm:gap-1 sm:px-2 sm:text-[13px] md:h-8 md:w-auto md:max-w-[22rem] md:gap-1 md:rounded-md md:border md:px-2.5 md:text-[14px] lg:px-3',
+              ? 'inline-flex h-7 w-full min-w-0 items-center justify-start gap-1.5 rounded-md border px-1.5 text-[12px] leading-none font-medium transition-colors sm:px-2 sm:text-[13px] md:h-7'
+              : cn(
+                  activityFilterChipBase,
+                  activityFilterChipOn,
+                  isOpen && 'light:ring-slate-400/55 ring-1 ring-white/20',
+                  'w-full min-w-0 justify-start',
+                ),
           fullWidth && !compact ? 'w-full md:w-auto' : fullWidth && compact ? 'w-full' : '',
           variant === 'ghost'
             ? isOpen
@@ -277,29 +288,64 @@ const ToolbarDropdown = <T extends string>({
               ? isOpen
                 ? 'border-surface-border bg-surface-hover text-slate-100'
                 : 'border-surface-border bg-surface-raised hover:border-surface-border hover:bg-surface-raised-hover text-slate-300 hover:text-slate-200'
-              : isOpen
-                ? 'bg-surface-hover md:border-surface-border text-slate-100 md:border'
-                : 'hover:bg-surface-raised-hover/90 md:border-surface-border md:bg-surface-raised md:hover:bg-surface-raised-hover text-slate-300 hover:text-slate-200 md:border',
+              : null,
         )}
       >
         {Icon ? (
-          <Icon size={12} className={cn('shrink-0 transition-colors', isOpen ? 'text-slate-300' : 'text-slate-400')} />
+          <Icon
+            size={12}
+            className={cn(
+              'shrink-0 transition-colors',
+              variant === 'default' && !compact && 'hidden md:block',
+              variant === 'default' && !compact ? 'text-slate-300' : isOpen ? 'text-slate-300' : 'text-slate-400',
+            )}
+          />
         ) : null}
-        {!compact && <span className='shrink-0 text-slate-500 max-md:text-[11px]'>{label}:</span>}
-        {variant === 'ghost' && compact && fullWidth ? (
-          <span className='min-w-0 flex-1 text-left text-slate-100'>
-            <span className='block truncate md:hidden'>{shortLabel}</span>
-            <span className='hidden md:block md:whitespace-nowrap'>{fullLabel}</span>
-          </span>
-        ) : compact ? (
-          <span className='min-w-0 flex-1 truncate text-left text-slate-200'>{displayLabel}</span>
-        ) : (
-          <>
-            <span className='min-w-0 flex-1 truncate text-left text-slate-200 md:hidden'>{shortLabel}</span>
-            <span className='hidden min-w-0 flex-1 truncate text-left text-slate-200 md:block'>{fullLabel}</span>
-          </>
-        )}
-        <ChevronDown size={12} className={cn('shrink-0 text-slate-500 transition-transform', isOpen && 'rotate-180')} />
+        <div className='flex min-w-0 flex-1 items-center gap-1 overflow-hidden md:gap-1.5'>
+          {!compact ? (
+            <span
+              className={cn(
+                'shrink-0 max-md:text-[10px] md:text-[11px]',
+                variant === 'default' ? cn('text-slate-400', twInk.lightTextSlate700) : 'text-slate-500',
+              )}
+            >
+              {label}:
+            </span>
+          ) : null}
+          {variant === 'ghost' && compact && fullWidth ? (
+            <span className='min-w-0 flex-1 text-left text-slate-100'>
+              <span className='block truncate md:hidden'>{shortLabel}</span>
+              <span className='hidden md:block md:whitespace-nowrap'>{fullLabel}</span>
+            </span>
+          ) : compact ? (
+            <span className='min-w-0 flex-1 truncate text-left text-slate-200'>{displayLabel}</span>
+          ) : (
+            <>
+              <span
+                className={cn('min-w-0 flex-1 truncate text-left text-slate-100 md:hidden', twInk.lightTextSlate900)}
+              >
+                {shortLabel}
+              </span>
+              <span
+                className={cn(
+                  'hidden min-w-0 flex-1 truncate text-left text-slate-100 md:block',
+                  twInk.lightTextSlate900,
+                )}
+              >
+                {fullLabel}
+              </span>
+            </>
+          )}
+          <ChevronDown
+            size={10}
+            strokeWidth={2}
+            className={cn(
+              'shrink-0 text-slate-300 transition-transform',
+              variant === 'default' && !compact && 'hidden md:block',
+              isOpen && 'rotate-180',
+            )}
+          />
+        </div>
       </button>
       {isOpen && menuPosition
         ? createPortal(
@@ -395,6 +441,8 @@ export const ProblemList = ({
   contentBeforeList,
   excludedSortOptions,
   enableViewModeToggle = false,
+  detachToolbar = false,
+  wrapDetachedContent,
 }: Props) => {
   const [showFilter, setFilterShowing] = useState(false);
   const [compactRows, setCompactRows] = useState<boolean>(() => {
@@ -510,128 +558,182 @@ export const ProblemList = ({
 
   const leading = typeof contentBeforeList === 'function' ? contentBeforeList(filtered) : contentBeforeList;
 
+  /** Primary ink on chip labels — same in on/off so Filter/Details stay readable (panel open state is obvious). */
+  const problemListToolbarChipInk = cn('text-slate-100', twInk.lightTextSlate900);
+
   const viewToggleAction = enableViewModeToggle ? (
     <label
-      className='hover:bg-surface-raised-hover/90 md:border-surface-border md:bg-surface-raised md:hover:bg-surface-raised-hover inline-flex h-8 shrink-0 items-center gap-1 rounded-md px-1.5 sm:gap-1.5 md:h-8 md:border md:px-2.5'
+      className={cn(activityFilterChipBase, activityFilterChipOn, 'shrink-0 cursor-pointer items-center')}
       title='Toggle detailed rows'
     >
       <FormSwitch checked={!compactRows} onChange={() => setCompactRows((v) => !v)} size='compact' variant='ios' />
-      <span className='text-[12px] font-medium whitespace-nowrap text-slate-300 sm:text-[14px]'>Details</span>
+      <span className={cn(designContract.typography.uiCompact, 'whitespace-nowrap', problemListToolbarChipInk)}>
+        Details
+      </span>
     </label>
   ) : null;
 
+  const toolbarRow =
+    showListControls || toolbarAction || viewToggleAction ? (
+      <div className={designContract.layout.problemListToolbarRow}>
+        {showListControls && (
+          <>
+            {groupByOptions.length > 1 && (
+              <ToolbarDropdown
+                className='relative min-w-0 shrink-0 md:max-w-[12rem]'
+                label='Group'
+                icon={FolderTree}
+                value={groupBy}
+                options={orderedGroupByOptions}
+                onSelect={(next) => dispatch({ action: 'group-by', groupBy: next })}
+              />
+            )}
+            <ToolbarDropdown
+              className='relative min-w-0 shrink-0 md:max-w-[22rem]'
+              label='Sort'
+              icon={ArrowDownWideNarrow}
+              value={order}
+              options={orderedSortOptions}
+              onSelect={(next) => dispatch({ action: 'order-by', order: next })}
+            />
+            <button
+              type='button'
+              aria-expanded={showFilter}
+              aria-label={showFilter ? 'Hide filter' : 'Show filter'}
+              onClick={() => setFilterShowing((v) => !v)}
+              className={cn(
+                activityFilterChipBase,
+                showFilter
+                  ? cn(
+                      'border-brand-border bg-brand/22 text-brand shadow-sm',
+                      'light:border-brand light:bg-brand/28 light:shadow-sm',
+                    )
+                  : activityFilterChipOn,
+                'shrink-0 justify-center transition-[background-color,border-color,color,box-shadow]',
+              )}
+            >
+              <Filter
+                size={12}
+                className={cn(
+                  'shrink-0',
+                  showFilter ? cn('text-brand', twInk.lightTextSlate900) : problemListToolbarChipInk,
+                )}
+                strokeWidth={2}
+              />
+              <span
+                className={cn(
+                  designContract.typography.uiCompact,
+                  'whitespace-nowrap',
+                  showFilter ? cn('text-brand', twInk.lightTextSlate900) : problemListToolbarChipInk,
+                )}
+              >
+                Filter
+              </span>
+            </button>
+          </>
+        )}
+        {viewToggleAction}
+        {toolbarAction}
+      </div>
+    ) : null;
+
+  const filterPanel =
+    showListControls && showFilter ? (
+      <div
+        className={cn(
+          'app-card-surface flex flex-col',
+          /** Match `.app-card`: sharp / full-bleed on phones, rounded from `sm` up. */
+          'rounded-none sm:rounded-xl',
+          'gap-2 px-4 pt-3 pb-3 sm:gap-2.5 sm:px-5 sm:pt-4 sm:pb-4',
+        )}
+        role='region'
+        aria-label='List filters'
+      >
+        <div className='flex flex-wrap items-center gap-x-3 gap-y-2'>
+          <GradeRangeControl
+            low={currentLow}
+            high={currentHigh}
+            lowOptions={lowestGradeOptions}
+            highOptions={highestGradeOptions}
+            onLowSelect={(next) => dispatch({ action: 'set-grade', low: next })}
+            onHighSelect={(next) => dispatch({ action: 'set-grade', high: next })}
+          />
+        </div>
+        {allTypes.length > 1 && (
+          <div className='flex flex-wrap items-center gap-x-4 gap-y-1.5'>
+            {allTypes.map((type) => (
+              <ToggleLabel
+                key={type}
+                label={`${type} (${lookup[type]})`}
+                checked={types[type] !== false}
+                onChange={() =>
+                  dispatch({
+                    action: 'type',
+                    type,
+                    enabled: !(types[type] ?? true),
+                  })
+                }
+              />
+            ))}
+          </div>
+        )}
+
+        {(mode === 'sector' && containsTicked) || (mode === 'user' && containsFa) ? (
+          <div className='flex flex-wrap gap-x-4 gap-y-1.5'>
+            {mode === 'sector' && containsTicked && (
+              <ToggleLabel
+                label='Hide ticked'
+                checked={hideTicked}
+                onChange={() => dispatch({ action: 'hide-ticked' })}
+              />
+            )}
+            {mode === 'user' && containsFa && (
+              <ToggleLabel label='Only FA' checked={onlyFa} onChange={() => dispatch({ action: 'only-fa' })} />
+            )}
+          </div>
+        ) : null}
+      </div>
+    ) : null;
+
+  const listBody = (
+    <>
+      {leading ? <div className='mb-4 sm:mb-5'>{leading}</div> : null}
+      {list}
+    </>
+  );
+
+  /**
+   * No horizontal padding on the pill row (avoids mobile inset). End alignment: `md:ml-auto` on
+   * {@link designContract.layout.problemListToolbarRow}. Filter: inner padding on `.app-card-surface` only.
+   */
+  const detachedStripClass = cn(
+    'flex w-full min-w-0 flex-col gap-3',
+    'max-sm:-mx-4 max-sm:w-[calc(100%+2rem)] sm:mx-0 sm:w-full',
+  );
+
+  const detachedChrome =
+    toolbarRow || filterPanel ? (
+      <div className={detachedStripClass}>
+        {toolbarRow ? <div className='flex w-full min-w-0 px-0 max-md:justify-center'>{toolbarRow}</div> : null}
+        {filterPanel ? <div className='w-full min-w-0'>{filterPanel}</div> : null}
+      </div>
+    ) : null;
+
   return (
     <ProblemListCompactContext.Provider value={compactRows}>
-      <div className='flex flex-col gap-4'>
-        {leading}
-
-        {(showListControls || toolbarAction || viewToggleAction) && (
-          <div className='flex min-w-0 flex-nowrap items-center justify-start gap-1 overflow-hidden sm:gap-1.5 md:gap-2'>
-            {showListControls && (
-              <>
-                {groupByOptions.length > 1 && (
-                  <ToolbarDropdown
-                    className='min-w-0 flex-1 basis-0 md:max-w-[12rem] md:flex-none md:basis-auto'
-                    label='Group'
-                    icon={FolderTree}
-                    value={groupBy}
-                    options={orderedGroupByOptions}
-                    onSelect={(next) => dispatch({ action: 'group-by', groupBy: next })}
-                  />
-                )}
-                <ToolbarDropdown
-                  className='min-w-0 flex-1 basis-0 md:max-w-[22rem] md:flex-none md:basis-auto'
-                  label='Sort'
-                  icon={ArrowDownWideNarrow}
-                  value={order}
-                  options={orderedSortOptions}
-                  onSelect={(next) => dispatch({ action: 'order-by', order: next })}
-                />
-                <button
-                  type='button'
-                  aria-expanded={showFilter}
-                  aria-label={showFilter ? 'Hide filters' : 'Show filters'}
-                  onClick={() => setFilterShowing((v) => !v)}
-                  className={cn(
-                    // Match ToolbarDropdown: borderless + tight on mobile; bordered from md (desktop unchanged).
-                    'inline-flex h-8 shrink-0 items-center justify-center gap-1 rounded-md px-1.5 text-[12px] font-medium transition-colors sm:gap-1.5 sm:px-2 sm:text-[13px] md:h-8 md:gap-1.5 md:border md:px-3 md:text-[14px]',
-                    showFilter
-                      ? 'bg-surface-hover md:border-surface-border text-slate-100 md:border'
-                      : 'hover:bg-surface-raised-hover/90 md:border-surface-border md:bg-surface-raised md:hover:bg-surface-raised-hover text-slate-300 hover:text-slate-200 md:border',
-                  )}
-                >
-                  <Filter
-                    size={12}
-                    className={cn('shrink-0', showFilter ? 'text-slate-300' : 'text-slate-400')}
-                    strokeWidth={2}
-                  />
-                  <span>Filters</span>
-                </button>
-              </>
-            )}
-            {viewToggleAction}
-            {toolbarAction}
-          </div>
-        )}
-
-        {showListControls && showFilter && (
-          <div
-            className={cn(
-              'border-surface-border/55 bg-surface-raised/30 mt-2.5 flex flex-col gap-2.5 rounded-lg border-y border-r py-2.5 pr-3 pl-3 sm:gap-2.5 sm:py-3 sm:pr-4 sm:pl-4',
-              'border-l-[3px] border-l-[color:var(--color-brand)]',
-              'light:border-r-slate-300/65 light:border-t-slate-300/65 light:border-b-slate-300/65 light:bg-slate-100/80',
-            )}
-            role='region'
-            aria-label='List filters'
-          >
-            <div className='flex flex-wrap items-center gap-x-3 gap-y-2'>
-              <GradeRangeControl
-                low={currentLow}
-                high={currentHigh}
-                lowOptions={lowestGradeOptions}
-                highOptions={highestGradeOptions}
-                onLowSelect={(next) => dispatch({ action: 'set-grade', low: next })}
-                onHighSelect={(next) => dispatch({ action: 'set-grade', high: next })}
-              />
-            </div>
-            {allTypes.length > 1 && (
-              <div className='flex flex-wrap items-center gap-x-4 gap-y-1.5'>
-                {allTypes.map((type) => (
-                  <ToggleLabel
-                    key={type}
-                    label={`${type} (${lookup[type]})`}
-                    checked={types[type] !== false}
-                    onChange={() =>
-                      dispatch({
-                        action: 'type',
-                        type,
-                        enabled: !(types[type] ?? true),
-                      })
-                    }
-                  />
-                ))}
-              </div>
-            )}
-
-            {(mode === 'sector' && containsTicked) || (mode === 'user' && containsFa) ? (
-              <div className='flex flex-wrap gap-x-4 gap-y-1.5'>
-                {mode === 'sector' && containsTicked && (
-                  <ToggleLabel
-                    label='Hide ticked'
-                    checked={hideTicked}
-                    onChange={() => dispatch({ action: 'hide-ticked' })}
-                  />
-                )}
-                {mode === 'user' && containsFa && (
-                  <ToggleLabel label='Only FA' checked={onlyFa} onChange={() => dispatch({ action: 'only-fa' })} />
-                )}
-              </div>
-            ) : null}
-          </div>
-        )}
-
-        {list}
-      </div>
+      {detachToolbar ? (
+        <div className='flex w-full min-w-0 flex-col gap-1 sm:gap-2'>
+          {detachedChrome}
+          {wrapDetachedContent ? wrapDetachedContent(listBody) : <div className='flex flex-col gap-4'>{listBody}</div>}
+        </div>
+      ) : (
+        <div className='flex w-full min-w-0 flex-col gap-3 sm:gap-4'>
+          {toolbarRow}
+          {filterPanel}
+          {leading ? <div className='mb-4 sm:mb-5'>{leading}</div> : null}
+          {list}
+        </div>
+      )}
     </ProblemListCompactContext.Provider>
   );
 };

@@ -19,7 +19,7 @@ export const tickCragLinkSector = cn(tickCragLink, 'light:text-[color:var(--colo
 export const tickCrag = 'font-normal text-slate-100 antialiased';
 /** Default route name — near-white on dark; near-black on light so it stays primary vs meta. */
 export const tickProblemLink = cn(
-  'align-baseline font-medium text-slate-50 antialiased transition-colors hover:text-brand',
+  'align-baseline font-normal text-slate-50 antialiased transition-colors hover:text-brand',
   twInk.lightTextSlate900,
 );
 
