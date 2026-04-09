@@ -300,6 +300,13 @@ const MediaModal = ({
 
   const svgs = useMemo(() => (m.svgs ?? m.mediaSvgs ?? []) as components['schemas']['Svg'][], [m.svgs, m.mediaSvgs]);
 
+  /**
+   * {@link getMediaFileUrlSrcSet} only emits `…w` entries ≤ `originalWidth`. A low/legacy `m.width` from the API
+   * (e.g. 600) would cap the whole srcset at 600w even in fullscreen — the modal then loads a tiny bitmap. Floor the
+   * cap so we still offer 800–1920+ candidates; the file endpoint scales from the stored original.
+   */
+  const modalImageWidthForSrcSet = useMemo(() => Math.max(m.width ?? 0, 1920), [m.width]);
+
   const canShowSidebar =
     svgs
       .filter((svg) => typeof svg.problemId === 'number')
@@ -645,8 +652,13 @@ const MediaModal = ({
             </button>
           </div>
 
+          {/*
+           * Do not use `items-center justify-center` here: the `<img>` would keep **intrinsic** layout size, so
+           * `max-*` only caps and a 600px-wide bitmap stays ~600px on screen. Fill the stage with `h-full w-full` +
+           * `object-contain` so the picture scales to the viewport (srcset still picks resolution).
+           */}
           <div
-            className='flex h-full w-full items-center justify-center transition-transform duration-300 ease-out'
+            className='flex h-full min-h-0 w-full min-w-0 transition-transform duration-300 ease-out'
             style={{ transform: `translateX(${offsetX}px)` }}
             onClick={handleBackdropClick}
           >
@@ -672,11 +684,12 @@ const MediaModal = ({
               ) : (
                 <img
                   data-modal-media-root
-                  className='touch-pan-pinch max-h-screen max-w-full cursor-pointer object-contain select-none'
+                  className='touch-pan-pinch h-full min-h-0 w-full min-w-0 cursor-pointer object-contain select-none'
                   src={getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, false, {
-                    targetWidth: Math.min(1920, m.width ?? 1920),
+                    targetWidth: Math.min(1920, modalImageWidthForSrcSet),
                   })}
-                  srcSet={getMediaFileUrlSrcSet(m.id ?? 0, m.versionStamp ?? 0, m.width ?? 0)}
+                  srcSet={getMediaFileUrlSrcSet(m.id ?? 0, m.versionStamp ?? 0, modalImageWidthForSrcSet)}
+                  sizes='100vw'
                   alt=''
                   onClick={(e) => {
                     e.stopPropagation();

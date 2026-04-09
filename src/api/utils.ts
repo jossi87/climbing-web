@@ -10,7 +10,7 @@ export function getLocales() {
 
 export function getBaseUrl(): string {
   if (import.meta.env.DEV) {
-    return import.meta.env.REACT_APP_API_URL ?? 'https://brattelinjer.no';
+    return import.meta.env.REACT_APP_API_URL ?? 'https://buldreinfo.com';
   }
   return window.origin;
 }
@@ -55,6 +55,7 @@ export function getMediaFileUrl(
   return getUrl(url);
 }
 
+/** `originalWidth` caps which `targetWidth` steps appear — only widths ≤ this value are listed (plus `originalWidth`). */
 export function getMediaFileUrlSrcSet(id: number, versionStamp: number, originalWidth: number): string {
   const SIZES = [300, 400, 480, 600, 800, 1280, 1920, 2560, 3840, 5120];
   const finalSizes = Array.from(new Set([...SIZES.filter((s) => s <= originalWidth), originalWidth])).sort(
