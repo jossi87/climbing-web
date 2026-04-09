@@ -235,7 +235,10 @@ type FilterButtonProps = {
 /** Single rhythm + {@link designContract.typography.feed} body tone (calm on dark `surface-card`). */
 const activityRowClass = cn(designContract.typography.listBody, designContract.typography.feed.sentence);
 
-const activityCommentClass = cn(designContract.typography.listBody, 'break-words italic text-slate-400 antialiased');
+const activityCommentClass = cn(
+  designContract.typography.listBody,
+  'break-words italic text-slate-50 antialiased light:text-slate-800',
+);
 
 const FilterButton = ({ active, onClick, icon: Icon, label, labelNarrow }: FilterButtonProps) => (
   <button
