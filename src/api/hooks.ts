@@ -547,6 +547,7 @@ export function useUserSearch(value: string) {
 export function usePermissions() {
   const { isAuthenticated } = useAuth0();
   const accessToken = useAccessToken();
+  const client = useQueryClient();
 
   const result = useData<Success<'getPermissions'>>(`/permissions`, {
     queryKey: [`/permissions`],
@@ -556,8 +557,13 @@ export function usePermissions() {
 
   const updatePermissions = useCallback(
     (...args: WithoutFirstParameter<typeof postPermissions>): ReturnType<typeof postPermissions> =>
-      postPermissions(accessToken, ...args),
-    [accessToken],
+      (postPermissions(accessToken, ...args) as Promise<Response>).then((res) => {
+        if (res.ok) {
+          void client.invalidateQueries({ queryKey: [`/permissions`] });
+        }
+        return res as Awaited<ReturnType<typeof postPermissions>>;
+      }),
+    [accessToken, client],
   );
 
   return {

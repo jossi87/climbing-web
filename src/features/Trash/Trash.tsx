@@ -1,4 +1,4 @@
-import { useState, type SyntheticEvent } from 'react';
+import { useState } from 'react';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { getMediaFileUrl, useTrash } from '../../api';
 import { useMeta } from '../../shared/components/Meta';
@@ -66,9 +66,6 @@ const Trash = () => {
                         <img
                           alt={t.name ?? ''}
                           src={getMediaFileUrl(t.idMedia, 0, false, { minDimension: 50 })}
-                          onError={(e: SyntheticEvent<HTMLImageElement, Event>) =>
-                            (e.currentTarget.src = '/png/video_placeholder.png')
-                          }
                           className='border-surface-border h-11 w-11 rounded-md border object-cover'
                         />
                       </button>
