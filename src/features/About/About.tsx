@@ -1,7 +1,12 @@
 import { useMeta } from '../../shared/components/Meta/context';
 import { useData } from '../../api';
-import { Info, Users, Pencil, Book, Code, Globe, Heart, Camera } from 'lucide-react';
+import { FileText, Info, Users, Pencil, Book, Code, Globe, Heart, Camera } from 'lucide-react';
 import type { Success } from '../../@types/buldreinfo';
+import {
+  BRV_PLATFORM_AGREEMENT_DATE_LABEL,
+  BRV_PLATFORM_AGREEMENT_PDF,
+  BRV_WEBSITE_URL,
+} from '../../constants/legalLinks';
 import {
   Card,
   Badge,
@@ -48,15 +53,27 @@ const About = () => {
 
           <Card>
             <SectionHeader title='Collaboration' icon={Heart} subheader='Get your own guide' />
-            <div className='space-y-5'>
-              <p className='text-sm leading-relaxed text-slate-300'>
+            <List>
+              <ListItem>
                 Contact <TextLink href='mailto:jostein.oygarden@gmail.com'>Jostein</TextLink> if you want to establish
-                your own online guidebook for your region
-              </p>
-              <div className='text-sm text-slate-300'>
-                The yearly hosting fee (as of 2026) is <span className='font-semibold text-slate-200'>250,- NOK</span>
-              </div>
-            </div>
+                your own online guidebook for your region.
+              </ListItem>
+              <ListItem>
+                The yearly hosting fee (as for 2026) is approximately{' '}
+                <span className='font-semibold text-slate-200'>250,- NOK</span>.
+              </ListItem>
+              <ListItem>
+                In Rogaland, <TextLink href={BRV_WEBSITE_URL}>BRV</TextLink> has a signed agreement (
+                {BRV_PLATFORM_AGREEMENT_DATE_LABEL}) covering platform use and data ownership.{' '}
+                <TextLink href={BRV_PLATFORM_AGREEMENT_PDF} title='Norwegian PDF'>
+                  <span className='inline-flex items-center gap-1'>
+                    Read the PDF
+                    <FileText className='h-3.5 w-3.5 shrink-0 opacity-90' strokeWidth={2} aria-hidden />
+                  </span>
+                </TextLink>
+                . We repeat this short notice on every regional guide so it stays easy to find.
+              </ListItem>
+            </List>
           </Card>
 
           <Card>
