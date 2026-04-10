@@ -30,7 +30,7 @@ function ActivityMediaThumb({ m, problemId }: { m: ActivityMedia; problemId?: nu
               className='absolute inset-0 h-full w-full object-cover transition-all duration-500 ease-out group-hover:scale-110'
               onError={() => setImgError(true)}
             />
-            <VideoThumbnailPlayOverlay />
+            <VideoThumbnailPlayOverlay size='compact' />
           </>
         )
       ) : (

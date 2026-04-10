@@ -20,7 +20,6 @@ import {
   Edit,
   Trash2,
   ExternalLink,
-  Play,
   MapPin,
   Calendar,
   User as UserIcon,
@@ -31,12 +30,12 @@ import { useLocalStorage } from '../../../utils/use-local-storage';
 import { downloadFileWithProgress, getMediaFileUrl, getMediaFileUrlSrcSet, useAccessToken } from '../../../api';
 import SvgViewer from '../SvgViewer';
 import VideoPlayer from './VideoPlayer';
+import { VideoPlayOverlayDisc } from './VideoThumbnailPlayOverlay';
 import { Descent, Rappel } from '../../../utils/svg-utils';
 import { useMeta } from '../Meta';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { designContract } from '../../../design/contract';
 import { cn } from '../../../lib/utils';
-import { useTheme } from '../../providers/useTheme';
 
 /** Route index color (matches topo SVG number semantics; typography-only, no boxes). */
 function svgListNrColor(svg: components['schemas']['Svg']) {
@@ -233,8 +232,6 @@ const MediaModal = ({
   autoPlayVideo,
   optProblemId,
 }: Props) => {
-  const { resolved } = useTheme();
-  const isLight = resolved === 'light';
   const { isAuthenticated, isAdmin, isBouldering } = useMeta();
   const accessToken = useAccessToken();
   const navigate = useNavigate();
@@ -744,23 +741,7 @@ const MediaModal = ({
                   alt=''
                 />
                 <div className='pointer-events-none absolute inset-0 flex items-center justify-center'>
-                  <div
-                    className={cn(
-                      'flex h-12 w-12 shrink-0 items-center justify-center rounded-full ring-1 transition-transform duration-300 group-hover:scale-110',
-                      isLight
-                        ? 'bg-slate-950/90 shadow-[0_10px_28px_rgba(0,0,0,0.5)] ring-black/40'
-                        : 'bg-white/92 shadow-[0_10px_28px_rgba(0,0,0,0.48)] ring-white/30',
-                    )}
-                  >
-                    <Play
-                      size={28}
-                      fill='currentColor'
-                      stroke='currentColor'
-                      className='ml-0.5'
-                      style={{ color: isLight ? '#ffffff' : '#0f172a' }}
-                      aria-hidden
-                    />
-                  </div>
+                  <VideoPlayOverlayDisc size='modal' />
                 </div>
               </div>
             )}

@@ -702,6 +702,14 @@ html[data-theme='light']
   }
 
   /**
+   * Play triangle on dark frosted discs (video thumbnails + media modal). Avoid `text-slate-*`: global light theme
+   * remaps those to dark ink on pale cards, but these controls sit on charcoal/blur in **both** themes.
+   */
+  .video-play-icon {
+    color: rgb(248 250 252);
+  }
+
+  /**
    * Access callouts (restrictions, closed, broken) — pastel on dark panels; saturated on white (light mode).
    */
   .text-access-danger {
