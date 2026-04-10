@@ -17,7 +17,7 @@ const App = () => {
           Skip to main content
         </a>
         {/* Light: graphite band under sticky header — `appShellLightBackdropStripClass` in `design/twInk.ts`. */}
-        <div aria-hidden className={appShellLightBackdropStripClass} />
+        <div aria-hidden className={appShellLightBackdropStripClass} role='presentation' />
         <Header />
         <main
           id='main-content'

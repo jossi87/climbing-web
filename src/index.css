@@ -803,12 +803,12 @@ html[data-theme='light']
   }
 
   /**
-   * Header search faux placeholder (`SearchInput` shell — softer than chrome label ink).
+   * Header search faux placeholder (`SearchInput` shell) — α high enough for ~4.5:1 on charcoal bar (a11y contrast).
    */
   .app-shell-header .shell-search-placeholder {
-    color: rgba(226, 232, 240, 0.38);
+    color: rgba(226, 232, 240, 0.58);
     font-size: 0.6875rem;
-    font-weight: 400;
+    font-weight: 500;
     letter-spacing: 0.01em;
   }
   @media (min-width: 640px) {

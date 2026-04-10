@@ -698,13 +698,23 @@ const MediaModal = ({
                 />
               )
             ) : m.embedUrl ? (
-              <iframe
+              <div
                 data-modal-media-root
-                src={m.embedUrl}
-                className='aspect-video h-full w-full max-w-5xl rounded-2xl shadow-2xl'
-                allowFullScreen
-                title='Video Content'
-              />
+                className='flex h-full min-h-0 w-full min-w-0 items-center justify-center px-4 py-6 sm:px-8'
+              >
+                {/*
+                  Vimeo / embed: `h-full w-full` + `aspect-video` on the iframe alone fights flex layout and sits off-center.
+                  Use a max-sized 16:9 box, centered, iframe `absolute inset-0` inside (standard responsive embed).
+                */}
+                <div className='relative aspect-video max-h-[min(85dvh,calc(100vw-2rem))] w-full max-w-5xl'>
+                  <iframe
+                    src={m.embedUrl}
+                    className='absolute inset-0 h-full w-full rounded-2xl shadow-2xl'
+                    allowFullScreen
+                    title='Video Content'
+                  />
+                </div>
+              </div>
             ) : autoPlayVideo ? (
               <div
                 data-modal-media-root

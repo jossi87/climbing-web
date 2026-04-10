@@ -42,6 +42,9 @@ const softProblemLink = cn(feed.routeTitle, 'inline');
 const softGradeBesideProblem = feed.gradeHighlight;
 const defaultGradeBesideProblem = 'font-normal text-slate-50 antialiased';
 
+/** Extra vertical padding on coarse pointers — helps 44px min touch target without shifting desktop layout. */
+const feedLinkTouch = 'touch-manipulation py-1.5 -my-1.5 max-md:py-2 max-md:-my-2 md:py-0 md:my-0';
+
 /** Default: crag → problem + grade · type/subtype; with soft + problemFirst, that block then `in` → location. */
 export const ProblemLink = ({
   a,
@@ -75,11 +78,11 @@ export const ProblemLink = ({
 
   const locationPair = (
     <>
-      <Link to={`/area/${a.areaId}`} className={cragArea}>
+      <Link to={`/area/${a.areaId}`} className={cn(cragArea, feedLinkTouch)}>
         {a.areaName?.trim()}
       </Link>
       <FeedRowSep soft={soft} />
-      <Link to={`/sector/${a.sectorId}`} className={cragSector}>
+      <Link to={`/sector/${a.sectorId}`} className={cn(cragSector, feedLinkTouch)}>
         {a.sectorName?.trim()}
       </Link>
     </>
@@ -90,7 +93,10 @@ export const ProblemLink = ({
 
   const routeWithGrade = (
     <>
-      <Link to={`/problem/${a.problemId}`} className={cn(problem, '[overflow-wrap:anywhere] break-words')}>
+      <Link
+        to={`/problem/${a.problemId}`}
+        className={cn(problem, feedLinkTouch, '[overflow-wrap:anywhere] break-words')}
+      >
         {a.problemName?.trim()}
       </Link>
       {showGrade ? <span className={cn(gradeBesideProblem, 'ml-1 whitespace-nowrap')}>{a.grade}</span> : null}

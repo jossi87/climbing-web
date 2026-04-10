@@ -8,6 +8,11 @@ type SearchInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   /** When set, a clear control is shown while the field has text (one tap clears). */
   onClear?: () => void;
   /**
+   * Accessible name for the field (required when `placeholder` is only simulated, e.g. `variant="shell"`).
+   * Falls back to `placeholder` or `aria-label` from HTML attrs, then `"Search"`.
+   */
+  ariaLabel?: string;
+  /**
    * `shell`: dark app header in any global theme. Uses explicit RGB text colors so
    * `html[data-theme="light"]` body slate remaps don’t paint dark ink on the dark bar.
    */
@@ -15,12 +20,14 @@ type SearchInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
 };
 
 export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(function SearchInput(
-  { isPending, className, onClear, variant = 'default', ...props },
+  { isPending, className, onClear, variant = 'default', ariaLabel, placeholder, 'aria-label': ariaLabelAttr, ...props },
   ref,
 ) {
   const hasValue = String(props.value ?? '').length > 0;
   const showClear = Boolean(onClear && hasValue && !props.disabled);
   const shell = variant === 'shell';
+  const placeholderText = placeholder ?? '';
+  const resolvedAriaLabel = ariaLabel ?? ariaLabelAttr ?? (placeholderText.length > 0 ? placeholderText : 'Search');
 
   return (
     <div
@@ -35,30 +42,36 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(functi
         className={cn(
           'pointer-events-none absolute inset-y-0 left-0 z-10 flex items-center pl-3 transition-colors',
           shell
-            ? cn(twInk.chromeNearWhite92, twInk.groupFocusWithinChromeWhite)
+            ? cn(twInk.chromeNearWhite, twInk.groupFocusWithinChromeWhite)
             : 'text-slate-400 group-focus-within:text-slate-300',
         )}
       >
         {isPending ? (
-          <Loader2 size={15} className={cn('animate-spin', shell ? twInk.chromeNearWhite : 'text-slate-400')} />
+          <Loader2
+            size={15}
+            className={cn('animate-spin', shell ? twInk.chromeNearWhite : 'text-slate-400')}
+            aria-hidden
+          />
         ) : (
-          <SearchIcon size={15} />
+          <SearchIcon size={15} aria-hidden />
         )}
       </div>
-      {!String(props.value ?? '').length && props.placeholder ? (
+      {!String(props.value ?? '').length && placeholderText ? (
         <span
+          aria-hidden
           className={cn(
             'pointer-events-none absolute inset-y-0 left-9 z-10 flex items-center leading-none normal-case',
             shell ? 'shell-search-placeholder' : 'header-meta-text tracking-[0.04em] text-current',
           )}
         >
-          {props.placeholder}
+          {placeholderText}
         </span>
       ) : null}
       <input
         ref={ref}
         {...props}
         placeholder=''
+        aria-label={resolvedAriaLabel}
         className={cn('search-input w-full pl-9', showClear ? 'pr-10' : null, className)}
       />
       {showClear ? (

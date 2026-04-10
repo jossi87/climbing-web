@@ -17,6 +17,7 @@ function ActivityMediaThumb({ m, problemId }: { m: ActivityMedia; problemId?: nu
     <Link
       to={`/problem/${problemId ?? 0}/${m.id ?? 0}`}
       className='sm:h-thumbnail-h sm:w-thumbnail-w group border-surface-border bg-surface-card relative block aspect-square min-w-0 shrink-0 overflow-hidden rounded-md border transition-all active:scale-95 sm:rounded-lg'
+      aria-label={`View activity photo, open problem ${problemId ?? 0}`}
     >
       {isMovie ? (
         imgError ? (

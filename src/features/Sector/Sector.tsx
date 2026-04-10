@@ -627,6 +627,7 @@ const Sector = () => {
           breadcrumb={
             <>
               <nav
+                aria-label='Breadcrumb'
                 className={cn(
                   'flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-2 text-pretty break-words',
                   designContract.typography.breadcrumb,
@@ -640,6 +641,7 @@ const Sector = () => {
                   {data.areaName}
                 </Link>
                 <LockSymbol lockedAdmin={!!data.areaLockedAdmin} lockedSuperadmin={!!data.areaLockedSuperadmin} />
+                <ChevronRight size={12} className='shrink-0 translate-y-px opacity-30' aria-hidden />
               </nav>
             </>
           }

@@ -216,8 +216,16 @@ const Header = () => {
         Two-layer glass: blur must sit in its own plane (transparent). A single high-α fill on top of backdrop-filter
         hides the frost — especially on light pages. Tint is a separate layer so we keep charcoal + visible blur.
       */}
-      <div className='app-shell-header-glass-blur pointer-events-none absolute inset-0 z-0' aria-hidden />
-      <div className='app-shell-header-glass-tint pointer-events-none absolute inset-0 z-0' aria-hidden />
+      <div
+        className='app-shell-header-glass-blur pointer-events-none absolute inset-0 z-0'
+        aria-hidden
+        role='presentation'
+      />
+      <div
+        className='app-shell-header-glass-tint pointer-events-none absolute inset-0 z-0'
+        aria-hidden
+        role='presentation'
+      />
       <div className='relative z-10'>
         <div className='max-w-container mx-auto h-13 px-4'>
           <div className='flex h-full items-center justify-between gap-x-4'>

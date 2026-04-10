@@ -400,6 +400,7 @@ export const Problem = () => {
                 {data.sectorName}
               </Link>
               <LockSymbol lockedAdmin={!!data.sectorLockedAdmin} lockedSuperadmin={!!data.sectorLockedSuperadmin} />
+              <ChevronRight size={12} className='shrink-0 translate-y-px opacity-30' aria-hidden />
             </nav>
           }
           actions={

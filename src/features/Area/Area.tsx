@@ -25,6 +25,7 @@ import { climbingRouteUsesPassiveGear, formatRouteTypeLabel } from '../../utils/
 import { compactFaPeopleNames, compactFaYear, normalizeFaPeopleSeparators } from '../../utils/firstAscentDisplay';
 import {
   Check,
+  ChevronRight,
   Plus,
   Edit,
   AlertTriangle,
@@ -606,6 +607,7 @@ const Area = () => {
           className='mb-0'
           breadcrumb={
             <nav
+              aria-label='Breadcrumb'
               className={cn(
                 'flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-2 text-pretty break-words',
                 designContract.typography.breadcrumb,
@@ -614,6 +616,10 @@ const Area = () => {
               <Link to='/areas' className={designContract.typography.breadcrumbLink}>
                 Areas
               </Link>
+              {/*
+                Same chevron as sector/problem crumbs: single segment still reads as a path (“Areas” → title below).
+              */}
+              <ChevronRight size={12} className='shrink-0 translate-y-px opacity-30' aria-hidden />
             </nav>
           }
           actions={

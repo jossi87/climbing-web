@@ -120,6 +120,20 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
             </div>
             <div className='skeleton-bar-muted h-3 w-full max-w-[18rem] animate-pulse rounded md:h-[0.875rem]' />
           </div>
+          {/*
+            Mirror loaded footer (tagged + photographer): without this block the card grows when data arrives.
+            Matches `border-t` row in the loaded state; avatar placeholders use mini size (24px).
+          */}
+          <div className='border-surface-border/50 mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 border-t pt-5 md:mt-4 md:gap-y-2 md:pt-3'>
+            <div className='flex min-w-0 items-center gap-3 md:gap-2.5'>
+              <div className='skeleton-bar h-6 w-6 shrink-0 animate-pulse rounded-full' />
+              <div className='skeleton-bar h-3.5 w-[min(100%,9rem)] max-w-full animate-pulse rounded' />
+            </div>
+            <div className='flex min-w-0 items-center gap-2.5 md:gap-2'>
+              <div className='skeleton-bar h-6 w-6 shrink-0 animate-pulse rounded-full' />
+              <div className='skeleton-bar-muted h-3.5 w-[min(100%,10rem)] max-w-full animate-pulse rounded' />
+            </div>
+          </div>
         </div>
       </Card>
     );

@@ -33,6 +33,7 @@ export function TradGearMarker({ line, className, iconClassName }: TradGearMarke
 
   return (
     <span
+      role='img'
       title={label}
       aria-label={label}
       className={cn(
@@ -40,7 +41,7 @@ export function TradGearMarker({ line, className, iconClassName }: TradGearMarke
         className,
       )}
     >
-      <WireGlyphImg className={iconClassName} />
+      <WireGlyphImg className={iconClassName} aria-hidden />
     </span>
   );
 }
