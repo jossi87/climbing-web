@@ -14,6 +14,9 @@ type UploadMedia = {
 };
 import { downloadFileWithProgress, getUrl, makeAuthenticatedRequest } from './utils';
 
+/** Media writes change problem/area/sector payloads; opt into global invalidation (default mutation event is `nop`). */
+const invalidateQueriesAfter = { consistencyAction: 'invalidate' as const };
+
 export function downloadTocXlsx(accessToken: string | null) {
   return downloadFileWithProgress(accessToken, '/toc/xlsx');
 }
@@ -21,6 +24,7 @@ export function downloadTocXlsx(accessToken: string | null) {
 export function deleteMedia(accessToken: string | null, id: number): Promise<Success<'deleteMedia'>> {
   return makeAuthenticatedRequest(accessToken, `/media?id=${id}`, {
     method: 'DELETE',
+    ...invalidateQueriesAfter,
   });
 }
 
@@ -37,6 +41,7 @@ export function moveMedia(
     `/media?id=${id}&left=${left}&toIdArea=${toIdArea}&toIdSector=${toIdSector}&toIdProblem=${toIdProblem}`,
     {
       method: 'PUT',
+      ...invalidateQueriesAfter,
     },
   );
 }
@@ -44,6 +49,7 @@ export function moveMedia(
 export function setMediaAsAvatar(accessToken: string | null, id: number): Promise<Success<'putMediaAvatar'>> {
   return makeAuthenticatedRequest(accessToken, `/media/avatar?id=${id}`, {
     method: 'PUT',
+    ...invalidateQueriesAfter,
   });
 }
 
@@ -250,6 +256,7 @@ export function postProblemMedia(
     headers: {
       Accept: 'application/json',
     },
+    ...invalidateQueriesAfter,
   })
     .then((data) => data.json())
     .catch((error) => {
@@ -435,11 +442,13 @@ export function putMediaInfo(
     headers: {
       'Content-Type': 'application/json',
     },
+    ...invalidateQueriesAfter,
   });
 }
 
 export function putMediaJpegRotate(accessToken: string | null, idMedia: number, degrees: number): Promise<unknown> {
   return makeAuthenticatedRequest(accessToken, `/media/jpeg/rotate?idMedia=${idMedia}&degrees=${degrees}`, {
     method: 'PUT',
+    ...invalidateQueriesAfter,
   });
 }
