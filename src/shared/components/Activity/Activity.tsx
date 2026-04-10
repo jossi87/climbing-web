@@ -14,34 +14,13 @@ import {
   activityFilterChipOff,
   activityFilterChipOn,
 } from '../../../design/activityFilterChips';
+import { activityFrontpageToolbarClassName } from './activityFrontpageToolbar';
 import { ActivityFeedMetaRow } from './ActivityFeedMetaRow';
+import { ActivitySkeleton } from './ActivitySkeleton';
 import { LazyMedia } from './components/LazyMedia';
 import type { components } from '../../../@types/buldreinfo/swagger';
 
 type ActivitySchema = components['schemas']['Activity'];
-
-/** Mirrors {@link ActivityFeedMetaRow}: story flex-1 + time on the far right; optional second row like stars/comment. */
-const ActivitySkeleton = () => (
-  <div className='min-h-[3.5rem] animate-pulse bg-transparent px-4 py-3 md:min-h-[4rem] md:px-5 md:py-2.5'>
-    <div className='flex items-start gap-3 md:gap-3'>
-      {/* Match {@link Avatar} size `small` (40px) at all breakpoints */}
-      <div className='skeleton-bar h-10 w-10 shrink-0 rounded-full pt-0.5' />
-      <div className='min-w-0 flex-1 space-y-1.5 pt-0.5'>
-        <div className='flex w-full min-w-0 flex-row items-start justify-between gap-3 sm:gap-4 md:gap-6'>
-          <div className='min-w-0 flex-1 space-y-1.5'>
-            <div className='skeleton-bar h-3 max-w-[min(100%,22rem)] rounded md:h-3.5' />
-            <div className='skeleton-bar-muted h-3 w-[58%] rounded md:h-3.5' />
-          </div>
-          <div
-            className='skeleton-bar-muted h-2.5 w-[2.75rem] shrink-0 self-start rounded pt-0.5 md:h-3 md:w-[3.25rem]'
-            aria-hidden
-          />
-        </div>
-        <div className='skeleton-bar-muted h-2.5 max-w-[12rem] rounded' aria-hidden />
-      </div>
-    </div>
-  </div>
-);
 
 /**
  * Latest-activity list + toolbar. `embedded` swaps {@link Card} for `.app-card-surface` (borderless shell); no caller
@@ -99,12 +78,9 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
     setTimeout(refetch, 10);
   };
 
-  /** Extra space before the card on phones so filters and first row don’t feel glued together. */
-  const toolbarClass = cn(designContract.layout.activityToolbarFrontpage, 'mb-6 max-md:mb-7 md:mb-6');
-
   return (
     <div className='w-full'>
-      <div className={toolbarClass}>
+      <div className={activityFrontpageToolbarClassName}>
         <SectionLabel className='hidden text-slate-400 md:block'>Latest activity</SectionLabel>
 
         <div className={designContract.layout.activityToolbarActionsFrontpage}>

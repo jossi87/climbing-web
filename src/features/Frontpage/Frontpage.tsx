@@ -1,10 +1,13 @@
+import { lazy, Suspense } from 'react';
 import { useMeta } from '../../shared/components/Meta/context';
 import { useData } from '../../api';
-import Activity from '../../shared/components/Activity/Activity';
+import { ActivityFrontpageSuspenseFallback } from '../../shared/components/Activity/ActivitySkeleton';
 import type { Success } from '../../@types/buldreinfo';
 import { FrontpageStats } from './FrontpageStats';
 import { RandomMediaCard } from './RandomMediaCard';
 import { designContract } from '../../design/contract';
+
+const Activity = lazy(() => import('../../shared/components/Activity/Activity'));
 
 const Frontpage = () => {
   const meta = useMeta();
@@ -12,11 +15,12 @@ const Frontpage = () => {
   const { data: randomMedia, isPending: randomMediaPending } =
     useData<Success<'getFrontpageRandomMedia'>>(`/frontpage/random_media`);
 
-  /**
-   * Reveal stats + random media together once everything needed for the aside is ready.
-   * Otherwise stats resolving before media (or vice versa) updates layout twice and the sticky column “steps down”.
-   */
-  const asideReady = Boolean(meta?.title) && !statsPending && !randomMediaPending;
+  const metaReady = Boolean(meta?.title);
+  /** Stats tiles need the `/frontpage/stats` response; regions count comes from meta only. */
+  const statsLoading = !metaReady || statsPending;
+  const regionsLoading = !metaReady;
+  /** Featured photo is often the LCP element — do not wait for `/frontpage/stats` (slower path). */
+  const randomMediaLoading = !metaReady || randomMediaPending;
 
   const type = meta.isBouldering ? 'bouldering problems' : 'climbing routes';
   /** Entries in meta.regions for the active region’s group (header region list scope). */
@@ -35,11 +39,11 @@ const Frontpage = () => {
         <div className='md:hidden'>
           <FrontpageStats
             placement='top'
-            stats={asideReady ? stats : undefined}
+            stats={statsLoading ? undefined : stats}
             regionsTo={regionsTo}
             numRegions={numRegions}
-            regionsLoading={!asideReady}
-            statsLoading={!asideReady}
+            regionsLoading={regionsLoading}
+            statsLoading={statsLoading}
             isBouldering={meta.isBouldering}
           />
         </div>
@@ -50,20 +54,22 @@ const Frontpage = () => {
               <div className='hidden md:block'>
                 <FrontpageStats
                   placement='sidebar'
-                  stats={asideReady ? stats : undefined}
+                  stats={statsLoading ? undefined : stats}
                   regionsTo={regionsTo}
                   numRegions={numRegions}
-                  regionsLoading={!asideReady}
-                  statsLoading={!asideReady}
+                  regionsLoading={regionsLoading}
+                  statsLoading={statsLoading}
                   isBouldering={meta.isBouldering}
                 />
               </div>
-              <RandomMediaCard randomMedia={randomMedia} isLoading={!asideReady} />
+              <RandomMediaCard randomMedia={randomMedia} isLoading={randomMediaLoading} />
             </div>
           </aside>
 
           <div className='order-2 md:col-span-9 md:pl-1'>
-            <Activity idArea={0} idSector={0} />
+            <Suspense fallback={<ActivityFrontpageSuspenseFallback />}>
+              <Activity idArea={0} idSector={0} />
+            </Suspense>
           </div>
         </div>
       </div>
