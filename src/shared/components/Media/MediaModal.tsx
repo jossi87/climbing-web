@@ -716,7 +716,7 @@ const MediaModal = ({
             ) : (
               <div
                 data-modal-media-root
-                className='group relative cursor-pointer'
+                className='group relative flex h-full min-h-0 w-full min-w-0 cursor-pointer'
                 onClick={(e) => {
                   e.stopPropagation();
                   playVideo();
@@ -725,9 +725,11 @@ const MediaModal = ({
                 {/*
                  * Third arg must be `isMovie: false` — that requests the server-generated JPEG poster.
                  * `true` is for the video file (VideoPlayer) and breaks `<img src>` (black / no frame).
+                 * Match the image branch: fill the swipe stage with h-full w-full + object-contain so the poster
+                 * centers on mobile; max-* only caps intrinsic size and left the play overlay misaligned.
                  */}
                 <img
-                  className='max-h-screen max-w-full object-contain opacity-90 transition-opacity group-hover:opacity-100'
+                  className='h-full min-h-0 w-full min-w-0 object-contain opacity-90 transition-opacity group-hover:opacity-100'
                   src={getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, false, { targetWidth: 1080 })}
                   alt=''
                 />
@@ -774,7 +776,7 @@ const MediaModal = ({
           )}
 
           <div className='pointer-events-none absolute right-4 bottom-4 left-4 z-170 flex items-end justify-end sm:right-8 sm:bottom-8 sm:left-8'>
-            <div className='pointer-events-auto max-w-[min(42rem,calc(100vw-2rem))] min-w-0 text-end'>
+            <div className='pointer-events-auto w-full max-w-full min-w-0 text-end'>
               {(() => {
                 const chunks: { key: string; node: ReactNode }[] = [];
                 if (showLocation && m.mediaMetadata?.location?.trim()) {
@@ -812,7 +814,7 @@ const MediaModal = ({
                   });
                 if (chunks.length === 0) return null;
                 return (
-                  <div className='ring-surface-border/40 inline-block rounded-2xl bg-slate-900 px-3 py-1.5 text-right text-[12px] leading-snug font-semibold tracking-normal text-pretty text-[#f1f5f9] normal-case shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1 sm:px-3.5 sm:py-2 sm:text-[13px]'>
+                  <div className='ring-surface-border/40 inline-block max-w-full rounded-2xl bg-slate-900 px-3 py-1.5 text-right text-[12px] leading-snug font-semibold tracking-normal text-pretty break-words text-[#f1f5f9] normal-case shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1 sm:px-3.5 sm:py-2 sm:text-[13px]'>
                     {chunks.map(({ key, node }, i) => (
                       <Fragment key={key}>
                         {i > 0 ? <span className='text-[#64748b]'> · </span> : null}

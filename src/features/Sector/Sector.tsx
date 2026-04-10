@@ -395,6 +395,15 @@ const Sector = () => {
   const [activeTab, setActiveTab] = useState<string | null>(null);
   const [sectorPickerOpen, setSectorPickerOpen] = useState(false);
   const sectorPickerRef = useRef<HTMLDivElement>(null);
+  const sectorPickerActiveItemRef = useRef<HTMLLIElement | null>(null);
+
+  useEffect(() => {
+    if (!sectorPickerOpen) return;
+    const id = requestAnimationFrame(() => {
+      sectorPickerActiveItemRef.current?.scrollIntoView({ block: 'center', inline: 'nearest' });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [sectorPickerOpen]);
 
   useEffect(() => {
     if (!sectorPickerOpen) return;
@@ -705,7 +714,12 @@ const Sector = () => {
                 {(data.sectors ?? []).map((s) => {
                   const current = data.id === s.id;
                   return (
-                    <li key={s.id} role='option' aria-selected={current}>
+                    <li
+                      key={s.id}
+                      ref={current ? sectorPickerActiveItemRef : undefined}
+                      role='option'
+                      aria-selected={current}
+                    >
                       <Link
                         to={`/sector/${s.id}`}
                         className={cn(
