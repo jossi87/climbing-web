@@ -19,11 +19,20 @@ export const LockSymbol = ({
       <span
         title='Super-admin lock'
         className={cn(
-          'ml-0.5 inline-flex h-4 min-w-[1.25rem] shrink-0 items-center justify-center rounded border border-red-400/65 bg-red-950/55 px-[3px] leading-none text-red-200 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.07)]',
+          'ml-0.5 inline-flex h-4 min-w-[1.25rem] shrink-0 items-center justify-center rounded border px-[3px] leading-none',
+          /* Dark: rose chip — strong border + fill, not “error red” */
+          'border-rose-500/55 bg-rose-950/60 text-rose-50',
+          /* Light: soft tint + readable ink */
+          'light:border-rose-600/55 light:bg-rose-100 light:text-rose-950',
           superadminClassName,
         )}
       >
-        <LockKeyhole size={11} strokeWidth={lockIconStroke} className='shrink-0 text-red-200' aria-hidden />
+        <LockKeyhole
+          size={11}
+          strokeWidth={lockIconStroke}
+          className='light:text-rose-800 shrink-0 text-rose-200'
+          aria-hidden
+        />
       </span>
     );
   if (lockedAdmin)
@@ -31,11 +40,19 @@ export const LockSymbol = ({
       <span
         title='Admin lock'
         className={cn(
-          'ml-0.5 inline-flex h-4 min-w-[1.25rem] shrink-0 items-center justify-center rounded border border-amber-400/60 bg-amber-950/45 px-[3px] leading-none text-amber-200 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]',
+          'ml-0.5 inline-flex h-4 min-w-[1.25rem] shrink-0 items-center justify-center rounded border px-[3px] leading-none',
+          /* Dark: violet chip — distinct from brand gold */
+          'border-violet-400/55 bg-violet-950/55 text-violet-50',
+          'light:border-violet-600/50 light:bg-violet-100 light:text-violet-950',
           adminClassName,
         )}
       >
-        <Lock size={11} strokeWidth={lockIconStroke} className='shrink-0 text-amber-200' aria-hidden />
+        <Lock
+          size={11}
+          strokeWidth={lockIconStroke}
+          className='light:text-violet-800 shrink-0 text-violet-200'
+          aria-hidden
+        />
       </span>
     );
   return null;

@@ -710,7 +710,8 @@ html[data-theme='light']
   }
 
   /**
-   * Access callouts (restrictions, closed, broken) — pastel on dark panels; saturated on white (light mode).
+   * Access callouts (restrictions, closed, broken) — pastel on dark panels; dark warm ink on white (light mode)
+   * so orange/amber stays readable on pale cards (avoid mid-orange that disappears on warm surfaces).
    */
   .text-access-danger {
     color: rgb(252 165 165);
@@ -722,25 +723,25 @@ html[data-theme='light']
     color: rgb(253 186 116);
   }
   html[data-theme='light'] .text-access-caution {
-    color: rgb(154 52 18);
+    color: rgb(67 20 7);
   }
   .access-no-dogs-icon {
     color: rgb(251 191 36);
   }
   html[data-theme='light'] .access-no-dogs-icon {
-    color: rgb(180 83 9);
+    color: rgb(146 64 14);
   }
   .access-no-dogs-title {
     color: rgb(255 237 213);
   }
   html[data-theme='light'] .access-no-dogs-title {
-    color: rgb(124 45 18);
+    color: rgb(67 20 7);
   }
   .access-no-dogs-sub {
     color: rgb(254 215 170);
   }
   html[data-theme='light'] .access-no-dogs-sub {
-    color: rgb(154 52 18);
+    color: rgb(120 53 15);
   }
 
   /** Modal / dialog secondary actions — avoid faded `opacity-*` + slate remaps in light mode */
@@ -1012,7 +1013,7 @@ html[data-theme='light']
     color: rgb(185 28 28);
   }
   html[data-theme='light'] :where(.type-micro).text-access-caution {
-    color: rgb(154 52 18);
+    color: rgb(67 20 7);
   }
 }
 

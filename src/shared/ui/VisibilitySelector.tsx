@@ -67,8 +67,8 @@ export const VisibilitySelector = ({
 
       <div className='pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-500'>
         {currentValue === 0 ? <Eye size={16} /> : null}
-        {currentValue === 1 ? <Lock size={16} className='text-amber-400' /> : null}
-        {currentValue === 2 ? <LockKeyhole size={16} className='text-red-400' /> : null}
+        {currentValue === 1 ? <Lock size={16} className='light:text-violet-700 text-violet-400' /> : null}
+        {currentValue === 2 ? <LockKeyhole size={16} className='light:text-rose-700 text-rose-400' /> : null}
       </div>
 
       <div className='pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-slate-500 transition-colors group-hover:text-slate-300'>
