@@ -4,7 +4,7 @@ import type { DispatchUpdate } from '../FilterForm/GradeSelect/GradeSelect';
 import { rowListTypeKey, type Row } from './types';
 import { useGrades } from '../Meta';
 import { getLocales } from '../../../api';
-import { useSessionStorage } from '../../../utils/use-local-storage';
+import { useLocalStorage, useSessionStorage } from '../../../utils/use-local-storage';
 
 export type OrderOption =
   | 'ascents'
@@ -158,14 +158,6 @@ const SORTS: Record<State['order'], (a: Row, b: Row) => number> = {
     b.stars - a.stars || b.gradeNumber - a.gradeNumber || a.num - b.num || a.name.localeCompare(b.name, getLocales()),
 } as const;
 
-const CLEANED_GROUP_BY: Record<GroupOption, GroupOption> = {
-  type: 'type',
-  area: 'area',
-  none: 'none',
-  rock: 'rock',
-  sector: 'sector',
-};
-
 const CLEANED_ORDER: Record<OrderOption, OrderOption> = {
   number: 'number',
   name: 'name',
@@ -181,23 +173,35 @@ export const useProblemListState = ({
   rows,
   order: defaultOrder,
   key,
+  sortPreferenceBucket,
 }: {
   rows: Row[];
   order: State['order'];
   key: string;
+  /**
+   * Sector / area lists: persist sort in localStorage under a shared bucket (grade vs number default styles,
+   * plus area aggregate). Omit for user profile lists — then sort is keyed by `problemList/${key}/order`.
+   */
+  sortPreferenceBucket?: 'grade' | 'number' | 'area';
 }): State & { dispatch: Dispatch<Update> } => {
   const [storedHideTicked, setStoredHideTicked] = useSessionStorage(`problemList/${key}/hideTicked`, false);
   const [storedOnlyFa, setStoredOnlyFa] = useSessionStorage(`problemList/${key}/onlyFa`, false);
-  const [storedGroupBy, setStoredGroupBy] = useSessionStorage(`problemList/${key}/groupBy`, 'none');
-  const [storedOrderBy, setStoredOrderBy] = useSessionStorage(`problemList/${key}/sectorOrderBy`, defaultOrder);
+
+  const orderStorageKey =
+    sortPreferenceBucket != null
+      ? `problemList/sector/sortPreference/${sortPreferenceBucket}`
+      : `problemList/${key}/order`;
+
+  const [storedOrderBy, setStoredOrderBy] = useLocalStorage(orderStorageKey, defaultOrder);
 
   const { mapping, easyToHard, idToGrade } = useGrades();
   const typeNames = useMemo(() => [...new Set(rows.map(rowListTypeKey))].sort(), [rows]);
   const [{ gradeLow, gradeHigh, hideTicked, onlyFa, order, groupBy, types }, dispatch] = useReducer(uiStateReducer, {
     gradeHigh: undefined,
     gradeLow: undefined,
-    order: CLEANED_ORDER[storedOrderBy] ?? 'name',
-    groupBy: CLEANED_GROUP_BY[storedGroupBy as GroupOption] ?? 'none',
+    order: CLEANED_ORDER[storedOrderBy as OrderOption] ?? defaultOrder,
+    /** Grouping is not persisted — default to none each visit. */
+    groupBy: 'none',
     hideTicked: storedHideTicked,
     onlyFa: storedOnlyFa,
     types: rows.reduce((acc, row) => ({ ...acc, [rowListTypeKey(row)]: true }), {} as Record<string, boolean>),
@@ -205,7 +209,6 @@ export const useProblemListState = ({
 
   useEffect(() => setStoredHideTicked(hideTicked), [hideTicked, setStoredHideTicked]);
   useEffect(() => setStoredOnlyFa(onlyFa), [onlyFa, setStoredOnlyFa]);
-  useEffect(() => setStoredGroupBy(groupBy), [groupBy, setStoredGroupBy]);
   useEffect(() => setStoredOrderBy(order), [order, setStoredOrderBy]);
   useEffect(() => dispatch({ action: 'init-types', typeNames }), [typeNames]);
 

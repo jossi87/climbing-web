@@ -172,6 +172,7 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
     <>
       <div className='space-y-4'>
         <ProblemList
+          key={`user/${userId}/todo`}
           storageKey={`user/${userId}/todo`}
           mode='user'
           defaultOrder='name'

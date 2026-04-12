@@ -17,6 +17,8 @@ type Props = {
   mode: 'sector' | 'user';
   defaultOrder: OrderOption;
   storageKey: string;
+  /** Sector/area: remember sort in localStorage (shared by grade vs number listing style). User lists omit. */
+  sortPreferenceBucket?: 'grade' | 'number' | 'area';
   toolbarAction?: React.ReactNode;
   /** Renders above the toolbar (e.g. map) so group/sort/filter stay between map and list. */
   contentBeforeList?: React.ReactNode | ((filteredRows: Row[]) => React.ReactNode);
@@ -437,6 +439,7 @@ export const ProblemList = ({
   mode,
   defaultOrder,
   storageKey,
+  sortPreferenceBucket,
   toolbarAction,
   contentBeforeList,
   excludedSortOptions,
@@ -492,6 +495,7 @@ export const ProblemList = ({
     rows: allRows,
     order: defaultOrder,
     key: storageKey,
+    sortPreferenceBucket,
   });
 
   const orderByOptions = ORDER_BY_OPTIONS[mode].filter((opt) => !excludedSortOptions?.includes(opt.value));

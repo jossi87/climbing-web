@@ -940,6 +940,7 @@ const Sector = () => {
       {effectiveTab === 'overview' && (data.problems?.length ?? 0) > 0 && (
         <div className='min-w-0'>
           <ProblemList
+            key={`sector/${sectorId}`}
             detachToolbar
             wrapDetachedContent={(inner) => (
               <Card flush className='min-w-0 border-0 shadow-sm'>
@@ -948,6 +949,7 @@ const Sector = () => {
             )}
             storageKey={`sector/${sectorId}`}
             mode='sector'
+            sortPreferenceBucket={data.orderByGrade ? 'grade' : 'number'}
             defaultOrder={data.orderByGrade ? 'grade-desc' : 'number'}
             rows={sectorProblemListRows}
             enableViewModeToggle

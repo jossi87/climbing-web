@@ -991,10 +991,12 @@ const Area = () => {
               </div>
             ) : (
               <ProblemList
+                key={`area/${areaId}`}
                 detachToolbar
                 wrapDetachedContent={(inner) => <div className='p-4 sm:p-5'>{inner}</div>}
                 storageKey={`area/${areaId}`}
                 mode='sector'
+                sortPreferenceBucket='area'
                 defaultOrder='grade-desc'
                 rows={problemRows}
                 enableViewModeToggle

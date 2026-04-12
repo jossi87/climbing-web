@@ -214,6 +214,7 @@ const ProfileStatistics = ({ userId, view }: ProfileStatisticsProps) => {
     return (
       <>
         <ProblemList
+          key={`user/${userId}/ascents`}
           storageKey={`user/${userId}`}
           mode='user'
           defaultOrder='date'
