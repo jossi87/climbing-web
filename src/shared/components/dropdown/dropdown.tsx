@@ -2,61 +2,77 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { cn } from '../../../lib/utils';
 
-export type DropdownPrimitive = string | number;
+export type DropdownValue = string | number | boolean;
 
-export type DropdownProps<T> = {
-  data: T[];
-  onClick: (item: T) => void;
-  isSearchable: boolean;
-  getLabel: (item: T) => string;
-  getGroupLabel?: (item: T) => string;
-  getKey?: (item: T, index: number) => string | number;
-  renderOption?: (item: T) => ReactNode;
+export type DropdownOption<V extends DropdownValue = string> = {
+  value: V;
+  label: string;
+};
+
+export type DropdownGroup<T extends DropdownOption<DropdownValue> = DropdownOption<DropdownValue>> = {
+  label: string;
+  options: T[];
+};
+
+export type DropdownProps<V extends DropdownValue = string, T extends DropdownOption<V> = DropdownOption<V>> = {
+  options?: T[];
+  groups?: DropdownGroup<T>[];
+  isSearchable?: boolean;
   placeholder?: string;
   searchPlaceholder?: string;
   emptyMessage?: string;
   className?: string;
+  renderOption?: (item: T) => ReactNode;
+  onClick: (item: T) => void;
 };
 
-export function Dropdown<T>({
-  data,
+export function Dropdown<V extends DropdownValue = string, T extends DropdownOption<V> = DropdownOption<V>>({
+  options,
+  groups,
   onClick,
   isSearchable,
-  getLabel,
-  getGroupLabel,
-  getKey,
   renderOption,
   placeholder = 'Select an option',
   searchPlaceholder = 'Type to search ...',
   emptyMessage = 'No results',
   className,
-}: DropdownProps<T>) {
+}: DropdownProps<V, T>) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [selectedLabel, setSelectedLabel] = useState<string>('');
   const rootRef = useRef<HTMLDivElement | null>(null);
 
+  const baseOptions = useMemo(() => {
+    if (groups && groups.length > 0) {
+      return groups.flatMap((group) => group.options);
+    }
+
+    return options ?? [];
+  }, [groups, options]);
+
   const sortedData = useMemo(() => {
-    return [...data].sort((a, b) => getLabel(a).localeCompare(getLabel(b), 'nb', { sensitivity: 'base' }));
-  }, [data, getLabel]);
+    return [...baseOptions].sort((a, b) => a.label.localeCompare(b.label, 'nb', { sensitivity: 'base' }));
+  }, [baseOptions]);
 
   const filteredData = useMemo(() => {
     if (!isSearchable || query.trim().length === 0) return sortedData;
     const normalizedQuery = query.toLocaleLowerCase('nb').trim();
-    return sortedData.filter((item) => getLabel(item).toLocaleLowerCase('nb').includes(normalizedQuery));
-  }, [getLabel, isSearchable, query, sortedData]);
+    return sortedData.filter((item) => item.label.toLocaleLowerCase('nb').includes(normalizedQuery));
+  }, [isSearchable, query, sortedData]);
 
   const groupedFilteredData = useMemo(() => {
-    if (!getGroupLabel) return null;
+    if (!groups || groups.length === 0) return null;
 
-    return filteredData.reduce((acc, item, index) => {
-      const groupLabel = getGroupLabel(item).trim() || 'Unknown';
-      const existing = acc.get(groupLabel) ?? [];
-      existing.push({ item, index });
-      acc.set(groupLabel, existing);
-      return acc;
-    }, new Map<string, Array<{ item: T; index: number }>>());
-  }, [filteredData, getGroupLabel]);
+    const filteredSet = new Set(filteredData);
+    return groups
+      .map((group) => {
+        const groupItems = group.options
+          .filter((item) => filteredSet.has(item))
+          .sort((a, b) => a.label.localeCompare(b.label, 'nb', { sensitivity: 'base' }));
+        return { label: group.label, options: groupItems };
+      })
+      .filter((group) => group.options.length > 0);
+  }, [filteredData, groups]);
 
   useEffect(() => {
     const onDocumentMouseDown = (event: MouseEvent) => {
@@ -113,16 +129,16 @@ export function Dropdown<T>({
             {filteredData.length === 0 ? (
               <li className='px-3 py-2 text-sm text-slate-400'>{emptyMessage}</li>
             ) : groupedFilteredData ? (
-              [...groupedFilteredData.entries()].map(([groupLabel, items]) => (
-                <li key={`group-${groupLabel}`}>
+              groupedFilteredData.map((group) => (
+                <li key={`group-${group.label}`}>
                   <div className='bg-surface-nav border-surface-border/60 sticky top-0 border-b px-3 py-1.5 text-xs font-semibold text-slate-300 uppercase'>
-                    {groupLabel}
+                    {group.label}
                   </div>
                   <ul className='m-0 list-none p-0'>
-                    {items.map(({ item, index }) => {
-                      const label = getLabel(item);
+                    {group.options.map((item, index) => {
+                      const label = item.label;
                       return (
-                        <li key={getKey ? getKey(item, index) : `${label}-${index}`}>
+                        <li key={`${String(item.value)}-${index}`}>
                           <button
                             type='button'
                             role='option'
@@ -143,9 +159,9 @@ export function Dropdown<T>({
               ))
             ) : (
               filteredData.map((item, index) => {
-                const label = getLabel(item);
+                const label = item.label;
                 return (
-                  <li key={getKey ? getKey(item, index) : `${label}-${index}`}>
+                  <li key={`${String(item.value)}-${index}`}>
                     <button
                       type='button'
                       role='option'

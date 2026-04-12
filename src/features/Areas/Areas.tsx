@@ -5,7 +5,7 @@ import { Loading } from '../../shared/ui/StatusWidgets';
 import { LockSymbol } from '../../shared/ui/Indicators';
 import { useAreas } from '../../api';
 import { useMeta } from '../../shared/components/Meta/context';
-import Dropdown from '../../shared/components/dropdown/dropdown';
+import Dropdown, { type DropdownGroup, type DropdownOption } from '../../shared/components/dropdown/dropdown';
 import { Map as MapIcon, Plus } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
@@ -37,17 +37,28 @@ const Areas = () => {
     return [...areasByRegion.entries()].sort((a, b) => a[0].localeCompare(b[0]));
   }, [filteredData]);
 
-  const areaRegionById = useMemo(() => {
-    const regionById = new Map<number, string>();
-    groupedRegions.forEach(([regionName, regionAreas]) => {
-      regionAreas.forEach((area) => {
-        if (typeof area.id === 'number') {
-          regionById.set(area.id, regionName);
-        }
-      });
-    });
-    return regionById;
-  }, [groupedRegions]);
+  type AreaDropdownOption = DropdownOption<number>;
+
+  const dropdownData: AreaDropdownOption[] = useMemo(
+    () =>
+      filteredData.map((area) => ({
+        value: area.id ?? 0,
+        label: area.name ?? `Area ${area.id ?? 0}`,
+      })),
+    [filteredData],
+  );
+
+  const dropdownGroups: DropdownGroup<AreaDropdownOption>[] = useMemo(
+    () =>
+      groupedRegions.map(([regionName, regionAreas]) => ({
+        label: regionName,
+        options: regionAreas.map((area) => ({
+          value: area.id ?? 0,
+          label: area.name ?? `Area ${area.id ?? 0}`,
+        })),
+      })),
+    [groupedRegions],
+  );
 
   const showRegionGrouping = groupedRegions.length > 1;
 
@@ -128,24 +139,17 @@ const Areas = () => {
           </div>
 
           <div className='mb-3 flex items-center gap-2'>
-            <Dropdown
-              data={filteredData}
+            <Dropdown<number, AreaDropdownOption>
+              options={dropdownData}
+              groups={showRegionGrouping ? dropdownGroups : undefined}
               isSearchable={true}
-              getLabel={(area) => area.name ?? `Area ${area.id ?? 0}`}
-              getGroupLabel={
-                showRegionGrouping
-                  ? (area) =>
-                      (typeof area.id === 'number' ? areaRegionById.get(area.id) : undefined) || 'Unknown region'
-                  : undefined
-              }
-              getKey={(area, index) => area.id ?? index}
               placeholder='Select area'
               searchPlaceholder='Search area ...'
               emptyMessage='No areas found'
               className='w-full max-w-xl'
-              onClick={(area) => {
-                if (!area.id) return;
-                navigate(`/area/${area.id}`);
+              onClick={(option) => {
+                if (!option.value) return;
+                navigate(`/area/${option.value}`);
               }}
             />
 
