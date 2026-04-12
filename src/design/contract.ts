@@ -239,17 +239,17 @@ export const designContract = {
       'group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-surface-raised-hover',
     /**
      * Round icon buttons in page header rows (Areas, Area, Sector, Problem).
-     * Slightly larger on phones now that breadcrumbs are shorter; `md+` keeps roomy desktop hit targets.
+     * Single 32px size so mobile matches desktop rhythm; icons stay 16px (was 24px/12px on narrow — too cramped).
      */
     pageHeaderIconButton:
-      'inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-colors md:h-8 md:w-8',
+      'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-colors',
     /** Add (+) — create entity; sky accent so it reads separately from gold **edit** actions. */
     pageHeaderIconButtonAdd:
       'border-sky-400/45 bg-sky-500/20 text-sky-300 hover:bg-sky-500/30 hover:text-sky-200 light:border-2 light:border-sky-700 light:bg-sky-100 light:text-sky-950 light:shadow-sm light:hover:border-sky-800 light:hover:bg-sky-200 light:hover:text-sky-950',
     /** Edit (pencil) — amber vs sky add; `light:*` matches `html[data-theme]` (see `index.css`). */
     pageHeaderIconButtonEdit:
       'border-amber-300/45 bg-amber-400/18 text-amber-100 hover:bg-amber-400/28 light:border-2 light:border-amber-700 light:bg-amber-100 light:text-amber-950 light:shadow-sm light:hover:border-amber-800 light:hover:bg-amber-200 light:hover:text-amber-950',
-    pageHeaderIconGlyph: 'pointer-events-none h-3 w-3 md:h-4 md:w-4',
+    pageHeaderIconGlyph: 'pointer-events-none h-4 w-4',
     /** Full-width tab row (Profile, Area, etc.): active state via short bar — no full-width rules above/below */
     tabBarRow: 'flex w-full min-w-0 flex-wrap',
     /**
