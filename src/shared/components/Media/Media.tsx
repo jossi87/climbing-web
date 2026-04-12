@@ -1,4 +1,4 @@
-import { useState, useEffect, type ComponentProps, useCallback } from 'react';
+import { useState, useEffect, useRef, type ComponentProps, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useInView } from 'react-intersection-observer';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -85,6 +85,15 @@ const Media = ({
   const [autoPlayVideo, setAutoPlayVideo] = useState(false);
   const { isLoading, getAccessTokenSilently } = useAuth0();
   const [confirmation, setConfirmation] = useState<{ message: string; action: () => void } | null>(null);
+  /** True after we opened the viewer with a history push from this page; close with pop so we do not duplicate the base URL. */
+  const mediaModalPushedRef = useRef(false);
+
+  useEffect(() => {
+    if (!mediaId) {
+      mediaModalPushedRef.current = false;
+    }
+  }, [mediaId]);
+
   const openModal = useCallback(
     (newM: MediaItem) => {
       const prevMediaId = m?.id;
@@ -93,7 +102,12 @@ const Media = ({
         : `${location.pathname}/${newM.id ?? 0}`;
       setM(newM);
       setEditM(null);
-      navigate(url);
+      /** Push on first open so browser Back closes the modal; replace when swapping media so swipes do not stack history. */
+      const isCarousel = !!prevMediaId;
+      if (!isCarousel) {
+        mediaModalPushedRef.current = true;
+      }
+      navigate(url, { replace: isCarousel });
     },
     [m?.id, location.pathname, navigate],
   );
@@ -102,7 +116,12 @@ const Media = ({
     const url = location.pathname.substring(0, lastSlashIndex);
     if (!pitch) setM(null);
     setAutoPlayVideo(false);
-    navigate(url);
+    if (mediaModalPushedRef.current) {
+      mediaModalPushedRef.current = false;
+      navigate(-1);
+    } else {
+      navigate(url, { replace: true });
+    }
   }, [location.pathname, pitch, navigate]);
   const gotoPrev = useCallback(() => {
     if (m && carouselMedia && carouselMedia.length > 1) {

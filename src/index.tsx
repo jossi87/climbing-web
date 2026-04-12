@@ -53,7 +53,8 @@ function ErrorFallback({ error, resetError }: { error: unknown; componentStack: 
 export const Auth0ProviderWithNavigate = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
   const onRedirectCallback = (appState?: { returnTo?: string } | null) => {
-    navigate(appState?.returnTo || window.location.pathname);
+    const to = appState?.returnTo ?? `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    navigate(to, { replace: true });
   };
   return (
     <Auth0Provider

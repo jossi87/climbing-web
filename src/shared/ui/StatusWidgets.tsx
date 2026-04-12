@@ -41,7 +41,13 @@ export const NotLoggedIn = () => {
         </div>
       </div>
       <button
-        onClick={() => loginWithRedirect({ appState: { returnTo: window.location.pathname } })}
+        onClick={() =>
+          loginWithRedirect({
+            appState: {
+              returnTo: `${window.location.pathname}${window.location.search}${window.location.hash}`,
+            },
+          })
+        }
         className='type-body btn-brand-solid flex w-full items-center justify-center gap-3 rounded-xl px-6 py-3 font-semibold shadow-lg transition-all active:scale-95'
       >
         <LogIn size={18} /> Sign in
