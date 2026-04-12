@@ -1,42 +1,61 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
 import { Loading } from '../../shared/ui/StatusWidgets';
-import { profileRowMiddleDotClass } from '../../shared/components/Profile/ProfileRowTextSep';
 import { LockSymbol } from '../../shared/ui/Indicators';
 import { useAreas } from '../../api';
 import { useMeta } from '../../shared/components/Meta/context';
+import Dropdown from '../../shared/components/dropdown/dropdown';
 import { Map as MapIcon, Plus } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 import { Card, SectionHeader } from '../../shared/ui';
 
 const Areas = () => {
+  const navigate = useNavigate();
   const { data } = useAreas();
   const meta = useMeta();
   const [showForDevelopers, setShowForDevelopers] = useState(false);
-  const areas = data ?? [];
+  const areas = useMemo(() => data ?? [], [data]);
+
+  const hasDeveloperAreas = useMemo(() => areas.some((a) => a.forDevelopers), [areas]);
+
+  const filteredData = useMemo(
+    () => areas.filter((a) => (hasDeveloperAreas ? Boolean(a.forDevelopers) === showForDevelopers : !a.forDevelopers)),
+    [areas, hasDeveloperAreas, showForDevelopers],
+  );
+
+  const groupedRegions = useMemo(() => {
+    const areasByRegion = filteredData.reduce((acc, area) => {
+      const regionName = area.regionName?.trim() || 'Unknown region';
+      const existing = acc.get(regionName) ?? [];
+      existing.push(area);
+      acc.set(regionName, existing);
+      return acc;
+    }, new Map<string, (typeof filteredData)[number][]>());
+
+    return [...areasByRegion.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+  }, [filteredData]);
+
+  const areaRegionById = useMemo(() => {
+    const regionById = new Map<number, string>();
+    groupedRegions.forEach(([regionName, regionAreas]) => {
+      regionAreas.forEach((area) => {
+        if (typeof area.id === 'number') {
+          regionById.set(area.id, regionName);
+        }
+      });
+    });
+    return regionById;
+  }, [groupedRegions]);
+
+  const showRegionGrouping = groupedRegions.length > 1;
 
   if (!data) {
     return <Loading />;
   }
 
   const typeDescription = meta.isBouldering ? 'problems' : 'routes';
-
-  const hasDeveloperAreas = areas.some((a) => a.forDevelopers);
-  const filteredData = areas.filter((a) =>
-    hasDeveloperAreas ? Boolean(a.forDevelopers) === showForDevelopers : !a.forDevelopers,
-  );
-
-  const areasByRegion = filteredData.reduce((acc, area) => {
-    const regionName = area.regionName?.trim() || 'Unknown region';
-    const existing = acc.get(regionName) ?? [];
-    existing.push(area);
-    acc.set(regionName, existing);
-    return acc;
-  }, new Map<string, (typeof filteredData)[number][]>());
-  const groupedRegions = [...areasByRegion.entries()].sort((a, b) => a[0].localeCompare(b[0]));
-  const showRegionGrouping = groupedRegions.length > 1;
 
   const markers = filteredData
     .filter((a) => a.coordinates)
@@ -72,8 +91,65 @@ const Areas = () => {
 
       <Card flush className='min-w-0 border-0'>
         <div className='relative p-4 pb-3 sm:p-5 sm:pb-4'>
-          <div className='absolute top-4 right-4 z-10 inline-flex items-center gap-1.5 sm:top-5 sm:right-5'>
-            {meta.isAdmin && (
+          <div className='flex items-center justify-between'>
+            <SectionHeader title='Areas' icon={MapIcon} subheader={`${filteredData.length} areas`} />
+
+            {hasDeveloperAreas ? (
+              <div className='mb-3 flex flex-wrap items-center gap-2'>
+                <div className='bg-surface-raised border-surface-border/60 inline-flex h-8 items-center gap-1 rounded-full border p-0.5 pl-2 shadow-sm'>
+                  <span className='type-micro shrink-0 text-slate-300'>Dataset:</span>
+                  <button
+                    type='button'
+                    onClick={() => setShowForDevelopers(false)}
+                    className={cn(
+                      'inline-flex h-6 items-center rounded-full px-2.5 text-[12px] leading-none font-medium transition-colors sm:text-[13px]',
+                      !showForDevelopers
+                        ? designContract.surfaces.segmentActiveBrandBorder
+                        : designContract.surfaces.segmentInactiveInGroup,
+                    )}
+                  >
+                    Developed
+                  </button>
+                  <button
+                    type='button'
+                    onClick={() => setShowForDevelopers(true)}
+                    className={cn(
+                      'inline-flex h-6 items-center rounded-full px-2.5 text-[12px] leading-none font-medium transition-colors sm:text-[13px]',
+                      showForDevelopers
+                        ? designContract.surfaces.segmentActiveBrandBorder
+                        : designContract.surfaces.segmentInactiveInGroup,
+                    )}
+                  >
+                    Developers
+                  </button>
+                </div>
+              </div>
+            ) : null}
+          </div>
+
+          <div className='mb-3 flex items-center gap-2'>
+            <Dropdown
+              data={filteredData}
+              isSearchable={true}
+              getLabel={(area) => area.name ?? `Area ${area.id ?? 0}`}
+              getGroupLabel={
+                showRegionGrouping
+                  ? (area) =>
+                      (typeof area.id === 'number' ? areaRegionById.get(area.id) : undefined) || 'Unknown region'
+                  : undefined
+              }
+              getKey={(area, index) => area.id ?? index}
+              placeholder='Select area'
+              searchPlaceholder='Search area ...'
+              emptyMessage='No areas found'
+              className='w-full max-w-xl'
+              onClick={(area) => {
+                if (!area.id) return;
+                navigate(`/area/${area.id}`);
+              }}
+            />
+
+            {meta.isAdmin ? (
               <Link
                 to={`/area/edit/-1`}
                 title='Add area'
@@ -86,47 +162,13 @@ const Areas = () => {
               >
                 <Plus className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
               </Link>
-            )}
+            ) : null}
           </div>
-
-          <SectionHeader title='Areas' icon={MapIcon} subheader={`${filteredData.length} areas`} />
-
-          {hasDeveloperAreas ? (
-            <div className='mb-3 flex flex-wrap items-center gap-2'>
-              <div className='bg-surface-raised border-surface-border/60 inline-flex h-8 items-center gap-1 rounded-full border p-0.5 pl-2 shadow-sm'>
-                <span className='type-micro shrink-0 text-slate-300'>Dataset:</span>
-                <button
-                  type='button'
-                  onClick={() => setShowForDevelopers(false)}
-                  className={cn(
-                    'inline-flex h-6 items-center rounded-full px-2.5 text-[12px] leading-none font-medium transition-colors sm:text-[13px]',
-                    !showForDevelopers
-                      ? designContract.surfaces.segmentActiveBrandBorder
-                      : designContract.surfaces.segmentInactiveInGroup,
-                  )}
-                >
-                  Developed
-                </button>
-                <button
-                  type='button'
-                  onClick={() => setShowForDevelopers(true)}
-                  className={cn(
-                    'inline-flex h-6 items-center rounded-full px-2.5 text-[12px] leading-none font-medium transition-colors sm:text-[13px]',
-                    showForDevelopers
-                      ? designContract.surfaces.segmentActiveBrandBorder
-                      : designContract.surfaces.segmentInactiveInGroup,
-                  )}
-                >
-                  Developers
-                </button>
-              </div>
-            </div>
-          ) : null}
 
           <div className='-mx-4 mb-3 w-[calc(100%+2rem)] sm:-mx-5 sm:w-[calc(100%+2.5rem)]'>
             <Leaflet
               autoZoom={true}
-              height='35vh'
+              height='65vh'
               markers={markers}
               defaultCenter={meta.defaultCenter}
               defaultZoom={meta.defaultZoom}
@@ -135,49 +177,6 @@ const Areas = () => {
               flyToId={null}
             />
           </div>
-
-          {showRegionGrouping ? (
-            <div className='space-y-4'>
-              {groupedRegions.map(([regionName, areasInRegion]) => (
-                <div key={regionName} className='bg-surface-card rounded-lg px-2 py-1.5 sm:px-2.5 sm:py-2'>
-                  <div className='mb-1.5 text-[12px] font-semibold text-slate-200 sm:text-[13px]'>{regionName}</div>
-                  <div className='type-micro text-slate-400'>
-                    {areasInRegion.map((area, index) => (
-                      <span key={area.id}>
-                        {index > 0 && <span className={cn('mx-2', profileRowMiddleDotClass)}>·</span>}
-                        <span className='inline-flex items-center gap-1'>
-                          <Link
-                            to={`/area/${area.id}`}
-                            className='hover:text-brand hover:decoration-brand/50 font-normal text-slate-300 underline-offset-[3px] transition-colors hover:underline'
-                          >
-                            {area.name}
-                          </Link>
-                          <LockSymbol lockedAdmin={!!area.lockedAdmin} lockedSuperadmin={!!area.lockedSuperadmin} />
-                        </span>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className='type-micro text-slate-400'>
-              {filteredData.map((area, index) => (
-                <span key={area.id}>
-                  {index > 0 && <span className={cn('mx-2', profileRowMiddleDotClass)}>·</span>}
-                  <span className='inline-flex items-center gap-1'>
-                    <Link
-                      to={`/area/${area.id}`}
-                      className='hover:text-brand hover:decoration-brand/50 font-normal text-slate-300 underline-offset-[3px] transition-colors hover:underline'
-                    >
-                      {area.name}
-                    </Link>
-                    <LockSymbol lockedAdmin={!!area.lockedAdmin} lockedSuperadmin={!!area.lockedSuperadmin} />
-                  </span>
-                </span>
-              ))}
-            </div>
-          )}
         </div>
       </Card>
     </div>
