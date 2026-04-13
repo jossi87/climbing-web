@@ -77,6 +77,13 @@ function activityStableKey(a: components['schemas']['Activity']): string {
   return `activity-${a.id ?? 'unknown'}`;
 }
 
+/** Backend `offset` advances by the **count** of `activityIds` per row (underlying rows), not feed row count. */
+function activityIdsCountForOffset(row: components['schemas']['Activity']): number {
+  const ids = row.activityIds;
+  if (!ids?.length) return 1;
+  return ids.length;
+}
+
 export function invalidateSectorQueries(client: QueryClient, sectorId: number) {
   return client.invalidateQueries({
     predicate: (q) => {
@@ -210,7 +217,8 @@ export function useActivity({
      */
     getNextPageParam: (lastPage, _allPages, lastPageParam) => {
       if (!lastPage?.length) return undefined;
-      return lastPageParam + lastPage.length;
+      const delta = lastPage.reduce((acc, row) => acc + activityIdsCountForOffset(row), 0);
+      return lastPageParam + delta;
     },
   });
 
