@@ -120,7 +120,7 @@ const MediaEditModal = ({ save, onCloseWithoutReload, m, numPitches }: Props) =>
 
           <div className='bg-surface-raised border-surface-border flex items-center justify-between gap-3 rounded-xl border p-4'>
             <div className='min-w-0 space-y-0.5'>
-              <label className={cn(fieldLabelClass, 'ml-0 font-semibold text-slate-200')}>Trivia image</label>
+              <label className={cn(fieldLabelClass, 'ml-0 font-semibold text-slate-200')}>Trivia media</label>
               <p className='type-small text-slate-400'>Mark as general trivia for the page</p>
             </div>
             <FormSwitch
@@ -131,7 +131,7 @@ const MediaEditModal = ({ save, onCloseWithoutReload, m, numPitches }: Props) =>
                 if (newTrivia) setPitch(0);
               }}
               variant='brand'
-              aria-label='Trivia image'
+              aria-label='Trivia media'
             />
           </div>
         </div>

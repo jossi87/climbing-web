@@ -374,7 +374,7 @@ const MediaModal = ({
   const activePitch = (!!pitch && (pitches ?? []).find((p) => p.nr === pitch)) || null;
 
   const canSetMediaAsAvatar = isAuthenticated && isImage;
-  const canEdit = isAdmin && isImage;
+  const canEdit = isAdmin;
   const canDelete = isAdmin;
   const canRotate =
     (isAdmin || m.uploadedByMe) && isImage && (m.svgs ?? []).length === 0 && (m.mediaSvgs ?? []).length === 0;

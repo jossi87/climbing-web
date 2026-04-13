@@ -124,16 +124,13 @@ export function ClickableAvatar(props: AvatarProps) {
 
   useEffect(() => {
     if (!open) return;
-    const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
     document.body.style.overflow = 'hidden';
-    document.body.style.paddingRight = `${scrollBarWidth}px`;
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') closeModal();
     };
     window.addEventListener('keydown', handleEsc);
     return () => {
       document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
       window.removeEventListener('keydown', handleEsc);
     };
   }, [open, closeModal]);
