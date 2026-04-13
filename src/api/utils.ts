@@ -1,6 +1,7 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { useState, useEffect } from 'react';
 import { DATA_MUTATION_EVENT } from '../shared/providers/DataReloader';
+import { ACTIVITY_AND_FRONTPAGE_INVALIDATION_EVENT } from './activityFeedInvalidation';
 import type { FetchOptions } from './types';
 import type { MediaRegion } from '../utils/svg-scaler';
 
@@ -101,7 +102,7 @@ export function makeAuthenticatedRequest(accessToken: string | null, incomingUrl
     : // Otherwise, append the link to the correct backend instance.
       getUrl(incomingUrl);
 
-  const { consistencyAction, ...opts } = extraOptions || {};
+  const { consistencyAction, invalidateActivityFeed, ...opts } = extraOptions || {};
   const baseHeaders = (opts?.headers as Record<string, string> | undefined) ?? {};
   const headers: Record<string, string> = {
     ...baseHeaders,
@@ -122,6 +123,9 @@ export function makeAuthenticatedRequest(accessToken: string | null, incomingUrl
           detail: { mode: consistencyAction ?? 'nop' },
         }),
       );
+      if (res.ok && invalidateActivityFeed) {
+        window.dispatchEvent(new CustomEvent(ACTIVITY_AND_FRONTPAGE_INVALIDATION_EVENT));
+      }
     }
     return res;
   });

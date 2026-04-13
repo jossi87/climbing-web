@@ -33,6 +33,8 @@ function useKey(customKey: readonly unknown[] | undefined, urlSuffix: string): r
   return key;
 }
 
+export { invalidateActivityAndFrontpageQueries } from './activityFeedInvalidation';
+
 /** Call after tick/comment POSTs so `useProblem` refetches (cache is not updated automatically). */
 export function invalidateProblemQueries(client: QueryClient, problemId: number) {
   return client.invalidateQueries({

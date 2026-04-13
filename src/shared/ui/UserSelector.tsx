@@ -26,6 +26,10 @@ type SingleUserProps = {
   matchInputLeadStyle?: boolean;
 };
 
+/** Portaled menus (`menuPortalTarget=document.body`) do not inherit the control’s font size — set explicitly or options look ~16px vs 13px fields. */
+const menuFontMd = '0.875rem';
+const menuFontMatchField = '0.8125rem';
+
 /** Dark UI to match `bg-surface-nav` / cards (react-select defaults to white). */
 const darkSelectStyles: StylesConfig<UserOption, boolean, GroupBase<UserOption>> = {
   control: (base, state) => ({
@@ -52,6 +56,8 @@ const darkSelectStyles: StylesConfig<UserOption, boolean, GroupBase<UserOption>>
   menuPortal: (base) => ({ ...base, zIndex: 1100 }),
   option: (base, state) => ({
     ...base,
+    fontSize: menuFontMd,
+    lineHeight: 1.35,
     cursor: 'pointer',
     backgroundColor: state.isFocused ? 'var(--color-surface-hover)' : 'transparent',
     color: 'var(--color-datepicker-text)',
@@ -88,8 +94,18 @@ const darkSelectStyles: StylesConfig<UserOption, boolean, GroupBase<UserOption>>
     color: 'var(--color-datepicker-muted)',
     ':hover': { color: 'var(--color-datepicker-nav-hover)' },
   }),
-  noOptionsMessage: (base) => ({ ...base, color: 'var(--color-datepicker-muted)' }),
-  loadingMessage: (base) => ({ ...base, color: 'var(--color-datepicker-muted)' }),
+  noOptionsMessage: (base, _props) => ({
+    ...base,
+    fontSize: menuFontMd,
+    lineHeight: 1.35,
+    color: 'var(--color-datepicker-muted)',
+  }),
+  loadingMessage: (base, _props) => ({
+    ...base,
+    fontSize: menuFontMd,
+    lineHeight: 1.35,
+    color: 'var(--color-datepicker-muted)',
+  }),
 };
 
 /** Tighter control + border-only focus (avoid stacked ring + placeholder clash when focused). */
@@ -130,6 +146,18 @@ function buildSelectStyles(
       placeholder: (base, state) => ({
         ...darkSelectStyles.placeholder!(base, state),
         margin: 0,
+      }),
+      option: (base, state) => ({
+        ...darkSelectStyles.option!(base, state),
+        fontSize: menuFontMatchField,
+      }),
+      noOptionsMessage: (base, props) => ({
+        ...darkSelectStyles.noOptionsMessage!(base, props),
+        fontSize: menuFontMatchField,
+      }),
+      loadingMessage: (base, props) => ({
+        ...darkSelectStyles.loadingMessage!(base, props),
+        fontSize: menuFontMatchField,
       }),
     };
   }
@@ -184,6 +212,18 @@ function buildSelectStyles(
         pointerEvents: hideWhileFocused ? 'none' : undefined,
       };
     },
+    option: (base, state) => ({
+      ...darkSelectStyles.option!(base, state),
+      fontSize: menuFontMatchField,
+    }),
+    noOptionsMessage: (base, props) => ({
+      ...darkSelectStyles.noOptionsMessage!(base, props),
+      fontSize: menuFontMatchField,
+    }),
+    loadingMessage: (base, props) => ({
+      ...darkSelectStyles.loadingMessage!(base, props),
+      fontSize: menuFontMatchField,
+    }),
   };
 }
 

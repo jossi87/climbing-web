@@ -1,5 +1,9 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, type ReactNode } from 'react';
+import {
+  ACTIVITY_AND_FRONTPAGE_INVALIDATION_EVENT,
+  invalidateActivityAndFrontpageQueries,
+} from '../../../api/activityFeedInvalidation';
 
 export const DATA_MUTATION_EVENT = 'brattelinjer/refetch';
 
@@ -43,9 +47,15 @@ export const DataReloader = ({ children }: { children: ReactNode }) => {
       }
     };
 
+    const onActivityFrontpage = () => {
+      void invalidateActivityAndFrontpageQueries(client);
+    };
+
     window.addEventListener(DATA_MUTATION_EVENT, onEvent as EventListener);
+    window.addEventListener(ACTIVITY_AND_FRONTPAGE_INVALIDATION_EVENT, onActivityFrontpage);
     return () => {
       window.removeEventListener(DATA_MUTATION_EVENT, onEvent as EventListener);
+      window.removeEventListener(ACTIVITY_AND_FRONTPAGE_INVALIDATION_EVENT, onActivityFrontpage);
     };
   }, [client]);
 

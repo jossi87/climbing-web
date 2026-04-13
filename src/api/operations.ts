@@ -101,6 +101,7 @@ export function postComment(
     headers: {
       Accept: 'application/json',
     },
+    invalidateActivityFeed: true,
   });
 }
 
@@ -206,6 +207,7 @@ export function postProblem(
     },
     /** Avoid refetching every cached query — that floods the network/console after save. */
     consistencyAction: 'nop',
+    invalidateActivityFeed: true,
   })
     .then(async (response) => {
       const body = await response.json().catch(() => ({}));
@@ -367,6 +369,7 @@ export function postSector(
       Accept: 'application/json',
     },
     consistencyAction: 'nop',
+    invalidateActivityFeed: true,
   })
     .then(async (response) => {
       const body = await response.json().catch(() => ({}));
@@ -416,6 +419,7 @@ export function postTicks(
     headers: {
       'Content-Type': 'application/json',
     },
+    invalidateActivityFeed: true,
   });
 }
 

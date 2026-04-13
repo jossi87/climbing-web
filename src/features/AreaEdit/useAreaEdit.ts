@@ -183,6 +183,7 @@ export const useAreaEdit = ({ areaId }: { areaId: number }) => {
     fetchOptions: {
       headers: { Accept: 'application/json' },
       consistencyAction: 'nop',
+      invalidateActivityFeed: true,
     },
   });
 
