@@ -22,7 +22,7 @@ import { DownloadButton } from '../../shared/ui/DownloadButton';
 import { Card, PageCardBreadcrumbRow } from '../../shared/ui';
 import { TradGearMarker } from '../../shared/ui/TradGearMarker';
 import { climbingRouteUsesPassiveGear, formatRouteTypeLabel } from '../../utils/routeTradGear';
-import { compactFaPeopleNames, compactFaYear, normalizeFaPeopleSeparators } from '../../utils/firstAscentDisplay';
+import { compactFaDisplayLine, normalizeFaPeopleSeparators } from '../../utils/firstAscentDisplay';
 import {
   Check,
   ChevronRight,
@@ -102,10 +102,9 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
       : null;
 
   const faNames = normalizeFaPeopleSeparators((problem.fa ?? '').trim());
-  const faNamesCompact = compactFaPeopleNames((problem.fa ?? '').trim());
   const faYear = problem.faDate && problem.faDate.length >= 4 ? problem.faDate.slice(0, 4) : '';
   const faLine = compact
-    ? `${faNamesCompact}${compactFaYear(problem.faDate)}`
+    ? compactFaDisplayLine((problem.fa ?? '').trim(), problem.faDate)
     : [faNames, faYear].filter(Boolean).join(' ');
 
   const tickCount = problem.numTicks ?? 0;
@@ -262,7 +261,7 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
     const faNamesTitle = normalizeFaPeopleSeparators((problem.fa ?? '').trim());
     const faYearTitle = problem.faDate && problem.faDate.length >= 4 ? problem.faDate.slice(0, 4) : '';
     const faLineTitle = compact
-      ? `${compactFaPeopleNames((problem.fa ?? '').trim())}${compactFaYear(problem.faDate)}`
+      ? compactFaDisplayLine((problem.fa ?? '').trim(), problem.faDate)
       : [faNamesTitle, faYearTitle].filter(Boolean).join(' ');
     if (faLineTitle) parts.push(faLineTitle);
     if (isClimbing && (problem.numPitches ?? 1) > 1) {
