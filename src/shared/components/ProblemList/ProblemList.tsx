@@ -33,6 +33,8 @@ type Props = {
   wrapDetachedContent?: (content: ReactNode) => ReactNode;
   /** Space between `contentBeforeList` and the list (default matches most pages). */
   leadingBottomClassName?: string;
+  /** `mode="user"` only: gap between list rows (default `gap-3 sm:gap-4`). */
+  userListClassName?: string;
 };
 
 type OrderByOption = { key: string; text: string; shortText: string; value: OrderOption };
@@ -396,6 +398,7 @@ const ToolbarDropdown = <T extends string>({
  * Hide the sort/filter toolbar for a single row only — one item has nothing to reorder.
  * The Group control is shown only when at least one grouping dimension has 2+ values (`groupByOptions.length > 1`).
  */
+/** Threshold uses full row count in `ProblemList`, not filtered length — so narrow filters do not hide group/sort/filter. */
 const MIN_ROWS_FOR_LIST_CONTROLS = 2;
 const GLOBAL_VIEW_MODE_KEY = 'problemList.detailed';
 
@@ -449,6 +452,7 @@ export const ProblemList = ({
   detachToolbar = false,
   wrapDetachedContent,
   leadingBottomClassName = 'mb-4 sm:mb-5',
+  userListClassName,
 }: Props) => {
   const [showFilter, setFilterShowing] = useState(false);
   const [compactRows, setCompactRows] = useState<boolean>(() => {
@@ -511,7 +515,7 @@ export const ProblemList = ({
   const highestGradeOptions = easyToHard
     .filter((label) => (mapping[label] ?? maxGradeIndex) > (mapping[currentLow] ?? 0))
     .map((label) => ({ key: `high-${label}`, text: label, shortText: label, value: label }));
-  const showListControls = filtered.length >= MIN_ROWS_FOR_LIST_CONTROLS;
+  const showListControls = allRows.length >= MIN_ROWS_FOR_LIST_CONTROLS;
 
   if (!allRows?.length) {
     return null;
@@ -538,7 +542,7 @@ export const ProblemList = ({
     }
 
     return (
-      <div className={cn('flex flex-col', mode === 'user' ? 'gap-3 sm:gap-4' : 'gap-0')}>
+      <div className={cn('flex flex-col', mode === 'user' ? (userListClassName ?? 'gap-3 sm:gap-4') : 'gap-0')}>
         {filtered.map(({ element }) => element)}
       </div>
     );
