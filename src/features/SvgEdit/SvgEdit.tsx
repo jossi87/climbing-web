@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, type MouseEventHandler, useReducer } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo, type MouseEventHandler, useReducer } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMeta } from '../../shared/components/Meta';
@@ -51,6 +51,12 @@ const pageActionIconBtnGlass =
   'border-white/12 bg-surface-raised text-slate-300 hover:border-white/18 hover:bg-surface-raised-hover';
 const pageActionIconBtnGreen = 'border-green-400/45 bg-green-500/20 text-green-300 hover:bg-green-500/28';
 const pageActionIconBtnBrand = 'border-brand-border btn-brand-solid shadow-sm hover:border-brand-border';
+
+function mediaRegionsDiffer(a: MediaRegion | undefined | null, b: MediaRegion | undefined | null): boolean {
+  if (!a && !b) return false;
+  if (!a || !b) return true;
+  return a.x !== b.x || a.y !== b.y || a.width !== b.width || a.height !== b.height;
+}
 
 const useIds = (): { problemId: number; pitch: number; mediaId: number } => {
   const { problemId, pitch, mediaId } = useParams();
@@ -112,6 +118,10 @@ export const SvgEditLoader = () => {
 
   if (!problem || !data) return <Loading />;
 
+  const mediaForTopo = problem.media?.find((x) => x.id === mediaId);
+  const maxPitchInSvgs = Math.max(0, ...(mediaForTopo?.svgs?.map((s) => s.pitch ?? 0) ?? [0]));
+  const pitchStripCount = Math.max(problem.sections?.length ?? 0, maxPitchInSvgs);
+
   return (
     <div className='w-full min-w-0'>
       <title>{`${pitch > 0 ? `Pitch ${pitch} · ` : ''}Topo editor | ${meta.title}`}</title>
@@ -120,6 +130,7 @@ export const SvgEditLoader = () => {
         {...data}
         mediaRegion={data.mediaRegion ?? undefined}
         sections={data.sections ?? []}
+        pitchStripCount={pitchStripCount}
         onSave={save}
         saving={saving}
         onCancel={() => navigate(`/problem/${problemId}`)}
@@ -130,6 +141,8 @@ export const SvgEditLoader = () => {
 };
 
 type Props = EditableSvg & {
+  /** Number of pitch strips (not counting “entire route”). Used for Segment-tab pitch scope dropdown when &gt; 1. */
+  pitchStripCount: number;
   onSave: (
     updated: Required<Pick<EditableSvg, 'path' | 'hasAnchor' | 'anchors' | 'tradBelayStations' | 'texts'>>,
   ) => void;
@@ -151,8 +164,9 @@ export const SvgEdit = ({
   onSave,
   onCancel,
   onUpdateMediaRegion,
-  problemId: _pId,
-  pitch: _pi,
+  problemId,
+  pitch,
+  pitchStripCount,
   mediaId,
   versionStamp,
   mediaWidth,
@@ -166,11 +180,18 @@ export const SvgEdit = ({
   texts: initialTexts,
   hasAnchor: initialHasAnchor,
 }: Props) => {
+  const navigate = useNavigate();
   const [customMediaRegion, setCustomMediaRegion] = useState<MediaRegion | undefined>(mediaRegion);
   const w = (mediaRegion ?? customMediaRegion)?.width || mediaWidth;
   const h = (mediaRegion ?? customMediaRegion)?.height || mediaHeight;
   /** Crop / region offsets are for multi-pitch strips on tall photos — not for normal single-pitch images */
-  const showMultiPitchCropUi = _pi > 0;
+  const showMultiPitchCropUi = pitch > 0;
+  const showPitchScopeDropdown = pitchStripCount > 1;
+  /** Edited region vs last applied (`mediaRegion` from props / server). */
+  const cropApplyDirty = useMemo(
+    () => mediaRegionsDiffer(customMediaRegion, mediaRegion),
+    [customMediaRegion, mediaRegion],
+  );
   const imageRef = useRef<SVGImageElement>(null);
   const shift = useRef(false);
 
@@ -474,6 +495,31 @@ export const SvgEdit = ({
                       Shift+click the photo to add path points. Select a point to edit the segment type, or remove it.
                       Curve handles are the blue circles.
                     </p>
+                    {showPitchScopeDropdown && (
+                      <div className='flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2 border-b border-white/6 pb-3'>
+                        <span className={cn(designContract.typography.label, 'shrink-0 text-slate-500')}>
+                          Topo scope
+                        </span>
+                        <select
+                          className={cn(fieldClass, 'max-w-[min(100%,24rem)] min-w-0')}
+                          aria-label='Entire route or which pitch strip to edit'
+                          value={pitch}
+                          onChange={(e) => {
+                            const next = +e.target.value;
+                            if (next !== pitch) {
+                              navigate(`/problem/svg-edit/${problemId}/${next}/${mediaId}`);
+                            }
+                          }}
+                        >
+                          <option value={0}>Entire route</option>
+                          {Array.from({ length: pitchStripCount }, (_, i) => i + 1).map((p) => (
+                            <option key={p} value={p}>
+                              Pitch {p}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
                     <div className='flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2'>
                       {activePoint !== 0 && (
                         <div className='flex min-w-0 items-center gap-2'>
@@ -570,10 +616,25 @@ export const SvgEdit = ({
                           />
                           <button
                             type='button'
-                            className={cn(toolBtn, toolBtnOff, 'bg-surface-raised border-white/10')}
+                            title={
+                              cropApplyDirty
+                                ? 'Apply to update the crop preview and editor'
+                                : 'Crop matches the current preview'
+                            }
+                            aria-label={cropApplyDirty ? 'Apply crop changes (you have unsaved edits)' : 'Apply crop'}
+                            className={cn(
+                              toolBtn,
+                              cropApplyDirty
+                                ? cn(
+                                    pageActionIconBtnBrand,
+                                    'rounded-md px-2.5 py-1.5 font-medium',
+                                    '[&_svg]:text-[var(--color-brand-foreground)]',
+                                  )
+                                : cn(toolBtnOff, 'bg-surface-raised border-white/10'),
+                            )}
                             onClick={() => onUpdateMediaRegion(customMediaRegion ?? null)}
                           >
-                            <RefreshCw size={12} strokeWidth={2} /> Apply
+                            <RefreshCw size={12} strokeWidth={2} className='shrink-0' aria-hidden /> Apply
                           </button>
                         </div>
                       )}
