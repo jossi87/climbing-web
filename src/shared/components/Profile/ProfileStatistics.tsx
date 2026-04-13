@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import Chart from '../Chart/Chart';
 import ProblemList from '../ProblemList';
+import { rowListTypeKey } from '../ProblemList/types';
 import Leaflet from '../Leaflet/Leaflet';
 import { LockSymbol, Stars } from '../../ui/Indicators';
 import { Loading } from '../../ui/StatusWidgets';
@@ -11,6 +12,7 @@ import * as Sentry from '@sentry/react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { AlertCircle, Check, Camera, Video, Plus, Repeat, X, type LucideIcon } from 'lucide-react';
 import { cn } from '../../../lib/utils';
+import { designContract } from '../../../design/contract';
 import { TradGearMarker } from '../../ui/TradGearMarker';
 import {
   climbingRouteUsesPassiveGear,
@@ -24,8 +26,8 @@ import {
   tickCrag,
   tickCragLinkArea,
   tickCragLinkSector,
+  tickFa,
   tickFlags,
-  tickListRowQuietMeta,
   tickProblemLink,
   tickWhenGrade,
 } from './profileRowTypography';
@@ -89,7 +91,7 @@ const TickListItemInner = ({ tick }: TickListItemProps) => {
       {tick.fa ? (
         <>
           {' '}
-          <span className={cn(tickListRowQuietMeta, 'font-medium')}>FA</span>
+          <span className={tickFa}>FA</span>
         </>
       ) : null}
       {isClimbing && tick.idTickRepeat ? (
@@ -218,23 +220,86 @@ const ProfileStatistics = ({ userId, view }: ProfileStatisticsProps) => {
           storageKey={`user/${userId}`}
           mode='user'
           defaultOrder='date'
+          leadingBottomClassName='mb-2 sm:mb-2.5'
           contentBeforeList={(filteredRows) => {
+            type TypeBucket = { count: number; numFa: number };
+            const buckets = new Map<string, TypeBucket>();
+            for (const row of filteredRows) {
+              const key = rowListTypeKey(row);
+              const prev = buckets.get(key) ?? { count: 0, numFa: 0 };
+              prev.count += 1;
+              if (row.fa) prev.numFa += 1;
+              buckets.set(key, prev);
+            }
+            const ascentTypeSummaries = [...buckets.entries()]
+              .map(([header, { count, numFa }]) => ({ key: header, header, count, numFa }))
+              .filter((s) => s.count > 0)
+              .sort((a, b) => a.header.localeCompare(b.header, undefined, { sensitivity: 'base' }));
+
+            const typeSummaryBlock =
+              ascentTypeSummaries.length > 1 ? (
+                <div
+                  className='min-w-0'
+                  role='status'
+                  aria-label={ascentTypeSummaries
+                    .map((s) =>
+                      s.numFa > 0
+                        ? `${s.header}: ${s.count} ascents (${s.numFa} FA)`
+                        : `${s.header}: ${s.count} ascents`,
+                    )
+                    .join('. ')}
+                >
+                  <div className='flex flex-wrap items-center gap-x-4 gap-y-2.5 text-[13px] leading-snug sm:gap-x-6 sm:text-sm'>
+                    {ascentTypeSummaries.map((s, i) => (
+                      <div
+                        key={s.key}
+                        className={cn(
+                          'inline-flex max-w-full min-w-0 items-center gap-x-2 sm:whitespace-nowrap',
+                          i > 0 && 'border-surface-border border-l pl-3 sm:pl-4',
+                        )}
+                        title={
+                          s.numFa > 0
+                            ? `${s.header}: ${s.count} ascents (${s.numFa} FA)`
+                            : `${s.header}: ${s.count} ascents`
+                        }
+                      >
+                        <span className='font-semibold text-slate-200'>{s.header}:</span>
+                        <span className='text-slate-300 tabular-nums'>{s.count}</span>
+                        {s.numFa > 0 ? (
+                          <span className={cn('font-normal tabular-nums', designContract.ascentStatus.ticked)}>
+                            ({s.numFa} FA)
+                          </span>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null;
+
             const filteredMarkers = filteredRows.flatMap((row) => (row.marker ? [row.marker] : []));
-            if (filteredMarkers.length === 0) return null;
+            const mapBlock =
+              filteredMarkers.length > 0 ? (
+                <div className='-mx-4 mb-2 h-[35vh] w-[calc(100%+2rem)] min-w-0 overflow-hidden sm:-mx-6 sm:w-[calc(100%+3rem)]'>
+                  <Leaflet
+                    key={'ticked-inline=' + userId}
+                    autoZoom={true}
+                    height='100%'
+                    markers={filteredMarkers}
+                    defaultCenter={defaultCenter}
+                    defaultZoom={defaultZoom}
+                    showSatelliteImage={false}
+                    clusterMarkers={true}
+                    flyToId={null}
+                  />
+                </div>
+              ) : null;
+
+            if (!typeSummaryBlock && !mapBlock) return null;
             return (
-              <div className='-mx-4 mb-3 h-[35vh] w-[calc(100%+2rem)] min-w-0 overflow-hidden sm:-mx-6 sm:w-[calc(100%+3rem)]'>
-                <Leaflet
-                  key={'ticked-inline=' + userId}
-                  autoZoom={true}
-                  height='100%'
-                  markers={filteredMarkers}
-                  defaultCenter={defaultCenter}
-                  defaultZoom={defaultZoom}
-                  showSatelliteImage={false}
-                  clusterMarkers={true}
-                  flyToId={null}
-                />
-              </div>
+              <>
+                {mapBlock}
+                {typeSummaryBlock ? <div className='min-w-0'>{typeSummaryBlock}</div> : null}
+              </>
             );
           }}
           rows={data.ticks.map((t) => ({

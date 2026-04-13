@@ -31,6 +31,8 @@ type Props = {
    */
   detachToolbar?: boolean;
   wrapDetachedContent?: (content: ReactNode) => ReactNode;
+  /** Space between `contentBeforeList` and the list (default matches most pages). */
+  leadingBottomClassName?: string;
 };
 
 type OrderByOption = { key: string; text: string; shortText: string; value: OrderOption };
@@ -446,6 +448,7 @@ export const ProblemList = ({
   enableViewModeToggle = false,
   detachToolbar = false,
   wrapDetachedContent,
+  leadingBottomClassName = 'mb-4 sm:mb-5',
 }: Props) => {
   const [showFilter, setFilterShowing] = useState(false);
   const [compactRows, setCompactRows] = useState<boolean>(() => {
@@ -701,7 +704,7 @@ export const ProblemList = ({
 
   const listBody = (
     <>
-      {leading ? <div className='mb-4 sm:mb-5'>{leading}</div> : null}
+      {leading ? <div className={leadingBottomClassName}>{leading}</div> : null}
       {list}
     </>
   );
@@ -734,7 +737,7 @@ export const ProblemList = ({
         <div className='flex w-full min-w-0 flex-col gap-3 sm:gap-4'>
           {toolbarRow}
           {filterPanel}
-          {leading ? <div className='mb-4 sm:mb-5'>{leading}</div> : null}
+          {leading ? <div className={leadingBottomClassName}>{leading}</div> : null}
           {list}
         </div>
       )}

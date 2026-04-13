@@ -50,7 +50,7 @@ export const tickComment = cn('font-normal italic text-slate-400 antialiased', t
  * name stay the visual focus (Sector/Area rows + profile ascent FA badge).
  */
 export const tickListRowQuietMeta = cn('font-normal text-slate-400 antialiased', twInk.lightTextSlate700);
-/** FA marker (green) — use where FA should read as a highlight; ascent list uses {@link tickListRowQuietMeta} instead. */
+/** FA marker (green) — use where FA should read as a highlight (profile ascents row + type strip). */
 export const tickFa = 'font-medium text-status-ticked antialiased';
 
 /** Italic comments in problem rows — one step below {@link designContract.typography.listBodyPlain} on narrow + `sm`. */
