@@ -1,6 +1,6 @@
-import { type ComponentProps, useEffect, useMemo, useRef, useState } from 'react';
+import { type ComponentProps, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import ProblemList, { useProblemListCompact } from '../../shared/components/ProblemList';
 import ChartGradeDistribution from '../../shared/components/ChartGradeDistribution/ChartGradeDistribution';
 import { SlopeProfile } from '../../shared/components/SlopeProfile';
@@ -386,13 +386,14 @@ function shouldShowSectorTodoTabFromPayload(sector: SectorTodoTabPayload): boole
 }
 
 const Sector = () => {
-  const { sectorId } = useParams();
+  const { sectorId, segment } = useParams();
   if (!sectorId) {
     throw new Error('Missing sectorId URL param');
   }
   const meta = useMeta();
   const { data, error, isLoading, redirectUi } = useSector(+sectorId);
-  const [activeTab, setActiveTab] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [sectorPickerOpen, setSectorPickerOpen] = useState(false);
   const sectorPickerRef = useRef<HTMLDivElement>(null);
   const sectorPickerActiveItemRef = useRef<HTMLLIElement | null>(null);
@@ -467,13 +468,41 @@ const Sector = () => {
     return t;
   }, [data, markers, meta.isClimbing]);
 
-  const normalizedActiveTab = activeTab === 'media' ? 'overview' : activeTab;
-  const effectiveTab =
-    tabs.length === 0
-      ? null
-      : normalizedActiveTab !== null && tabs.some((x) => x.id === normalizedActiveTab)
-        ? normalizedActiveTab
-        : tabs[0].id;
+  /** Path segments: `/sector/:id`, `/sector/:id/overview`, `/sector/:id/map`, …; numeric segment = media deep link (tab highlights overview). */
+  const effectiveTab = useMemo(() => {
+    if (tabs.length === 0) return null;
+    if (segment && /^\d+$/.test(segment)) return tabs[0].id;
+    const candidate = segment === 'media' ? 'overview' : segment;
+    if (candidate && tabs.some((x) => x.id === candidate)) return candidate;
+    return tabs[0].id;
+  }, [tabs, segment]);
+
+  const setSectorTab = useCallback(
+    (id: string) => {
+      const base = `/sector/${sectorId}`;
+      if (id === 'overview') navigate(base, { replace: true });
+      else navigate(`${base}/${id}`, { replace: true });
+    },
+    [sectorId, navigate],
+  );
+
+  /** Old `?tab=` links → path (same idea as profile `/user/:id/:page`). */
+  useEffect(() => {
+    const raw = searchParams.get('tab');
+    if (!raw) return;
+    const base = `/sector/${sectorId}`;
+    const next = raw === 'media' ? 'overview' : raw;
+    navigate(next === 'overview' ? base : `${base}/${next}`, { replace: true });
+  }, [searchParams, sectorId, navigate]);
+
+  useEffect(() => {
+    if (tabs.length === 0 || !segment) return;
+    if (/^\d+$/.test(segment)) return;
+    const candidate = segment === 'media' ? 'overview' : segment;
+    if (!tabs.some((x) => x.id === candidate)) {
+      navigate(`/sector/${sectorId}`, { replace: true });
+    }
+  }, [tabs, segment, sectorId, navigate]);
 
   if (redirectUi) return redirectUi;
 
@@ -770,7 +799,7 @@ const Sector = () => {
                     type='button'
                     role='tab'
                     aria-selected={isActive}
-                    onClick={() => setActiveTab(t.id)}
+                    onClick={() => setSectorTab(t.id)}
                     className={tabBarButtonClassName(isActive)}
                   >
                     <IconComp

@@ -32,9 +32,27 @@ type Props = Pick<ComponentProps<typeof MediaModal>, 'optProblemId'> & {
   /** Denser grid than `compactTiles` (trivia on area/sector/problem). */
   triviaTiles?: boolean;
 };
+/** Tab path segments on `/area`, `/problem`, and `/sector` share the same URL slot as numeric media ids. */
+const AREA_PROBLEM_SECTOR_TAB_SEGMENTS = new Set(['overview', 'map', 'distribution', 'top', 'todo', 'activity']);
+
+function stripTabSegmentFromPath(pathname: string): string {
+  if (!pathname.startsWith('/problem/') && !pathname.startsWith('/sector/') && !pathname.startsWith('/area/')) {
+    return pathname;
+  }
+  const lastSlash = pathname.lastIndexOf('/');
+  if (lastSlash <= 0) return pathname;
+  const last = pathname.slice(lastSlash + 1);
+  if (last && AREA_PROBLEM_SECTOR_TAB_SEGMENTS.has(last)) {
+    return pathname.slice(0, lastSlash);
+  }
+  return pathname;
+}
+
 const useIds = () => {
-  const { mediaId, pitch } = useParams();
-  return { mediaId: mediaId ? +mediaId : 0, pitch: pitch ? +pitch : 0 };
+  const { mediaId, pitch, segment } = useParams();
+  const raw = segment ?? mediaId;
+  const mediaIdNum = raw && /^\d+$/.test(String(raw)) ? +raw : 0;
+  return { mediaId: mediaIdNum, pitch: pitch ? +pitch : 0 };
 };
 type MediaAction = (token: string) => Promise<unknown>;
 
@@ -97,9 +115,10 @@ const Media = ({
   const openModal = useCallback(
     (newM: MediaItem) => {
       const prevMediaId = m?.id;
+      const basePath = stripTabSegmentFromPath(location.pathname);
       const url = prevMediaId
         ? location.pathname.replace(prevMediaId.toString(), (newM.id ?? 0).toString())
-        : `${location.pathname}/${newM.id ?? 0}`;
+        : `${basePath}/${newM.id ?? 0}`;
       setM(newM);
       setEditM(null);
       /** Push on first open so browser Back closes the modal; replace when swapping media so swipes do not stack history. */

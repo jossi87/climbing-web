@@ -44,7 +44,7 @@ function AppRoutes() {
         element={
           <Routes>
             <Route path='/about' element={<About />} />
-            <Route path='/area/:areaId/:mediaId?' element={<Area />} />
+            <Route path='/area/:areaId/:segment?' element={<Area />} />
             <Route
               path='/area/edit/:areaId'
               element={
@@ -76,7 +76,7 @@ function AppRoutes() {
               }
             />
             <Route path='/privacy-policy' element={<PrivacyPolicy />} />
-            <Route path='/problem/:problemId/:mediaId?/:pitch?' element={<Problem />} />
+            <Route path='/problem/:problemId/:segment?/:pitch?' element={<Problem />} />
             <Route
               path='/problem/edit/media/:problemId'
               element={
@@ -104,7 +104,7 @@ function AppRoutes() {
             <Route path='/problems' element={<Problems />} />
             <Route path='/regions/:type' element={<Regions />} />
             <Route path='/sites/:type' element={<RedirectSitesUrlToRegions />} />
-            <Route path='/sector/:sectorId/:mediaId?' element={<Sector />} />
+            <Route path='/sector/:sectorId/:segment?' element={<Sector />} />
             <Route
               path='/sector/edit/:areaId/:sectorId'
               element={

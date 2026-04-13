@@ -1,5 +1,16 @@
-import { useState, useOptimistic, useTransition, type ComponentProps, type ElementType } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useOptimistic,
+  useState,
+  useTransition,
+  type ComponentProps,
+  type Dispatch,
+  type ElementType,
+  type SetStateAction,
+} from 'react';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
 import { getDistanceWithUnit } from '../../shared/components/Leaflet/geo-utils';
 import GetCenterFromDegrees from '../../utils/map-utils';
@@ -100,18 +111,12 @@ const useIds = () => {
   return { problemId: +problemId };
 };
 
+type ProblemLoadedData = NonNullable<ReturnType<typeof useProblem>['data']>;
+
 export const Problem = () => {
   const { problemId } = useIds();
   const [showHiddenMedia, setShowHiddenMedia] = useState(false);
-  const [activeTab, setActiveTab] = useState<'overview' | 'map'>('overview');
-  const meta = useMeta();
   const { data, error, toggleTodo, redirectUi } = useProblem(+problemId, showHiddenMedia);
-  const [isPending, startTransition] = useTransition();
-
-  const [optimisticTodo, setOptimisticTodo] = useOptimistic(data?.todo, (_, newTodo: boolean) => newTodo);
-
-  const [showTickModal, setShowTickModal] = useState(false);
-  const [showCommentModal, setShowCommentModal] = useState<components['schemas']['ProblemComment'] | null>(null);
 
   if (redirectUi) return redirectUi;
 
@@ -133,8 +138,40 @@ export const Problem = () => {
 
   if (!data?.id) return <Loading />;
 
+  return (
+    <ProblemLoaded
+      data={data}
+      problemId={problemId}
+      showHiddenMedia={showHiddenMedia}
+      setShowHiddenMedia={setShowHiddenMedia}
+      toggleTodo={toggleTodo}
+    />
+  );
+};
+
+function ProblemLoaded({
+  data,
+  problemId,
+  showHiddenMedia,
+  setShowHiddenMedia,
+  toggleTodo,
+}: {
+  data: ProblemLoadedData;
+  problemId: number;
+  showHiddenMedia: boolean;
+  setShowHiddenMedia: Dispatch<SetStateAction<boolean>>;
+  toggleTodo: ReturnType<typeof useProblem>['toggleTodo'];
+}) {
+  const navigate = useNavigate();
+  const { segment } = useParams();
+  const [searchParams] = useSearchParams();
+  const meta = useMeta();
+  const [isPending, startTransition] = useTransition();
+  const [optimisticTodo, setOptimisticTodo] = useOptimistic(data.todo, (_, newTodo: boolean) => newTodo);
+  const [showTickModal, setShowTickModal] = useState(false);
+  const [showCommentModal, setShowCommentModal] = useState<components['schemas']['ProblemComment'] | null>(null);
+
   const handleToggleTodo = async () => {
-    if (!data) return;
     const newTodoValue = !optimisticTodo;
     startTransition(async () => {
       setOptimisticTodo(newTodoValue);
@@ -213,6 +250,36 @@ export const Problem = () => {
   const hasDescent = (data.sectorDescent?.coordinates?.length ?? 0) > 1;
   const hasSectorOutline = (data.sectorOutline?.length ?? 0) > 0;
   const showMapTab = markers.length > 0 || hasApproach || hasDescent || (hasSectorOutline && !data.coordinates);
+
+  /** `/problem/:id`, `/problem/:id/overview`, and `/problem/:id/map` — same pattern as profile pages. */
+  const activeTab = useMemo<'overview' | 'map'>(() => {
+    if (!showMapTab) return 'overview';
+    return segment === 'map' ? 'map' : 'overview';
+  }, [showMapTab, segment]);
+
+  const setProblemTab = useCallback(
+    (tab: 'overview' | 'map') => {
+      const base = `/problem/${data.id}`;
+      if (tab === 'overview') navigate(base, { replace: true });
+      else navigate(`${base}/map`, { replace: true });
+    },
+    [data.id, navigate],
+  );
+
+  useEffect(() => {
+    if (!showMapTab && segment === 'map') {
+      navigate(`/problem/${data.id}`, { replace: true });
+    }
+  }, [showMapTab, segment, data.id, navigate]);
+
+  /** Legacy `?tab=map` → `/problem/:id/map`. */
+  useEffect(() => {
+    const q = searchParams.get('tab');
+    if (q == null) return;
+    const base = `/problem/${data.id}`;
+    navigate(q === 'map' ? `${base}/map` : base, { replace: true });
+  }, [searchParams, data.id, navigate]);
+
   const showOverviewContent = !showMapTab || activeTab === 'overview';
 
   const overviewChipsRow = (
@@ -546,7 +613,7 @@ export const Problem = () => {
                 type='button'
                 role='tab'
                 aria-selected={activeTab === 'overview'}
-                onClick={() => setActiveTab('overview')}
+                onClick={() => setProblemTab('overview')}
                 className={tabBarButtonClassName(activeTab === 'overview')}
               >
                 <LayoutDashboard
@@ -560,7 +627,7 @@ export const Problem = () => {
                 type='button'
                 role='tab'
                 aria-selected={activeTab === 'map'}
-                onClick={() => setActiveTab('map')}
+                onClick={() => setProblemTab('map')}
                 className={tabBarButtonClassName(activeTab === 'map')}
               >
                 <MapIcon
@@ -755,4 +822,4 @@ export const Problem = () => {
       ) : null}
     </div>
   );
-};
+}

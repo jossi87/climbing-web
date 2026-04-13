@@ -1,5 +1,5 @@
-import { type ComponentProps, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { type ComponentProps, useCallback, useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import ChartGradeDistribution from '../../shared/components/ChartGradeDistribution/ChartGradeDistribution';
 import Top from '../../shared/components/Top/Top';
 import Activity from '../../shared/components/Activity/Activity';
@@ -431,8 +431,8 @@ function shouldShowAreaTodoTabFromPayload(area: components['schemas']['Area']): 
 
 const Area = () => {
   const meta = useMeta();
-  const { areaId } = useParams();
-  const [activeTab, setActiveTab] = useState<string | null>(null);
+  const { areaId, segment } = useParams();
+  const navigate = useNavigate();
   const [activeSectorTab, setActiveSectorTab] = useState<string>('sectors');
 
   if (areaId === undefined) {
@@ -521,13 +521,32 @@ const Area = () => {
     return t;
   }, [data, markers.length, outlines.length, slopes.length]);
 
-  const normalizedActiveTab = activeTab === 'image' ? 'overview' : activeTab;
-  const effectiveTab =
-    tabs.length === 0
-      ? null
-      : normalizedActiveTab !== null && tabs.some((x) => x.id === normalizedActiveTab)
-        ? normalizedActiveTab
-        : tabs[0].id;
+  /** Path segments: `/area/:id`, `/area/:id/overview`, `/area/:id/map`, …; numeric segment = media deep link. */
+  const effectiveTab = useMemo(() => {
+    if (tabs.length === 0) return null;
+    if (segment && /^\d+$/.test(segment)) return tabs[0].id;
+    const candidate = segment === 'image' || segment === 'media' ? 'overview' : segment;
+    if (candidate && tabs.some((x) => x.id === candidate)) return candidate;
+    return tabs[0].id;
+  }, [tabs, segment]);
+
+  const setAreaTab = useCallback(
+    (id: string) => {
+      const base = `/area/${areaId}`;
+      if (id === 'overview') navigate(base, { replace: true });
+      else navigate(`${base}/${id}`, { replace: true });
+    },
+    [areaId, navigate],
+  );
+
+  useEffect(() => {
+    if (tabs.length === 0 || !segment) return;
+    if (/^\d+$/.test(segment)) return;
+    const candidate = segment === 'image' || segment === 'media' ? 'overview' : segment;
+    if (!tabs.some((x) => x.id === candidate)) {
+      navigate(`/area/${areaId}`, { replace: true });
+    }
+  }, [tabs, segment, areaId, navigate]);
 
   const problemRows = useMemo(() => {
     if (!data?.sectors) return [];
@@ -676,7 +695,7 @@ const Area = () => {
                     type='button'
                     role='tab'
                     aria-selected={isActive}
-                    onClick={() => setActiveTab(t.id)}
+                    onClick={() => setAreaTab(t.id)}
                     className={tabBarButtonClassName(isActive)}
                   >
                     <IconComp
