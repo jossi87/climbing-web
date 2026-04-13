@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, type ElementType } from 'react';
 import { Link } from 'react-router-dom';
 import Linkify from 'linkify-react';
-import { Filter, ChevronDown, Plus, Check, MessageSquare, Camera } from 'lucide-react';
+import { Filter, ChevronDown, Plus, Check, MessageSquare, Camera, Loader2 } from 'lucide-react';
 import { useLocalStorage } from '../../../utils/use-local-storage';
 import { useMeta } from '../Meta/context';
 import { useActivity } from '../../../api';
@@ -44,6 +44,9 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
     data: activity,
     refetch,
     isPending,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
   } = useActivity({
     idArea,
     idSector,
@@ -77,6 +80,9 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
     if (type === 'comments') setActivityTypeComments(!activityTypeComments);
     setTimeout(refetch, 10);
   };
+
+  const activityList = activity ?? [];
+  const showActivityEmpty = !isPending && activityList.length === 0;
 
   return (
     <div className='w-full'>
@@ -172,32 +178,94 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
 
       {embedded ? (
         <div className='app-card-surface'>
-          {isPending
-            ? [...Array(10)].map((_, i) => <ActivitySkeleton key={i} />)
-            : activity?.map((a) => (
-                <ActivityItem
-                  key={a.activityIds?.join('+') ?? `activity-${a.id}`}
-                  a={a}
-                  isBouldering={meta.isBouldering}
-                />
-              ))}
+          {isPending ? (
+            [...Array(10)].map((_, i) => <ActivitySkeleton key={i} />)
+          ) : showActivityEmpty ? (
+            <ActivityEmptyState />
+          ) : (
+            activityList.map((a) => (
+              <ActivityItem
+                key={a.activityIds?.join('+') ?? `activity-${a.id}`}
+                a={a}
+                isBouldering={meta.isBouldering}
+              />
+            ))
+          )}
+          <ActivitySeeMore
+            show={!isPending && !!hasNextPage}
+            loading={isFetchingNextPage}
+            onFetchMore={() => void fetchNextPage()}
+            embedded
+          />
         </div>
       ) : (
         <Card flush>
-          {isPending
-            ? [...Array(10)].map((_, i) => <ActivitySkeleton key={i} />)
-            : activity?.map((a) => (
-                <ActivityItem
-                  key={a.activityIds?.join('+') ?? `activity-${a.id}`}
-                  a={a}
-                  isBouldering={meta.isBouldering}
-                />
-              ))}
+          {isPending ? (
+            [...Array(10)].map((_, i) => <ActivitySkeleton key={i} />)
+          ) : showActivityEmpty ? (
+            <ActivityEmptyState />
+          ) : (
+            activityList.map((a) => (
+              <ActivityItem
+                key={a.activityIds?.join('+') ?? `activity-${a.id}`}
+                a={a}
+                isBouldering={meta.isBouldering}
+              />
+            ))
+          )}
+          <ActivitySeeMore
+            show={!isPending && !!hasNextPage}
+            loading={isFetchingNextPage}
+            onFetchMore={() => void fetchNextPage()}
+            embedded={false}
+          />
         </Card>
       )}
     </div>
   );
 };
+
+/** Shown when the feed has loaded and the API returned no rows (e.g. quiet sector or tight filters). */
+function ActivityEmptyState() {
+  return (
+    <div
+      className={cn(designContract.typography.meta, 'px-4 py-10 text-center text-pretty md:px-5 md:py-12')}
+      role='status'
+    >
+      No activity yet.
+    </div>
+  );
+}
+
+type ActivitySeeMoreProps = {
+  show: boolean;
+  loading: boolean;
+  onFetchMore: () => void;
+  embedded: boolean;
+};
+
+function ActivitySeeMore({ show, loading, onFetchMore, embedded }: ActivitySeeMoreProps) {
+  if (!show) return null;
+  return (
+    <div className={cn('flex justify-center px-4 pt-1 pb-3 md:px-5 md:pt-2 md:pb-4', embedded && 'rounded-b-xl')}>
+      <button
+        type='button'
+        onClick={onFetchMore}
+        disabled={loading}
+        className={cn(
+          designContract.typography.uiCompact,
+          'border-surface-border bg-surface-nav inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border px-4 py-2 font-medium text-slate-200 transition-colors',
+          'hover:bg-surface-raised-hover hover:text-slate-50',
+          'light:border-slate-200 light:bg-white light:text-slate-950 light:hover:bg-slate-50',
+          'disabled:cursor-not-allowed disabled:opacity-50',
+        )}
+      >
+        {loading ? <Loader2 size={14} className='animate-spin' strokeWidth={2.25} aria-hidden /> : null}
+        See more
+      </button>
+    </div>
+  );
+}
 
 type FilterButtonProps = {
   active: boolean;

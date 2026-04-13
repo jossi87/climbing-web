@@ -7,6 +7,7 @@ import {
   type UseQueryOptions,
   useQuery,
   useQueryClient,
+  useInfiniteQuery,
 } from '@tanstack/react-query';
 import type { Success, WithoutFirstParameter } from '../@types/buldreinfo';
 import type { components } from '../@types/buldreinfo/swagger';
@@ -14,7 +15,7 @@ import { useLocalStorage } from '../utils/use-local-storage';
 import { useRedirect } from '../utils/useRedirect';
 import { makeAuthenticatedRequest, useAccessToken } from './utils';
 import type { FetchOptions } from './types';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { postPermissions } from './operations';
 import { captureException } from '@sentry/react';
 import { type MediaRegion, calculateMediaRegion, isPathVisible, scalePath } from '../utils/svg-scaler';
@@ -70,6 +71,12 @@ export function invalidateMediaQueries(client: QueryClient, idMedia: number) {
 }
 
 /** Sector problem lists (`hasTopo`, etc.) — invalidate after edits that change problem-level topo flags. */
+/** Same identity as activity feed row keys — skip duplicates when the same row appears across pages. */
+function activityStableKey(a: components['schemas']['Activity']): string {
+  if (a.activityIds && a.activityIds.length > 0) return a.activityIds.join('+');
+  return `activity-${a.id ?? 'unknown'}`;
+}
+
 export function invalidateSectorQueries(client: QueryClient, sectorId: number) {
   return client.invalidateQueries({
     predicate: (q) => {
@@ -181,12 +188,55 @@ export function useActivity({
   ticks: boolean;
   media: boolean;
 }) {
-  return useData<Success<'getActivity'>>(
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+
+  const queryKey = useKey(
+    [`/activity`, { idArea, idSector, lowerGrade, fa, comments, ticks, media }],
     `/activity?idArea=${idArea}&idSector=${idSector}&lowerGrade=${lowerGrade}&fa=${fa}&comments=${comments}&ticks=${ticks}&media=${media}`,
-    {
-      queryKey: [`/activity`, { idArea, idSector, lowerGrade, fa, comments, ticks, media }],
-    },
   );
+
+  const query = useInfiniteQuery({
+    queryKey,
+    initialPageParam: 0,
+    queryFn: async ({ pageParam }: { pageParam: number }) => {
+      const accessToken = isAuthenticated ? await getAccessTokenSilently() : null;
+      const url = `/activity?idArea=${idArea}&idSector=${idSector}&lowerGrade=${lowerGrade}&fa=${fa}&comments=${comments}&ticks=${ticks}&media=${media}&offset=${pageParam}`;
+      const res = await makeAuthenticatedRequest(accessToken, url);
+      return res.json() as Promise<Success<'getActivity'>>;
+    },
+    /**
+     * Inner query uses offset/limit; outer permission filter can shrink pages — do not infer “end” from length.
+     * Only an empty page means no more rows.
+     */
+    getNextPageParam: (lastPage, _allPages, lastPageParam) => {
+      if (!lastPage?.length) return undefined;
+      return lastPageParam + lastPage.length;
+    },
+  });
+
+  const flat = useMemo(() => {
+    const pages = query.data?.pages;
+    if (!pages?.length) return [];
+    const seen = new Set<string>();
+    const out: Success<'getActivity'> = [];
+    for (const page of pages) {
+      for (const row of page) {
+        const k = activityStableKey(row);
+        if (seen.has(k)) continue;
+        seen.add(k);
+        out.push(row);
+      }
+    }
+    return out;
+  }, [query.data?.pages]);
+  const redirectUi = useRedirect(query.data?.pages?.[0]);
+
+  return {
+    ...query,
+    data: flat,
+    refetch: query.refetch,
+    redirectUi,
+  };
 }
 
 export function useAreas() {

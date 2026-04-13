@@ -1908,8 +1908,8 @@ export type components = {
             parameters?: {
                 [key: string]: string;
             };
-            wildcardSubtype?: boolean;
             wildcardType?: boolean;
+            wildcardSubtype?: boolean;
         };
         MessageBodyWorkers: Record<string, never>;
         MultiPart: {
@@ -2089,6 +2089,8 @@ export interface operations {
                 ticks?: boolean;
                 /** @description Include new media */
                 media?: boolean;
+                /** @description Offset (see more) */
+                offset?: number;
             };
             header?: never;
             path?: never;
