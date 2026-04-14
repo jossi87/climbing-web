@@ -250,20 +250,26 @@ export const designContract = {
     pageHeaderIconButtonEdit:
       'border-amber-300/45 bg-amber-400/18 text-amber-100 hover:bg-amber-400/28 light:border-2 light:border-amber-700 light:bg-amber-100 light:text-amber-950 light:shadow-sm light:hover:border-amber-800 light:hover:bg-amber-200 light:hover:text-amber-950',
     pageHeaderIconGlyph: 'pointer-events-none h-4 w-4',
-    /** Full-width tab row (Profile, Area, etc.): active state via short bar — no full-width rules above/below */
+    /** Full-width tab row: equal strips are flush; active tab uses full-cell surface (see {@link tabBarButtonActive}). */
     tabBarRow: 'flex w-full min-w-0 flex-wrap',
+    /** Bottom rule for tab strips — paired with {@link tabBarStripEqual} or {@link tabBarStripInline}. */
+    tabBarStripBase: 'border-surface-border/40 border-b pb-0',
     /**
-     * Card tab strip chrome: bottom rule + horizontal inset. Use on every page tab row (with {@link tabBarRow})
-     * so primary strips match secondary (e.g. Area overview tabs vs Sectors/Routes).
+     * Equal-width tab rows (Area / Sector / Problem / Profile): flush to card edges so each tab fills 1/n of the bar;
+     * active background reads as a full cell (see {@link tabBarButtonActive}).
      */
-    tabBarStrip: 'border-surface-border/40 border-b px-4 pt-2.5 pb-0 sm:px-5',
+    tabBarStripEqual: 'pt-0',
+    /**
+     * Content-sized tab pairs (e.g. Area Sectors | Routes): inset + top air so pairs align with padded body below.
+     */
+    tabBarStripInline: 'px-4 pt-2.5 sm:px-5',
     /** Content-sized tab pairs (e.g. Sectors | Routes): extra air between tabs */
     tabBarStripGapInline: 'gap-x-6 gap-y-1 sm:gap-x-10',
     tabBarButton:
-      'group relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-t-lg border-b-2 border-transparent px-1 py-2.5 text-[12px] leading-tight font-medium transition-[color,background-color] sm:flex-row sm:gap-1.5 sm:px-3 sm:py-3 sm:text-[13px]',
-    /** Capped-width bar reads better on 2-tab rows than a full-cell underline; active ink is brighter than idle. */
+      'group relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-none border-b-2 border-transparent px-2 py-3 text-[12px] leading-tight font-medium transition-[color,background-color] sm:flex-row sm:gap-1.5 sm:px-3 sm:py-3.5 sm:text-[13px]',
+    /** Full-cell lift + brand bar; hover slightly deepens the same surface (no “floating pill” in the strip). */
     tabBarButtonActive:
-      'text-slate-50 after:pointer-events-none after:absolute after:bottom-0 after:left-1/2 after:h-[3px] after:w-[min(5.75rem,calc(100%-0.75rem))] after:max-w-[11rem] after:-translate-x-1/2 after:rounded-full after:bg-brand hover:bg-surface-raised-hover/35 light:text-slate-950 light:hover:bg-slate-200/65',
+      'bg-surface-raised/50 text-slate-50 after:pointer-events-none after:absolute after:bottom-0 after:left-1/2 after:h-[3px] after:w-[min(5.75rem,calc(100%-0.75rem))] after:max-w-[11rem] after:-translate-x-1/2 after:rounded-full after:bg-brand hover:bg-surface-raised-hover/65 light:bg-slate-200/85 light:text-slate-950 light:hover:bg-slate-300/80',
     tabBarButtonInactive:
       'text-slate-300 hover:bg-surface-raised-hover/50 hover:text-slate-100 light:text-slate-600 light:hover:bg-slate-200/80 light:hover:text-slate-900',
     /** Tab caption — `text-inherit` so label + icon share {@link tabBarButtonActive} / {@link tabBarButtonInactive} hover ink. */

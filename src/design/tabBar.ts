@@ -5,13 +5,14 @@ import { designContract } from './contract';
 export const TAB_BAR_ICON_SIZE = 14;
 
 /**
- * Wraps a tab row with global strip chrome (border + inset). Use for both grid tabs and inline pairs.
- * @param variant `equal` — many equal columns (grid); `inline` — a few content-sized tabs with gap
+ * Wraps a tab row with strip chrome (bottom border). `equal` is flush to the card edges; `inline` keeps horizontal inset.
+ * @param variant `equal` — equal columns (grid/flex); `inline` — content-sized tabs with gap
  */
 export const tabBarStripContainerClassName = (variant: 'equal' | 'inline') =>
   cn(
     designContract.controls.tabBarRow,
-    designContract.controls.tabBarStrip,
+    designContract.controls.tabBarStripBase,
+    variant === 'equal' ? designContract.controls.tabBarStripEqual : designContract.controls.tabBarStripInline,
     variant === 'inline' && designContract.controls.tabBarStripGapInline,
   );
 
