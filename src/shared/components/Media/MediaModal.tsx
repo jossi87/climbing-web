@@ -382,6 +382,15 @@ const MediaModal = ({
   const canDrawMedia = isAdmin && isImage && !isBouldering;
   const canOrder = isAdmin && isImage && (orderableMedia ?? []).some((om) => om.id === (m.id ?? 0));
   const canMove = isAdmin && isImage;
+  const hasMenuTopActions =
+    canDrawTopo ||
+    canDrawMedia ||
+    canOrder ||
+    (canMove && (m.enableMoveToIdArea ?? 0) > 0) ||
+    (canMove && (m.enableMoveToIdSector ?? 0) > 0) ||
+    (canMove && (m.enableMoveToIdProblem ?? 0) > 0) ||
+    canSetMediaAsAvatar;
+  const hasMenuBottomActions = !m.embedUrl || canRotate || canEdit || canDelete;
 
   const attachCarouselSwipeHandlers = isMobile && carouselSize > 1 && visualViewportScale <= 1.05;
 
@@ -595,7 +604,7 @@ const MediaModal = ({
                     </button>
                   )}
 
-                  <div className='bg-surface-border/50 my-2 h-px' />
+                  {hasMenuTopActions && hasMenuBottomActions && <div className='bg-surface-border/50 my-2 h-px' />}
 
                   {!m.embedUrl && (
                     <button

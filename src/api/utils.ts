@@ -160,7 +160,7 @@ export function downloadFileWithProgress(
         const disposition = xhr.getResponseHeader('Content-Disposition');
         let filename = '';
 
-        if (disposition && disposition.indexOf('attachment') !== -1) {
+        if (disposition && disposition.includes('filename')) {
           const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
           const matches = filenameRegex.exec(disposition);
           if (matches != null && matches[1]) {

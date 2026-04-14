@@ -44,9 +44,9 @@ const factSegmentClass = cn(factClass, 'inline-flex min-h-5 items-center');
 /** Lucide icons: same box as row text line (12px). */
 const factIconClass = 'shrink-0 text-slate-400';
 
-function dateWithCalendar(date: string) {
+function dateWithCalendar(date: string, key?: string) {
   return (
-    <span className={cn(factSegmentClass, 'gap-1 tabular-nums')}>
+    <span key={key} className={cn(factSegmentClass, 'gap-1 tabular-nums')}>
       <Calendar size={12} className={factIconClass} strokeWidth={2.25} aria-hidden />
       {date}
     </span>
@@ -82,10 +82,10 @@ function UserFactLink({
   );
 }
 
-function climberList(users: User[]) {
+function climberList(users: User[], key?: string) {
   if (users.length === 0) return null;
   return (
-    <span className='inline-flex min-w-0 flex-wrap content-start items-start gap-x-2 gap-y-1'>
+    <span key={key} className='inline-flex min-w-0 flex-wrap content-start items-start gap-x-2 gap-y-1'>
       {users.map((u, i) =>
         u.id != null ? (
           <UserFactLink
@@ -101,11 +101,11 @@ function climberList(users: User[]) {
   );
 }
 
-function todoUserList(todos: ProblemTodo[]) {
+function todoUserList(todos: ProblemTodo[], key?: string) {
   const withUser = todos.filter((t) => t.idUser != null);
   if (withUser.length === 0) return null;
   return (
-    <span className={cn(factClass, 'min-w-0 [overflow-wrap:anywhere]')}>
+    <span key={key} className={cn(factClass, 'min-w-0 [overflow-wrap:anywhere]')}>
       {withUser.map((u, idx) => (
         <span key={u.idUser ?? idx}>
           {idx > 0 ? ', ' : null}
@@ -144,7 +144,7 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
   ].filter(Boolean);
   const showIce = meta.isIce && iceParts.length > 0;
 
-  const todoNames = todoUserList(data.todos ?? []);
+  const todoNames = todoUserList(data.todos ?? [], 'todo-users');
   const showTodoRow = todoNames != null;
 
   const triviaText = (data.trivia ?? '').trim();
@@ -166,10 +166,10 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
 
   const aidRowBody: ReactNode[] = [];
   if (aidDate) {
-    aidRowBody.push(dateWithCalendar(aidDate));
+    aidRowBody.push(dateWithCalendar(aidDate, 'aid-date'));
   }
   if (aidUsers.length > 0) {
-    aidRowBody.push(climberList(aidUsers));
+    aidRowBody.push(climberList(aidUsers, 'aid-users'));
   }
 
   const freeRowBody: ReactNode[] = [];
@@ -189,20 +189,20 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
     );
   }
   if (freeDate) {
-    freeRowBody.push(dateWithCalendar(freeDate));
+    freeRowBody.push(dateWithCalendar(freeDate, 'free-date'));
   }
   if (mergedForFree.length > 0) {
-    freeRowBody.push(climberList(mergedForFree));
+    freeRowBody.push(climberList(mergedForFree, 'free-users'));
   }
 
   return (
     <div className='min-w-0 space-y-2 sm:space-y-2.5'>
       {showAidBlock && (
         <div className='space-y-1.5'>
-          <p className={rowClass}>
+          <div className={rowClass}>
             <span className={leadClass}>First aid ascent:</span>
             {factsBand(aidRowBody)}
-          </p>
+          </div>
           {aidDesc.length > 0 ? (
             <ExpandableMarkdown content={faAid!.description!} contentClassName='max-w-none text-slate-400' />
           ) : null}
@@ -210,10 +210,10 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
       )}
 
       {showFreeBlock && (
-        <p className={rowClass}>
+        <div className={rowClass}>
           <span className={leadClass}>{freeLead}</span>
           {factsBand(freeRowBody)}
-        </p>
+        </div>
       )}
 
       {showIce ? (
@@ -223,7 +223,7 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
       ) : null}
 
       {showTriviaBlock && (
-        <p className={rowClass}>
+        <div className={rowClass}>
           <span className={leadClass}>Trivia:</span>
           {factsBand([
             <div key='trivia-inline' className='flex min-w-0 flex-1 flex-col gap-2 sm:gap-2.5'>
@@ -245,14 +245,14 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
               ) : null}
             </div>,
           ])}
-        </p>
+        </div>
       )}
 
       {showTodoRow ? (
-        <p className={rowClass}>
+        <div className={rowClass}>
           <span className={leadClass}>Todo:</span>
           {factsBand([todoNames])}
-        </p>
+        </div>
       ) : null}
     </div>
   );
