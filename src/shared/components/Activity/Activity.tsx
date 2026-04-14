@@ -45,6 +45,7 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
     data: activity,
     refetch,
     isPending,
+    isError,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
@@ -83,7 +84,8 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
   };
 
   const activityList = activity ?? [];
-  const showActivityEmpty = !isPending && activityList.length === 0;
+  const showActivityEmpty = !isPending && !isError && activityList.length === 0;
+  const showActivityError = isError && activityList.length === 0;
 
   return (
     <div className='w-full'>
@@ -181,6 +183,8 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
         <div className='app-card-surface'>
           {isPending ? (
             [...Array(10)].map((_, i) => <ActivitySkeleton key={i} />)
+          ) : showActivityError ? (
+            <ActivityErrorState onRetry={() => void refetch()} />
           ) : showActivityEmpty ? (
             <ActivityEmptyState />
           ) : (
@@ -193,7 +197,7 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
             ))
           )}
           <ActivitySeeMore
-            show={!isPending && !!hasNextPage}
+            show={!isPending && !showActivityError && !!hasNextPage}
             loading={isFetchingNextPage}
             onFetchMore={() => void fetchNextPage()}
             embedded
@@ -203,6 +207,8 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
         <Card flush>
           {isPending ? (
             [...Array(10)].map((_, i) => <ActivitySkeleton key={i} />)
+          ) : showActivityError ? (
+            <ActivityErrorState onRetry={() => void refetch()} />
           ) : showActivityEmpty ? (
             <ActivityEmptyState />
           ) : (
@@ -215,7 +221,7 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
             ))
           )}
           <ActivitySeeMore
-            show={!isPending && !!hasNextPage}
+            show={!isPending && !showActivityError && !!hasNextPage}
             loading={isFetchingNextPage}
             onFetchMore={() => void fetchNextPage()}
             embedded={false}
@@ -238,6 +244,30 @@ function ActivityEmptyState() {
   );
 }
 
+/** Initial load failed — avoid mislabeling as an empty feed. */
+function ActivityErrorState({ onRetry }: { onRetry: () => void }) {
+  return (
+    <div
+      className={cn(designContract.typography.meta, 'px-4 py-10 text-center text-pretty md:px-5 md:py-12')}
+      role='alert'
+    >
+      <p className='light:text-slate-600 text-slate-400'>Couldn’t load activity.</p>
+      <button
+        type='button'
+        onClick={onRetry}
+        className={cn(
+          designContract.typography.uiCompact,
+          'border-surface-border/70 bg-surface-raised/55 hover:border-surface-border hover:bg-surface-raised mt-3 inline-flex min-h-9 items-center justify-center rounded-lg border px-4 py-2 font-medium text-slate-400 transition-[background-color,border-color,color] hover:text-slate-200',
+          'light:border-slate-300/90 light:bg-slate-100/75 light:text-slate-600 light:shadow-sm light:hover:border-slate-400 light:hover:bg-slate-200',
+          twInk.lightHoverSlate800,
+        )}
+      >
+        Retry
+      </button>
+    </div>
+  );
+}
+
 type ActivitySeeMoreProps = {
   show: boolean;
   loading: boolean;
@@ -253,6 +283,7 @@ function ActivitySeeMore({ show, loading, onFetchMore, embedded }: ActivitySeeMo
         type='button'
         onClick={onFetchMore}
         disabled={loading}
+        aria-busy={loading}
         className={cn(
           designContract.typography.uiCompact,
           'border-surface-border/70 bg-surface-raised/55 hover:border-surface-border hover:bg-surface-raised inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border px-4 py-2 font-medium text-slate-500 transition-[background-color,border-color,color] hover:text-slate-300',
