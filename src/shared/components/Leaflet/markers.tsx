@@ -4,7 +4,7 @@ import { markerBlueIcon, markerRedIcon, parkingIcon, weatherIcon, rockIcon } fro
 import { useNavigate } from 'react-router';
 import type { Marker as LeafletMarker } from 'leaflet';
 import type { components } from '../../../@types/buldreinfo/swagger';
-import { captureException } from '@sentry/react';
+import { captureSentryException } from '../../../utils/sentry';
 import { Navigation, ExternalLink, CloudSun } from 'lucide-react';
 
 type ParkingMarker = {
@@ -82,9 +82,7 @@ export default function Markers({ opacity, markers, addEventHandlers, flyToId, s
         map.flyTo(marker.getLatLng(), 13, { animate: false });
         marker.openPopup();
       } else {
-        captureException('Missing marker ref', {
-          extra: { flyToId, refs: Object.keys(markerRefs.current ?? {}) },
-        });
+        captureSentryException('Missing marker ref', { flyToId, refs: Object.keys(markerRefs.current ?? {}) });
       }
     }
   }, [flyToId, map]);

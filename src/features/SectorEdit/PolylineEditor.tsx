@@ -3,7 +3,7 @@ import { colorLatLng, parsePolyline } from '../../utils/polyline';
 import { type DropzoneOptions, useDropzone } from 'react-dropzone';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { calculateDistanceBetweenCoordinates, parsers } from '../../shared/components/Leaflet/geo-utils';
-import { captureMessage } from '@sentry/react';
+import { captureSentryMessage } from '../../utils/sentry';
 import { X, Upload, FileCode, Database, List } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
@@ -29,20 +29,20 @@ export const PolylineEditor = ({ coordinates, parking, onChange, upload }: Props
       reader.onload = (e) => {
         const match = file.name.toLowerCase().match(/\.([a-z]+)$/);
         if (!match) {
-          captureMessage('Could not extract file extension');
+          captureSentryMessage('Could not extract file extension');
           return;
         }
         const extension = match[1];
 
         const parser = parsers[extension];
         if (!parser) {
-          captureMessage('No defined parser for file', { extra: { extension } });
+          captureSentryMessage('No defined parser for file', { extension });
           return;
         }
 
         const coords = parser(e.target?.result as string);
         if (!coords || coords.length === 0) {
-          captureMessage('Could not parse file or empty coordinates', { extra: { extension } });
+          captureSentryMessage('Could not parse file or empty coordinates', { extension });
           return;
         }
 

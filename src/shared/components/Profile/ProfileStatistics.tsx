@@ -8,7 +8,6 @@ import { LockSymbol, Stars } from '../../ui/Indicators';
 import { Loading } from '../../ui/StatusWidgets';
 import { numberWithCommas, useProfileStatistics } from '../../../api';
 import { useMeta } from '../Meta';
-import * as Sentry from '@sentry/react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { AlertCircle, Check, Camera, Video, Plus, Repeat, X, type LucideIcon } from 'lucide-react';
 import { cn } from '../../../lib/utils';
@@ -31,6 +30,7 @@ import {
   tickProblemLink,
   tickWhenGrade,
 } from './profileRowTypography';
+import { captureSentryException } from '../../../utils/sentry';
 
 type TickListItemProps = {
   tick: NonNullable<components['schemas']['ProfileStatistics']['ticks']>[number];
@@ -176,7 +176,7 @@ const ProfileStatistics = ({ userId, view }: ProfileStatisticsProps) => {
   if (isLoading) return <Loading inline />;
 
   if (error || !data || !stats) {
-    Sentry.captureException(error, { extra: { userId } });
+    captureSentryException(error, { userId });
     return (
       <div className='py-12 text-center'>
         <AlertCircle size={48} className='mx-auto mb-4 text-red-500' />

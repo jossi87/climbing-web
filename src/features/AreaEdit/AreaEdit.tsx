@@ -5,7 +5,7 @@ import { useMeta } from '../../shared/components/Meta/context';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { useNavigate, useParams } from 'react-router-dom';
 import { VisibilitySelectorField } from '../../shared/ui/VisibilitySelector';
-import { captureException } from '@sentry/react';
+import { captureSentryException } from '../../utils/sentry';
 import { spaPathFromRedirectResponse } from '../../api';
 import { useAreaEdit } from './useAreaEdit';
 import { hours } from '../../utils/hours';
@@ -58,7 +58,7 @@ export const AreaEdit = () => {
             navigate(path ?? fallback);
           })
           .catch((error) => {
-            captureException(error);
+            captureSentryException(error);
           });
       }
     },

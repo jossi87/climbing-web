@@ -16,7 +16,7 @@ import {
 import { parseReadOnlySvgs, parsePath, isCubicPoint, type ParsedEntry } from '../../utils/svg-helpers';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { Card } from '../../shared/ui';
-import { captureException } from '@sentry/react';
+import { captureSentryException } from '../../utils/sentry';
 import { generatePath, reducer, type State } from './state';
 import { neverGuard } from '../../utils/neverGuard';
 import type { MediaRegion } from '../../utils/svg-scaler';
@@ -109,7 +109,7 @@ export const SvgEditLoader = () => {
         })
         .catch((error) => {
           console.warn(error);
-          captureException(error);
+          captureSentryException(error);
         })
         .finally(() => setSaving(false));
     },

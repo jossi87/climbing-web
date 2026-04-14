@@ -92,7 +92,7 @@ export default defineConfig(({ mode }) => {
               if (isReactCoreLib) {
                 return 'vendor-react-core';
               }
-              return 'vendor-utils';
+              return undefined;
             }
           },
         },

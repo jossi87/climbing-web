@@ -5,7 +5,7 @@ import { itemLocalStorage } from '../../utils/use-local-storage';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { flatten, unflatten } from 'flat';
 import jsonUrl from 'json-url';
-import { captureMessage, captureException } from '@sentry/react';
+import { captureSentryException, captureSentryMessage } from '../../utils/sentry';
 
 const codec = jsonUrl('lzw');
 
@@ -817,7 +817,7 @@ export const useFilterState = (init?: Partial<UiState>) => {
         });
       } catch (e) {
         console.warn('Failed to parse hash', e);
-        captureException(e, { extra: { hash } });
+        captureSentryException(e, { hash });
         throw e;
       }
     },
@@ -827,7 +827,7 @@ export const useFilterState = (init?: Partial<UiState>) => {
   useEffect(() => {
     const onHashChange = (e: HashChangeEvent) => {
       const url = new URL(e.newURL);
-      captureMessage('filter-hashchange', { extra: { hash: url.hash } });
+      captureSentryMessage('filter-hashchange', { hash: url.hash });
       loadFromHash(url.hash).catch((e) => {
         window.history.replaceState(undefined, '', '');
         console.warn(e);
@@ -867,7 +867,7 @@ export const useFilterState = (init?: Partial<UiState>) => {
 
   useEffect(() => {
     if (window.location.hash) {
-      captureMessage('filter-hash', { extra: { hash: window.location.hash } });
+      captureSentryMessage('filter-hash', { hash: window.location.hash });
       loadFromHash(window.location.hash).catch((e) => {
         window.history.replaceState(undefined, '', '');
         console.warn(e);

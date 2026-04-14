@@ -12,7 +12,7 @@ import { ProblemOrder } from './ProblemOrder';
 import { PolylineEditor } from './PolylineEditor';
 import { ZoomLogic } from './ZoomLogic';
 import { PolylineMarkers } from './PolylineMarkers';
-import { captureException } from '@sentry/react';
+import { captureSentryException } from '../../utils/sentry';
 import { hours } from '../../utils/hours';
 import ExternalLink from '../../shared/ui/ExternalLinks';
 import {
@@ -219,7 +219,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
         })
         .catch((error) => {
           console.warn(error);
-          captureException(error);
+          captureSentryException(error);
         })
         .finally(() => setSaving(false));
     }

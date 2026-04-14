@@ -28,7 +28,7 @@ import DatePicker from 'react-datepicker';
 import { VisibilitySelectorField } from '../../shared/ui/VisibilitySelector';
 import { useQueryClient } from '@tanstack/react-query';
 import type { components } from '../../@types/buldreinfo/swagger';
-import { captureException, captureMessage } from '@sentry/react';
+import { captureSentryException, captureSentryMessage } from '../../utils/sentry';
 import ExternalLink from '../../shared/ui/ExternalLinks';
 import { Calendar, Save, ChevronDown, AlertCircle, AlertTriangle, Edit, Loader2, MapPinOff } from 'lucide-react';
 import { cn } from '../../lib/utils';
@@ -141,9 +141,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
       const trash = !!data.trash;
       if (trash) {
         if (!confirm('Are you sure you want to move this problem/route to trash?')) {
-          captureMessage('Decided to not delete problem', {
-            extra: { problemId, sectorId },
-          });
+          captureSentryMessage('Decided to not delete problem', { problemId, sectorId });
           return false;
         }
       }
@@ -201,7 +199,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
         return path ?? (problemId > 0 ? `/problem/${problemId}` : `/sector/${sectorId}`);
       } catch (error) {
         console.warn(error);
-        captureException(error);
+        captureSentryException(error);
         return false;
       } finally {
         setSaving(false);
