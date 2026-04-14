@@ -148,7 +148,9 @@ export function useData<TQueryData = unknown, TData = TQueryData>(
     ...options
   }: Partial<Omit<UseQueryOptions<TQueryData, unknown, TData>, 'queryFn' | 'structuralSharing'>> = {},
 ) {
-  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const { isAuthenticated, getAccessTokenSilently, isLoading } = useAuth0();
+  const authReady = !isLoading;
+  const { enabled, ...restOptions } = options;
   const queryKey = useKey(customQueryKey, urlSuffix);
 
   const queryFn: () => Promise<TQueryData> = async (): Promise<TQueryData> => {
@@ -160,7 +162,8 @@ export function useData<TQueryData = unknown, TData = TQueryData>(
   const data = useQuery<TQueryData, unknown, TData>({
     queryKey,
     queryFn,
-    ...options,
+    enabled: authReady && (enabled ?? true),
+    ...restOptions,
   });
   const redirectUi = useRedirect(data.data);
   return { ...data, redirectUi };
@@ -195,7 +198,8 @@ export function useActivity({
   ticks: boolean;
   media: boolean;
 }) {
-  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const { isAuthenticated, getAccessTokenSilently, isLoading } = useAuth0();
+  const authReady = !isLoading;
 
   const queryKey = useKey(
     [`/activity`, { idArea, idSector, lowerGrade, fa, comments, ticks, media }],
@@ -204,6 +208,7 @@ export function useActivity({
 
   const query = useInfiniteQuery({
     queryKey,
+    enabled: authReady,
     initialPageParam: 0,
     queryFn: async ({ pageParam }: { pageParam: number }) => {
       const accessToken = isAuthenticated ? await getAccessTokenSilently() : null;
