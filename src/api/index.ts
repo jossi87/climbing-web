@@ -25,6 +25,7 @@ export {
   getUrl,
   getMediaFileUrl,
   getMediaFileUrlSrcSet,
+  getTieredMinDimension,
   numberWithCommas,
   convertFromDateToString,
   convertFromStringToDate,

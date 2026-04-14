@@ -5,6 +5,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   deleteMedia,
   getMediaFileUrl,
+  getTieredMinDimension,
   moveMedia,
   putMediaInfo,
   putMediaJpegRotate,
@@ -56,11 +57,20 @@ const useIds = () => {
 };
 type MediaAction = (token: string) => Promise<unknown>;
 
+/**
+ * Tile thumbs are rendered at roughly 110-205 CSS px depending on grid variant.
+ * Use coarse 1x/2x tiers to avoid generating many near-identical on-demand sizes.
+ */
+function mediaTileMinDimension(triviaTiles: boolean): number {
+  const baseCssPx = triviaTiles ? 96 : 120;
+  return Math.max(baseCssPx, getTieredMinDimension(baseCssPx));
+}
+
 /** File videos: always request poster JPEG; only show placeholder when the image actually fails (e.g. not generated yet). */
 const MediaVideoTile = ({ x, triviaTiles }: { x: MediaItem; triviaTiles: boolean }) => {
   const [imgError, setImgError] = useState(false);
   const thumbUrl = getMediaFileUrl(Number(x.id ?? 0), Number(x.versionStamp ?? 0), false, {
-    minDimension: triviaTiles ? 160 : 205,
+    minDimension: mediaTileMinDimension(triviaTiles),
   });
 
   if (imgError) {
@@ -234,7 +244,7 @@ const Media = ({
                 style={{
                   backgroundImage: `url(${JSON.stringify(
                     getMediaFileUrl(Number(x.id ?? 0), Number(x.versionStamp ?? 0), false, {
-                      minDimension: triviaTiles ? 160 : 205,
+                      minDimension: mediaTileMinDimension(!!triviaTiles),
                     }),
                   )})`,
                 }}

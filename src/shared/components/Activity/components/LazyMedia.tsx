@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
 import type { components } from '../../../../@types/buldreinfo/swagger';
-import { getMediaFileUrl } from '../../../../api';
+import { getMediaFileUrl, getTieredMinDimension } from '../../../../api';
 import { VideoProcessingPlaceholder } from '../../Media/VideoProcessingPlaceholder';
 import { VideoThumbnailPlayOverlay } from '../../Media/VideoThumbnailPlayOverlay';
 
@@ -11,7 +11,11 @@ type ActivityMedia = components['schemas']['ActivityMedia'];
 function ActivityMediaThumb({ m, problemId }: { m: ActivityMedia; problemId?: number }) {
   const [imgError, setImgError] = useState(false);
   const isMovie = !!m.movie;
-  const thumbUrl = getMediaFileUrl(Number(m.id ?? 0), Number(m.versionStamp ?? 0), false, { minDimension: 200 });
+  /** Stable 1x/2x tiers (100 or 188) to avoid many on-demand S3 variants. */
+  const thumbMinDimension = Math.max(100, getTieredMinDimension(94));
+  const thumbUrl = getMediaFileUrl(Number(m.id ?? 0), Number(m.versionStamp ?? 0), false, {
+    minDimension: thumbMinDimension,
+  });
 
   return (
     <Link

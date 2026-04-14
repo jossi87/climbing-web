@@ -68,6 +68,16 @@ export function getMediaFileUrlSrcSet(id: number, versionStamp: number, original
     .join(',\n');
 }
 
+/**
+ * Return a stable minDimension based on coarse DPR tiers.
+ * This avoids generating many near-identical on-demand variants (e.g. 116/117/118/119...).
+ */
+export function getTieredMinDimension(baseCssPx: number): number {
+  const dpr = typeof window === 'undefined' ? 1 : window.devicePixelRatio || 1;
+  const dprTier = dpr >= 1.5 ? 2 : 1;
+  return Math.round(baseCssPx * dprTier);
+}
+
 export function numberWithCommas(number: number) {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
