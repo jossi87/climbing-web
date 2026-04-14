@@ -165,6 +165,8 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
   const metaTextClass = 'text-[12px] leading-snug text-slate-400 md:text-[13px]';
   const interactiveLinkClass =
     'rounded-sm transition-colors duration-150 hover:text-brand hover:underline hover:decoration-brand/50 underline-offset-[3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-border/70';
+  /** Keep visuals; add touch padding only on small screens to satisfy tap-target audits. */
+  const touchTargetClass = 'inline-flex min-h-9 items-center px-1 -mx-1 md:min-h-0 md:px-0 md:mx-0';
   /** Mobile-only text on the photo — `photo-overlay-*` avoids light-theme `text-slate-*` remaps. No people row. */
   const overlayLinkClass = `${interactiveLinkClass} photo-overlay-link`;
   const mobileProblemTitleClass = 'photo-overlay-fg text-[15px] font-semibold leading-tight';
@@ -262,19 +264,19 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
         <div className='space-y-3 md:space-y-1.5'>
           <Link
             to={`/problem/${randomMediaItem.idProblem}`}
-            className={`${interactiveLinkClass} inline-flex flex-wrap items-baseline gap-x-2 gap-y-1`}
+            className={`${interactiveLinkClass} ${touchTargetClass} flex-wrap items-baseline gap-x-2 gap-y-1`}
           >
             <span className={problemTitleClass}>{randomMediaItem.problem}</span>
             <span className={gradeClass}>{randomMediaItem.grade}</span>
           </Link>
           <div className='leading-snug'>
-            <Link to={`/area/${randomMediaItem.idArea}`} className={interactiveLinkClass}>
+            <Link to={`/area/${randomMediaItem.idArea}`} className={`${interactiveLinkClass} ${touchTargetClass}`}>
               <span className={locationClass}>{randomMediaItem.area}</span>
             </Link>
             <span className='mx-1 text-slate-500' aria-hidden>
               ·
             </span>
-            <Link to={`/sector/${randomMediaItem.idSector}`} className={interactiveLinkClass}>
+            <Link to={`/sector/${randomMediaItem.idSector}`} className={`${interactiveLinkClass} ${touchTargetClass}`}>
               <span className={locationClass}>{randomMediaItem.sector}</span>
             </Link>
           </div>
@@ -286,7 +288,7 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
               <div className='flex items-center gap-3 md:gap-2.5'>
                 <AvatarGroup items={taggedUsers.map((u) => ({ ...u, mediaId: u.mediaId ?? 0 }))} size='mini' max={3} />
                 <div className={metaTextClass}>
-                  <Link to={`/user/${taggedUsers[0].id}`} className={interactiveLinkClass}>
+                  <Link to={`/user/${taggedUsers[0].id}`} className={`${interactiveLinkClass} ${touchTargetClass}`}>
                     {taggedUsers[0].name}
                   </Link>
                   {taggedUsers.length > 1 && (
@@ -308,7 +310,7 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
                 />
                 <div className={metaTextClass}>
                   <span className='mr-1 text-slate-400'>By</span>
-                  <Link to={`/user/${photographer.id}`} className={interactiveLinkClass}>
+                  <Link to={`/user/${photographer.id}`} className={`${interactiveLinkClass} ${touchTargetClass}`}>
                     {photographer.name}
                   </Link>
                 </div>

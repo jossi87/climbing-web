@@ -286,7 +286,7 @@ function ActivitySeeMore({ show, loading, onFetchMore, embedded }: ActivitySeeMo
         aria-busy={loading}
         className={cn(
           designContract.typography.uiCompact,
-          'border-surface-border/70 bg-surface-raised/55 hover:border-surface-border hover:bg-surface-raised inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border px-4 py-2 font-medium text-slate-500 transition-[background-color,border-color,color] hover:text-slate-300',
+          'border-surface-border/70 bg-surface-raised/55 hover:border-surface-border hover:bg-surface-raised inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border px-4 py-2 font-medium text-slate-300 transition-[background-color,border-color,color] hover:text-slate-200',
           'light:border-slate-300/90 light:bg-slate-100/75 light:text-slate-600 light:shadow-sm light:hover:border-slate-400 light:hover:bg-slate-200',
           twInk.lightHoverSlate800,
           'disabled:cursor-not-allowed disabled:opacity-50',

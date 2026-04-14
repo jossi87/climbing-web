@@ -56,9 +56,9 @@ export const designContract = {
      */
     feed: {
       /** Default line color on dark panels — bright enough for small body text (WCAG-friendly vs `surface-card`). */
-      sentence: 'text-slate-400 antialiased align-baseline',
+      sentence: 'text-slate-300 antialiased align-baseline',
       /** Glue words (“ticked”, “in”), trailing type — one quiet meta layer with {@link feed.locationLink}. */
-      action: 'text-slate-400 antialiased align-baseline',
+      action: 'text-slate-300 antialiased align-baseline',
       emphasis: 'font-normal text-slate-300 antialiased align-baseline transition-colors hover:text-brand',
       /**
        * Problem / route name — `font-medium` on dark panels; light pages remap `text-slate-50` to ink, so we step up
@@ -67,7 +67,7 @@ export const designContract = {
       routeTitle:
         'font-medium text-slate-50 antialiased align-baseline transition-colors hover:text-brand light:font-semibold light:text-slate-950',
       /** Area + sector links — same color as glue ({@link feed.action}); brand on hover so they still read as links. */
-      locationLink: 'font-normal text-slate-400 antialiased align-baseline transition-colors hover:text-brand',
+      locationLink: 'font-normal text-slate-300 antialiased align-baseline transition-colors hover:text-brand',
       /** Middle dot — strong enough to read as a boundary; `font-semibold` thickens the interpunct. */
       metaSep: 'text-slate-300 font-semibold antialiased align-baseline',
       /** Grade + subtype beside the name — slightly softer ink in light so the route title stays primary. */
