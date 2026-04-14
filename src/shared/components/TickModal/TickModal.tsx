@@ -9,7 +9,6 @@ import {
   useAccessToken,
 } from '../../../api';
 import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import {
   X,
@@ -27,6 +26,7 @@ import {
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 import { useMeta } from '../Meta/context';
+import { ensureDatePickerStyles } from '../../../utils/ensureDatePickerStyles';
 
 type Repeat = { date?: string; comment?: string };
 
@@ -76,6 +76,11 @@ const TickModal = ({
   const [repeats, setRepeats] = useState<Repeat[]>(initialRepeats || []);
   const [apiError, setApiError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    void ensureDatePickerStyles();
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;

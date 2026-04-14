@@ -1,4 +1,12 @@
-import { useState, useCallback, type ChangeEvent, type ComponentProps, type FormEvent, type UIEvent } from 'react';
+import {
+  useState,
+  useEffect,
+  useCallback,
+  type ChangeEvent,
+  type ComponentProps,
+  type FormEvent,
+  type UIEvent,
+} from 'react';
 import { UsersSelector } from '../../shared/ui/UserSelector';
 import RockSelector from '../../shared/components/RockSelector/RockSelector';
 import ProblemSection from '../../shared/components/ProblemSection/ProblemSection';
@@ -17,7 +25,6 @@ import {
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { useNavigate, useParams } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import { VisibilitySelectorField } from '../../shared/ui/VisibilitySelector';
 import { useQueryClient } from '@tanstack/react-query';
 import type { components } from '../../@types/buldreinfo/swagger';
@@ -27,6 +34,7 @@ import { Calendar, Save, ChevronDown, AlertCircle, AlertTriangle, Edit, Loader2,
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 import { Card, FormSwitch, MarkdownFieldLabel, SectionHeader } from '../../shared/ui';
+import { ensureDatePickerStyles } from '../../utils/ensureDatePickerStyles';
 
 type Problem = components['schemas']['Problem'];
 
@@ -98,6 +106,10 @@ const isPlottableProblem = (
 };
 
 const ProblemEdit = ({ problem, sector }: Props) => {
+  useEffect(() => {
+    void ensureDatePickerStyles();
+  }, []);
+
   const client = useQueryClient();
   const accessToken = useAccessToken();
   const { sectorId, problemId } = useIds();

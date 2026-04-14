@@ -39,6 +39,14 @@ export default defineConfig(({ mode }) => {
       target: 'esnext',
       cssMinify: 'esbuild',
       cssCodeSplit: true,
+      modulePreload: {
+        /**
+         * Keep frontpage startup lean: datepicker + swagger are route-only and should not preload on `/`.
+         * They still load on-demand when those routes/components are requested.
+         */
+        resolveDependencies: (_filename, deps) =>
+          deps.filter((d) => !d.includes('vendor-datepicker') && !d.includes('vendor-swagger')),
+      },
       chunkSizeWarningLimit: 1000,
       rollupOptions: {
         onwarn(warning, warn) {
@@ -53,7 +61,8 @@ export default defineConfig(({ mode }) => {
               if (id.includes('dashjs') || id.includes('hls.js')) return 'vendor-video';
               if (id.includes('leaflet')) return 'vendor-leaflet';
               if (id.includes('lucide-react')) return 'vendor-icons';
-              if (id.includes('date-fns') || id.includes('react-datepicker')) return 'vendor-date';
+              if (id.includes('react-datepicker')) return 'vendor-datepicker';
+              if (id.includes('date-fns')) return 'vendor-date-fns';
               if (id.includes('@auth0')) return 'vendor-auth';
               if (id.includes('@sentry')) return 'vendor-sentry';
               if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
