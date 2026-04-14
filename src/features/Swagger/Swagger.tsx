@@ -1,11 +1,15 @@
 import SwaggerUI from 'swagger-ui-react';
-import 'swagger-ui-react/swagger-ui.css';
+import { useEffect } from 'react';
 import { useMeta } from '../../shared/components/Meta/context';
 import { FileJson } from 'lucide-react';
 import { Card, SectionHeader } from '../../shared/ui';
+import { ensureSwaggerStyles } from '../../utils/ensureSwaggerStyles';
 
 const Swagger = () => {
   const meta = useMeta();
+  useEffect(() => {
+    void ensureSwaggerStyles();
+  }, []);
 
   return (
     <div className='w-full min-w-0'>

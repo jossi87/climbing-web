@@ -1,5 +1,5 @@
 import { lazy as reactLazy, type ComponentType } from 'react';
-import { captureSentryException, captureSentryMessage } from './sentry';
+import * as Sentry from '@sentry/react';
 
 const lazyRetry = function <P>(componentImport: () => Promise<{ default: ComponentType<P> }>, componentName: string) {
   const key = `retry-lazy-refreshed/${componentName}`;
@@ -22,10 +22,12 @@ const lazyRetry = function <P>(componentImport: () => Promise<{ default: Compone
               extra[itemKey] = sessionStorage.getItem(itemKey);
             }
           }
-          captureSentryException(error, extra);
+          Sentry.captureException(error, { extra });
           reject(error);
         } else {
-          captureSentryMessage('Failed to load chunk', { componentName, error: String(error) });
+          Sentry.captureMessage('Failed to load chunk', {
+            extra: { componentName, error },
+          });
           window.sessionStorage.setItem(key, String(Date.now()));
           window.location.reload();
         }

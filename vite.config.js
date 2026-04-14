@@ -51,8 +51,12 @@ export default defineConfig(({ mode }) => {
             'vendor-date-fns',
             'vendor-datepicker',
             'vendor-leaflet',
+            'vendor-flat',
+            'vendor-json-url',
+            'vendor-select',
             'vendor-sentry',
             'vendor-swagger',
+            'vendor-utils',
             'vendor-video',
           ];
           return deps.filter((dep) => !preloadDenylist.some((name) => dep.includes(name)));
@@ -74,9 +78,6 @@ export default defineConfig(({ mode }) => {
               if (id.includes('lucide-react')) return 'vendor-icons';
               if (id.includes('react-datepicker')) return 'vendor-datepicker';
               if (id.includes('date-fns')) return 'vendor-date-fns';
-              if (id.includes('@tanstack/react-query')) return 'vendor-query';
-              if (id.includes('linkify-react') || id.includes('linkifyjs')) return 'vendor-linkify';
-              if (id.includes('remarkable')) return 'vendor-markdown';
               if (id.includes('react-select')) return 'vendor-select';
               if (id.includes('json-url')) return 'vendor-json-url';
               if (id.includes('flat')) return 'vendor-flat';

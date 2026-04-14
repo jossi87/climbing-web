@@ -17,7 +17,7 @@ import { makeAuthenticatedRequest, useAccessToken } from './utils';
 import type { FetchOptions } from './types';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { postPermissions } from './operations';
-import { captureSentryException } from '../utils/sentry';
+import { captureException } from '@sentry/react';
 import { type MediaRegion, calculateMediaRegion, isPathVisible, scalePath } from '../utils/svg-scaler';
 
 function useKey(customKey: readonly unknown[] | undefined, urlSuffix: string): readonly unknown[] {
@@ -718,11 +718,13 @@ export function useSvgEdit(problemId: number, pitch: number, mediaId: number, me
       const parsed = JSON.parse(svg.anchors);
       anchors.push(...parsed);
     } catch (ex) {
-      captureSentryException(ex, {
-        anchors: svg.anchors,
-        problemId,
-        mediaId,
-        svgId: svg.id,
+      captureException(ex, {
+        extra: {
+          anchors: svg.anchors,
+          problemId,
+          mediaId,
+          svgId: svg.id,
+        },
       });
     }
   }
@@ -732,11 +734,13 @@ export function useSvgEdit(problemId: number, pitch: number, mediaId: number, me
       const parsed = JSON.parse(svg.tradBelayStations);
       tradBelayStations.push(...parsed);
     } catch (ex) {
-      captureSentryException(ex, {
-        tradBelayStations: svg.tradBelayStations,
-        problemId,
-        mediaId,
-        svgId: svg.id,
+      captureException(ex, {
+        extra: {
+          tradBelayStations: svg.tradBelayStations,
+          problemId,
+          mediaId,
+          svgId: svg.id,
+        },
       });
     }
   }
@@ -746,11 +750,13 @@ export function useSvgEdit(problemId: number, pitch: number, mediaId: number, me
       const parsed = JSON.parse(svg.texts);
       texts.push(...parsed);
     } catch (ex) {
-      captureSentryException(ex, {
-        texts: svg.texts,
-        problemId,
-        mediaId,
-        svgId: svg.id,
+      captureException(ex, {
+        extra: {
+          texts: svg.texts,
+          problemId,
+          mediaId,
+          svgId: svg.id,
+        },
       });
     }
   }
