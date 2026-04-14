@@ -9,6 +9,7 @@ import { Avatar, AvatarGroup, Card, SectionLabel } from '../../ui';
 import { Stars } from '../../ui/Indicators';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
+import { twInk } from '../../../design/twInk';
 import {
   activityFilterChipBase,
   activityFilterChipOff,
@@ -254,9 +255,9 @@ function ActivitySeeMore({ show, loading, onFetchMore, embedded }: ActivitySeeMo
         disabled={loading}
         className={cn(
           designContract.typography.uiCompact,
-          'border-surface-border bg-surface-nav inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border px-4 py-2 font-medium text-slate-200 transition-colors',
-          'hover:bg-surface-raised-hover hover:text-slate-50',
-          'light:border-slate-200 light:bg-white light:text-slate-950 light:hover:bg-slate-50',
+          'border-surface-border/70 bg-surface-raised/55 hover:border-surface-border hover:bg-surface-raised inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border px-4 py-2 font-medium text-slate-500 transition-[background-color,border-color,color] hover:text-slate-300',
+          'light:border-slate-300/90 light:bg-slate-100/75 light:text-slate-600 light:shadow-sm light:hover:border-slate-400 light:hover:bg-slate-200',
+          twInk.lightHoverSlate800,
           'disabled:cursor-not-allowed disabled:opacity-50',
         )}
       >
