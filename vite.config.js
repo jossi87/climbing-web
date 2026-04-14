@@ -41,11 +41,22 @@ export default defineConfig(({ mode }) => {
       cssCodeSplit: true,
       modulePreload: {
         /**
-         * Keep frontpage startup lean: datepicker + swagger are route-only and should not preload on `/`.
-         * They still load on-demand when those routes/components are requested.
+         * Keep frontpage startup lean by avoiding eager modulepreload for route-only/heavy feature chunks.
+         * Chunks still load on-demand when those routes/components are requested.
          */
-        resolveDependencies: (_filename, deps) =>
-          deps.filter((d) => !d.includes('vendor-datepicker') && !d.includes('vendor-swagger')),
+        resolveDependencies: (_filename, deps) => {
+          const preloadDenylist = [
+            'vendor-auth',
+            'vendor-charts',
+            'vendor-date-fns',
+            'vendor-datepicker',
+            'vendor-leaflet',
+            'vendor-sentry',
+            'vendor-swagger',
+            'vendor-video',
+          ];
+          return deps.filter((dep) => !preloadDenylist.some((name) => dep.includes(name)));
+        },
       },
       chunkSizeWarningLimit: 1000,
       rollupOptions: {
@@ -63,9 +74,21 @@ export default defineConfig(({ mode }) => {
               if (id.includes('lucide-react')) return 'vendor-icons';
               if (id.includes('react-datepicker')) return 'vendor-datepicker';
               if (id.includes('date-fns')) return 'vendor-date-fns';
+              if (id.includes('@tanstack/react-query')) return 'vendor-query';
+              if (id.includes('linkify-react') || id.includes('linkifyjs')) return 'vendor-linkify';
+              if (id.includes('remarkable')) return 'vendor-markdown';
+              if (id.includes('react-select')) return 'vendor-select';
+              if (id.includes('json-url')) return 'vendor-json-url';
+              if (id.includes('flat')) return 'vendor-flat';
               if (id.includes('@auth0')) return 'vendor-auth';
               if (id.includes('@sentry')) return 'vendor-sentry';
-              if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
+              const isReactCoreLib =
+                /[\\/]node_modules[\\/]react[\\/]/.test(id) ||
+                /[\\/]node_modules[\\/]react-dom[\\/]/.test(id) ||
+                /[\\/]node_modules[\\/]react-router[\\/]/.test(id) ||
+                /[\\/]node_modules[\\/]react-router-dom[\\/]/.test(id) ||
+                /[\\/]node_modules[\\/]scheduler[\\/]/.test(id);
+              if (isReactCoreLib) {
                 return 'vendor-react-core';
               }
               return 'vendor-utils';

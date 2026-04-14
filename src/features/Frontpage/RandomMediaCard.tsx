@@ -238,24 +238,15 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
           </>
         )}
         <div className='pointer-events-none absolute inset-0 bg-linear-to-t from-black/44 via-black/14 to-transparent md:hidden' />
-        <div className='pointer-events-none absolute inset-x-0 bottom-0 z-[1] px-3 pt-1 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:hidden'>
-          <Link
-            to={`/problem/${randomMediaItem.idProblem}`}
-            className={`${overlayLinkClass} pointer-events-auto flex items-baseline gap-1.5`}
-          >
+        <div className='pointer-events-none absolute inset-x-0 bottom-0 z-[1] px-3 pb-[max(0.625rem,env(safe-area-inset-bottom))] md:hidden'>
+          <div className='flex items-baseline gap-1.5 leading-tight'>
             <h3 className={mobileProblemTitleClass}>{randomMediaItem.problem}</h3>
             <span className={mobileGradeClass}>{randomMediaItem.grade}</span>
-          </Link>
-          <div className='mt-1 leading-none'>
-            <Link to={`/area/${randomMediaItem.idArea}`} className={`${overlayLinkClass} pointer-events-auto`}>
-              <span className={mobileLocationClass}>{randomMediaItem.area}</span>
-            </Link>
-            <span className='photo-overlay-sep mx-1' aria-hidden>
-              ·
+          </div>
+          <div className='mt-0.5 leading-tight'>
+            <span className={mobileLocationClass}>
+              {randomMediaItem.area} <span className='photo-overlay-sep'>·</span> {randomMediaItem.sector}
             </span>
-            <Link to={`/sector/${randomMediaItem.idSector}`} className={`${overlayLinkClass} pointer-events-auto`}>
-              <span className={mobileLocationClass}>{randomMediaItem.sector}</span>
-            </Link>
           </div>
         </div>
       </div>

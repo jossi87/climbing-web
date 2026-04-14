@@ -6,8 +6,8 @@ import App from './App';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DataReloader } from './shared/providers/DataReloader';
 import { ThemeProvider } from './shared/providers/ThemeProvider';
-import { init, browserTracingIntegration, ErrorBoundary } from '@sentry/react';
-import { type ReactNode, lazy, Suspense } from 'react';
+import { Component, type ErrorInfo, type ReactNode, lazy, Suspense } from 'react';
+import { captureSentryException, initSentry } from './utils/sentry';
 
 const ReactQueryDevtoolsLazy = lazy(() =>
   import('@tanstack/react-query-devtools').then((module) => ({
@@ -17,14 +17,7 @@ const ReactQueryDevtoolsLazy = lazy(() =>
 
 const APP_ENV = import.meta.env.REACT_APP_ENV;
 
-setTimeout(() => {
-  init({
-    dsn: 'https://32152968271f46afa0efa8608b252e42@o4505452714786816.ingest.sentry.io/4505452716556288',
-    integrations: [browserTracingIntegration()],
-    environment: APP_ENV ?? 'unknown',
-    tracesSampleRate: APP_ENV === 'production' ? 0.1 : 1.0,
-  });
-}, 100);
+initSentry(APP_ENV);
 
 function ErrorFallback({ error, resetError }: { error: unknown; componentStack: string; resetError: () => void }) {
   return (
@@ -48,6 +41,32 @@ function ErrorFallback({ error, resetError }: { error: unknown; componentStack: 
       </div>
     </div>
   );
+}
+
+class AppErrorBoundary extends Component<{ children: ReactNode }, { error: unknown | null }> {
+  state: { error: unknown | null } = { error: null };
+
+  static getDerivedStateFromError(error: unknown) {
+    return { error };
+  }
+
+  componentDidCatch(error: unknown, errorInfo: ErrorInfo) {
+    captureSentryException(error, {
+      componentStack: errorInfo.componentStack,
+    });
+  }
+
+  resetError = () => {
+    this.setState({ error: null });
+    window.location.reload();
+  };
+
+  render() {
+    if (this.state.error) {
+      return <ErrorFallback error={this.state.error} componentStack='' resetError={this.resetError} />;
+    }
+    return this.props.children;
+  }
 }
 
 export const Auth0ProviderWithNavigate = ({ children }: { children: ReactNode }) => {
@@ -83,13 +102,13 @@ const Index = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
       <ThemeProvider>
-        <ErrorBoundary fallback={ErrorFallback} onReset={() => window.location.reload()}>
+        <AppErrorBoundary>
           <DataReloader>
             <Auth0ProviderWithNavigate>
               <App />
             </Auth0ProviderWithNavigate>
           </DataReloader>
-        </ErrorBoundary>
+        </AppErrorBoundary>
       </ThemeProvider>
     </BrowserRouter>
     {APP_ENV === 'development' && (
