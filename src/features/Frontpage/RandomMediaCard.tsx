@@ -44,7 +44,7 @@ const desktopCopyMin = 'hidden min-h-[5.25rem] bg-surface-card p-4 md:block md:m
 const SWIPE_PX = 48;
 /** Subtle carousel controls: readable on photos, stronger on card hover / focus. */
 const arrowNavClass =
-  'absolute top-1/2 z-[3] flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border-0 bg-black/35 p-0 text-white/90 shadow-sm outline-none backdrop-blur-[1px] transition-[opacity,background-color,color] hover:bg-black/50 focus-visible:ring-2 focus-visible:ring-white/45 max-md:opacity-90 md:opacity-55 md:group-hover:opacity-90';
+  'absolute top-1/2 z-[3] flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border-0 bg-black/35 p-0 !text-white shadow-sm outline-none backdrop-blur-[1px] transition-[opacity,background-color,color] hover:bg-black/50 focus-visible:ring-2 focus-visible:ring-white/45 max-md:opacity-90 md:opacity-55 md:group-hover:opacity-90';
 
 export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
   /** Explicit `bg-surface-card` so the shell never reads as white next to `app-card` shadow merge / aside. */
@@ -168,7 +168,6 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
   /** Keep visuals; add touch padding only on small screens to satisfy tap-target audits. */
   const touchTargetClass = 'inline-flex min-h-9 items-center px-1 -mx-1 md:min-h-0 md:px-0 md:mx-0';
   /** Mobile-only text on the photo — `photo-overlay-*` avoids light-theme `text-slate-*` remaps. No people row. */
-  const overlayLinkClass = `${interactiveLinkClass} photo-overlay-link`;
   const mobileProblemTitleClass = 'photo-overlay-fg text-[15px] font-semibold leading-tight';
   const mobileGradeClass = 'photo-overlay-fg-muted text-[13px] font-light tabular-nums tracking-tight leading-none';
   const mobileLocationClass = 'photo-overlay-fg-muted text-[12px] font-normal leading-tight';
@@ -221,7 +220,7 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
                 go(-1);
               }}
             >
-              <ChevronLeft className='h-5 w-5 shrink-0' strokeWidth={2} aria-hidden />
+              <ChevronLeft className='h-5 w-5 shrink-0' strokeWidth={2} color='white' aria-hidden />
             </button>
             <button
               type='button'
@@ -233,7 +232,7 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
                 go(1);
               }}
             >
-              <ChevronRight className='h-5 w-5 shrink-0' strokeWidth={2} aria-hidden />
+              <ChevronRight className='h-5 w-5 shrink-0' strokeWidth={2} color='white' aria-hidden />
             </button>
           </>
         )}
