@@ -6,7 +6,7 @@ import ProfileStatistics from '../../shared/components/Profile/ProfileStatistics
 import { ClickableAvatar } from '../../shared/ui/Avatar/Avatar';
 import ProfileTodo from '../../shared/components/Profile/ProfileTodo';
 import ProfileMedia from '../../shared/components/Profile/ProfileMedia';
-import { LayoutDashboard, List, Bookmark, Images, Camera, AlertTriangle, Globe, Mail, Clock } from 'lucide-react';
+import { LayoutDashboard, List, Bookmark, Images, Camera, Globe, Mail, Clock } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 import {
@@ -15,7 +15,7 @@ import {
   tabBarStripContainerClassName,
   TAB_BAR_ICON_SIZE,
 } from '../../design/tabBar';
-import { Card } from '../../shared/ui';
+import { Card, NotFoundCard } from '../../shared/ui';
 
 enum Page {
   overview = 'overview',
@@ -74,13 +74,14 @@ const Profile = () => {
 
   if (error || !profile) {
     return (
-      <div className='w-full py-16 sm:py-20'>
-        <div className={cn(designContract.surfaces.card, 'space-y-4 p-12 text-center')}>
-          <AlertTriangle size={48} className='mx-auto text-red-500/50' />
-          <h2 className='type-h1'>{error ? '404' : 'Not Found'}</h2>
-          <p className={designContract.typography.label}>{error ? String(error) : 'Profile not found'}</p>
-        </div>
-      </div>
+      <>
+        <title>{`Not found | ${meta?.title}`}</title>
+        <NotFoundCard
+          className='py-8 sm:py-12'
+          title={error ? '404' : 'Not Found'}
+          description={error ? String(error) : 'Profile not found'}
+        />
+      </>
     );
   }
 

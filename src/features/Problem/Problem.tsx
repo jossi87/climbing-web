@@ -38,7 +38,7 @@ import { ProblemAscentOverview } from './ProblemAscentOverview';
 import { ProblemNeighboursRow } from './ProblemNeighboursRow';
 import { ProblemBoulderRockOrNeighboursRow } from './ProblemBoulderRockOrNeighboursRow';
 import { DownloadButton } from '../../shared/ui/DownloadButton';
-import { Card, PageCardBreadcrumbRow } from '../../shared/ui';
+import { Card, NotFoundCard, PageCardBreadcrumbRow } from '../../shared/ui';
 import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
 import {
   tabBarButtonClassName,
@@ -113,6 +113,19 @@ const useIds = () => {
 
 type ProblemLoadedData = NonNullable<ReturnType<typeof useProblem>['data']>;
 
+function ProblemNotFound() {
+  const meta = useMeta();
+  return (
+    <>
+      <title>{`Not found | ${meta?.title}`}</title>
+      <NotFoundCard
+        className='mt-4 sm:mt-6'
+        description='Cannot find the specified problem or insufficient permissions.'
+      />
+    </>
+  );
+}
+
 export const Problem = () => {
   const { problemId } = useIds();
   const [showHiddenMedia, setShowHiddenMedia] = useState(false);
@@ -121,19 +134,7 @@ export const Problem = () => {
   if (redirectUi) return redirectUi;
 
   if (error) {
-    return (
-      <div className='bg-surface-card border-surface-border rounded-md border p-6 text-left'>
-        <div className='flex items-center gap-4'>
-          <div className='rounded-xl bg-red-500/10 p-3 text-red-500 shadow-inner'>
-            <AlertTriangle size={24} />
-          </div>
-          <div>
-            <h3 className='font-bold text-slate-200'>404</h3>
-            <p className='text-sm text-slate-400'>Cannot find the specified problem or insufficient permissions.</p>
-          </div>
-        </div>
-      </div>
-    );
+    return <ProblemNotFound />;
   }
 
   if (!data?.id) return <Loading />;

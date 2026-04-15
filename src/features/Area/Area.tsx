@@ -19,7 +19,7 @@ import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
 import ProblemList, { useProblemListCompact } from '../../shared/components/ProblemList';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { DownloadButton } from '../../shared/ui/DownloadButton';
-import { Card, PageCardBreadcrumbRow } from '../../shared/ui';
+import { Card, NotFoundCard, PageCardBreadcrumbRow } from '../../shared/ui';
 import { TradGearMarker } from '../../shared/ui/TradGearMarker';
 import { climbingRouteUsesPassiveGear, formatRouteTypeLabel } from '../../utils/routeTradGear';
 import { compactFaDisplayLine, normalizeFaPeopleSeparators } from '../../utils/firstAscentDisplay';
@@ -579,13 +579,13 @@ const Area = () => {
 
   if (error) {
     return (
-      <div className='bg-surface-card border-surface-border mx-auto mt-12 max-w-2xl space-y-4 rounded-2xl border p-8 text-center'>
-        <AlertTriangle size={48} className='mx-auto text-red-500 opacity-50' />
-        <h2 className='type-h1'>404 Error</h2>
-        <p className='text-slate-400'>
-          Cannot find the specified area because it does not exist or you do not have sufficient permissions.
-        </p>
-      </div>
+      <>
+        <title>{`Not found | ${meta?.title}`}</title>
+        <NotFoundCard
+          className='mt-4 sm:mt-6'
+          description='Cannot find the specified area because it does not exist or you do not have sufficient permissions.'
+        />
+      </>
     );
   }
 

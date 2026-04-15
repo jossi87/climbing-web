@@ -24,7 +24,7 @@ import { useSector } from '../../api';
 import type { Slope } from '../../@types/buldreinfo';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { DownloadButton } from '../../shared/ui/DownloadButton';
-import { Card, PageCardBreadcrumbRow } from '../../shared/ui';
+import { Card, NotFoundCard, PageCardBreadcrumbRow } from '../../shared/ui';
 import { TradGearMarker } from '../../shared/ui/TradGearMarker';
 import { climbingRouteUsesPassiveGear, formatRouteTypeLabel } from '../../utils/routeTradGear';
 import {
@@ -508,11 +508,10 @@ const Sector = () => {
 
   if (error) {
     return (
-      <div className='bg-surface-card border-surface-border mx-auto mt-12 max-w-2xl space-y-4 rounded-2xl border p-8 text-center'>
-        <AlertTriangle size={48} className='mx-auto text-red-500 opacity-50' />
-        <h2 className='type-h1'>404 Error</h2>
-        <p className='text-slate-400'>{String(error)}</p>
-      </div>
+      <>
+        <title>{`Not found | ${meta?.title}`}</title>
+        <NotFoundCard className='mt-4 sm:mt-6' description={String(error)} />
+      </>
     );
   }
 

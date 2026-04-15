@@ -10,6 +10,7 @@ export * from './FormSwitch';
 export * from './Indicators';
 export * from './List';
 export * from './MarkdownFieldLabel';
+export * from './NotFoundCard';
 export * from './NavItem';
 export * from './PageCardBreadcrumbRow';
 export * from './PageHeader';

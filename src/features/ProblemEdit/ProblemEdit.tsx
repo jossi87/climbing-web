@@ -30,10 +30,10 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { captureSentryException, captureSentryMessage } from '../../utils/sentry';
 import ExternalLink from '../../shared/ui/ExternalLinks';
-import { Calendar, Save, ChevronDown, AlertCircle, AlertTriangle, Edit, Loader2, MapPinOff } from 'lucide-react';
+import { Calendar, Save, ChevronDown, AlertTriangle, Edit, Loader2, MapPinOff } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
-import { Card, FormSwitch, MarkdownFieldLabel, SectionHeader } from '../../shared/ui';
+import { Card, FormSwitch, MarkdownFieldLabel, NotFoundCard, SectionHeader } from '../../shared/ui';
 import { ensureDatePickerStyles } from '../../utils/ensureDatePickerStyles';
 
 type Problem = components['schemas']['Problem'];
@@ -45,21 +45,27 @@ const useIds = (): { sectorId: number; problemId: number } => {
   return { sectorId: +sectorId, problemId: +problemId };
 };
 
+function ProblemEditLoaderNotFound() {
+  const meta = useMeta();
+  return (
+    <>
+      <title>{`Not found | ${meta?.title}`}</title>
+      <NotFoundCard
+        className='mt-4 sm:mt-6'
+        title='404'
+        description='Cannot find the specified problem because it does not exist or you do not have sufficient permissions.'
+      />
+    </>
+  );
+}
+
 export const ProblemEditLoader = () => {
   const { sectorId, problemId } = useIds();
   const { data: sector } = useSector(sectorId);
   const { data: problem, status: problemStatus, error } = useProblem(problemId, true);
 
   if (error) {
-    return (
-      <div className='bg-surface-card border-surface-border mx-auto mt-12 max-w-2xl space-y-4 rounded-2xl border p-8 text-center'>
-        <AlertCircle size={48} className='mx-auto text-red-500 opacity-50' />
-        <h2 className='type-h1'>404</h2>
-        <p className='font-medium text-slate-400'>
-          Cannot find the specified problem because it does not exist or you do not have sufficient permissions.
-        </p>
-      </div>
-    );
+    return <ProblemEditLoaderNotFound />;
   }
 
   if (!sector) return <Loading />;

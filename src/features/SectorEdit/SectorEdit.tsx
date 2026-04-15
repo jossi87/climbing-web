@@ -31,7 +31,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
-import { Card, FormSwitch, MarkdownFieldLabel, SectionHeader } from '../../shared/ui';
+import { Card, FormSwitch, MarkdownFieldLabel, NotFoundCard, SectionHeader } from '../../shared/ui';
 
 type Area = components['schemas']['Area'];
 type Sector = components['schemas']['Sector'];
@@ -45,23 +45,27 @@ const useIds = (): { areaId: number; sectorId: number } => {
   return { sectorId: +sectorId, areaId: +areaId };
 };
 
+function SectorEditLoaderNotFound() {
+  const meta = useMeta();
+  return (
+    <>
+      <title>{`Not found | ${meta?.title}`}</title>
+      <NotFoundCard
+        className='mt-4 sm:mt-6'
+        title='404'
+        description='Cannot find the specified sector because it does not exist or you do not have sufficient permissions.'
+      />
+    </>
+  );
+}
+
 export const SectorEditLoader = () => {
   const { areaId, sectorId } = useIds();
   const { data: area } = useArea(areaId);
   const { data: sector, error } = useSector(sectorId);
 
   if (error) {
-    return (
-      <div className='bg-surface-card border-surface-border mx-auto mt-10 max-w-2xl rounded-2xl border p-12 text-center'>
-        <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10 text-red-500'>
-          <AlertTriangle size={32} />
-        </div>
-        <h2 className='type-h1 mb-2'>404</h2>
-        <p className='text-slate-400'>
-          Cannot find the specified sector because it does not exist or you do not have sufficient permissions.
-        </p>
-      </div>
-    );
+    return <SectorEditLoaderNotFound />;
   }
 
   if (!area) return <Loading />;
