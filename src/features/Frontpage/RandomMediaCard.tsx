@@ -68,6 +68,8 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
 
   const blockLinkNavigation = useRef(false);
   const touchStartX = useRef<number | null>(null);
+  /** True if this gesture ever had 2+ fingers (pinch); do not treat release as a horizontal swipe. */
+  const multiTouchGesture = useRef(false);
 
   const go = (dir: -1 | 1) => {
     if (!items || items.length < 2) return;
@@ -87,11 +89,30 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
   };
 
   const onTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.targetTouches[0]?.clientX ?? null;
+    if (e.touches.length > 1) {
+      multiTouchGesture.current = true;
+      return;
+    }
+    touchStartX.current = e.touches[0]?.clientX ?? null;
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length > 1) multiTouchGesture.current = true;
   };
 
   const onTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current == null || !items || items.length < 2) return;
+    if (e.touches.length > 0) return;
+
+    const wasMulti = multiTouchGesture.current;
+    multiTouchGesture.current = false;
+
+    const pageZoomed =
+      typeof window !== 'undefined' && window.visualViewport != null && window.visualViewport.scale > 1.02;
+
+    if (wasMulti || pageZoomed || touchStartX.current == null || !items || items.length < 2) {
+      touchStartX.current = null;
+      return;
+    }
     const x = e.changedTouches[0]?.clientX;
     if (x == null) return;
     const dx = x - touchStartX.current;
@@ -178,9 +199,11 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
       <div
         className={mediaFrameClass}
         onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
         onTouchCancel={() => {
           touchStartX.current = null;
+          multiTouchGesture.current = false;
         }}
       >
         <Link
