@@ -91,6 +91,7 @@ const Permissions = () => {
                 placeholder='Search users...'
                 onChange={(e) => setQuery(e.target.value)}
                 value={query}
+                onClear={() => setQuery('')}
                 className='bg-surface-raised border-surface-border focus:border-surface-border placeholder:text-slate-500'
               />
             </div>
