@@ -907,10 +907,7 @@ export type components = {
         };
         Area: {
             redirectUrl?: string;
-            /** Format: int32 */
-            regionId?: number;
             regionName?: string;
-            canonical?: string;
             /** Format: int32 */
             id?: number;
             trash?: boolean;
@@ -1164,7 +1161,6 @@ export type components = {
         DangerousArea: {
             /** Format: int32 */
             id?: number;
-            url?: string;
             name?: string;
             lockedAdmin?: boolean;
             lockedSuperadmin?: boolean;
@@ -1177,7 +1173,6 @@ export type components = {
         DangerousProblem: {
             /** Format: int32 */
             id?: number;
-            url?: string;
             broken?: string;
             lockedAdmin?: boolean;
             lockedSuperadmin?: boolean;
@@ -1192,7 +1187,6 @@ export type components = {
         DangerousSector: {
             /** Format: int32 */
             id?: number;
-            url?: string;
             name?: string;
             wallDirectionCalculated?: components["schemas"]["CompassDirection"];
             wallDirectionManual?: components["schemas"]["CompassDirection"];
@@ -1360,7 +1354,6 @@ export type components = {
             sectorDescent?: components["schemas"]["Slope"];
             neighbourPrev?: components["schemas"]["SectorProblem"];
             neighbourNext?: components["schemas"]["SectorProblem"];
-            canonical?: string;
             /** Format: int32 */
             id?: number;
             broken?: string;
@@ -1540,7 +1533,6 @@ export type components = {
         ProfileTodoArea: {
             /** Format: int32 */
             id?: number;
-            url?: string;
             name?: string;
             lockedAdmin?: boolean;
             lockedSuperadmin?: boolean;
@@ -1551,7 +1543,6 @@ export type components = {
             todoId?: number;
             /** Format: int32 */
             id?: number;
-            url?: string;
             lockedAdmin?: boolean;
             lockedSuperadmin?: boolean;
             /** Format: int32 */
@@ -1564,7 +1555,6 @@ export type components = {
         ProfileTodoSector: {
             /** Format: int32 */
             id?: number;
-            url?: string;
             name?: string;
             lockedAdmin?: boolean;
             lockedSuperadmin?: boolean;
@@ -1585,8 +1575,6 @@ export type components = {
             /** Format: int32 */
             areaSunToHour?: number;
             areaName?: string;
-            areaComment?: string;
-            canonical?: string;
             /** Format: int32 */
             id?: number;
             trash?: boolean;
@@ -1614,7 +1602,6 @@ export type components = {
             newMedia?: components["schemas"]["NewMedia"][];
             externalLinks?: components["schemas"]["ExternalLink"][];
             pageViews?: string;
-            siblings?: components["schemas"]["SectorJump"][];
         };
         SectorJump: {
             /** Format: int32 */
