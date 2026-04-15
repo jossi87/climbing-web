@@ -204,8 +204,8 @@ export const ProblemsMap = ({ areas }: Props) => {
   const { defaultCenter, defaultZoom, isBouldering } = useMeta();
 
   return (
-    <div className='relative z-0 h-[35vh] w-full'>
-      <Leaflet defaultCenter={defaultCenter} defaultZoom={defaultZoom} showElevationControl={false}>
+    <div className='relative z-0 h-[35vh] min-h-[220px] w-full overflow-hidden'>
+      <Leaflet height='100%' defaultCenter={defaultCenter} defaultZoom={defaultZoom} showElevationControl={false}>
         {({ showElevation }) => (
           <>
             <SectorOutlines areas={areas} showElevation={showElevation} />

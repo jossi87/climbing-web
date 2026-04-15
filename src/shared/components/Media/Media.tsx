@@ -5,6 +5,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   deleteMedia,
   getMediaFileUrl,
+  getMediaFileUrlSrcSet,
   getTieredMinDimension,
   moveMedia,
   putMediaInfo,
@@ -66,12 +67,28 @@ function mediaTileMinDimension(triviaTiles: boolean): number {
   return Math.max(baseCssPx, getTieredMinDimension(baseCssPx));
 }
 
+function mediaTileSizes(compactTiles: boolean, triviaTiles: boolean): string {
+  if (triviaTiles) {
+    // trivia: 4 / 5 / 6 / 7 columns across breakpoints
+    return '(min-width: 1024px) 14vw, (min-width: 768px) 16vw, (min-width: 640px) 19vw, 24vw';
+  }
+  if (compactTiles) {
+    // compact: 3 / 4 / 5 / 6 columns across breakpoints
+    return '(min-width: 1024px) 16vw, (min-width: 768px) 20vw, (min-width: 640px) 24vw, 32vw';
+  }
+  // default: 3 / 3 / 4 / 5 columns across breakpoints
+  return '(min-width: 1024px) 20vw, (min-width: 768px) 24vw, 32vw';
+}
+
 /** File videos: always request poster JPEG; only show placeholder when the image actually fails (e.g. not generated yet). */
 const MediaVideoTile = ({ x, triviaTiles }: { x: MediaItem; triviaTiles: boolean }) => {
   const [imgError, setImgError] = useState(false);
+  const sizes = mediaTileSizes(false, triviaTiles);
+  const originalWidth = Math.max(Number(x.width ?? 0) || 0, 300);
   const thumbUrl = getMediaFileUrl(Number(x.id ?? 0), Number(x.versionStamp ?? 0), false, {
     minDimension: mediaTileMinDimension(triviaTiles),
   });
+  const thumbSrcSet = getMediaFileUrlSrcSet(Number(x.id ?? 0), Number(x.versionStamp ?? 0), originalWidth);
 
   if (imgError) {
     return (
@@ -85,6 +102,8 @@ const MediaVideoTile = ({ x, triviaTiles }: { x: MediaItem; triviaTiles: boolean
     <>
       <img
         src={thumbUrl}
+        srcSet={thumbSrcSet}
+        sizes={sizes}
         alt=''
         className='absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105'
         onError={() => setImgError(true)}
@@ -205,6 +224,7 @@ const Media = ({
     setM(null);
   }
   const tileCompact = compactTiles || triviaTiles;
+  const tileSizes = mediaTileSizes(!!compactTiles, !!triviaTiles);
 
   const LazyMediaCard = ({ x }: { x: MediaItem }) => {
     const { ref, inView } = useInView({ triggerOnce: true, rootMargin: '200px 0px' });
@@ -237,17 +257,20 @@ const Media = ({
             ) : x.idType === 2 ? (
               <MediaVideoTile key={`${x.id}-${x.versionStamp ?? 0}`} x={x} triviaTiles={!!triviaTiles} />
             ) : (
-              <div
-                role='img'
-                aria-label={x.mediaMetadata?.description ?? 'Media thumbnail'}
-                className='absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-105'
-                style={{
-                  backgroundImage: `url(${JSON.stringify(
-                    getMediaFileUrl(Number(x.id ?? 0), Number(x.versionStamp ?? 0), false, {
-                      minDimension: mediaTileMinDimension(!!triviaTiles),
-                    }),
-                  )})`,
-                }}
+              <img
+                src={getMediaFileUrl(Number(x.id ?? 0), Number(x.versionStamp ?? 0), false, {
+                  minDimension: mediaTileMinDimension(!!triviaTiles),
+                })}
+                srcSet={getMediaFileUrlSrcSet(
+                  Number(x.id ?? 0),
+                  Number(x.versionStamp ?? 0),
+                  Math.max(Number(x.width ?? 0) || 0, 300),
+                )}
+                sizes={tileSizes}
+                alt={x.mediaMetadata?.description ?? ''}
+                className='absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105'
+                loading='lazy'
+                decoding='async'
               />
             )
           ) : (
