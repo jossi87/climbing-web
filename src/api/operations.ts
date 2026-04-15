@@ -1,5 +1,6 @@
 import type { Success } from '../@types/buldreinfo';
-import type { components, operations } from '../@types/buldreinfo/swagger';
+import type { components } from '../@types/buldreinfo/swagger';
+import { createHttpErrorFromResponse } from './httpError';
 
 type UploadMedia = {
   file?: File | null;
@@ -17,15 +18,26 @@ import { downloadFileWithProgress, getUrl, makeAuthenticatedRequest } from './ut
 /** Media writes change problem/area/sector payloads; opt into global invalidation (default mutation event is `nop`). */
 const invalidateQueriesAfter = { consistencyAction: 'invalidate' as const };
 
+async function ensureOkResponse(response: Response, url: string): Promise<Response> {
+  if (response.ok) return response;
+  throw await createHttpErrorFromResponse(response, url);
+}
+
+async function ensureOkJson<T>(response: Response, url: string, fallback: T): Promise<T> {
+  await ensureOkResponse(response, url);
+  return response.json().catch(() => fallback) as Promise<T>;
+}
+
 export function downloadTocXlsx(accessToken: string | null) {
   return downloadFileWithProgress(accessToken, '/toc/xlsx');
 }
 
 export function deleteMedia(accessToken: string | null, id: number): Promise<Success<'deleteMedia'>> {
-  return makeAuthenticatedRequest(accessToken, `/media?id=${id}`, {
+  const url = `/media?id=${id}`;
+  return makeAuthenticatedRequest(accessToken, url, {
     method: 'DELETE',
     ...invalidateQueriesAfter,
-  });
+  }).then((response) => ensureOkResponse(response, url));
 }
 
 export function moveMedia(
@@ -36,21 +48,19 @@ export function moveMedia(
   toIdSector: number,
   toIdProblem: number,
 ): Promise<Success<'putMedia'>> {
-  return makeAuthenticatedRequest(
-    accessToken,
-    `/media?id=${id}&left=${left}&toIdArea=${toIdArea}&toIdSector=${toIdSector}&toIdProblem=${toIdProblem}`,
-    {
-      method: 'PUT',
-      ...invalidateQueriesAfter,
-    },
-  );
+  const url = `/media?id=${id}&left=${left}&toIdArea=${toIdArea}&toIdSector=${toIdSector}&toIdProblem=${toIdProblem}`;
+  return makeAuthenticatedRequest(accessToken, url, {
+    method: 'PUT',
+    ...invalidateQueriesAfter,
+  }).then((response) => ensureOkResponse(response, url));
 }
 
 export function setMediaAsAvatar(accessToken: string | null, id: number): Promise<Success<'putMediaAvatar'>> {
-  return makeAuthenticatedRequest(accessToken, `/media/avatar?id=${id}`, {
+  const url = `/media/avatar?id=${id}`;
+  return makeAuthenticatedRequest(accessToken, url, {
     method: 'PUT',
     ...invalidateQueriesAfter,
-  });
+  }).then((response) => ensureOkResponse(response, url));
 }
 
 export function downloadUsersTicks(accessToken: string | null) {
@@ -66,7 +76,8 @@ export function postComment(
   resolved: boolean,
   del: boolean,
   media: UploadMedia[],
-): Promise<operations['postComments']['responses']['default']['content']['application/json']> {
+): Promise<Response> {
+  const url = `/comments`;
   const formData = new FormData();
   const newMedia = media.map((m) => {
     return {
@@ -95,14 +106,14 @@ export function postComment(
   );
   media.forEach((m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file));
 
-  return makeAuthenticatedRequest(accessToken, `/comments`, {
+  return makeAuthenticatedRequest(accessToken, url, {
     method: 'POST',
     body: formData,
     headers: {
       Accept: 'application/json',
     },
     invalidateActivityFeed: true,
-  });
+  }).then((response) => ensureOkResponse(response, url));
 }
 
 export function postPermissions(
@@ -113,7 +124,8 @@ export function postPermissions(
   superadminRead: boolean,
   superadminWrite: boolean,
 ): Promise<Success<'postPermissions'>> {
-  return makeAuthenticatedRequest(accessToken, `/permissions`, {
+  const url = `/permissions`;
+  return makeAuthenticatedRequest(accessToken, url, {
     method: 'POST',
     body: JSON.stringify({
       userId,
@@ -125,7 +137,7 @@ export function postPermissions(
     headers: {
       'Content-Type': 'application/json',
     },
-  });
+  }).then((response) => ensureOkResponse(response, url));
 }
 
 export function postProblem(
@@ -155,6 +167,7 @@ export function postProblem(
   routeLength: string,
   descent: string,
 ): Promise<Success<'postProblems'>> {
+  const url = `/problems`;
   const formData = new FormData();
   const newMedia = media.map((m) => {
     return {
@@ -199,7 +212,7 @@ export function postProblem(
     }),
   );
   media.forEach((m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file));
-  return makeAuthenticatedRequest(accessToken, `/problems`, {
+  return makeAuthenticatedRequest(accessToken, url, {
     method: 'POST',
     body: formData,
     headers: {
@@ -209,24 +222,9 @@ export function postProblem(
     consistencyAction: 'nop',
     invalidateActivityFeed: true,
   })
-    .then(async (response) => {
-      const body = await response.json().catch(() => ({}));
-      if (!response.ok) {
-        const message =
-          typeof body === 'object' &&
-          body !== null &&
-          'message' in body &&
-          typeof (body as { message?: unknown }).message === 'string'
-            ? (body as { message: string }).message
-            : response.statusText;
-        throw new Error(message);
-      }
-      return body;
-    })
+    .then((response) => ensureOkJson(response, url, {} as Success<'postProblems'>))
     .catch((error) => {
       console.warn(error);
-      const message = error instanceof Error ? error.message : String(error);
-      alert(message);
       throw error;
     });
 }
@@ -236,6 +234,7 @@ export function postProblemMedia(
   id: number,
   media: UploadMedia[],
 ): Promise<Success<'postProblemsMedia'>> {
+  const url = `/problems/media`;
   const formData = new FormData();
   const newMedia = media.map((m) => {
     return {
@@ -252,7 +251,7 @@ export function postProblemMedia(
   });
   formData.append('json', JSON.stringify({ id, newMedia }));
   media.forEach((m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file));
-  return makeAuthenticatedRequest(accessToken, `/problems/media`, {
+  return makeAuthenticatedRequest(accessToken, url, {
     method: 'POST',
     body: formData,
     headers: {
@@ -260,10 +259,10 @@ export function postProblemMedia(
     },
     ...invalidateQueriesAfter,
   })
-    .then((data) => data.json())
+    .then((response) => ensureOkJson(response, url, {} as Success<'postProblemsMedia'>))
     .catch((error) => {
       console.warn(error);
-      alert(error);
+      throw error;
     });
 }
 
@@ -280,26 +279,23 @@ export function postProblemSvg(
   tradBelayStations: string,
   texts: string,
 ): Promise<Success<'postProblemsSvg'>> {
-  return makeAuthenticatedRequest(
-    accessToken,
-    `/problems/svg?problemId=${problemId}&pitch=${pitch}&mediaId=${mediaId}`,
-    {
-      method: 'POST',
-      body: JSON.stringify({
-        delete: del,
-        id,
-        path,
-        hasAnchor,
-        anchors,
-        tradBelayStations,
-        texts,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+  const url = `/problems/svg?problemId=${problemId}&pitch=${pitch}&mediaId=${mediaId}`;
+  return makeAuthenticatedRequest(accessToken, url, {
+    method: 'POST',
+    body: JSON.stringify({
+      delete: del,
+      id,
+      path,
+      hasAnchor,
+      anchors,
+      tradBelayStations,
+      texts,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
     },
-  );
+  }).then((response) => ensureOkResponse(response, url));
 }
 
 export function postSector(
@@ -324,6 +320,7 @@ export function postSector(
   media: UploadMedia[],
   problemOrder: components['schemas']['SectorProblemOrder'][] | undefined,
 ): Promise<Success<'postSectors'>> {
+  const url = `/sectors`;
   const formData = new FormData();
   const newMedia = media.map((m) => {
     return {
@@ -362,7 +359,7 @@ export function postSector(
     }),
   );
   media.forEach((m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file));
-  return makeAuthenticatedRequest(accessToken, `/sectors`, {
+  return makeAuthenticatedRequest(accessToken, url, {
     method: 'POST',
     body: formData,
     headers: {
@@ -371,24 +368,9 @@ export function postSector(
     consistencyAction: 'nop',
     invalidateActivityFeed: true,
   })
-    .then(async (response) => {
-      const body = await response.json().catch(() => ({}));
-      if (!response.ok) {
-        const message =
-          typeof body === 'object' &&
-          body !== null &&
-          'message' in body &&
-          typeof (body as { message?: unknown }).message === 'string'
-            ? (body as { message: string }).message
-            : response.statusText;
-        throw new Error(message);
-      }
-      return body;
-    })
+    .then((response) => ensureOkJson(response, url, {} as Success<'postSectors'>))
     .catch((error) => {
       console.warn(error);
-      const message = error instanceof Error ? error.message : String(error);
-      alert(message);
       throw error;
     });
 }
@@ -404,7 +386,8 @@ export function postTicks(
   grade: string,
   repeats: components['schemas']['TickRepeat'][] | undefined,
 ): Promise<Success<'postTicks'>> {
-  return makeAuthenticatedRequest(accessToken, `/ticks`, {
+  const url = `/ticks`;
+  return makeAuthenticatedRequest(accessToken, url, {
     method: 'POST',
     body: JSON.stringify({
       delete: del,
@@ -420,7 +403,7 @@ export function postTicks(
       'Content-Type': 'application/json',
     },
     invalidateActivityFeed: true,
-  });
+  }).then((response) => ensureOkResponse(response, url));
 }
 
 export function postUserRegion(
@@ -428,9 +411,10 @@ export function postUserRegion(
   regionId: number,
   del: boolean,
 ): Promise<Success<'postUserRegions'>> {
-  return makeAuthenticatedRequest(accessToken, `/user/regions?regionId=${regionId}&delete=${del}`, {
+  const url = `/user/regions?regionId=${regionId}&delete=${del}`;
+  return makeAuthenticatedRequest(accessToken, url, {
     method: 'POST',
-  });
+  }).then((response) => ensureOkResponse(response, url));
 }
 
 export function putMediaInfo(
@@ -440,19 +424,21 @@ export function putMediaInfo(
   pitch: number,
   trivia: boolean,
 ): Promise<Success<'putMediaInfo'>> {
-  return makeAuthenticatedRequest(accessToken, `/media/info`, {
+  const url = `/media/info`;
+  return makeAuthenticatedRequest(accessToken, url, {
     method: 'PUT',
     body: JSON.stringify({ mediaId, description, pitch, trivia }),
     headers: {
       'Content-Type': 'application/json',
     },
     ...invalidateQueriesAfter,
-  });
+  }).then((response) => ensureOkResponse(response, url));
 }
 
 export function putMediaJpegRotate(accessToken: string | null, idMedia: number, degrees: number): Promise<unknown> {
-  return makeAuthenticatedRequest(accessToken, `/media/jpeg/rotate?idMedia=${idMedia}&degrees=${degrees}`, {
+  const url = `/media/jpeg/rotate?idMedia=${idMedia}&degrees=${degrees}`;
+  return makeAuthenticatedRequest(accessToken, url, {
     method: 'PUT',
     ...invalidateQueriesAfter,
-  });
+  }).then((response) => ensureOkResponse(response, url));
 }

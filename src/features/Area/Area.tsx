@@ -72,6 +72,7 @@ import {
   tickProblemLinkWithStatus,
   tickWhenGrade,
 } from '../../shared/components/Profile/profileRowTypography';
+import { getUserFriendlyHttpErrorMessage, isHttpError } from '../../api/httpError';
 
 type Props = {
   sectorId: number;
@@ -577,7 +578,7 @@ const Area = () => {
 
   if (redirectUi) return redirectUi;
 
-  if (error) {
+  if (error && isHttpError(error, 404)) {
     return (
       <>
         <title>{`Not found | ${meta?.title}`}</title>
@@ -585,6 +586,18 @@ const Area = () => {
           className='mt-4 sm:mt-6'
           description='Cannot find the specified area because it does not exist or you do not have sufficient permissions.'
         />
+      </>
+    );
+  }
+
+  if (error) {
+    const description = isHttpError(error)
+      ? getUserFriendlyHttpErrorMessage(error)
+      : 'Something went wrong while loading this area.';
+    return (
+      <>
+        <title>{`Error | ${meta?.title}`}</title>
+        <NotFoundCard className='mt-4 sm:mt-6' title='Unable To Load Area' description={description} />
       </>
     );
   }

@@ -1,6 +1,9 @@
+import type { ReactNode } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Lock, LogIn, AlertTriangle, RefreshCw } from 'lucide-react';
 import { Card } from './Card';
+import { cn } from '../../lib/utils';
+import { designContract } from '../../design/contract';
 
 type LoadingProps = {
   inline?: boolean;
@@ -27,57 +30,84 @@ export const Loading = ({ inline = false }: LoadingProps) =>
     </Card>
   );
 
+type AuthGateCardProps = {
+  icon: ReactNode;
+  title: string;
+  description: string;
+  actions?: ReactNode;
+  tone?: 'default' | 'danger';
+};
+
+function AuthGateCard({ icon, title, description, actions, tone = 'default' }: AuthGateCardProps) {
+  const iconWrapClass =
+    tone === 'danger'
+      ? 'border-surface-border bg-surface-raised text-status-danger rounded-xl border p-3 shadow-sm'
+      : 'border-surface-border bg-surface-raised text-slate-300 rounded-xl border p-3 shadow-sm';
+
+  return (
+    <Card flush className='min-w-0 border-0'>
+      <div className='flex min-w-0 flex-col gap-4 p-4 sm:gap-5 sm:p-5'>
+        <div className='flex min-w-0 items-start gap-3.5 sm:gap-4'>
+          <div className={iconWrapClass}>{icon}</div>
+          <div className='min-w-0'>
+            <h2 className={cn(designContract.typography.subtitle, 'text-slate-100')}>{title}</h2>
+            <p className={cn(designContract.typography.body, 'mt-1 text-slate-400')}>{description}</p>
+          </div>
+        </div>
+        {actions ? <div className='min-w-0'>{actions}</div> : null}
+      </div>
+    </Card>
+  );
+}
+
 export const NotLoggedIn = () => {
   const { loginWithRedirect } = useAuth0();
   return (
-    <div className='bg-surface-card border-surface-border rounded-xl border p-6 shadow-2xl'>
-      <div className='mb-6 flex items-center gap-5 text-left'>
-        <div className='border-surface-border bg-surface-raised rounded-2xl border p-4 text-slate-400 shadow-inner'>
-          <Lock size={24} />
-        </div>
-        <div>
-          <h3 className='text-lg leading-tight font-semibold text-slate-200'>Authentication required</h3>
-          <p className='mt-1 text-sm text-slate-500'>You must be logged in to access this page</p>
-        </div>
-      </div>
-      <button
-        onClick={() =>
-          loginWithRedirect({
-            appState: {
-              returnTo: `${window.location.pathname}${window.location.search}${window.location.hash}`,
-            },
-          })
-        }
-        className='type-body btn-brand-solid flex w-full items-center justify-center gap-3 rounded-xl px-6 py-3 font-semibold shadow-lg transition-all active:scale-95'
-      >
-        <LogIn size={18} /> Sign in
-      </button>
-    </div>
+    <AuthGateCard
+      icon={<Lock size={18} aria-hidden />}
+      title='Authentication required'
+      description='You must be logged in to access this page.'
+      actions={
+        <button
+          onClick={() =>
+            loginWithRedirect({
+              appState: {
+                returnTo: `${window.location.pathname}${window.location.search}${window.location.hash}`,
+              },
+            })
+          }
+          className={cn(
+            designContract.controls.brandSolid,
+            'inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-[12px] sm:min-h-9 sm:w-auto sm:text-[13px]',
+          )}
+        >
+          <LogIn size={15} aria-hidden />
+          <span>Sign in</span>
+        </button>
+      }
+    />
   );
 };
 
 export const InsufficientPrivileges = () => (
-  <div className='bg-surface-card border-surface-border rounded-xl border p-6 text-left shadow-2xl'>
-    <div className='mb-5 flex items-center gap-5'>
-      <div className='border-surface-border bg-surface-raised rounded-2xl border border-red-500/30 p-4 text-red-400 shadow-inner'>
-        <AlertTriangle size={24} />
+  <AuthGateCard
+    icon={<AlertTriangle size={18} aria-hidden />}
+    title='Insufficient privileges'
+    description="You don't have access to this page."
+    tone='danger'
+    actions={
+      <div className='bg-surface-raised border-surface-border/60 rounded-lg border px-3 py-2.5 sm:px-4 sm:py-3'>
+        <p className={cn(designContract.typography.body, 'text-slate-400')}>
+          Contact{' '}
+          <a
+            href='mailto:jostein.oygarden@gmail.com'
+            className='decoration-brand/35 hover:text-brand active:text-brand focus-visible:text-brand focus-visible:ring-brand-border/55 font-semibold text-slate-200 underline underline-offset-4 transition-colors focus-visible:rounded-sm focus-visible:ring-2 focus-visible:outline-none'
+          >
+            Jostein Oeygarden
+          </a>{' '}
+          if you need an upgrade.
+        </p>
       </div>
-      <div>
-        <h3 className='text-lg leading-tight font-semibold text-slate-200'>Insufficient privileges</h3>
-        <p className='mt-1 text-sm text-slate-500'>You don't have access to this page</p>
-      </div>
-    </div>
-    <div className='bg-surface-raised border-surface-border/50 rounded-lg border p-4'>
-      <p className='text-sm leading-relaxed text-slate-400'>
-        Contact{' '}
-        <a
-          href='mailto:jostein.oygarden@gmail.com'
-          className='decoration-brand/30 hover:text-brand active:text-brand focus-visible:text-brand focus-visible:ring-brand-border/55 focus-visible:ring-offset-surface-raised font-semibold text-slate-200 underline underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none'
-        >
-          Jostein Øygarden
-        </a>{' '}
-        if you need an upgrade.
-      </p>
-    </div>
-  </div>
+    }
+  />
 );

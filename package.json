@@ -94,7 +94,7 @@
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
     "analyze": "vite build --mode analyze",
-    "swagger": "openapi-typescript https://brattelinjer.no/com.buldreinfo.jersey.jaxb/openapi.json --output src/@types/buldreinfo/swagger.d.ts --export-type",
+    "swagger": "node scripts/generate-swagger.mjs",
     "validate": "npm run format:check && npm run lint && npm run type-check",
     "prepare": "husky"
   },

@@ -19,6 +19,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { postPermissions } from './operations';
 import { captureSentryException } from '../utils/sentry';
 import { type MediaRegion, calculateMediaRegion, isPathVisible, scalePath } from '../utils/svg-scaler';
+import { createHttpErrorFromResponse, isHttpError } from './httpError';
 
 function useKey(customKey: readonly unknown[] | undefined, urlSuffix: string): readonly unknown[] {
   const { isAuthenticated } = useAuth0();
@@ -153,9 +154,25 @@ export function useData<TQueryData = unknown, TData = TQueryData>(
   const { enabled, ...restOptions } = options;
   const queryKey = useKey(customQueryKey, urlSuffix);
 
+  /**
+   * Follow API semantics: do not retry deterministic client errors (4xx).
+   * Retry only transient/network-like failures a limited number of times.
+   */
+  const retryOption =
+    restOptions.retry ??
+    ((failureCount: number, error: unknown) => {
+      if (isHttpError(error) && error.status >= 400 && error.status < 500) {
+        return false;
+      }
+      return failureCount < 3;
+    });
+
   const queryFn: () => Promise<TQueryData> = async (): Promise<TQueryData> => {
     const accessToken = isAuthenticated ? await getAccessTokenSilently() : null;
     const res = await makeAuthenticatedRequest(accessToken, urlSuffix);
+    if (!res.ok) {
+      throw await createHttpErrorFromResponse(res, urlSuffix);
+    }
     return res.json();
   };
 
@@ -163,6 +180,7 @@ export function useData<TQueryData = unknown, TData = TQueryData>(
     queryKey,
     queryFn,
     enabled: authReady && (enabled ?? true),
+    retry: retryOption,
     ...restOptions,
   });
   const redirectUi = useRedirect(data.data);
@@ -214,7 +232,16 @@ export function useActivity({
       const accessToken = isAuthenticated ? await getAccessTokenSilently() : null;
       const url = `/activity?idArea=${idArea}&idSector=${idSector}&lowerGrade=${lowerGrade}&fa=${fa}&comments=${comments}&ticks=${ticks}&media=${media}&offset=${pageParam}`;
       const res = await makeAuthenticatedRequest(accessToken, url);
+      if (!res.ok) {
+        throw await createHttpErrorFromResponse(res, url);
+      }
       return res.json() as Promise<Success<'getActivity'>>;
+    },
+    retry: (failureCount, error) => {
+      if (isHttpError(error) && error.status >= 400 && error.status < 500) {
+        return false;
+      }
+      return failureCount < 3;
     },
     /**
      * Inner query uses offset/limit; outer permission filter can shrink pages — do not infer “end” from length.
@@ -443,7 +470,7 @@ export function useProfile(userId = -1) {
 }
 
 export function useProfileMedia({ userId, captured }: { userId: number; captured: boolean }) {
-  return useData<Success<'getProfilemedia'>>(`/profile/media?id=${userId}&captured=${captured}`, {
+  return useData<Success<'getProfileMedia'>>(`/profile/media?id=${userId}&captured=${captured}`, {
     queryKey: [`/profile/media`, { id: userId, captured }],
   });
 }

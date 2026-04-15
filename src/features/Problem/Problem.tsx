@@ -60,6 +60,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
+import { getUserFriendlyHttpErrorMessage, isHttpError } from '../../api/httpError';
 
 /** Shared header for ticks / comments: icon + title + count as quiet typography (no badge chrome). */
 function ProblemSocialCardHeader({
@@ -128,13 +129,26 @@ function ProblemNotFound() {
 
 export const Problem = () => {
   const { problemId } = useIds();
+  const meta = useMeta();
   const [showHiddenMedia, setShowHiddenMedia] = useState(false);
   const { data, error, toggleTodo, redirectUi } = useProblem(+problemId, showHiddenMedia);
 
   if (redirectUi) return redirectUi;
 
-  if (error) {
+  if (error && isHttpError(error, 404)) {
     return <ProblemNotFound />;
+  }
+
+  if (error) {
+    const description = isHttpError(error)
+      ? getUserFriendlyHttpErrorMessage(error)
+      : 'Something went wrong while loading this problem.';
+    return (
+      <>
+        <title>{`Error | ${meta?.title}`}</title>
+        <NotFoundCard className='mt-4 sm:mt-6' title='Unable To Load Problem' description={description} />
+      </>
+    );
   }
 
   if (!data?.id) return <Loading />;
