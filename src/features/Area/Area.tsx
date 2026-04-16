@@ -14,7 +14,7 @@ import { ConditionLabels } from '../../shared/components/Widgets/ConditionLabels
 import { ExternalLinkLabels } from '../../shared/components/Widgets/ExternalLinkLabels';
 import { NoDogsAllowed } from '../../shared/components/Widgets/NoDogsAllowed';
 import { useMeta } from '../../shared/components/Meta/context';
-import { getMediaFileUrl, useArea } from '../../api';
+import { getMediaFileUrl, mediaIdentityId, mediaIdentityVersionStamp, useArea } from '../../api';
 import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
 import ProblemList, { useProblemListCompact } from '../../shared/components/ProblemList';
 import type { components } from '../../@types/buldreinfo/swagger';
@@ -880,7 +880,7 @@ const Area = () => {
             {activeSectorTab === 'sectors' ? (
               <div className={cn('min-w-0 p-4 sm:p-5', designContract.layout.areaSectorCardGrid)}>
                 {data.sectors?.map((sector) => {
-                  const sectorHasThumb = !!sector.randomMediaId;
+                  const sectorHasThumb = mediaIdentityId(sector.randomMedia) > 0;
                   /** Thumbnails + dark placeholders: light ink remaps break `text-slate-*`; use overlay tokens or `light:` for empty tiles. */
                   const sectorCardTitleClass = cn(
                     'line-clamp-2 min-w-0 flex-1 font-medium tracking-tight text-[0.95rem] leading-tight sm:text-[1.1rem] md:text-[1.25rem]',
@@ -930,9 +930,14 @@ const Area = () => {
                         {sectorHasThumb ? (
                           <img
                             className='absolute inset-0 z-[2] h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105'
-                            src={getMediaFileUrl(sector.randomMediaId!, sector.randomMediaVersionStamp ?? 0, false, {
-                              minDimension: 400,
-                            })}
+                            src={getMediaFileUrl(
+                              mediaIdentityId(sector.randomMedia),
+                              mediaIdentityVersionStamp(sector.randomMedia),
+                              false,
+                              {
+                                minDimension: 400,
+                              },
+                            )}
                             alt=''
                             onError={(e) => {
                               (e.currentTarget as HTMLImageElement).style.display = 'none';

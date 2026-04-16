@@ -357,14 +357,13 @@ type ActivityItemProps = {
 const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
   const avatarItems =
     (a.activityThumbnails ?? []).length > 0
-      ? a.activityThumbnails!.map((m) => ({ mediaId: m.id, mediaVersionStamp: m.versionStamp }))
+      ? a.activityThumbnails!.map((m) => ({ mediaIdentity: m.identity }))
       : (a.users ?? []).length > 0
         ? a.users!.map((u) => ({
             name: u.name,
-            mediaId: u.mediaId,
-            mediaVersionStamp: u.mediaVersionStamp,
+            mediaIdentity: u.mediaIdentity,
           }))
-        : [{ name: a.name, mediaId: undefined, mediaVersionStamp: undefined }];
+        : [{ name: a.name, mediaIdentity: undefined }];
 
   const statusIconGlyph = 'shrink-0 text-slate-300';
   const statusIconSize = 10;
@@ -455,8 +454,7 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
                   >
                     <Avatar
                       name={u.name}
-                      mediaId={u.mediaId}
-                      mediaVersionStamp={u.mediaVersionStamp}
+                      mediaIdentity={u.mediaIdentity}
                       size='micro'
                       className='ring-surface-card group-hover/user:ring-brand-border shrink-0 ring-2 transition-all'
                     />

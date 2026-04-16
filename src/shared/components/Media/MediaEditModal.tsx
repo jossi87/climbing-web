@@ -42,7 +42,7 @@ const MediaEditModal = ({ save, onCloseWithoutReload, m, numPitches }: Props) =>
     if (saving) return;
     setSaving(true);
     try {
-      await Promise.resolve(save(m.id ?? 0, description, pitch, trivia));
+      await Promise.resolve(save(m.identity?.id ?? 0, description, pitch, trivia));
     } catch (error) {
       console.warn(error);
       alert(error instanceof Error ? error.message : String(error));

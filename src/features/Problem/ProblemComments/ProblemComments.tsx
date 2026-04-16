@@ -95,8 +95,7 @@ export const ProblemComments = ({
               <div className='shrink-0 pt-0.5'>
                 <ClickableAvatar
                   name={c.name}
-                  mediaId={c.mediaId}
-                  mediaVersionStamp={c.mediaVersionStamp}
+                  mediaIdentity={c.mediaIdentity}
                   size='tiny'
                   className={cn(isOwn && 'border-status-ticked/40 ring-status-ticked/25 ring-1')}
                 />

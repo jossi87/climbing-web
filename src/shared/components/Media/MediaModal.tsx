@@ -27,7 +27,14 @@ import {
 } from 'lucide-react';
 
 import { useLocalStorage } from '../../../utils/use-local-storage';
-import { downloadFileWithProgress, getMediaFileUrl, getMediaFileUrlSrcSet, useAccessToken } from '../../../api';
+import {
+  downloadFileWithProgress,
+  getMediaFileUrl,
+  getMediaFileUrlSrcSet,
+  mediaIdentityId,
+  mediaIdentityVersionStamp,
+  useAccessToken,
+} from '../../../api';
 import SvgViewer from '../SvgViewer';
 import VideoPlayer from './VideoPlayer';
 import { VideoPlayOverlayDisc } from './VideoThumbnailPlayOverlay';
@@ -319,13 +326,14 @@ const MediaModal = ({
 
   const activeSidebarRowRef = useRef<HTMLAnchorElement | null>(null);
 
+  const modalMediaNumericId = mediaIdentityId(m.identity);
   useEffect(() => {
     if (!canShowSidebar || !showSidebar || activeSidebarIndex < 0) return;
     const id = requestAnimationFrame(() => {
       activeSidebarRowRef.current?.scrollIntoView({ block: 'center', behavior: 'auto' });
     });
     return () => cancelAnimationFrame(id);
-  }, [canShowSidebar, showSidebar, activeSidebarIndex, m.id]);
+  }, [canShowSidebar, showSidebar, activeSidebarIndex, modalMediaNumericId]);
 
   const isImage = m?.idType === 1;
 
@@ -400,7 +408,10 @@ const MediaModal = ({
     (isAdmin || m.uploadedByMe) && isImage && (m.svgs ?? []).length === 0 && (m.mediaSvgs ?? []).length === 0;
   const canDrawTopo = isAdmin && isImage && !!optProblemId;
   const canDrawMedia = isAdmin && isImage && !isBouldering;
-  const canOrder = isAdmin && isImage && (orderableMedia ?? []).some((om) => om.id === (m.id ?? 0));
+  const canOrder =
+    isAdmin &&
+    isImage &&
+    (orderableMedia ?? []).some((om) => mediaIdentityId(om.identity) === mediaIdentityId(m.identity));
   const canMove = isAdmin && isImage;
   const hasMenuTopActions =
     canDrawTopo ||
@@ -459,7 +470,7 @@ const MediaModal = ({
                   <Link
                     key={svg.problemId}
                     ref={activeSidebarIndex === rowIndex ? activeSidebarRowRef : undefined}
-                    to={`/problem/${svg.problemId}/${m.id}`}
+                    to={`/problem/${svg.problemId}/${mediaIdentityId(m.identity)}`}
                     onMouseEnter={() => setProblemIdHovered(svg.problemId ?? null)}
                     onMouseLeave={() => setProblemIdHovered(null)}
                     title={statusHint}
@@ -577,7 +588,9 @@ const MediaModal = ({
                   {canDrawTopo && (
                     <button
                       type='button'
-                      onClick={() => navigate(`/problem/svg-edit/${optProblemId}/${pitch || 0}/${m.id}`)}
+                      onClick={() =>
+                        navigate(`/problem/svg-edit/${optProblemId}/${pitch || 0}/${mediaIdentityId(m.identity)}`)
+                      }
                       className={mediaMenuItemClass}
                     >
                       <Paintbrush size={14} className={mediaMenuIconClass} strokeWidth={2} /> Draw topo line
@@ -586,7 +599,7 @@ const MediaModal = ({
                   {canDrawMedia && (
                     <button
                       type='button'
-                      onClick={() => navigate(`/media/svg-edit/${m.id}`)}
+                      onClick={() => navigate(`/media/svg-edit/${mediaIdentityId(m.identity)}`)}
                       className={mediaMenuItemClass}
                     >
                       <Paintbrush size={14} className={mediaMenuIconClass} strokeWidth={2} /> Draw on image
@@ -632,7 +645,12 @@ const MediaModal = ({
                       onClick={() =>
                         downloadFileWithProgress(
                           accessToken,
-                          getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, m.idType !== 1, { original: true }),
+                          getMediaFileUrl(
+                            mediaIdentityId(m.identity),
+                            mediaIdentityVersionStamp(m.identity),
+                            m.idType !== 1,
+                            { original: true },
+                          ),
                         )
                       }
                       className={mediaMenuItemClass}
@@ -711,10 +729,14 @@ const MediaModal = ({
                 <img
                   data-modal-media-root
                   className='touch-pan-pinch h-full min-h-0 w-full min-w-0 cursor-pointer object-contain select-none'
-                  src={getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, false, {
+                  src={getMediaFileUrl(mediaIdentityId(m.identity), mediaIdentityVersionStamp(m.identity), false, {
                     targetWidth: Math.min(1920, modalImageWidthForSrcSet),
                   })}
-                  srcSet={getMediaFileUrlSrcSet(m.id ?? 0, m.versionStamp ?? 0, modalImageWidthForSrcSet)}
+                  srcSet={getMediaFileUrlSrcSet(
+                    mediaIdentityId(m.identity),
+                    mediaIdentityVersionStamp(m.identity),
+                    modalImageWidthForSrcSet,
+                  )}
                   sizes='100vw'
                   alt=''
                   onClick={(e) => {
@@ -766,7 +788,9 @@ const MediaModal = ({
                  */}
                 <img
                   className='h-full min-h-0 w-full min-w-0 object-contain opacity-90 transition-opacity group-hover:opacity-100'
-                  src={getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, false, { targetWidth: 1080 })}
+                  src={getMediaFileUrl(mediaIdentityId(m.identity), mediaIdentityVersionStamp(m.identity), false, {
+                    targetWidth: 1080,
+                  })}
                   alt=''
                 />
                 <div className='pointer-events-none absolute inset-0 flex items-center justify-center'>

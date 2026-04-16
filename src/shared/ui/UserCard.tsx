@@ -5,12 +5,20 @@ import { ClickableAvatar } from './Avatar/Avatar';
 import { designContract } from '../../design/contract';
 import { twInk } from '../../design/twInk';
 import { cn } from '../../lib/utils';
-import type { Success } from '../../@types/buldreinfo';
+import type { components } from '../../@types/buldreinfo/swagger';
 
-type Administrator = Success<'getAdministrators'>[number];
+/** Administrators use `randomMedia`; permissions rows use `mediaIdentity`. */
+type UserCardUser = {
+  userId?: number;
+  name?: string;
+  emails?: string[];
+  lastLogin?: string;
+  mediaIdentity?: components['schemas']['MediaIdentity'];
+  randomMedia?: components['schemas']['MediaIdentity'];
+};
 
 type UserCardProps = {
-  user: Administrator;
+  user: UserCardUser;
   variant?: 'default' | 'minimal';
   metaAction?: ReactNode;
 };
@@ -27,8 +35,7 @@ export const UserCard = ({ user, variant = 'default', metaAction }: UserCardProp
   >
     <ClickableAvatar
       name={user.name}
-      mediaId={user.mediaId ?? undefined}
-      mediaVersionStamp={user.mediaVersionStamp ?? undefined}
+      mediaIdentity={user.mediaIdentity ?? user.randomMedia}
       size={variant === 'minimal' ? 'tiny' : 'small'}
     />
     <div className='flex min-w-0 flex-1 flex-col'>

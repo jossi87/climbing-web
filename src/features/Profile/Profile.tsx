@@ -109,12 +109,7 @@ const Profile = () => {
       <Card flush className='min-w-0 border-0'>
         <div className='p-4 sm:p-5'>
           <div className='flex min-w-0 items-start gap-3'>
-            <ClickableAvatar
-              name={fullName}
-              mediaId={profile.mediaId}
-              mediaVersionStamp={profile.mediaVersionStamp}
-              size='small'
-            />
+            <ClickableAvatar name={fullName} mediaIdentity={profile.mediaIdentity} size='small' />
             <div className='min-w-0'>
               <h1 className='type-h1 truncate'>
                 {profile.firstname} {profile.lastname}

@@ -4,6 +4,17 @@ import { DATA_MUTATION_EVENT } from '../shared/providers/DataReloader';
 import { ACTIVITY_AND_FRONTPAGE_INVALIDATION_EVENT } from './activityFeedInvalidation';
 import type { FetchOptions } from './types';
 import type { MediaRegion } from '../utils/svg-scaler';
+import type { components } from '../@types/buldreinfo/swagger';
+
+export type MediaIdentity = components['schemas']['MediaIdentity'];
+
+export function mediaIdentityId(identity?: MediaIdentity | null): number {
+  return identity?.id ?? 0;
+}
+
+export function mediaIdentityVersionStamp(identity?: MediaIdentity | null): number {
+  return Number(identity?.versionStamp ?? 0);
+}
 
 export function getLocales() {
   return 'nb-NO';

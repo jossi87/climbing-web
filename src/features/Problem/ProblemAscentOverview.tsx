@@ -57,26 +57,18 @@ function dateWithCalendar(date: string, key?: string) {
 function UserFactLink({
   userId,
   name,
-  mediaId,
-  mediaVersionStamp,
+  mediaIdentity,
 }: {
   userId: number;
   name?: string;
-  mediaId?: number;
-  mediaVersionStamp?: number;
+  mediaIdentity?: User['mediaIdentity'];
 }) {
   return (
     <Link
       to={`/user/${userId}`}
       className={cn(factSegmentClass, 'hover:text-brand max-w-full min-w-0 gap-1 transition-colors')}
     >
-      <Avatar
-        name={name}
-        mediaId={mediaId}
-        mediaVersionStamp={mediaVersionStamp}
-        size='micro'
-        className='shrink-0 ring-1 ring-white/10'
-      />
+      <Avatar name={name} mediaIdentity={mediaIdentity} size='micro' className='shrink-0 ring-1 ring-white/10' />
       <span className='min-w-0'>{name}</span>
     </Link>
   );
@@ -88,13 +80,7 @@ function climberList(users: User[], key?: string) {
     <span key={key} className='inline-flex min-w-0 flex-wrap content-start items-start gap-x-2 gap-y-1'>
       {users.map((u, i) =>
         u.id != null ? (
-          <UserFactLink
-            key={u.id ?? i}
-            userId={u.id}
-            name={u.name}
-            mediaId={u.mediaId}
-            mediaVersionStamp={u.mediaVersionStamp}
-          />
+          <UserFactLink key={u.id ?? i} userId={u.id} name={u.name} mediaIdentity={u.mediaIdentity} />
         ) : null,
       )}
     </span>

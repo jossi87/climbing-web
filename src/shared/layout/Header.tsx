@@ -19,7 +19,7 @@ type DropdownItemProps = {
 };
 
 const Header = () => {
-  const { isSuperAdmin, isAuthenticated, authenticatedName, mediaId, mediaVersionStamp } = useMeta();
+  const { isSuperAdmin, isAuthenticated, authenticatedName, mediaIdentity } = useMeta();
   const { isLoading, loginWithRedirect, logout } = useAuth0();
   const accessToken = useAccessToken();
   const location = useLocation();
@@ -113,8 +113,7 @@ const Header = () => {
       <div className='account-dropdown-container relative'>
         <Avatar
           name={authenticatedName}
-          mediaId={mediaId}
-          mediaVersionStamp={mediaVersionStamp}
+          mediaIdentity={mediaIdentity}
           size='tiny'
           onClick={() => setIsAccountOpen(!isAccountOpen)}
           className={cn(

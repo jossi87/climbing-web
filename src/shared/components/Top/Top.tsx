@@ -55,8 +55,7 @@ const Top = ({ idArea, idSector }: TopProps) => {
                     >
                       <Avatar
                         name={u.name}
-                        mediaId={u.mediaId}
-                        mediaVersionStamp={u.mediaVersionStamp}
+                        mediaIdentity={u.mediaIdentity}
                         size='micro'
                         className={cn(
                           'shrink-0 ring-1 ring-white/10 transition-all',

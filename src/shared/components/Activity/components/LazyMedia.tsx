@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
 import type { components } from '../../../../@types/buldreinfo/swagger';
-import { getMediaFileUrl, getTieredMinDimension } from '../../../../api';
+import { getMediaFileUrl, getTieredMinDimension, mediaIdentityId, mediaIdentityVersionStamp } from '../../../../api';
 import { VideoProcessingPlaceholder } from '../../Media/VideoProcessingPlaceholder';
 import { VideoThumbnailPlayOverlay } from '../../Media/VideoThumbnailPlayOverlay';
 
@@ -13,13 +13,13 @@ function ActivityMediaThumb({ m, problemId }: { m: ActivityMedia; problemId?: nu
   const isMovie = !!m.movie;
   /** Stable 1x/2x tiers (100 or 188) to avoid many on-demand S3 variants. */
   const thumbMinDimension = Math.max(100, getTieredMinDimension(94));
-  const thumbUrl = getMediaFileUrl(Number(m.id ?? 0), Number(m.versionStamp ?? 0), false, {
+  const thumbUrl = getMediaFileUrl(mediaIdentityId(m.identity), mediaIdentityVersionStamp(m.identity), false, {
     minDimension: thumbMinDimension,
   });
 
   return (
     <Link
-      to={`/problem/${problemId ?? 0}/${m.id ?? 0}`}
+      to={`/problem/${problemId ?? 0}/${mediaIdentityId(m.identity)}`}
       className='sm:h-thumbnail-h sm:w-thumbnail-w group border-surface-border bg-surface-card relative block aspect-square min-w-0 shrink-0 overflow-hidden rounded-md border transition-all active:scale-95 sm:rounded-lg'
       aria-label={`View activity photo, open problem ${problemId ?? 0}`}
     >
@@ -65,9 +65,9 @@ export const LazyMedia = ({ media, problemId }: { media: ActivityMedia[]; proble
     <div ref={ref} className='grid min-h-12 grid-cols-4 gap-1 sm:flex sm:flex-wrap sm:gap-2'>
       {media.map((m) =>
         inView ? (
-          <ActivityMediaThumb key={m.id} m={m} problemId={problemId} />
+          <ActivityMediaThumb key={mediaIdentityId(m.identity)} m={m} problemId={problemId} />
         ) : (
-          <div key={m.id} className={thumbCellClass}>
+          <div key={mediaIdentityId(m.identity)} className={thumbCellClass}>
             <div className='skeleton-bar h-full w-full animate-pulse' />
           </div>
         ),

@@ -121,8 +121,7 @@ const Permissions = () => {
                             user={{
                               userId: u.userId,
                               name: u.name,
-                              mediaId: u.mediaId,
-                              mediaVersionStamp: u.mediaVersionStamp,
+                              mediaIdentity: u.mediaIdentity,
                               lastLogin: u.lastLogin,
                             }}
                             metaAction={

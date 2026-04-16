@@ -883,31 +883,32 @@ export type components = {
             users?: components["schemas"]["User"][];
         };
         ActivityMedia: {
+            identity?: components["schemas"]["MediaIdentity"];
+            movie?: boolean;
+            embedUrl?: string;
+        };
+        MediaIdentity: {
             /** Format: int32 */
             id?: number;
             /** Format: int64 */
             versionStamp?: number;
-            movie?: boolean;
-            embedUrl?: string;
+            /** Format: int32 */
+            focusX?: number;
+            /** Format: int32 */
+            focusY?: number;
         };
         User: {
             /** Format: int32 */
             id?: number;
             name?: string;
-            /** Format: int32 */
-            mediaId?: number;
-            /** Format: int64 */
-            mediaVersionStamp?: number;
+            mediaIdentity?: components["schemas"]["MediaIdentity"];
         };
         Administrator: {
             /** Format: int32 */
             userId?: number;
             name?: string;
             emails?: string[];
-            /** Format: int32 */
-            mediaId?: number;
-            /** Format: int64 */
-            mediaVersionStamp?: number;
+            randomMedia?: components["schemas"]["MediaIdentity"];
             lastLogin?: string;
         };
         Area: {
@@ -964,10 +965,7 @@ export type components = {
             wallDirectionManual?: components["schemas"]["CompassDirection"];
             approach?: components["schemas"]["Slope"];
             descent?: components["schemas"]["Slope"];
-            /** Format: int32 */
-            randomMediaId?: number;
-            /** Format: int64 */
-            randomMediaVersionStamp?: number;
+            randomMedia?: components["schemas"]["MediaIdentity"];
             problems?: components["schemas"]["SectorProblem"][];
             typeNumTickedTodo?: components["schemas"]["TypeNumTickedTodo"][];
             /** Format: int32 */
@@ -1006,11 +1004,8 @@ export type components = {
             inherited?: boolean;
         };
         Media: {
-            /** Format: int32 */
-            id?: number;
+            identity?: components["schemas"]["MediaIdentity"];
             uploadedByMe?: boolean;
-            /** Format: int64 */
-            versionStamp?: number;
             /** Format: int32 */
             pitch?: number;
             trivia?: boolean;
@@ -1204,10 +1199,7 @@ export type components = {
             problems?: components["schemas"]["DangerousProblem"][];
         };
         FrontpageRandomMedia: {
-            /** Format: int32 */
-            idMedia?: number;
-            /** Format: int64 */
-            versionStamp?: number;
+            identity?: components["schemas"]["MediaIdentity"];
             /** Format: int32 */
             width?: number;
             /** Format: int32 */
@@ -1279,10 +1271,7 @@ export type components = {
             isAdmin?: boolean;
             isSuperAdmin?: boolean;
             authenticatedName?: string;
-            /** Format: int32 */
-            mediaId?: number;
-            /** Format: int64 */
-            mediaVersionStamp?: number;
+            mediaIdentity?: components["schemas"]["MediaIdentity"];
             grades?: components["schemas"]["Grade"][];
             faYears?: number[];
             /** Format: int32 */
@@ -1307,10 +1296,7 @@ export type components = {
             /** Format: int32 */
             userId?: number;
             name?: string;
-            /** Format: int32 */
-            mediaId?: number;
-            /** Format: int64 */
-            mediaVersionStamp?: number;
+            mediaIdentity?: components["schemas"]["MediaIdentity"];
             lastLogin?: string;
             adminRead?: boolean;
             adminWrite?: boolean;
@@ -1405,10 +1391,7 @@ export type components = {
             date?: string;
             /** Format: int32 */
             idUser?: number;
-            /** Format: int32 */
-            mediaId?: number;
-            /** Format: int64 */
-            mediaVersionStamp?: number;
+            mediaIdentity?: components["schemas"]["MediaIdentity"];
             name?: string;
             message?: string;
             danger?: boolean;
@@ -1431,10 +1414,7 @@ export type components = {
             id?: number;
             /** Format: int32 */
             idUser?: number;
-            /** Format: int32 */
-            mediaId?: number;
-            /** Format: int64 */
-            mediaVersionStamp?: number;
+            mediaIdentity?: components["schemas"]["MediaIdentity"];
             date?: string;
             name?: string;
             suggestedGrade?: string;
@@ -1447,10 +1427,7 @@ export type components = {
         ProblemTodo: {
             /** Format: int32 */
             idUser?: number;
-            /** Format: int32 */
-            mediaId?: number;
-            /** Format: int64 */
-            mediaVersionStamp?: number;
+            mediaIdentity?: components["schemas"]["MediaIdentity"];
             name?: string;
         };
         TickRepeat: {
@@ -1467,10 +1444,7 @@ export type components = {
             firstname?: string;
             lastname?: string;
             emailVisibleToAll?: boolean;
-            /** Format: int32 */
-            mediaId?: number;
-            /** Format: int64 */
-            mediaVersionStamp?: number;
+            mediaIdentity?: components["schemas"]["MediaIdentity"];
             emails?: string[];
             userRegions?: components["schemas"]["UserRegion"][];
             lastActivity?: string;
@@ -1767,10 +1741,7 @@ export type components = {
             /** Format: int32 */
             userId?: number;
             name?: string;
-            /** Format: int32 */
-            mediaId?: number;
-            /** Format: int64 */
-            mediaVersionStamp?: number;
+            mediaIdentity?: components["schemas"]["MediaIdentity"];
             mine?: boolean;
         };
         Trash: {
@@ -1940,10 +1911,7 @@ export type components = {
             description?: string;
             url?: string;
             externalUrl?: string;
-            /** Format: int32 */
-            mediaId?: number;
-            /** Format: int64 */
-            mediaVersionStamp?: number;
+            mediaIdentity?: components["schemas"]["MediaIdentity"];
             lockedAdmin?: boolean;
             lockedSuperadmin?: boolean;
             /** Format: int64 */

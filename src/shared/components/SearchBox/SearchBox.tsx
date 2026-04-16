@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ExternalLink, Map, MapPin, MapPinned, Search as SearchIcon, User, type LucideIcon } from 'lucide-react';
-import { getMediaFileUrl, useSearch } from '../../../api';
+import { getMediaFileUrl, mediaIdentityId, mediaIdentityVersionStamp, useSearch } from '../../../api';
+import type { components } from '../../../@types/buldreinfo/swagger';
 import { LockSymbol } from '../../ui/Indicators';
 import { cn } from '../../../lib/utils';
 import { SearchInput, Card, avatarFallbackColors, avatarInitialsFromName } from '../../ui';
@@ -9,17 +10,7 @@ import { designContract } from '../../../design/contract';
 import { twInk } from '../../../design/twInk';
 import { useMeta } from '../Meta/context';
 
-type SearchResult = {
-  title: string;
-  description?: string;
-  url: string;
-  externalUrl?: string;
-  mediaId?: number;
-  mediaVersionStamp?: number;
-  lockedAdmin?: boolean;
-  lockedSuperadmin?: boolean;
-  pageViews?: number;
-};
+type SearchResult = components['schemas']['Search'];
 
 type SearchEntityKind = 'area' | 'sector' | 'problem' | 'user' | 'unknown';
 
@@ -150,8 +141,10 @@ const SearchBox = () => {
       window.open(result.externalUrl, '_blank');
       return;
     }
+    const url = result.url;
+    if (!url) return;
     skipClearOnNextPathnameRef.current = true;
-    navigate(result.url);
+    navigate(url);
   };
 
   return (
@@ -206,9 +199,9 @@ const SearchBox = () => {
         <div className='absolute z-100 mt-2 w-full min-w-[320px]'>
           <Card flush className='animate-in fade-in max-h-[70vh] overflow-y-auto p-1 shadow-2xl'>
             {results.map((result, idx) => {
-              const mediaId = Number(result?.mediaId) || 0;
-              const versionStamp = result?.mediaVersionStamp || 0;
-              const imageSrc = mediaId > 0 ? getMediaFileUrl(mediaId, versionStamp, false, { minDimension: 48 }) : null;
+              const mid = mediaIdentityId(result?.mediaIdentity);
+              const versionStamp = mediaIdentityVersionStamp(result?.mediaIdentity);
+              const imageSrc = mid > 0 ? getMediaFileUrl(mid, versionStamp, false, { minDimension: 48 }) : null;
               const entityKind = getSearchEntityKind(result);
               const problemTitle =
                 entityKind === 'problem' && !result.externalUrl

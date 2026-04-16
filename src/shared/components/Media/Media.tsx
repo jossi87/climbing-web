@@ -7,6 +7,8 @@ import {
   getMediaFileUrl,
   getMediaFileUrlSrcSet,
   getTieredMinDimension,
+  mediaIdentityId,
+  mediaIdentityVersionStamp,
   moveMedia,
   putMediaInfo,
   putMediaJpegRotate,
@@ -85,10 +87,14 @@ const MediaVideoTile = ({ x, triviaTiles }: { x: MediaItem; triviaTiles: boolean
   const [imgError, setImgError] = useState(false);
   const sizes = mediaTileSizes(false, triviaTiles);
   const originalWidth = Math.max(Number(x.width ?? 0) || 0, 300);
-  const thumbUrl = getMediaFileUrl(Number(x.id ?? 0), Number(x.versionStamp ?? 0), false, {
+  const thumbUrl = getMediaFileUrl(mediaIdentityId(x.identity), mediaIdentityVersionStamp(x.identity), false, {
     minDimension: mediaTileMinDimension(triviaTiles),
   });
-  const thumbSrcSet = getMediaFileUrlSrcSet(Number(x.id ?? 0), Number(x.versionStamp ?? 0), originalWidth);
+  const thumbSrcSet = getMediaFileUrlSrcSet(
+    mediaIdentityId(x.identity),
+    mediaIdentityVersionStamp(x.identity),
+    originalWidth,
+  );
 
   if (imgError) {
     return (
@@ -143,11 +149,11 @@ const Media = ({
 
   const openModal = useCallback(
     (newM: MediaItem) => {
-      const prevMediaId = m?.id;
+      const prevMediaId = m ? mediaIdentityId(m.identity) : 0;
       const basePath = stripTabSegmentFromPath(location.pathname);
       const url = prevMediaId
-        ? location.pathname.replace(prevMediaId.toString(), (newM.id ?? 0).toString())
-        : `${basePath}/${newM.id ?? 0}`;
+        ? location.pathname.replace(prevMediaId.toString(), String(mediaIdentityId(newM.identity)))
+        : `${basePath}/${mediaIdentityId(newM.identity)}`;
       setM(newM);
       setEditM(null);
       /** Push on first open so browser Back closes the modal; replace when swapping media so swipes do not stack history. */
@@ -157,7 +163,7 @@ const Media = ({
       }
       navigate(url, { replace: isCarousel });
     },
-    [m?.id, location.pathname, navigate],
+    [m, location.pathname, navigate],
   );
   const closeModal = useCallback(() => {
     const lastSlashIndex = location.pathname.lastIndexOf('/');
@@ -173,13 +179,19 @@ const Media = ({
   }, [location.pathname, pitch, navigate]);
   const gotoPrev = useCallback(() => {
     if (m && carouselMedia && carouselMedia.length > 1) {
-      const ix = (carouselMedia.findIndex((x) => x.id === m.id) - 1 + carouselMedia.length) % carouselMedia.length;
+      const ix =
+        (carouselMedia.findIndex((x) => mediaIdentityId(x.identity) === mediaIdentityId(m.identity)) -
+          1 +
+          carouselMedia.length) %
+        carouselMedia.length;
       openModal(carouselMedia[ix]);
     }
   }, [m, carouselMedia, openModal]);
   const gotoNext = useCallback(() => {
     if (m && carouselMedia && carouselMedia.length > 1) {
-      const ix = (carouselMedia.findIndex((x) => x.id === m.id) + 1) % carouselMedia.length;
+      const ix =
+        (carouselMedia.findIndex((x) => mediaIdentityId(x.identity) === mediaIdentityId(m.identity)) + 1) %
+        carouselMedia.length;
       openModal(carouselMedia[ix]);
     }
   }, [m, carouselMedia, openModal]);
@@ -211,13 +223,16 @@ const Media = ({
     if (!m) return;
     setConfirmation({
       message: `Delete this ${m.idType === 1 ? 'image' : 'video'}?`,
-      action: () => executeMediaAction((token) => deleteMedia(token, m.id ?? 0)),
+      action: () => executeMediaAction((token) => deleteMedia(token, mediaIdentityId(m.identity))),
     });
   };
   if (isLoading) return <Loading />;
   if (mediaId && media) {
-    const found = media.find((x) => x.id === mediaId);
-    if (found && (!m || m.id !== found.id || m.mediaSvgs !== found.mediaSvgs)) {
+    const found = media.find((x) => mediaIdentityId(x.identity) === mediaId);
+    if (
+      found &&
+      (!m || mediaIdentityId(m.identity) !== mediaIdentityId(found.identity) || m.mediaSvgs !== found.mediaSvgs)
+    ) {
       setM(found);
     }
   } else if (!mediaId && !pitch && m) {
@@ -255,15 +270,19 @@ const Media = ({
                 className='absolute inset-0 h-full w-full'
               />
             ) : x.idType === 2 ? (
-              <MediaVideoTile key={`${x.id}-${x.versionStamp ?? 0}`} x={x} triviaTiles={!!triviaTiles} />
+              <MediaVideoTile
+                key={`${mediaIdentityId(x.identity)}-${mediaIdentityVersionStamp(x.identity)}`}
+                x={x}
+                triviaTiles={!!triviaTiles}
+              />
             ) : (
               <img
-                src={getMediaFileUrl(Number(x.id ?? 0), Number(x.versionStamp ?? 0), false, {
+                src={getMediaFileUrl(mediaIdentityId(x.identity), mediaIdentityVersionStamp(x.identity), false, {
                   minDimension: mediaTileMinDimension(!!triviaTiles),
                 })}
                 srcSet={getMediaFileUrlSrcSet(
-                  Number(x.id ?? 0),
-                  Number(x.versionStamp ?? 0),
+                  mediaIdentityId(x.identity),
+                  mediaIdentityVersionStamp(x.identity),
                   Math.max(Number(x.width ?? 0) || 0, 300),
                 )}
                 sizes={tileSizes}
@@ -325,7 +344,7 @@ const Media = ({
       {m &&
         createPortal(
           <MediaModal
-            key={m.id ?? 0}
+            key={mediaIdentityId(m.identity)}
             isSaving={isSaving}
             onClose={closeModal}
             m={m}
@@ -334,26 +353,40 @@ const Media = ({
             autoPlayVideo={autoPlayVideo}
             onEdit={() => setEditM(m)}
             onDelete={onDeleteMedia}
-            onRotate={(deg) => executeMediaAction((token) => putMediaJpegRotate(token, m.id ?? 0, deg))}
-            onMoveImageLeft={() => executeMediaAction((token) => moveMedia(token, m.id ?? 0, true, 0, 0, 0))}
-            onMoveImageRight={() => executeMediaAction((token) => moveMedia(token, m.id ?? 0, false, 0, 0, 0))}
+            onRotate={(deg) =>
+              executeMediaAction((token) => putMediaJpegRotate(token, mediaIdentityId(m.identity), deg))
+            }
+            onMoveImageLeft={() =>
+              executeMediaAction((token) => moveMedia(token, mediaIdentityId(m.identity), true, 0, 0, 0))
+            }
+            onMoveImageRight={() =>
+              executeMediaAction((token) => moveMedia(token, mediaIdentityId(m.identity), false, 0, 0, 0))
+            }
             onMoveImageToArea={() =>
-              executeMediaAction((token) => moveMedia(token, m.id ?? 0, false, m.enableMoveToIdArea ?? 0, 0, 0))
+              executeMediaAction((token) =>
+                moveMedia(token, mediaIdentityId(m.identity), false, m.enableMoveToIdArea ?? 0, 0, 0),
+              )
             }
             onMoveImageToSector={() =>
-              executeMediaAction((token) => moveMedia(token, m.id ?? 0, false, 0, m.enableMoveToIdSector ?? 0, 0))
+              executeMediaAction((token) =>
+                moveMedia(token, mediaIdentityId(m.identity), false, 0, m.enableMoveToIdSector ?? 0, 0),
+              )
             }
             onMoveImageToProblem={() =>
-              executeMediaAction((token) => moveMedia(token, m.id ?? 0, false, 0, 0, m.enableMoveToIdProblem ?? 0))
+              executeMediaAction((token) =>
+                moveMedia(token, mediaIdentityId(m.identity), false, 0, 0, m.enableMoveToIdProblem ?? 0),
+              )
             }
             onSetMediaAsAvatar={() =>
               setConfirmation({
                 message: 'Change your avatar to this image?',
-                action: () => executeMediaAction((token) => setMediaAsAvatar(token, m.id ?? 0)),
+                action: () => executeMediaAction((token) => setMediaAsAvatar(token, mediaIdentityId(m.identity))),
               })
             }
             orderableMedia={orderableMedia ?? []}
-            carouselIndex={(carouselMedia?.findIndex((x) => x.id === (m.id ?? 0)) ?? -1) + 1}
+            carouselIndex={
+              (carouselMedia?.findIndex((x) => mediaIdentityId(x.identity) === mediaIdentityId(m.identity)) ?? -1) + 1
+            }
             carouselSize={carouselMedia?.length ?? 0}
             showLocation={showLocation}
             gotoPrev={gotoPrev}
@@ -374,7 +407,7 @@ const Media = ({
       >
         {' '}
         {media?.map((x) => (
-          <LazyMediaCard x={x} key={x.id ?? 0} />
+          <LazyMediaCard x={x} key={mediaIdentityId(x.identity)} />
         ))}{' '}
       </div>{' '}
     </div>

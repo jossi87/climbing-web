@@ -592,7 +592,7 @@ const MediaSvgEdit = () => {
             >
               <image
                 ref={imageRef}
-                xlinkHref={getMediaFileUrl(data.id ?? 0, data.versionStamp ?? 0, false)}
+                xlinkHref={getMediaFileUrl(data.identity?.id ?? 0, Number(data.identity?.versionStamp ?? 0), false)}
                 width='100%'
                 height='100%'
               />

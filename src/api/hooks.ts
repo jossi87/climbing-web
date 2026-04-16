@@ -13,7 +13,7 @@ import type { Success, WithoutFirstParameter } from '../@types/buldreinfo';
 import type { components } from '../@types/buldreinfo/swagger';
 import { useLocalStorage } from '../utils/use-local-storage';
 import { useRedirect } from '../utils/useRedirect';
-import { makeAuthenticatedRequest, useAccessToken } from './utils';
+import { makeAuthenticatedRequest, useAccessToken, mediaIdentityId, mediaIdentityVersionStamp } from './utils';
 import type { FetchOptions } from './types';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { postPermissions } from './operations';
@@ -693,7 +693,7 @@ export function useSvgEdit(problemId: number, pitch: number, mediaId: number, me
     return undefined;
   }
 
-  const m = data.media?.find((x) => x.id == mediaId);
+  const m = data.media?.find((x) => mediaIdentityId(x.identity) == mediaId);
   if (!m) {
     return undefined;
   }
@@ -707,7 +707,7 @@ export function useSvgEdit(problemId: number, pitch: number, mediaId: number, me
       mediaWidth: m.width ?? 0,
       mediaHeight: m.height ?? 0,
       mediaRegion,
-      versionStamp: m.versionStamp ?? 0,
+      versionStamp: mediaIdentityVersionStamp(m.identity),
       sections: data.sections ?? [],
       anchors: [],
       hasAnchor: true,
@@ -789,13 +789,13 @@ export function useSvgEdit(problemId: number, pitch: number, mediaId: number, me
     svgId,
     problemId,
     pitch,
-    mediaId: m.id ?? 0,
+    mediaId: mediaIdentityId(m.identity),
     mediaWidth: m.width ?? 0,
     mediaHeight: m.height ?? 0,
     mediaRegion: mediaRegionLocal,
     sections: data.sections ?? [],
     nr: svgNr,
-    versionStamp: m.versionStamp ?? 0,
+    versionStamp: mediaIdentityVersionStamp(m.identity),
     path: path ?? '',
     anchors,
     tradBelayStations,

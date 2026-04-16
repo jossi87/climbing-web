@@ -1,4 +1,4 @@
-import { getMediaFileUrl } from '../../../api';
+import { getMediaFileUrl, mediaIdentityId, mediaIdentityVersionStamp } from '../../../api';
 import { SvgRoute } from './SvgRoute';
 import { Descent, Rappel } from '../../../utils/svg-utils';
 import type { components } from '../../../@types/buldreinfo/swagger';
@@ -41,6 +41,7 @@ export const SvgViewer = ({
   const pitchNum = pitch ?? 0;
   const optProblemIdNum = optProblemId ?? 0;
   const problemIdHoveredNum = problemIdHovered ?? 0;
+  const mediaFileNumericId = mediaIdentityId(m.identity);
 
   // Process dimensions and regions
   const processed = useMemo(() => {
@@ -83,7 +84,7 @@ export const SvgViewer = ({
   const mediaSvgs = ((m.mediaSvgs ?? []) as components['schemas']['MediaSvgElement'][])
     .filter((svg) => !svg.path || (mediaRegion ? isPathVisible(svg.path ?? '', regionForScaleAll) : true))
     .map((svg, idx) => {
-      const keyPrefix = `${m.id}-${thumb}-${idx}`;
+      const keyPrefix = `${mediaFileNumericId}-${thumb}-${idx}`;
       switch (svg.t) {
         case 'PATH':
           return (
@@ -134,11 +135,11 @@ export const SvgViewer = ({
       })
       .map((svg) => (
         <SvgRoute
-          key={`${m.id}-${svg.problemId}-${svg.pitch}-${thumb}`}
+          key={`${mediaFileNumericId}-${svg.problemId}-${svg.pitch}-${thumb}`}
           thumbnail={thumb}
           showText={showText}
           scale={scale}
-          mediaId={m.id ?? 0}
+          mediaId={mediaFileNumericId}
           mediaHeight={imgH}
           mediaWidth={imgW}
           svg={svg}
@@ -150,7 +151,7 @@ export const SvgViewer = ({
       ));
   }, [
     svgs,
-    m.id,
+    mediaFileNumericId,
     thumb,
     showText,
     scale,
@@ -189,7 +190,7 @@ export const SvgViewer = ({
         onMouseLeave={() => setProblemIdHovered?.(null)}
       >
         <image
-          xlinkHref={getMediaFileUrl(m.id ?? 0, m.versionStamp ?? 0, false, {
+          xlinkHref={getMediaFileUrl(mediaIdentityId(m.identity), mediaIdentityVersionStamp(m.identity), false, {
             mediaRegion: mediaRegion ?? undefined,
           })}
           width='100%'

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import { createPortal } from 'react-dom';
-import { getMediaFileUrl } from '../../../api/utils';
+import { getMediaFileUrl, type MediaIdentity } from '../../../api/utils';
 import { cn } from '../../../lib/utils';
 import { avatarFallbackColors, avatarInitialsFromName } from './avatarFallback';
 
@@ -10,8 +10,7 @@ type AvatarSize = 'micro' | 'mini' | 'tiny' | 'small' | 'medium' | 'large' | 'bi
 
 type AvatarProps = {
   name?: string;
-  mediaId?: number;
-  mediaVersionStamp?: number;
+  mediaIdentity?: MediaIdentity;
   size?: AvatarSize;
   className?: string;
   onClick?: (e: React.MouseEvent) => void;
@@ -29,9 +28,10 @@ const SIZE_MAP: Record<AvatarSize, number> = {
   massive: 800,
 };
 
-export function Avatar({ name, mediaId, mediaVersionStamp, size = 'mini', className, onClick }: AvatarProps) {
+export function Avatar({ name, mediaIdentity, size = 'mini', className, onClick }: AvatarProps) {
   const pixelSize = SIZE_MAP[size] || 24;
-  const mid = mediaId ?? 0;
+  const mid = mediaIdentity?.id ?? 0;
+  const mediaVersionStamp = Number(mediaIdentity?.versionStamp ?? 0);
   const initials = avatarInitialsFromName(name);
   const fallbackStyle = mid === 0 ? avatarFallbackColors(name) : undefined;
   /** ~2× for retina; capped so we don’t request huge originals on modal-sized avatars. */
@@ -57,7 +57,7 @@ export function Avatar({ name, mediaId, mediaVersionStamp, size = 'mini', classN
         </span>
       ) : (
         <img
-          src={getMediaFileUrl(mid, mediaVersionStamp ?? 0, false, { targetWidth: mediaTargetWidth })}
+          src={getMediaFileUrl(mid, mediaVersionStamp, false, { targetWidth: mediaTargetWidth })}
           alt={name ?? ''}
           loading='lazy'
           width={pixelSize}
@@ -86,7 +86,7 @@ export function AvatarGroup({
       <div className={cn('flex', size === 'micro' || size === 'mini' || size === 'tiny' ? '-space-x-3' : '-space-x-4')}>
         {items.slice(0, max).map((item, i) => (
           <ClickableAvatar
-            key={item.mediaId || i}
+            key={item.mediaIdentity?.id || i}
             {...item}
             size={size}
             className={cn('ring-surface-hover rounded-full ring-2', item.className)}
@@ -119,7 +119,7 @@ export function AvatarGroup({
 
 export function ClickableAvatar(props: AvatarProps) {
   const [open, setOpen] = useState(false);
-  const mid = props.mediaId ?? 0;
+  const mid = props.mediaIdentity?.id ?? 0;
   const closeModal = useCallback(() => setOpen(false), []);
 
   useEffect(() => {
@@ -152,7 +152,12 @@ export function ClickableAvatar(props: AvatarProps) {
         mid !== 0 &&
         createPortal(
           <Suspense fallback={null}>
-            <AvatarModal mid={mid} name={props.name} stamp={props.mediaVersionStamp} onClose={closeModal} />
+            <AvatarModal
+              mid={mid}
+              name={props.name}
+              stamp={Number(props.mediaIdentity?.versionStamp ?? 0)}
+              onClose={closeModal}
+            />
           </Suspense>,
           document.body,
         )}

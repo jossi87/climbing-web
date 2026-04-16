@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { getMediaFileUrl, getMediaFileUrlSrcSet } from '../../api';
+import { getMediaFileUrl, getMediaFileUrlSrcSet, mediaIdentityId, mediaIdentityVersionStamp } from '../../api';
 import { cn } from '../../lib/utils';
 import { ClickableAvatar, AvatarGroup, Card } from '../../shared/ui';
 import type { components } from '../../@types/buldreinfo/swagger';
@@ -51,7 +51,10 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
   const cardShellClass = 'group bg-surface-card overflow-hidden border-0 text-left';
 
   const items = randomMedia?.length ? randomMedia : undefined;
-  const listKey = useMemo(() => items?.map((m) => `${m.idProblem}-${m.idMedia}`).join('|') ?? '', [items]);
+  const listKey = useMemo(
+    () => items?.map((m) => `${m.idProblem}-${mediaIdentityId(m.identity)}`).join('|') ?? '',
+    [items],
+  );
 
   const [carousel, setCarousel] = useState<{ key: string; index: number }>(() => ({
     key: listKey,
@@ -212,14 +215,19 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
           className='focus-visible:ring-brand-border/80 absolute inset-0 z-0 block transition-[filter,transform] duration-300 outline-none hover:brightness-110 focus-visible:ring-2 focus-visible:ring-inset'
         >
           <img
-            key={`${randomMediaItem.idProblem}-${randomMediaItem.idMedia}-${safeIndex}`}
+            key={`${randomMediaItem.idProblem}-${mediaIdentityId(randomMediaItem.identity)}-${safeIndex}`}
             className='h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105'
-            src={getMediaFileUrl(Number(randomMediaItem.idMedia ?? 0), randomMediaItem.versionStamp || 0, false, {
-              minDimension: 400,
-            })}
+            src={getMediaFileUrl(
+              mediaIdentityId(randomMediaItem.identity),
+              mediaIdentityVersionStamp(randomMediaItem.identity),
+              false,
+              {
+                minDimension: 400,
+              },
+            )}
             srcSet={getMediaFileUrlSrcSet(
-              Number(randomMediaItem.idMedia ?? 0),
-              randomMediaItem.versionStamp || 0,
+              mediaIdentityId(randomMediaItem.identity),
+              mediaIdentityVersionStamp(randomMediaItem.identity),
               randomMediaItem.width ?? 2560,
             )}
             sizes='(max-width: 767px) 100vw, 400px'
@@ -299,7 +307,11 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
           <div className='border-surface-border/50 mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 border-t pt-5 md:mt-4 md:gap-y-2 md:pt-3'>
             {taggedUsers.length > 0 && (
               <div className='flex items-center gap-3 md:gap-2.5'>
-                <AvatarGroup items={taggedUsers.map((u) => ({ ...u, mediaId: u.mediaId ?? 0 }))} size='mini' max={3} />
+                <AvatarGroup
+                  items={taggedUsers.map((u) => ({ name: u.name, mediaIdentity: u.mediaIdentity }))}
+                  size='mini'
+                  max={3}
+                />
                 <div className={metaTextClass}>
                   <Link to={`/user/${taggedUsers[0].id}`} className={`${interactiveLinkClass} ${touchTargetClass}`}>
                     {taggedUsers[0].name}
@@ -315,12 +327,7 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
             )}
             {showPhotographerByRow && photographer ? (
               <div className='flex items-center gap-2.5 md:gap-2'>
-                <ClickableAvatar
-                  name={photographer.name}
-                  mediaId={photographer.mediaId}
-                  mediaVersionStamp={photographer.mediaVersionStamp}
-                  size='mini'
-                />
+                <ClickableAvatar name={photographer.name} mediaIdentity={photographer.mediaIdentity} size='mini' />
                 <div className={metaTextClass}>
                   <span className='mr-1 text-slate-400'>By</span>
                   <Link to={`/user/${photographer.id}`} className={`${interactiveLinkClass} ${touchTargetClass}`}>

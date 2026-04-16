@@ -29,6 +29,9 @@ export {
   numberWithCommas,
   convertFromDateToString,
   convertFromStringToDate,
+  mediaIdentityId,
+  mediaIdentityVersionStamp,
+  type MediaIdentity,
 } from './utils';
 
 export { spaPathFromRedirectResponse } from './redirectResponse';
