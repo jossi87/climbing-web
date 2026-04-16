@@ -9,6 +9,7 @@ import {
   getTieredMinDimension,
   mediaIdentityId,
   mediaIdentityVersionStamp,
+  mediaObjectPositionStyle,
   moveMedia,
   putMediaInfo,
   putMediaJpegRotate,
@@ -112,6 +113,7 @@ const MediaVideoTile = ({ x, triviaTiles }: { x: MediaItem; triviaTiles: boolean
         sizes={sizes}
         alt=''
         className='absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105'
+        style={mediaObjectPositionStyle(x.identity)}
         onError={() => setImgError(true)}
       />
       <VideoThumbnailPlayOverlay />
@@ -288,6 +290,7 @@ const Media = ({
                 sizes={tileSizes}
                 alt={x.mediaMetadata?.description ?? ''}
                 className='absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105'
+                style={mediaObjectPositionStyle(x.identity)}
                 loading='lazy'
                 decoding='async'
               />

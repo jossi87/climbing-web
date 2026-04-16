@@ -14,7 +14,13 @@ import { ConditionLabels } from '../../shared/components/Widgets/ConditionLabels
 import { ExternalLinkLabels } from '../../shared/components/Widgets/ExternalLinkLabels';
 import { NoDogsAllowed } from '../../shared/components/Widgets/NoDogsAllowed';
 import { useMeta } from '../../shared/components/Meta/context';
-import { getMediaFileUrl, mediaIdentityId, mediaIdentityVersionStamp, useArea } from '../../api';
+import {
+  getMediaFileUrl,
+  mediaIdentityId,
+  mediaIdentityVersionStamp,
+  mediaObjectPositionStyle,
+  useArea,
+} from '../../api';
 import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
 import ProblemList, { useProblemListCompact } from '../../shared/components/ProblemList';
 import type { components } from '../../@types/buldreinfo/swagger';
@@ -930,6 +936,7 @@ const Area = () => {
                         {sectorHasThumb ? (
                           <img
                             className='absolute inset-0 z-[2] h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105'
+                            style={mediaObjectPositionStyle(sector.randomMedia)}
                             src={getMediaFileUrl(
                               mediaIdentityId(sector.randomMedia),
                               mediaIdentityVersionStamp(sector.randomMedia),

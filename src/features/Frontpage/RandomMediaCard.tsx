@@ -1,7 +1,13 @@
 import { useMemo, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { getMediaFileUrl, getMediaFileUrlSrcSet, mediaIdentityId, mediaIdentityVersionStamp } from '../../api';
+import {
+  getMediaFileUrl,
+  getMediaFileUrlSrcSet,
+  mediaIdentityId,
+  mediaIdentityVersionStamp,
+  mediaObjectPositionStyle,
+} from '../../api';
 import { cn } from '../../lib/utils';
 import { ClickableAvatar, AvatarGroup, Card } from '../../shared/ui';
 import type { components } from '../../@types/buldreinfo/swagger';
@@ -217,6 +223,7 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
           <img
             key={`${randomMediaItem.idProblem}-${mediaIdentityId(randomMediaItem.identity)}-${safeIndex}`}
             className='h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105'
+            style={mediaObjectPositionStyle(randomMediaItem.identity)}
             src={getMediaFileUrl(
               mediaIdentityId(randomMediaItem.identity),
               mediaIdentityVersionStamp(randomMediaItem.identity),

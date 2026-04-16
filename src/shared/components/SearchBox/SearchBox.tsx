@@ -1,7 +1,13 @@
 import { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ExternalLink, Map, MapPin, MapPinned, Search as SearchIcon, User, type LucideIcon } from 'lucide-react';
-import { getMediaFileUrl, mediaIdentityId, mediaIdentityVersionStamp, useSearch } from '../../../api';
+import {
+  getMediaFileUrl,
+  mediaIdentityId,
+  mediaIdentityVersionStamp,
+  mediaObjectPositionStyle,
+  useSearch,
+} from '../../../api';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { LockSymbol } from '../../ui/Indicators';
 import { cn } from '../../../lib/utils';
@@ -244,7 +250,12 @@ const SearchBox = () => {
                     {result.externalUrl ? (
                       <ExternalLink size={18} className='group-hover:text-brand text-slate-400' />
                     ) : imageSrc ? (
-                      <img src={imageSrc} className='h-full w-full object-cover' alt='' />
+                      <img
+                        src={imageSrc}
+                        className='h-full w-full object-cover'
+                        style={mediaObjectPositionStyle(result.mediaIdentity)}
+                        alt=''
+                      />
                     ) : userInitialsFallback ? (
                       <span
                         className='pointer-events-none flex h-full w-full items-center justify-center leading-none font-light tracking-wide uppercase antialiased'

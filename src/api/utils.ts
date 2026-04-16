@@ -16,6 +16,33 @@ export function mediaIdentityVersionStamp(identity?: MediaIdentity | null): numb
   return Number(identity?.versionStamp ?? 0);
 }
 
+function mediaFocusPercentPair(identity?: MediaIdentity | null): string | undefined {
+  if (!identity) return undefined;
+  const x = identity.focusX;
+  const y = identity.focusY;
+  if (x == null && y == null) return undefined;
+  /** API uses `0,0` as "no focus" — same as omitting; real top-left would be e.g. `0` with a non-zero other axis. */
+  if (x === 0 && y === 0) return undefined;
+  return `${x ?? 50}% ${y ?? 50}%`;
+}
+
+/**
+ * CSS `object-position` from API focus (percent 0–100). Omitted when neither axis is set (browser default center).
+ * Use only where the image is **cropped** (`object-fit: cover`); not for letterboxed `object-contain` viewers (e.g. media modal).
+ */
+export function mediaObjectPositionStyle(identity?: MediaIdentity | null): { objectPosition: string } | undefined {
+  const pair = mediaFocusPercentPair(identity);
+  return pair ? { objectPosition: pair } : undefined;
+}
+
+/** Same percentages as {@link mediaObjectPositionStyle} for `background-size: cover` tiles using `background-image`. */
+export function mediaBackgroundPositionStyle(
+  identity?: MediaIdentity | null,
+): { backgroundPosition: string } | undefined {
+  const pair = mediaFocusPercentPair(identity);
+  return pair ? { backgroundPosition: pair } : undefined;
+}
+
 export function getLocales() {
   return 'nb-NO';
 }

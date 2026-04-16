@@ -2,7 +2,14 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
 import type { components } from '../../../../@types/buldreinfo/swagger';
-import { getMediaFileUrl, getTieredMinDimension, mediaIdentityId, mediaIdentityVersionStamp } from '../../../../api';
+import {
+  getMediaFileUrl,
+  getTieredMinDimension,
+  mediaBackgroundPositionStyle,
+  mediaIdentityId,
+  mediaIdentityVersionStamp,
+  mediaObjectPositionStyle,
+} from '../../../../api';
 import { VideoProcessingPlaceholder } from '../../Media/VideoProcessingPlaceholder';
 import { VideoThumbnailPlayOverlay } from '../../Media/VideoThumbnailPlayOverlay';
 
@@ -32,6 +39,7 @@ function ActivityMediaThumb({ m, problemId }: { m: ActivityMedia; problemId?: nu
               src={thumbUrl}
               alt=''
               className='absolute inset-0 h-full w-full object-cover transition-all duration-500 ease-out group-hover:scale-110'
+              style={mediaObjectPositionStyle(m.identity)}
               onError={() => setImgError(true)}
             />
             <VideoThumbnailPlayOverlay size='compact' />
@@ -44,6 +52,7 @@ function ActivityMediaThumb({ m, problemId }: { m: ActivityMedia; problemId?: nu
           className='animate-in fade-in fill-mode-both absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-500 ease-out group-hover:scale-110'
           style={{
             backgroundImage: `url(${JSON.stringify(thumbUrl)})`,
+            ...mediaBackgroundPositionStyle(m.identity),
           }}
         />
       )}

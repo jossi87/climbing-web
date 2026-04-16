@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import { createPortal } from 'react-dom';
-import { getMediaFileUrl, type MediaIdentity } from '../../../api/utils';
+import { getMediaFileUrl, mediaObjectPositionStyle, type MediaIdentity } from '../../../api/utils';
 import { cn } from '../../../lib/utils';
 import { avatarFallbackColors, avatarInitialsFromName } from './avatarFallback';
 
@@ -63,6 +63,7 @@ export function Avatar({ name, mediaIdentity, size = 'mini', className, onClick 
           width={pixelSize}
           height={pixelSize}
           className='pointer-events-none h-full w-full object-cover'
+          style={mediaObjectPositionStyle(mediaIdentity)}
           decoding='async'
         />
       )}

@@ -31,6 +31,8 @@ export {
   convertFromStringToDate,
   mediaIdentityId,
   mediaIdentityVersionStamp,
+  mediaObjectPositionStyle,
+  mediaBackgroundPositionStyle,
   type MediaIdentity,
 } from './utils';
 
