@@ -60,7 +60,12 @@ const Profile = () => {
             </div>
             <div className={tabBarStripContainerClassName('equal')}>
               {Array.from({ length: 5 }).map((_, idx) => (
-                <div key={idx} className='skeleton-bar h-11 min-w-0 flex-1 rounded-none' />
+                <div key={idx} className='relative flex h-11 min-w-0 flex-1 items-center justify-center'>
+                  <div className='skeleton-bar-muted h-3 w-16 rounded' />
+                  {idx === 0 ? (
+                    <div className='bg-brand absolute bottom-0 h-[2px] w-14 rounded-full opacity-70' />
+                  ) : null}
+                </div>
               ))}
             </div>
           </div>
