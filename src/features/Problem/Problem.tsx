@@ -19,7 +19,6 @@ import Media from '../../shared/components/Media/Media';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { LockSymbol } from '../../shared/ui/Indicators';
 import { ConditionLabels } from '../../shared/components/Widgets/ConditionLabels';
-import { Badge } from '../../shared/components/Widgets/ClimbingWidgets';
 import { ExternalLinkLabels } from '../../shared/components/Widgets/ExternalLinkLabels';
 import { NoDogsAllowed } from '../../shared/components/Widgets/NoDogsAllowed';
 import { useMeta } from '../../shared/components/Meta/context';
@@ -37,8 +36,7 @@ import { ProblemComments } from './ProblemComments';
 import { ProblemAscentOverview } from './ProblemAscentOverview';
 import { ProblemNeighboursRow } from './ProblemNeighboursRow';
 import { ProblemBoulderRockOrNeighboursRow } from './ProblemBoulderRockOrNeighboursRow';
-import { DownloadButton } from '../../shared/ui/DownloadButton';
-import { Card, NotFoundCard, PageCardBreadcrumbRow } from '../../shared/ui';
+import { ActionMenuChip, Card, NotFoundCard, PageCardBreadcrumbRow } from '../../shared/ui';
 import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
 import {
   tabBarButtonClassName,
@@ -55,6 +53,7 @@ import {
   Edit,
   Plus,
   Map as MapIcon,
+  Download,
   ChevronRight,
   AlertTriangle,
 } from 'lucide-react';
@@ -314,35 +313,53 @@ function ProblemLoaded({
         sunToHour={data.sectorSunToHour ?? data.areaSunToHour ?? 0}
         pageViews={data.pageViews}
       />
-      <DownloadButton href={`/problem/pdf?id=${data.id}`}>
-        {meta.isBouldering ? 'boulder.pdf' : 'route.pdf'}
-      </DownloadButton>
-      <DownloadButton href={`/sectors/pdf?id=${data.sectorId}`}>sector.pdf</DownloadButton>
-      <DownloadButton href={`/areas/pdf?id=${data.areaId}`}>area.pdf</DownloadButton>
-      {data.sectorParking && (
-        <a
-          href={googleMapsSearchUrl(data.sectorParking.latitude, data.sectorParking.longitude)}
-          target='_blank'
-          rel='noreferrer'
-          title='Parking in Google Maps'
-        >
-          <Badge icon={MapIcon} className={designContract.surfaces.badgeLinkHover}>
-            Parking
-          </Badge>
-        </a>
-      )}
-      {data.coordinates && (
-        <a
-          href={googleMapsSearchUrl(data.coordinates.latitude, data.coordinates.longitude)}
-          target='_blank'
-          rel='noreferrer'
-          title={meta.isBouldering ? 'Boulder in Google Maps' : 'Route in Google Maps'}
-        >
-          <Badge icon={MapIcon} className={designContract.surfaces.badgeLinkHover}>
-            {meta.isBouldering ? 'Boulder' : 'Route'}
-          </Badge>
-        </a>
-      )}
+      <ActionMenuChip
+        label='PDF'
+        icon={Download}
+        title='Download PDF'
+        items={[
+          {
+            id: 'problem-pdf',
+            label: 'Problem',
+            href: `/problem/pdf?id=${data.id}`,
+            kind: 'download',
+          },
+          {
+            id: 'sector-pdf',
+            label: 'Sector',
+            href: `/sectors/pdf?id=${data.sectorId}`,
+            kind: 'download',
+          },
+          { id: 'area-pdf', label: 'Area', href: `/areas/pdf?id=${data.areaId}`, kind: 'download' },
+        ]}
+      />
+      <ActionMenuChip
+        label='Google Maps'
+        icon={MapIcon}
+        title='Open in Google Maps'
+        items={[
+          ...(data.sectorParking
+            ? [
+                {
+                  id: 'maps-parking',
+                  label: 'Parking',
+                  href: googleMapsSearchUrl(data.sectorParking.latitude, data.sectorParking.longitude),
+                  kind: 'link' as const,
+                },
+              ]
+            : []),
+          ...(data.coordinates
+            ? [
+                {
+                  id: 'maps-problem',
+                  label: meta.isBouldering ? 'Boulder' : 'Route',
+                  href: googleMapsSearchUrl(data.coordinates.latitude, data.coordinates.longitude),
+                  kind: 'link' as const,
+                },
+              ]
+            : []),
+        ]}
+      />
       <ExternalLinkLabels externalLinks={data.externalLinks} />
     </div>
   );

@@ -1,6 +1,7 @@
 export * from './Avatar/Avatar';
 export * from './Avatar/avatarFallback';
 export * from './Avatar/AvatarModal';
+export * from './ActionMenuChip';
 export * from './Badge';
 export * from './Card';
 export * from './DownloadButton';

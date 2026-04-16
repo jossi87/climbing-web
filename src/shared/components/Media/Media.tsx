@@ -236,7 +236,7 @@ const Media = ({
         className={cn(
           'group relative w-full min-w-0 cursor-pointer overflow-hidden transition-all duration-300',
           tileCompact ? 'rounded-lg' : 'rounded-xl',
-          'bg-surface-nav hover:shadow-lg',
+          'bg-surface-card hover:shadow-lg',
           hasSvgs
             ? 'border-0'
             : cn('border-surface-border hover:border-brand-border border', x.inherited && 'border-slate-700'),

@@ -12,6 +12,7 @@ import type { components } from '../../../@types/buldreinfo/swagger';
 import { AlertCircle, Check, Camera, Video, Plus, Repeat, X, type LucideIcon } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
+import { twInk } from '../../../design/twInk';
 import { TradGearMarker } from '../../ui/TradGearMarker';
 import {
   climbingRouteUsesPassiveGear,
@@ -263,8 +264,8 @@ const ProfileStatistics = ({ userId, view }: ProfileStatisticsProps) => {
                             : `${s.header}: ${s.count} ascents`
                         }
                       >
-                        <span className='font-semibold text-slate-200'>{s.header}:</span>
-                        <span className='text-slate-300 tabular-nums'>{s.count}</span>
+                        <span className={cn('font-semibold text-slate-200', twInk.lightTextSlate800)}>{s.header}:</span>
+                        <span className={cn('text-slate-300 tabular-nums', twInk.lightTextSlate700)}>{s.count}</span>
                         {s.numFa > 0 ? (
                           <span className={cn('font-normal tabular-nums', designContract.ascentStatus.ticked)}>
                             ({s.numFa} FA)

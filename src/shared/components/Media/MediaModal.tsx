@@ -360,6 +360,26 @@ const MediaModal = ({
     closeSidebarOrModal();
   };
 
+  const embedSrc = useMemo(() => {
+    const raw = m.embedUrl?.trim();
+    if (!raw) return '';
+    try {
+      const url = new URL(raw);
+      const host = url.hostname.toLowerCase();
+      if (host.includes('vimeo.com')) {
+        // Keep Vimeo chrome/background dark regardless of app theme.
+        url.searchParams.set('color', '000000');
+        url.searchParams.set('title', '0');
+        url.searchParams.set('byline', '0');
+        url.searchParams.set('portrait', '0');
+        url.searchParams.set('transparent', '0');
+      }
+      return url.toString();
+    } catch {
+      return raw;
+    }
+  }, [m.embedUrl]);
+
   if (isSaving) {
     return (
       <div className='fixed inset-0 z-250 flex h-[100dvh] min-h-[100dvh] w-full max-w-[100vw] items-center justify-center bg-black/90 backdrop-blur-xl'>
@@ -712,10 +732,10 @@ const MediaModal = ({
                   Vimeo / embed: `h-full w-full` + `aspect-video` on the iframe alone fights flex layout and sits off-center.
                   Use a max-sized 16:9 box, centered, iframe `absolute inset-0` inside (standard responsive embed).
                 */}
-                <div className='relative aspect-video max-h-[min(85dvh,calc(100vw-2rem))] w-full max-w-5xl'>
+                <div className='relative aspect-video max-h-[min(85dvh,calc(100vw-2rem))] w-full max-w-5xl overflow-hidden rounded-2xl bg-black shadow-2xl ring-1 ring-black/70'>
                   <iframe
-                    src={m.embedUrl}
-                    className='absolute inset-0 h-full w-full rounded-2xl shadow-2xl'
+                    src={embedSrc}
+                    className='absolute inset-0 h-full w-full border-0 bg-black'
                     allowFullScreen
                     title='Video Content'
                   />

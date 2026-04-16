@@ -16,15 +16,13 @@ import { googleMapsSearchUrl } from '../../utils/googleMaps';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { Stars, LockSymbol } from '../../shared/ui/Indicators';
 import { ConditionLabels } from '../../shared/components/Widgets/ConditionLabels';
-import { Badge } from '../../shared/components/Widgets/ClimbingWidgets';
 import { ExternalLinkLabels } from '../../shared/components/Widgets/ExternalLinkLabels';
 import { NoDogsAllowed } from '../../shared/components/Widgets/NoDogsAllowed';
 import { useMeta } from '../../shared/components/Meta/context';
 import { useSector } from '../../api';
 import type { Slope } from '../../@types/buldreinfo';
 import type { components } from '../../@types/buldreinfo/swagger';
-import { DownloadButton } from '../../shared/ui/DownloadButton';
-import { Card, NotFoundCard, PageCardBreadcrumbRow } from '../../shared/ui';
+import { ActionMenuChip, Card, NotFoundCard, PageCardBreadcrumbRow } from '../../shared/ui';
 import { TradGearMarker } from '../../shared/ui/TradGearMarker';
 import { climbingRouteUsesPassiveGear, formatRouteTypeLabel } from '../../utils/routeTradGear';
 import {
@@ -45,6 +43,7 @@ import {
   Image as ImageIcon,
   MapPin,
   Spline,
+  Download,
   LayoutDashboard,
   Bookmark,
   Map as MapIcon,
@@ -856,35 +855,50 @@ const Sector = () => {
                         sunToHour={data.sunToHour ?? data.areaSunToHour ?? 0}
                         pageViews={data.pageViews}
                       />
-                      <DownloadButton href={`/sectors/pdf?id=${data.id}`}>sector.pdf</DownloadButton>
-                      <DownloadButton href={`/areas/pdf?id=${data.areaId}`}>area.pdf</DownloadButton>
-                      {data.parking && (
-                        <a
-                          href={googleMapsSearchUrl(data.parking.latitude, data.parking.longitude)}
-                          rel='noreferrer noopener'
-                          target='_blank'
-                          title='Open parking in Google Maps'
-                        >
-                          <Badge icon={MapIcon} className={designContract.surfaces.badgeLinkHover}>
-                            Parking
-                          </Badge>
-                        </a>
-                      )}
-                      {meta.isClimbing && (data.outline ?? []).length > 0 && (
-                        <a
-                          href={googleMapsSearchUrl(
-                            (data.outline ?? [])[0]?.latitude,
-                            (data.outline ?? [])[0]?.longitude,
-                          )}
-                          rel='noreferrer noopener'
-                          target='_blank'
-                          title='Sector location in Google Maps'
-                        >
-                          <Badge icon={MapIcon} className={designContract.surfaces.badgeLinkHover}>
-                            Sector
-                          </Badge>
-                        </a>
-                      )}
+                      <ActionMenuChip
+                        label='PDF'
+                        icon={Download}
+                        title='Download PDF'
+                        items={[
+                          {
+                            id: 'sector-pdf',
+                            label: 'Sector',
+                            href: `/sectors/pdf?id=${data.id}`,
+                            kind: 'download',
+                          },
+                          { id: 'area-pdf', label: 'Area', href: `/areas/pdf?id=${data.areaId}`, kind: 'download' },
+                        ]}
+                      />
+                      <ActionMenuChip
+                        label='Google Maps'
+                        icon={MapIcon}
+                        title='Open in Google Maps'
+                        items={[
+                          ...(data.parking
+                            ? [
+                                {
+                                  id: 'maps-parking',
+                                  label: 'Parking',
+                                  href: googleMapsSearchUrl(data.parking.latitude, data.parking.longitude),
+                                  kind: 'link' as const,
+                                },
+                              ]
+                            : []),
+                          ...(meta.isClimbing && (data.outline ?? []).length > 0
+                            ? [
+                                {
+                                  id: 'maps-sector',
+                                  label: 'Sector',
+                                  href: googleMapsSearchUrl(
+                                    (data.outline ?? [])[0]?.latitude,
+                                    (data.outline ?? [])[0]?.longitude,
+                                  ),
+                                  kind: 'link' as const,
+                                },
+                              ]
+                            : []),
+                        ]}
+                      />
                       <ExternalLinkLabels externalLinks={data.externalLinks} />
                     </div>
 

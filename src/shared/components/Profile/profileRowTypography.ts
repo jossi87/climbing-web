@@ -11,15 +11,17 @@ export const profileRowRootClass = designContract.typography.listBody;
  */
 export const problemListRowRootClass = designContract.typography.listBodyPlain;
 
-export const tickCragLink = 'font-normal text-slate-100 antialiased transition-colors hover:text-brand';
-/** Light: sky ink for area (reads as “where”, distinct from sector green + body black). */
-export const tickCragLinkArea = cn(tickCragLink, 'light:text-[color:var(--color-status-todo)]');
-/** Light: emerald ink for sector — pairs with {@link tickCragLinkArea}. */
-export const tickCragLinkSector = cn(tickCragLink, 'light:text-[color:var(--color-status-ticked)]');
-export const tickCrag = 'font-normal text-slate-100 antialiased';
+export const tickCragLink = cn(
+  'font-normal text-slate-100 antialiased transition-colors hover:text-brand',
+  twInk.lightTextSlate900,
+);
+/** Keep area/sector/problem ink consistent in light mode (match dark-mode hierarchy). */
+export const tickCragLinkArea = tickCragLink;
+export const tickCragLinkSector = tickCragLink;
+export const tickCrag = cn('font-normal text-slate-100 antialiased', twInk.lightTextSlate900);
 /** Default route name — near-white on dark; near-black on light so it stays primary vs meta. */
 export const tickProblemLink = cn(
-  'align-baseline font-normal text-slate-50 antialiased transition-colors hover:text-brand',
+  'align-baseline font-medium text-slate-50 antialiased transition-colors hover:text-brand',
   twInk.lightTextSlate900,
 );
 
@@ -38,7 +40,7 @@ export const tickOwnUserLink =
   'font-medium text-status-ticked antialiased transition-colors hover:text-status-ticked/85';
 /** Grade / inline meta — soft on dark; clearly secondary on light vs {@link tickProblemLink}. */
 export const tickWhenGrade = cn('font-normal text-slate-200 antialiased', twInk.lightTextSlate800);
-export const tickFlags = 'font-normal text-slate-400 antialiased';
+export const tickFlags = cn('font-normal text-slate-400 antialiased', twInk.lightTextSlate700);
 /**
  * Italic tail (comments) — muted on dark; on light, stepped down from {@link tickWhenGrade} so descriptions stay
  * legible on white cards without matching body meta.

@@ -269,9 +269,9 @@ export const designContract = {
       'group relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-none border-b-2 border-transparent px-2 py-3 text-[12px] leading-tight font-medium transition-[color,background-color] sm:flex-row sm:gap-1.5 sm:px-3 sm:py-3.5 sm:text-[13px]',
     /** Full-cell lift + brand bar; hover slightly deepens the same surface (no “floating pill” in the strip). */
     tabBarButtonActive:
-      'bg-surface-raised/50 text-slate-50 after:pointer-events-none after:absolute after:bottom-0 after:left-1/2 after:h-[3px] after:w-[min(5.75rem,calc(100%-0.75rem))] after:max-w-[11rem] after:-translate-x-1/2 after:rounded-full after:bg-brand hover:bg-surface-raised-hover/65 light:bg-slate-200/85 light:text-slate-950 light:hover:bg-slate-300/80',
+      'bg-surface-raised/50 text-slate-50 after:pointer-events-none after:absolute after:bottom-[-1px] after:left-1/2 after:h-[3px] after:w-[min(5.75rem,calc(100%-0.75rem))] after:max-w-[11rem] after:-translate-x-1/2 after:rounded-full after:bg-brand hover:bg-surface-raised-hover/65 light:bg-slate-100 light:text-slate-900 light:hover:bg-slate-200/90',
     tabBarButtonInactive:
-      'text-slate-300 hover:bg-surface-raised-hover/50 hover:text-slate-100 light:text-slate-600 light:hover:bg-slate-200/80 light:hover:text-slate-900',
+      'text-slate-300 hover:bg-surface-raised-hover/50 hover:text-slate-100 light:text-slate-500 light:hover:bg-slate-100 light:hover:text-slate-800',
     /** Tab caption — `text-inherit` so label + icon share {@link tabBarButtonActive} / {@link tabBarButtonInactive} hover ink. */
     tabBarLabel: 'block min-w-0 truncate text-[12px] font-medium leading-tight text-inherit sm:text-[13px]',
     /** Inline-width tab pair (e.g. Sectors | Routes) — semibold; counts keep their own muted classes. */

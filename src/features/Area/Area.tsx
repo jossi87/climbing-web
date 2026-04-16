@@ -18,8 +18,7 @@ import { getMediaFileUrl, useArea } from '../../api';
 import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
 import ProblemList, { useProblemListCompact } from '../../shared/components/ProblemList';
 import type { components } from '../../@types/buldreinfo/swagger';
-import { DownloadButton } from '../../shared/ui/DownloadButton';
-import { Card, NotFoundCard, PageCardBreadcrumbRow } from '../../shared/ui';
+import { ActionMenuChip, Card, NotFoundCard, PageCardBreadcrumbRow } from '../../shared/ui';
 import { TradGearMarker } from '../../shared/ui/TradGearMarker';
 import { climbingRouteUsesPassiveGear, formatRouteTypeLabel } from '../../utils/routeTradGear';
 import { compactFaDisplayLine, normalizeFaPeopleSeparators } from '../../utils/firstAscentDisplay';
@@ -32,6 +31,7 @@ import {
   Image as ImageIcon,
   MapPin,
   Map as MapIcon,
+  Download,
   MapPinned,
   Spline,
   BarChart2,
@@ -760,7 +760,12 @@ const Area = () => {
                           Under development
                         </span>
                       )}
-                      <DownloadButton href={`/areas/pdf?id=${data.id}`}>PDF</DownloadButton>
+                      <ActionMenuChip
+                        label='PDF'
+                        icon={Download}
+                        title='Download PDF'
+                        items={[{ id: 'area-pdf', label: 'Area', href: `/areas/pdf?id=${data.id}`, kind: 'download' }]}
+                      />
                       <ExternalLinkLabels externalLinks={data.externalLinks} />
                     </div>
 

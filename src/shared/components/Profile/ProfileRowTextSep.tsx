@@ -1,7 +1,7 @@
 import { cn } from '../../../lib/utils';
 
-/** Middle dot: dark panels use soft sep; light mode uses solid slate-500 so `·` isn’t washed out (opacity + remap bugs). */
-export const profileRowMiddleDotClass = 'text-slate-300/95 light:text-slate-500';
+/** Middle dot: slightly stronger in light mode to improve scan rhythm in long ascent rows. */
+export const profileRowMiddleDotClass = 'text-slate-300/95 light:text-slate-600';
 
 /**
  * Separates adjacent text in the same profile/activity row (middle dot).
