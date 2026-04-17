@@ -16,7 +16,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { Card } from '../../shared/ui';
 import { useMeta } from '../../shared/components/Meta';
-import type { Success } from '../../@types/buldreinfo';
 import { RotateCcw, Save, X, Spline, Anchor, Triangle, Trash2, Info } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
@@ -41,9 +40,8 @@ const MediaSvgEdit = () => {
   const { mediaId } = useParams();
   const { outerWidth, outerHeight } = window;
   const mediaIdNum = Number(mediaId ?? 0);
-  const { media: data, status, isLoading, save: newSave } = useMediaSvg(mediaIdNum) as ReturnType<typeof useMediaSvg>;
+  const { media: data, isLoading, save: newSave } = useMediaSvg(mediaIdNum) as ReturnType<typeof useMediaSvg>;
 
-  const [modifiedData, setData] = useState<Success<'getMedia'> | undefined | null>(null);
   const [, setForceUpdate] = useState(0);
   const [activeElementIndex, setActiveElementIndex] = useState(-1);
   const shift = useRef<boolean>(false);
@@ -51,19 +49,6 @@ const MediaSvgEdit = () => {
   const [draggedPoint, setDraggedPoint] = useState<boolean>(false);
   const [draggedCubic, setDraggedCubic] = useState<number | false>(false);
   const imageRef = useRef<SVGImageElement | null>(null);
-
-  useEffect(() => {
-    switch (status) {
-      case 'success': {
-        setData(data);
-        break;
-      }
-      case 'pending': {
-        setData(undefined);
-        break;
-      }
-    }
-  }, [data, status]);
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -89,7 +74,7 @@ const MediaSvgEdit = () => {
   const getMediaSvgs = () => (data.mediaSvgs = data.mediaSvgs ?? []) as EditableSvg[];
 
   function handleSave() {
-    void newSave(modifiedData).then(async () => {
+    void newSave(data).then(async () => {
       await invalidateMediaQueries(queryClient, mediaIdNum);
       await invalidateAllProblemQueries(queryClient);
       navigate(-1);
@@ -133,7 +118,6 @@ const MediaSvgEdit = () => {
       const points = cur.points as ParsedEntry[];
       points.push(coords);
       cur.path = generatePath(points);
-      setData(data);
       setActivePoint(points.length - 1);
       setForceUpdate((v) => v + 1);
     } else if (
@@ -145,7 +129,6 @@ const MediaSvgEdit = () => {
       const coords = getMouseCoords(e);
       getMediaSvgs()[activeElementIndex].rappelX = coords.x;
       getMediaSvgs()[activeElementIndex].rappelY = coords.y;
-      setData(data);
       setForceUpdate((v) => v + 1);
     }
   }
@@ -158,7 +141,6 @@ const MediaSvgEdit = () => {
     points[active].x = coords.x;
     points[active].y = coords.y;
     cur.path = generatePath(points);
-    setData(data);
     setForceUpdate((v) => v + 1);
   }
 
@@ -171,7 +153,6 @@ const MediaSvgEdit = () => {
     points[active].c[anchor].x = coords.x;
     points[active].c[anchor].y = coords.y;
     cur.path = generatePath(points);
-    setData(data);
     setForceUpdate((v) => v + 1);
   }
 
@@ -226,7 +207,6 @@ const MediaSvgEdit = () => {
           break;
       }
       cur.path = generatePath(points);
-      setData(data);
       setForceUpdate((v) => v + 1);
     }
   }
@@ -240,7 +220,6 @@ const MediaSvgEdit = () => {
       points.splice(active, 1);
       cur.path = generatePath(points);
       setActivePoint(cur.points!.length - 1);
-      setData(data);
       setForceUpdate((v) => v + 1);
     }
   }
@@ -249,7 +228,6 @@ const MediaSvgEdit = () => {
     if (!data) return;
     const svgs = getMediaSvgs();
     svgs.length = 0;
-    setData(data);
     setActiveElementIndex(-1);
     shift.current = false;
     setActivePoint(0);
@@ -393,7 +371,6 @@ const MediaSvgEdit = () => {
                       points: [],
                     };
                     mediaSvgs.push(element);
-                    setData(data);
                     setActiveElementIndex(mediaSvgs.length - 1);
                     setActivePoint(0);
                     setForceUpdate((v) => v + 1);
@@ -418,7 +395,6 @@ const MediaSvgEdit = () => {
                       rappelY: (data.height ?? 0) / 2,
                     };
                     mediaSvgs.push(element);
-                    setData(data);
                     setActiveElementIndex(mediaSvgs.length - 1);
                     setActivePoint(0);
                     setForceUpdate((v) => v + 1);
@@ -443,7 +419,6 @@ const MediaSvgEdit = () => {
                       rappelY: (data.height ?? 0) / 2,
                     };
                     mediaSvgs.push(element);
-                    setData(data);
                     setActiveElementIndex(mediaSvgs.length - 1);
                     setActivePoint(0);
                     setForceUpdate((v) => v + 1);
@@ -521,7 +496,6 @@ const MediaSvgEdit = () => {
                       aria-label='Remove layer'
                       onClick={() => {
                         mediaSvgs.splice(index, 1);
-                        setData(data);
                         setActiveElementIndex(-1);
                         setForceUpdate((v) => v + 1);
                       }}
