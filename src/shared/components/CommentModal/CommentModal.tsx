@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type MouseEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { invalidateProblemQueries, postComment, useAccessToken } from '../../../api';
@@ -32,6 +32,8 @@ const CommentModal = ({
   const [media, setMedia] = useState<UploadedMedia[]>([]);
   const [saving, setSaving] = useState(false);
 
+  const isEditing = comment != null && comment.id != null && comment.id !== -1;
+
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key !== 'Escape' || saving) return;
@@ -61,6 +63,11 @@ const CommentModal = ({
   const modalBodyClass =
     'min-h-0 space-y-4 overflow-y-auto overscroll-contain px-4 py-3.5 text-left max-sm:flex-1 sm:max-h-[calc(min(94dvh,56rem)-9.5rem)] sm:flex-none sm:space-y-5 sm:px-6 sm:py-4';
 
+  const handleBackdropClick = (e: MouseEvent<HTMLDivElement>) => {
+    if (saving) return;
+    if (e.target === e.currentTarget) onClose();
+  };
+
   /** Portaled to `document.body` — avoids stacking under the sticky header (see `App.tsx` `main` + `Header`). */
   return createPortal(
     <div
@@ -68,12 +75,13 @@ const CommentModal = ({
       role='dialog'
       aria-modal='true'
       aria-labelledby='comment-modal-title'
+      onClick={handleBackdropClick}
     >
-      <div className={modalPanelClass}>
+      <div className={modalPanelClass} onClick={(e) => e.stopPropagation()}>
         <div className='border-surface-border bg-surface-raised flex shrink-0 items-center justify-between border-b px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-6 sm:py-4 sm:pt-4'>
           <h3 id='comment-modal-title' className='type-label flex min-w-0 items-center gap-2 text-slate-200'>
             <MessageSquare size={18} className='shrink-0 text-slate-400' />
-            <span className='truncate'>Add comment</span>
+            <span className='truncate'>{isEditing ? 'Edit comment' : 'Add comment'}</span>
           </h3>
           <button
             type='button'
