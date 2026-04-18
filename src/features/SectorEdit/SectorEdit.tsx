@@ -1,4 +1,5 @@
 import { useState, useCallback, type ComponentProps, type UIEvent, type FormEvent, type ChangeEvent } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import MediaUpload from '../../shared/components/MediaUpload/MediaUpload';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { useMeta } from '../../shared/components/Meta';
@@ -98,6 +99,7 @@ type OnChangeParams = { value: string | number | undefined };
 
 export const SectorEdit = ({ sector, area }: Props) => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const meta = useMeta();
   const accessToken = useAccessToken();
   const { areaId, sectorId } = useIds();
@@ -209,6 +211,19 @@ export const SectorEdit = ({ sector, area }: Props) => {
         data.problemOrder,
       )
         .then(async (res) => {
+          const nextSectorId = res.idSector && res.idSector > 0 ? res.idSector : sectorId;
+          const nextAreaId = res.idArea && res.idArea > 0 ? res.idArea : areaId;
+
+          // Keep area/sector map data fresh when returning from edit.
+          await Promise.all([
+            queryClient.invalidateQueries({
+              queryKey: ['/areas', { id: nextAreaId }],
+            }),
+            queryClient.invalidateQueries({
+              queryKey: ['/sectors', { id: nextSectorId }],
+            }),
+          ]);
+
           const path = spaPathFromRedirectResponse(res);
           if (path === null) return;
           const fallback =
