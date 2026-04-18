@@ -15,7 +15,7 @@ export function VideoProcessingPlaceholder({ compact = false, className }: Props
   return (
     <div
       className={cn(
-        'flex h-full min-h-0 w-full flex-col items-center justify-center bg-gradient-to-b from-slate-800 to-slate-950 text-center',
+        'media-modal-dark-chrome flex h-full min-h-0 w-full flex-col items-center justify-center bg-gradient-to-b from-slate-800 to-slate-950 text-center',
         compact ? 'gap-1 px-1 py-0.5' : 'gap-1.5 px-2 py-1',
         className,
       )}
