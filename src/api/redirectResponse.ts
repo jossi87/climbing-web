@@ -28,3 +28,13 @@ export function spaPathFromRedirectResponse(res: Redirect | undefined | null): s
     return undefined;
   }
 }
+
+/**
+ * GET responses for Area, Sector, and Problem can include `redirectUrl` when the entity is not visible (moved, locked, …).
+ * Full payloads still carry many fields, so {@link useRedirect}'s narrow `Redirect` shape does not apply — navigate here.
+ */
+export function applyEntityRedirectUrl(entity: { redirectUrl?: string } | undefined | null): void {
+  const raw = entity?.redirectUrl?.trim();
+  if (!raw || raw === window.location.href) return;
+  window.location.replace(raw);
+}

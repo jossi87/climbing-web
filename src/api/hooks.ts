@@ -20,6 +20,7 @@ import { postPermissions } from './operations';
 import { captureSentryException } from '../utils/sentry';
 import { type MediaRegion, calculateMediaRegion, isPathVisible, scalePath } from '../utils/svg-scaler';
 import { createHttpErrorFromResponse, isHttpError } from './httpError';
+import { applyEntityRedirectUrl } from './redirectResponse';
 
 function useKey(customKey: readonly unknown[] | undefined, urlSuffix: string): readonly unknown[] {
   const { isAuthenticated } = useAuth0();
@@ -290,10 +291,9 @@ export function useArea(id: number) {
     queryKey: [`/areas`, { id }],
     enabled: id > 0,
     select(response) {
-      if (response?.[0].redirectUrl) {
-        window.location.href = response?.[0].redirectUrl;
-      }
-      return response?.[0];
+      const row = response?.[0];
+      applyEntityRedirectUrl(row);
+      return row;
     },
   });
 }
@@ -313,6 +313,10 @@ export function useProblem(id: number, showHiddenMedia: boolean) {
   const problem = useData<Success<'getProblem'>>(`/problem?id=${id}&showHiddenMedia=${showHiddenMedia}`, {
     enabled: id > 0,
     queryKey: [`/problem`, { id, showHiddenMedia }],
+    select(data) {
+      applyEntityRedirectUrl(data);
+      return data;
+    },
   });
   const { data: profile } = useProfile(-1);
   const toggleTodo = usePostData(`/todo?idProblem=${id}`, {
@@ -492,6 +496,10 @@ export function useSector(id: number | undefined) {
   return useData<Success<'getSectors'> | undefined>(`/sectors?id=${id}`, {
     enabled: !!id && id > 0,
     queryKey: [`/sectors`, { id }],
+    select(data) {
+      applyEntityRedirectUrl(data);
+      return data;
+    },
   });
 }
 
