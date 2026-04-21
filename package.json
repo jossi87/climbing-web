@@ -18,7 +18,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@tailwindcss/vite": "^4.2.2",
+    "@tailwindcss/vite": "^4.2.4",
     "@tanstack/react-query-devtools": "^5.99.2",
     "@types/leaflet": "^1.9.21",
     "@types/node": "^25.6.0",
@@ -45,7 +45,7 @@
     "rollup-plugin-visualizer": "^7.0.1",
     "tailwindcss": "^4.2.2",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.58.2",
+    "typescript-eslint": "^8.59.0",
     "vite": "^8.0.9",
     "vite-tsconfig-paths": "^6.1.1"
   },
@@ -73,7 +73,7 @@
     "react-is": "^19.2.5",
     "react-leaflet": "^5.0.0",
     "react-player": "^3.4.0",
-    "react-router-dom": "^7.14.1",
+    "react-router-dom": "^7.14.2",
     "react-select": "^5.10.2",
     "react-swipeable": "^7.0.2",
     "recharts": "^3.8.1",
