@@ -1,6 +1,18 @@
 import { useEffect, useState, useCallback, useRef, type ComponentProps } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { Upload, Film, X, Hash, MessageSquare, Camera, User as UserIcon, Users, Clock, Loader2 } from 'lucide-react';
+import { useDropzone, ErrorCode, type FileRejection } from 'react-dropzone';
+import {
+  Upload,
+  Film,
+  X,
+  Hash,
+  MessageSquare,
+  Camera,
+  User as UserIcon,
+  Users,
+  Clock,
+  Loader2,
+  AlertCircle,
+} from 'lucide-react';
 import VideoEmbedder from './VideoEmbedder';
 import { UserSelector } from '../../ui/UserSelector';
 import { UsersSelector } from '../../ui/UserSelector';
@@ -9,6 +21,40 @@ import { useMeta } from '../Meta/context';
 import { cn } from '../../../lib/utils';
 import { FormSwitch } from '../../ui';
 import { captureVideoPosterFrame } from '../../../utils/captureVideoPosterFrame';
+
+/**
+ * Cap uploads below the tab memory ceiling. iOS Safari crashes silently around
+ * ~300–400 MB on older devices, so mobile gets a tighter limit; desktop browsers
+ * can comfortably push larger videos through FormData/fetch.
+ *
+ * Detection uses `(pointer: coarse)` — this covers phones and tablets (which share
+ * the same memory constraints) without UA sniffing. Evaluated once at module load;
+ * no need to react to pointer-type changes during a session.
+ */
+const MAX_FILE_SIZE_MB_MOBILE = 300;
+const MAX_FILE_SIZE_MB_DESKTOP = 600;
+
+const isCoarsePointer =
+  typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(pointer: coarse)').matches : false;
+
+const MAX_FILE_SIZE_MB = isCoarsePointer ? MAX_FILE_SIZE_MB_MOBILE : MAX_FILE_SIZE_MB_DESKTOP;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+
+const formatFileSizeMb = (bytes: number) => {
+  const mb = bytes / (1024 * 1024);
+  return mb >= 10 ? `${mb.toFixed(0)} MB` : `${mb.toFixed(1)} MB`;
+};
+
+const describeRejection = (rejection: FileRejection): string => {
+  const tooLarge = rejection.errors.find((e) => e.code === ErrorCode.FileTooLarge);
+  if (tooLarge) {
+    return `Too large (${formatFileSizeMb(rejection.file.size)}, limit ${MAX_FILE_SIZE_MB} MB)`;
+  }
+  if (rejection.errors.some((e) => e.code === ErrorCode.FileInvalidType)) {
+    return 'Unsupported file type';
+  }
+  return rejection.errors[0]?.message ?? 'Rejected';
+};
 
 export type UploadedMedia = {
   file?: File;
@@ -47,6 +93,7 @@ const MediaUpload = ({ onMediaChanged, isMultiPitch, variant = 'default' }: Prop
   const meta = useMeta();
   const [media, setMedia] = useState<UploadedMedia[]>([]);
   const [isConverting, setIsConverting] = useState(false);
+  const [rejections, setRejections] = useState<FileRejection[]>([]);
   const onMediaChangedRef = useRef(onMediaChanged);
   onMediaChangedRef.current = onMediaChanged;
 
@@ -55,7 +102,9 @@ const MediaUpload = ({ onMediaChanged, isMultiPitch, variant = 'default' }: Prop
   }, [media]);
 
   const onDrop = useCallback(
-    async (acceptedFiles: File[]) => {
+    async (acceptedFiles: File[], fileRejections: FileRejection[]) => {
+      setRejections(fileRejections);
+      if (acceptedFiles.length === 0) return;
       setIsConverting(true);
       try {
         const processedFiles = await Promise.all(
@@ -112,6 +161,7 @@ const MediaUpload = ({ onMediaChanged, isMultiPitch, variant = 'default' }: Prop
       'video/webm': [],
       'video/quicktime': [],
     },
+    maxSize: MAX_FILE_SIZE_BYTES,
     noClick: isConverting,
     noKeyboard: isConverting,
   });
@@ -159,11 +209,43 @@ const MediaUpload = ({ onMediaChanged, isMultiPitch, variant = 'default' }: Prop
               <p className='text-[13px] leading-snug font-semibold text-slate-200 sm:text-base sm:leading-relaxed'>
                 {isDragActive ? 'Drop here' : 'Tap or drop to upload'}
               </p>
-              <p className='text-[12px] leading-tight text-slate-500 sm:text-sm'>JPG, PNG, HEIC, MP4…</p>
+              <p className='text-[12px] leading-tight text-slate-500 sm:text-sm'>
+                JPG, PNG, HEIC, MP4… · up to {MAX_FILE_SIZE_MB} MB per file
+              </p>
             </div>
           </>
         )}
       </div>
+
+      {rejections.length > 0 && (
+        <div
+          role='alert'
+          className='bg-surface-raised flex items-start gap-3 rounded-xl border border-red-500/35 p-3 sm:p-4'
+        >
+          <AlertCircle className='mt-0.5 shrink-0 text-red-500' size={18} />
+          <div className='min-w-0 flex-1 space-y-1'>
+            <p className='text-[13px] font-semibold text-red-500 sm:text-sm'>
+              {rejections.length === 1 ? 'File could not be added' : `${rejections.length} files could not be added`}
+            </p>
+            <ul className='space-y-0.5 text-[12px] leading-snug text-slate-300 sm:text-[13px]'>
+              {rejections.map((r) => (
+                <li key={`${r.file.name}-${r.file.size}-${r.file.lastModified}`} className='break-words'>
+                  <span className='font-medium text-slate-200'>{r.file.name}</span>
+                  <span className='text-slate-400'> — {describeRejection(r)}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <button
+            type='button'
+            onClick={() => setRejections([])}
+            className='hover:bg-surface-raised-hover -mr-1 shrink-0 rounded-lg p-1 text-slate-400 transition-colors hover:text-slate-200'
+            aria-label='Dismiss'
+          >
+            <X size={16} />
+          </button>
+        </div>
+      )}
 
       <VideoEmbedder addMedia={addMedia} />
 
