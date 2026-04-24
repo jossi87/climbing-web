@@ -374,7 +374,8 @@ const MediaModal = ({
     try {
       const url = new URL(raw);
       const host = url.hostname.toLowerCase();
-      if (host.includes('vimeo.com')) {
+      const isVimeoHost = host === 'vimeo.com' || host.endsWith('.vimeo.com');
+      if (isVimeoHost) {
         // Keep Vimeo chrome/background dark regardless of app theme.
         url.searchParams.set('color', '000000');
         url.searchParams.set('title', '0');
