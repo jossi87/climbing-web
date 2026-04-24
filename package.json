@@ -64,7 +64,7 @@
     "leaflet.markercluster": "^1.5.3",
     "linkify-react": "^4.3.2",
     "linkifyjs": "^4.3.2",
-    "lucide-react": "^1.9.0",
+    "lucide-react": "^1.11.0",
     "react": "^19.2.5",
     "react-datepicker": "^9.1.0",
     "react-dom": "^19.2.5",
