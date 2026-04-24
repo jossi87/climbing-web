@@ -22,6 +22,17 @@ export default function Polygons({ opacity, outlines, addEventHandlers, showElev
   const polygons = outlines.map((o) => {
     const positions = o.outline.map((c) => [c.latitude ?? 0, c.longitude ?? 0] as [number, number]);
     const key = positions.map((p) => p[0] + ',' + p[1]).join(' -> ');
+    const handleClick = () => {
+      if (addEventHandlers) {
+        if (o.url && o.url.startsWith('https')) {
+          const win = window.open(o.url, '_blank');
+          win?.focus();
+        } else if (o.url) {
+          navigate(o.url);
+        }
+      }
+    };
+    const tooltipInteractive = !!(addEventHandlers && o.url);
     return (
       <Polygon
         key={key}
@@ -29,20 +40,19 @@ export default function Polygons({ opacity, outlines, addEventHandlers, showElev
         color={o.background ? 'red' : '#3388ff'}
         weight={o.background ? 1 : 3}
         eventHandlers={{
-          click: () => {
-            if (addEventHandlers) {
-              if (o.url && o.url.startsWith('https')) {
-                const win = window.open(o.url, '_blank');
-                win?.focus();
-              } else if (o.url) {
-                navigate(o.url);
-              }
-            }
-          },
+          click: handleClick,
         }}
       >
         {o.label && (
-          <Tooltip opacity={opacity} permanent className='buldreinfo-tooltip-compact'>
+          <Tooltip
+            opacity={opacity}
+            permanent
+            interactive={tooltipInteractive}
+            className={`buldreinfo-tooltip-compact${tooltipInteractive ? 'buldreinfo-tooltip-clickable' : ''}`}
+            eventHandlers={{
+              click: handleClick,
+            }}
+          >
             {o.label}
           </Tooltip>
         )}

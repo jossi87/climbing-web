@@ -576,6 +576,18 @@ const Leaflet = ({
           opacity: 0.95 !important;
         }
 
+        .buldreinfo-tooltip-clickable {
+          cursor: pointer !important;
+          padding: 3px 7px !important;
+          font-size: 10px !important;
+          font-weight: 600 !important;
+        }
+        .buldreinfo-tooltip-clickable:hover {
+          opacity: 1 !important;
+          background-color: var(--color-surface-card) !important;
+          border-color: var(--color-brand) !important;
+        }
+
         .marker-cluster-small,
         .marker-cluster-medium,
         .marker-cluster-large {

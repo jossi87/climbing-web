@@ -190,7 +190,17 @@ export default function Markers({ opacity, markers, addEventHandlers, flyToId, s
             markerRefs.current[m.id] = ref;
           }}
         >
-          <Tooltip opacity={opacity} permanent className='buldreinfo-tooltip-compact'>
+          <Tooltip
+            opacity={opacity}
+            permanent
+            interactive
+            className='buldreinfo-tooltip-compact buldreinfo-tooltip-clickable'
+            eventHandlers={{
+              click: () => {
+                markerRefs.current[m.id]?.openPopup();
+              },
+            }}
+          >
             {labelText}
           </Tooltip>
           <Popup closeButton={false} maxWidth={560} minWidth={220}>
@@ -212,7 +222,15 @@ export default function Markers({ opacity, markers, addEventHandlers, flyToId, s
           }}
           draggable={false}
         >
-          <Tooltip opacity={opacity} permanent className='buldreinfo-tooltip-compact'>
+          <Tooltip
+            opacity={opacity}
+            permanent
+            interactive={addEventHandlers}
+            className={`buldreinfo-tooltip-compact${addEventHandlers ? 'buldreinfo-tooltip-clickable' : ''}`}
+            eventHandlers={{
+              click: () => addEventHandlers && navigate(m.url),
+            }}
+          >
             {labelText}
           </Tooltip>
         </Marker>
