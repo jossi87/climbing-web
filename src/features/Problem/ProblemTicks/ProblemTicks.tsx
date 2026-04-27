@@ -6,7 +6,7 @@ import Linkify from 'linkify-react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
-import { X } from 'lucide-react';
+import { NoPersonalGradeBadge } from '../../../shared/ui/NoPersonalGradeBadge';
 import {
   profileRowRootClass,
   tickCommentSmall,
@@ -108,10 +108,7 @@ export const ProblemTicks = ({ ticks }: Props) => {
                   {t.noPersonalGrade ? (
                     <>
                       {' '}
-                      <span className={cn(tickFlags, 'inline-flex items-center gap-1')}>
-                        <X size={10} className='inline shrink-0 opacity-70' strokeWidth={2.5} />
-                        No personal grade
-                      </span>
+                      <NoPersonalGradeBadge />
                     </>
                   ) : (
                     <>

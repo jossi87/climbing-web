@@ -36,7 +36,7 @@ import { ProblemComments } from './ProblemComments';
 import { ProblemAscentOverview } from './ProblemAscentOverview';
 import { ProblemNeighboursRow } from './ProblemNeighboursRow';
 import { ProblemBoulderRockOrNeighboursRow } from './ProblemBoulderRockOrNeighboursRow';
-import { ActionMenuChip, Card, NotFoundCard, PageCardBreadcrumbRow } from '../../shared/ui';
+import { ActionMenuChip, Card, NotFoundCard, NO_PERSONAL_GRADE_LABEL, PageCardBreadcrumbRow } from '../../shared/ui';
 import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
 import {
   tabBarButtonClassName,
@@ -453,7 +453,7 @@ function ProblemLoaded({
           idProblem={data.id!}
           date={userTick?.date}
           comment={userTick?.comment ?? ''}
-          grade={userTick?.noPersonalGrade ? 'No personal grade' : (userTick?.suggestedGrade ?? data.grade ?? '')}
+          grade={userTick?.noPersonalGrade ? NO_PERSONAL_GRADE_LABEL : (userTick?.suggestedGrade ?? data.grade ?? '')}
           gradeFa={data.originalGrade}
           gradeConsensus={data.grade}
           grades={meta.grades}

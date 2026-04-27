@@ -9,7 +9,8 @@ import { Loading } from '../../ui/StatusWidgets';
 import { numberWithCommas, useProfileStatistics } from '../../../api';
 import { useMeta } from '../Meta';
 import type { components } from '../../../@types/buldreinfo/swagger';
-import { AlertCircle, Check, Camera, Video, Plus, Repeat, X, type LucideIcon } from 'lucide-react';
+import { AlertCircle, Check, Camera, Video, Plus, Repeat, type LucideIcon } from 'lucide-react';
+import { NoPersonalGradeBadge } from '../../ui/NoPersonalGradeBadge';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 import { twInk } from '../../../design/twInk';
@@ -104,10 +105,7 @@ const TickListItemInner = ({ tick }: TickListItemProps) => {
       {tick.noPersonalGrade ? (
         <>
           {' '}
-          <span className={cn(tickFlags, 'inline-flex items-center gap-0.5')} title='No personal grade'>
-            <X size={8} strokeWidth={2.5} aria-hidden />
-            no grade
-          </span>
+          <NoPersonalGradeBadge variant='dense' />
         </>
       ) : null}
       {!showPassiveGear && multiPitch ? (

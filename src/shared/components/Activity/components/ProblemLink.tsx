@@ -7,6 +7,7 @@ import { designContract } from '../../../../design/contract';
 import { cn } from '../../../../lib/utils';
 import { TradGearMarker } from '../../../ui/TradGearMarker';
 import { climbingRouteUsesPassiveGear, formatRouteTypeLabel } from '../../../../utils/routeTradGear';
+import { NO_PERSONAL_GRADE_LABEL, NoPersonalGradeBadge } from '../../../ui/NoPersonalGradeBadge';
 
 const feed = designContract.typography.feed;
 
@@ -60,7 +61,9 @@ export const ProblemLink = ({
   const gradeBesideProblem = tone === 'soft' ? softGradeBesideProblem : defaultGradeBesideProblem;
   /** One class stack for label-like spans (optional API type, subtype); avoids mixing with {@link tickFlags} in activity rows. */
   const metaSpanClass = flagsClassName ?? tickFlags;
-  const showGrade = !!(a.grade && a.grade !== '.');
+  const isNoPersonalGrade = a.grade === NO_PERSONAL_GRADE_LABEL;
+  /** Backend echoes `'No personal grade'` in the grade slot for ungraded ticks; render a calmer badge instead of the prominent grade highlight. */
+  const showGrade = !!(a.grade && a.grade !== '.' && !isNoPersonalGrade);
   const showSubtype = !!(a.problemSubtype && a.problemSubtype !== '.');
   const subtypeForLabel = showSubtype ? a.problemSubtype : '';
   const routeTypeLabel = formatRouteTypeLabel(type, subtypeForLabel);
@@ -100,6 +103,7 @@ export const ProblemLink = ({
         {a.problemName?.trim()}
       </Link>
       {showGrade ? <span className={cn(gradeBesideProblem, 'ml-1 whitespace-nowrap')}>{a.grade}</span> : null}
+      {isNoPersonalGrade ? <NoPersonalGradeBadge variant='feed' className='ml-1' /> : null}
       {showPassiveGearIcon ? (
         <TradGearMarker
           line={routeTypeLabel}

@@ -13,6 +13,7 @@ export * from './List';
 export * from './MarkdownFieldLabel';
 export * from './NotFoundCard';
 export * from './NavItem';
+export * from './NoPersonalGradeBadge';
 export * from './PageCardBreadcrumbRow';
 export * from './PageHeader';
 export * from './ResponsiveGrid';

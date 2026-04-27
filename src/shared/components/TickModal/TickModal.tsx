@@ -27,6 +27,7 @@ import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 import { useMeta } from '../Meta/context';
 import { ensureDatePickerStyles } from '../../../utils/ensureDatePickerStyles';
+import { NO_PERSONAL_GRADE_LABEL } from '../../ui/NoPersonalGradeBadge';
 
 type Repeat = { date?: string; comment?: string };
 
@@ -230,7 +231,7 @@ const TickModal = ({
                   onChange={(e) => setGrade(e.target.value)}
                   className='bg-surface-nav border-surface-border type-body w-full cursor-pointer appearance-none rounded-xl border px-3 py-2.5 pr-9 transition-colors focus:border-white/20 focus:outline-none'
                 >
-                  <option value='No personal grade'>I don't want to grade</option>
+                  <option value={NO_PERSONAL_GRADE_LABEL}>I don't want to grade</option>
                   {grades.map((g, i) => (
                     <option key={i} value={g.grade}>
                       {g.grade}
