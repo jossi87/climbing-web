@@ -661,6 +661,22 @@ html[data-theme='light']
     color: rgb(241 245 249) !important;
   }
 
+  /**
+   * Actions popover (`media-modal-actions-menu`) opts out of the dark-chrome neutralizer above:
+   * its container uses theme-aware `bg-surface-card` (white in light mode), so its ink must follow
+   * the global light remap or text reads light-on-white. Same values as the global `:where(...)`
+   * remaps further down — repeated here with `!important` to win against the dark-chrome rules.
+   */
+  html[data-theme='light'] .media-modal-dark-chrome .media-modal-actions-menu .text-slate-200 {
+    color: rgb(30 41 59) !important;
+  }
+  html[data-theme='light'] .media-modal-dark-chrome .media-modal-actions-menu .text-slate-300 {
+    color: rgb(51 65 85) !important;
+  }
+  html[data-theme='light'] .media-modal-dark-chrome .media-modal-actions-menu .type-label {
+    color: rgb(71 85 105) !important;
+  }
+
   html[data-theme='light'] .app-shell-header .header-sign-in-btn {
     background-color: rgba(28, 30, 36, 0.92) !important;
     border-color: color-mix(in srgb, var(--color-brand) 45%, rgba(255, 255, 255, 0.12)) !important;

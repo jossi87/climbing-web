@@ -584,7 +584,13 @@ const MediaModal = ({
                 <MoreVertical size={17} strokeWidth={2} />
               </button>
               {showMenu && (
-                <div className='bg-surface-card border-surface-border animate-in fade-in zoom-in-95 absolute top-full right-0 z-180 mt-2 w-64 rounded-2xl border py-2 shadow-2xl duration-200'>
+                /**
+                 * Marker class `media-modal-actions-menu` opts this panel out of the dark-chrome
+                 * `text-slate-*` neutralizer (see `index.css`). The panel uses theme-aware
+                 * `bg-surface-card`, so its ink must follow the global light remap or it ends up
+                 * light-on-white in light mode.
+                 */
+                <div className='media-modal-actions-menu bg-surface-card border-surface-border animate-in fade-in zoom-in-95 absolute top-full right-0 z-180 mt-2 w-64 rounded-2xl border py-2 shadow-2xl duration-200'>
                   <div className='type-label border-surface-border/50 mb-1 border-b px-4 py-2'>Actions</div>
                   {canDrawTopo && (
                     <button
