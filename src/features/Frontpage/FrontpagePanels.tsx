@@ -59,6 +59,13 @@ type PanelProps = {
   children: ReactNode;
   /** Compact panel padding so 4 panels fit comfortably on a frontpage rail. */
   bodyClassName?: string;
+  /**
+   * Render a skeleton bar in place of the title text. Use when the eventual title depends on data we don't have yet
+   * (the FA panel flips between "Newest Routes" / "Newest Boulders" based on `meta.isBouldering`, so the skeleton would
+   * otherwise render the wrong term and visibly swap once `/meta` resolves). The bar takes the same line-box as the
+   * real `SectionLabel`, so the header height is identical between loading and loaded states.
+   */
+  titleLoading?: boolean;
 };
 
 /**
@@ -94,16 +101,39 @@ const seeAllLinkClass =
 const dividerClass = 'border-surface-border/40 border-t';
 const emptyRowClass = 'px-4 py-6 text-center text-[12px] text-slate-500 sm:px-5 sm:text-[13px]';
 
-const PanelCard = ({ icon, title, seeAllLabel, seeMoreCategory, children, bodyClassName }: PanelProps) => {
+const PanelCard = ({
+  icon,
+  title,
+  seeAllLabel,
+  seeMoreCategory,
+  children,
+  bodyClassName,
+  titleLoading,
+}: PanelProps) => {
   const href = seeMoreCategory ? activityShowHref(seeMoreCategory) : '/activity';
   return (
     <Card flush>
       <div className={sectionHeaderRowClass}>
         <span className={sectionTitleClass}>
           <span className='text-slate-400'>{icon}</span>
-          <SectionLabel className='!text-[12px] !tracking-[0.14em] sm:!text-[13px]'>{title}</SectionLabel>
+          <SectionLabel className='!text-[12px] !tracking-[0.14em] sm:!text-[13px]'>
+            {titleLoading ? (
+              /**
+               * Skeleton bar sized to approximate the longest expected title in this slot ("Newest Boulders" / "Newest
+               * Routes"). `inline-block` + `align-middle` keep it on the same baseline as the icon and the SectionLabel
+               * uppercase letterforms, so the header line-box matches the loaded state to the pixel.
+               */
+              <span className='skeleton-bar inline-block h-2.5 w-28 rounded align-middle sm:h-3' aria-hidden='true' />
+            ) : (
+              title
+            )}
+          </SectionLabel>
         </span>
-        <Link to={href} className={seeAllLinkClass} aria-label={`See all ${title.toLowerCase()}`}>
+        <Link
+          to={href}
+          className={seeAllLinkClass}
+          aria-label={titleLoading ? 'See more' : `See all ${title.toLowerCase()}`}
+        >
           {seeAllLabel ?? 'See all'}
           <ArrowRight size={11} strokeWidth={2.25} />
         </Link>
@@ -339,7 +369,7 @@ function FirstAscentsPanel({ items, isBouldering }: { items: FirstAscent[]; isBo
   return (
     <PanelCard
       icon={<Plus size={13} strokeWidth={2.25} />}
-      title={isBouldering ? 'New Boulders' : 'New Routes'}
+      title={isBouldering ? 'Newest Boulders' : 'Newest Routes'}
       seeAllLabel='See more'
       seeMoreCategory='fa'
     >
@@ -774,10 +804,12 @@ function readBuckets(frontpage: Frontpage | undefined) {
  * are pinned to prevent CLS on settle.
  */
 export const FrontpagePanels = ({ frontpage, isLoading = false }: Props) => {
-  /** FA panel title flips between "New Routes" (default climbing) and "New Boulders" (bouldering site) — terminology
-   *  the climbing community actually uses, more inviting than the literal "First Ascents" jargon. */
+  /** FA panel title flips between "Newest Routes" (default climbing) and "Newest Boulders" (bouldering site) —
+   *  terminology the climbing community actually uses, more inviting than the literal "First Ascents" jargon.
+   *  Only consumed by the **loaded** branch below; the skeleton uses `titleLoading` so it doesn't render the wrong
+   *  term while `/meta` is in flight (without the flag, `MetaProvider`'s DEFAULT_META has `isBouldering: false` and
+   *  the skeleton would briefly show "Newest Routes" before swapping to "Newest Boulders" on a bouldering site). */
   const isBouldering = !!useMeta()?.isBouldering;
-  const faTitle = isBouldering ? 'New Boulders' : 'New Routes';
 
   if (isLoading || !frontpage) {
     /**
@@ -800,7 +832,10 @@ export const FrontpagePanels = ({ frontpage, isLoading = false }: Props) => {
           </PanelCard>
           <PanelCard
             icon={<Plus size={13} strokeWidth={2.25} />}
-            title={faTitle}
+            /** Title text doesn't render while `titleLoading`, but we still pass a non-empty string so the
+             *  `aria-label` fallback in `PanelCard` has something useful for screen readers if the prop is read. */
+            title='Newest'
+            titleLoading
             seeAllLabel='See more'
             seeMoreCategory='fa'
           >
