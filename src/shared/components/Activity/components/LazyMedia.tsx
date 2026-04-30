@@ -25,9 +25,13 @@ function ActivityMediaThumb({ m, problemId }: { m: ActivityMedia; problemId?: nu
   });
 
   return (
+    /**
+     * Named group (`group/thumb`) so the zoom only fires for the hovered thumbnail.
+     * Bare `group-hover:` would also fire on the activity row's outer `group`, zooming every thumb at once.
+     */
     <Link
       to={`/problem/${problemId ?? 0}/${mediaIdentityId(m.identity)}`}
-      className='sm:h-thumbnail-h sm:w-thumbnail-w group border-surface-border bg-surface-card relative block aspect-square min-w-0 shrink-0 overflow-hidden rounded-md border transition-all active:scale-95 sm:rounded-lg'
+      className='sm:h-thumbnail-h sm:w-thumbnail-w group/thumb border-surface-border bg-surface-card relative block aspect-square min-w-0 shrink-0 overflow-hidden rounded-md border transition-all active:scale-95 sm:rounded-lg'
       aria-label={`View activity photo, open problem ${problemId ?? 0}`}
     >
       {isMovie ? (
@@ -38,7 +42,7 @@ function ActivityMediaThumb({ m, problemId }: { m: ActivityMedia; problemId?: nu
             <img
               src={thumbUrl}
               alt=''
-              className='absolute inset-0 h-full w-full object-cover transition-all duration-500 ease-out group-hover:scale-110'
+              className='absolute inset-0 h-full w-full object-cover transition-all duration-500 ease-out group-hover/thumb:scale-110'
               style={mediaObjectPositionStyle(m.identity)}
               onError={() => setImgError(true)}
             />
@@ -49,7 +53,7 @@ function ActivityMediaThumb({ m, problemId }: { m: ActivityMedia; problemId?: nu
         <div
           role='img'
           aria-label='Activity media'
-          className='animate-in fade-in fill-mode-both absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-500 ease-out group-hover:scale-110'
+          className='animate-in fade-in fill-mode-both absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-500 ease-out group-hover/thumb:scale-110'
           style={{
             backgroundImage: `url(${JSON.stringify(thumbUrl)})`,
             ...mediaBackgroundPositionStyle(m.identity),

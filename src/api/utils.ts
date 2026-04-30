@@ -16,31 +16,36 @@ export function mediaIdentityVersionStamp(identity?: MediaIdentity | null): numb
   return Number(identity?.versionStamp ?? 0);
 }
 
-function mediaFocusPercentPair(identity?: MediaIdentity | null): string | undefined {
-  if (!identity) return undefined;
-  const x = identity.focusX;
-  const y = identity.focusY;
-  if (x == null && y == null) return undefined;
-  /** API uses `0,0` as "no focus" — same as omitting; real top-left would be e.g. `0` with a non-zero other axis. */
-  if (x === 0 && y === 0) return undefined;
+/**
+ * Build the `X% Y%` percent pair from API focus, falling back to centered (`50% 50%`) when no usable focus is set.
+ *
+ * Why always return a string (instead of `undefined`):
+ * - `object-position` defaults to `50% 50%` in CSS, so omitting the style was visually equivalent to centering.
+ * - `background-position` defaults to **`0% 0%` (top-left)** — omitting the style anchored cropped tiles at top-left,
+ *   not center. Always emitting an explicit pair keeps both helpers visually consistent.
+ *
+ * API conventions:
+ * - `0,0` is the sentinel for "no focus" — same as omitting both axes. Real top-left would have one axis non-zero.
+ * - When only one axis is provided, the other axis falls back to `50%` (center on the missing dimension).
+ */
+function mediaFocusPercentPair(identity?: MediaIdentity | null): string {
+  const x = identity?.focusX;
+  const y = identity?.focusY;
+  if ((x == null && y == null) || (x === 0 && y === 0)) return '50% 50%';
   return `${x ?? 50}% ${y ?? 50}%`;
 }
 
 /**
- * CSS `object-position` from API focus (percent 0–100). Omitted when neither axis is set (browser default center).
+ * CSS `object-position` from API focus (percent 0–100), defaulting to `50% 50%` when no focus is set.
  * Use only where the image is **cropped** (`object-fit: cover`); not for letterboxed `object-contain` viewers (e.g. media modal).
  */
-export function mediaObjectPositionStyle(identity?: MediaIdentity | null): { objectPosition: string } | undefined {
-  const pair = mediaFocusPercentPair(identity);
-  return pair ? { objectPosition: pair } : undefined;
+export function mediaObjectPositionStyle(identity?: MediaIdentity | null): { objectPosition: string } {
+  return { objectPosition: mediaFocusPercentPair(identity) };
 }
 
 /** Same percentages as {@link mediaObjectPositionStyle} for `background-size: cover` tiles using `background-image`. */
-export function mediaBackgroundPositionStyle(
-  identity?: MediaIdentity | null,
-): { backgroundPosition: string } | undefined {
-  const pair = mediaFocusPercentPair(identity);
-  return pair ? { backgroundPosition: pair } : undefined;
+export function mediaBackgroundPositionStyle(identity?: MediaIdentity | null): { backgroundPosition: string } {
+  return { backgroundPosition: mediaFocusPercentPair(identity) };
 }
 
 export function getLocales() {
