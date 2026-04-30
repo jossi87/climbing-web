@@ -121,21 +121,31 @@ const ActivityPanel = ({ icon, title, seeAllLabel, seeMoreCategory, children, bo
 const rowClass = 'group/row flex items-start gap-3 px-4 py-2 sm:px-5 sm:py-2.5';
 const rowGridClass = 'min-w-0 flex-1';
 const rowLineClass = 'flex items-baseline justify-between gap-3';
+/**
+ * **Trailing meta line-height = `leading-tight` (1.25)** — without this, the bare `<span>` inherits the body's
+ * `leading-relaxed` (1.625), so on 12px text the line box is ~19.5px **regardless of whether the row has a byline**.
+ * That left a phantom 4–5px under each row vs. the location `<p>` (which is 12px × 1.25 = 15px), and made it
+ * impossible to size the skeleton to match the real row exactly (skeleton looked taller than data on settle).
+ *
+ * With `leading-tight` here AND on `bylineRightClass`, line 2 = `max(15px, 15px) = 15px`, identical for rows
+ * with-or-without a byline. Skeleton can floor at `min-h-[15px]` and the panel doesn't shift on data load.
+ */
 const timeAgoClass =
-  'shrink-0 whitespace-nowrap text-[11px] font-normal tabular-nums tracking-tight text-slate-500 sm:text-[12px]';
+  'shrink-0 whitespace-nowrap text-[11px] font-normal leading-tight tabular-nums tracking-tight text-slate-500 sm:text-[12px]';
 /**
  * Right-aligned climber byline on line 2 — **same tone + size as `timeAgoClass`** (`slate-500`, `text-[11px]
- * sm:text-[12px]`, `tracking-tight`). The "who" is no more important than the "when" — both are trailing metadata
- * pinned to the right column, so they share dimness. Hierarchy now reads as:
+ * sm:text-[12px]`, `tracking-tight`, `leading-tight`). The "who" is no more important than the "when" — both are
+ * trailing metadata pinned to the right column, so they share dimness. Hierarchy now reads as:
  *
  *   slate-50  → route headline (the news)
  *   slate-400 → location (left subline; the "where")
  *   slate-500 → climber + timestamp (right column; quieter context)
  *
- * `max-w-[55%]` caps how much the name can steal from the location on narrow panels.
+ * `max-w-[55%]` caps how much the name can steal from the location on narrow panels. `leading-tight` keeps the
+ * line box at 15px so it doesn't out-grow the location `<p>` (see {@link timeAgoClass}).
  */
 const bylineRightClass =
-  'shrink-0 max-w-[55%] truncate whitespace-nowrap text-right text-[11px] font-normal tracking-tight text-slate-500 sm:text-[12px]';
+  'shrink-0 max-w-[55%] truncate whitespace-nowrap text-right text-[11px] font-normal leading-tight tracking-tight text-slate-500 sm:text-[12px]';
 const problemLinkClass = designContract.typography.feed.routeTitle;
 
 /**
@@ -224,8 +234,15 @@ function ProblemTitleInline({
 
 /**
  * **Area-only** location link. Sector was removed from frontpage activity payloads (the panels are too compact to
- * read "Area · Sector" comfortably and the user can drill in for sector via the route page). `tone='muted'` flips to
- * {@link mutedLocationLinkClass} (slate-400) for the panel rows where the location sits below the headline.
+ * read "Area · Sector" comfortably and the user can drill in for sector via the route page).
+ *
+ * `tone` picks the ink tier:
+ *   - `default` (slate-300) — used as the **left subline** when the location is the row's main secondary fact.
+ *   - `muted` (slate-400) — used in FA / Recent rows where the location is one of *two* sublines (location +
+ *     climber name) and we want the location to read as ambient context.
+ *   - `trailing` (slate-500, matches {@link nameLinkClass} / {@link timeAgoClass}) — used in Comments where the area
+ *     sits in the **right column** as quiet trailing meta alongside `timeAgo`. Same ink tier as time keeps the
+ *     "trailing right column" visually unified across all four panels (FA / Recent / Comments / …).
  */
 function LocationInline({
   areaId,
@@ -234,10 +251,15 @@ function LocationInline({
 }: {
   areaId?: number;
   areaName?: string;
-  tone?: 'default' | 'muted';
+  tone?: 'default' | 'muted' | 'trailing';
 }) {
   if (!areaName) return null;
-  const linkClass = tone === 'muted' ? mutedLocationLinkClass : designContract.typography.feed.locationLink;
+  const linkClass =
+    tone === 'trailing'
+      ? nameLinkClass
+      : tone === 'muted'
+        ? mutedLocationLinkClass
+        : designContract.typography.feed.locationLink;
   return (
     <Link to={`/area/${areaId ?? 0}`} className={linkClass}>
       {areaName.trim()}
@@ -247,7 +269,17 @@ function LocationInline({
 
 /* ──────────────────────────── Panels ──────────────────────────── */
 
-/** Mobile-only cap on Newest Media so the section stays at two rows on phones (3 cols × 2). All other panels show whatever the WS returns. */
+/**
+ * Mobile-only caps so phones don't have to scroll past the entire frontpage to reach the next panel:
+ *   - {@link FEED_MOBILE_CAP}: 5 rows in Recent / FA panels — short enough that the next panel is always in
+ *     thumb-reach without feeling sparse; full 8 from the WS still renders on `sm+`.
+ *   - {@link MEDIA_MOBILE_CAP}: 6 tiles in Newest Media (3 cols × 2 rows).
+ *   - Comments stay uncapped (only 4 max from the WS to begin with).
+ *
+ * Past the cap the rows / tiles use `max-sm:hidden` so they collapse out of layout entirely on `< sm`. The full set
+ * is always available via the panel's "See more" → `/activity?show=…` link, so nothing is lost — just relocated.
+ */
+const FEED_MOBILE_CAP = 5;
 const MEDIA_MOBILE_CAP = 6;
 
 /**
@@ -304,7 +336,7 @@ function FirstAscentsPanel({ items, isBouldering }: { items: FirstAscent[]; isBo
           {items.map((a, i) => {
             const users = Array.isArray(a.users) ? a.users : [];
             return (
-              <li key={`fa-${a.problemId ?? i}-${i}`} className={rowClass}>
+              <li key={`fa-${a.problemId ?? i}-${i}`} className={cn(rowClass, i >= FEED_MOBILE_CAP && 'max-sm:hidden')}>
                 <div className='shrink-0 pt-0.5'>
                   <AvatarGroup
                     items={users.map((u) => ({
@@ -365,7 +397,10 @@ function RecentAscentsPanel({ items }: { items: Ascent[] }) {
           {items.map((a, i) => {
             const u = a.u;
             return (
-              <li key={`tick-${a.problemId ?? i}-${u?.id ?? i}-${i}`} className={rowClass}>
+              <li
+                key={`tick-${a.problemId ?? i}-${u?.id ?? i}-${i}`}
+                className={cn(rowClass, i >= FEED_MOBILE_CAP && 'max-sm:hidden')}
+              >
                 <div className='shrink-0 pt-0.5'>
                   <ClickableAvatar
                     name={u?.name}
@@ -565,32 +600,42 @@ function CommentsPanel({ items }: { items: LastComment[] }) {
                     className={singleAvatarRingClass}
                   />
                 </div>
-                <div className='min-w-0 flex-1'>
-                  {/*
-                    Three-line shape: headline (one line, truncated; lock symbol if protected) → comment body (up to
-                    two wrapped lines via `line-clamp-2`) → location (one line, area only). The comment uses
-                    {@link commentBodyClass} — matched metrics with the subline but **without** `white-space: nowrap`,
-                    so `line-clamp-2` actually wraps. `slate-300` keeps the body slightly brighter than the
-                    surrounding slate-400 metadata. Comments don't carry `problemSubtype`, so no trad icon here.
-                  */}
-                  <p className='m-0 leading-tight [overflow-wrap:anywhere]'>
-                    <ProblemTitleInline
-                      problemId={a.problemId}
-                      problemName={a.problemName}
-                      problemLockedAdmin={a.problemLockedAdmin}
-                      problemLockedSuperadmin={a.problemLockedSuperadmin}
-                    />
-                  </p>
-                  {a.comment ? (
-                    <p className={commentBodyClass}>
-                      <Linkify>{a.comment}</Linkify>
+                {/*
+                  Two-line shape mirroring FA / Recent rows so the four panels share one rhythm:
+                    line 1 → headline (left) + timeAgo (right)
+                    line 2 → comment body (up to 2 lines, left) + area (right)
+                  The old layout left the area dangling on a third line by itself, which read as awkward
+                  trailing metadata. Pairing area with the comment makes the right column a consistent
+                  "trailing meta" channel (timeAgo above, area below) and shaves ~15px off each row.
+                  `items-baseline` aligns the area to the **first baseline** of the comment, so for 2-line
+                  comments the area sits next to line 1 with line 2 wrapping under it.
+                */}
+                <div className={rowGridClass}>
+                  <div className={rowLineClass}>
+                    <p className='m-0 min-w-0 truncate leading-tight [overflow-wrap:anywhere]'>
+                      <ProblemTitleInline
+                        problemId={a.problemId}
+                        problemName={a.problemName}
+                        problemLockedAdmin={a.problemLockedAdmin}
+                        problemLockedSuperadmin={a.problemLockedSuperadmin}
+                      />
                     </p>
-                  ) : null}
-                  <p className={sublineClass}>
-                    <LocationInline areaId={a.areaId} areaName={a.areaName} tone='muted' />
-                  </p>
+                    <span className={timeAgoClass}>{a.timeAgo}</span>
+                  </div>
+                  {(a.comment || a.areaName) && (
+                    <div className={rowLineClass}>
+                      <p className={commentBodyClass}>{a.comment ? <Linkify>{a.comment}</Linkify> : null}</p>
+                      {a.areaName ? (
+                        <span className={bylineRightClass}>
+                          {/* `trailing` tone → `nameLinkClass` (slate-500) so the area matches the sibling
+                              `timeAgo` ink and the "trailing right column" reads as one unified channel
+                              (timeAgo + area), same design language as FA / Recent. */}
+                          <LocationInline areaId={a.areaId} areaName={a.areaName} tone='trailing' />
+                        </span>
+                      ) : null}
+                    </div>
+                  )}
                 </div>
-                <span className={timeAgoClass}>{a.timeAgo}</span>
               </li>
             );
           })}
@@ -608,16 +653,33 @@ function CommentsPanel({ items }: { items: LastComment[] }) {
  * that animates in is the body content, which avoids any frame jitter when data resolves.
  */
 
-/** FA / Recent — 2-line row mirroring `<SkeletonFeedRow>` ↔ live row (headline + timeAgo, location + name). */
-const SkeletonFeedRow = () => (
-  <div className={cn(rowClass, 'animate-pulse')}>
+/**
+ * **FA / Recent skeleton row — sized to match the real row's line boxes** so swapping skeleton → data doesn't shift
+ * the page layout.
+ *
+ * **Final cascaded sizes** (after pinning trailing-meta spans to `leading-tight`):
+ *   - Line 1: headline `<p>` inherits `font-size: 100%` from `html` (= **16px**) × `leading-tight` (1.25) =
+ *     **20px line box**. The right-side `timeAgo` span is 12px × `leading-tight` = 15px — the `<p>` dominates,
+ *     so the flex line is **20px**.
+ *   - Line 2: location `<p>` (`sublineClass`, 12px × 1.25 = 15px) and byline `<span>` (`bylineRightClass`, 12px ×
+ *     **`leading-tight`** = 15px). With both pinned to `leading-tight`, the flex line is **15px regardless of
+ *     whether the row has a byline**. Without `leading-tight` on the span, it inherited body's `leading-relaxed`
+ *     (1.625) = ~19.5px, making the skeleton look ~5px tall per row vs. the eventual data — that's the "skeleton
+ *     bigger than data → panel shrinks on load" jump the user reported.
+ *
+ * Skeleton therefore floors at `min-h-[20px]` / `min-h-[15px]` (= **35px content** per row) which matches the real
+ * row down to the pixel. Bars use `h-3.5` (line 1, 14px) and `h-2.5` (line 2, 10px) so they visually approximate
+ * the cap-height of the real text rather than reading as thin lines or overflowing the line box.
+ */
+const SkeletonFeedRow = ({ hideOnMobile = false }: { hideOnMobile?: boolean }) => (
+  <div className={cn(rowClass, 'animate-pulse', hideOnMobile && 'max-sm:hidden')}>
     <div className='skeleton-bar h-8 w-8 shrink-0 rounded-full' />
-    <div className={cn(rowGridClass, 'space-y-1.5')}>
-      <div className={rowLineClass}>
-        <div className='skeleton-bar h-3 w-[55%] min-w-0 rounded' />
-        <div className='skeleton-bar-muted h-2.5 w-10 shrink-0 rounded' />
+    <div className={rowGridClass}>
+      <div className={cn(rowLineClass, 'min-h-[20px]')}>
+        <div className='skeleton-bar h-3.5 w-[55%] min-w-0 rounded' />
+        <div className='skeleton-bar-muted h-3 w-10 shrink-0 rounded' />
       </div>
-      <div className={rowLineClass}>
+      <div className={cn(rowLineClass, 'min-h-[15px]')}>
         <div className='skeleton-bar-muted h-2.5 w-[42%] min-w-0 rounded' />
         <div className='skeleton-bar-muted h-2.5 w-[28%] shrink-0 rounded' />
       </div>
@@ -638,16 +700,32 @@ const SkeletonMediaTile = ({ hideOnMobile }: { hideOnMobile: boolean }) => (
   </div>
 );
 
-/** Comments — 3 stacked bars + right-aligned timeAgo bar; `index` toggles the alt-row left border on `sm+`. */
+/**
+ * Comments skeleton row — mirrors the **2-line** layout. Sized to the SHORTER (1-line comment) end of the
+ * spectrum since comment length is unknown until the data lands:
+ *
+ *   - Line 1: headline `<p>` (16px × `leading-tight` = 20px) + `timeAgo` span (15px) → flex line = **20px**.
+ *   - Line 2: comment body (`commentBodyClass`, 12px × `leading-tight` = **15px** for a 1-line comment, up to 30px
+ *     when `line-clamp-2` wraps) + area span (15px) → flex line = **15px**.
+ *
+ * Total content = **35px** (matches FA / Recent rows). 1-line comments load with **no shift**; longer comments
+ * grow the row by ~15px on settle. We deliberately under-reserve here rather than over-reserve — Comments is the
+ * **last** panel on the page (followed only by the footer), so panel growth pushes the footer down rather than
+ * shoving frontpage content; that's the least-disruptive direction for any residual CLS we can't pre-measure.
+ */
 const SkeletonCommentRow = ({ index }: { index: number }) => (
   <div className={cn(rowClass, 'animate-pulse sm:px-3', index % 2 === 1 && 'border-surface-border/30 sm:border-l')}>
     <div className='skeleton-bar h-8 w-8 shrink-0 rounded-full' />
-    <div className='min-w-0 flex-1 space-y-1.5'>
-      <div className='skeleton-bar h-3 w-[55%] rounded' />
-      <div className='skeleton-bar-muted h-2.5 w-[92%] rounded' />
-      <div className='skeleton-bar-muted h-2.5 w-[40%] rounded' />
+    <div className={rowGridClass}>
+      <div className={cn(rowLineClass, 'min-h-[20px]')}>
+        <div className='skeleton-bar h-3.5 w-[55%] min-w-0 rounded' />
+        <div className='skeleton-bar-muted h-3 w-12 shrink-0 rounded' />
+      </div>
+      <div className={cn(rowLineClass, 'min-h-[15px]')}>
+        <div className='skeleton-bar-muted h-2.5 w-[78%] min-w-0 rounded' />
+        <div className='skeleton-bar-muted h-2.5 w-[40%] shrink-0 rounded' />
+      </div>
     </div>
-    <div className='skeleton-bar-muted h-2.5 w-12 shrink-0 rounded' />
   </div>
 );
 
@@ -691,7 +769,7 @@ export const FrontpageActivityPanels = ({ frontpage, isLoading = false }: Props)
             seeMoreCategory='ticks'
           >
             {[...Array(8)].map((_, i) => (
-              <SkeletonFeedRow key={i} />
+              <SkeletonFeedRow key={i} hideOnMobile={i >= FEED_MOBILE_CAP} />
             ))}
           </ActivityPanel>
           <ActivityPanel
@@ -701,7 +779,7 @@ export const FrontpageActivityPanels = ({ frontpage, isLoading = false }: Props)
             seeMoreCategory='fa'
           >
             {[...Array(8)].map((_, i) => (
-              <SkeletonFeedRow key={i} />
+              <SkeletonFeedRow key={i} hideOnMobile={i >= FEED_MOBILE_CAP} />
             ))}
           </ActivityPanel>
         </div>

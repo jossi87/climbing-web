@@ -160,46 +160,6 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/v2/frontpage/random_media": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get frontpage (random media)
-         * @deprecated
-         */
-        get: operations["getFrontpageRandomMedia"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/frontpage/stats": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get frontpage stats
-         * @deprecated
-         */
-        get: operations["getFrontpageStats"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v2/grade/distribution": {
         parameters: {
             query?: never;
@@ -1265,9 +1225,6 @@ export type components = {
         FrontpageNewestMedia: {
             identity?: components["schemas"]["MediaIdentity"];
             isMovie?: boolean;
-            /** Format: int32 */
-            areaId?: number;
-            areaName?: string;
             /** Format: int32 */
             problemId?: number;
             problemLockedAdmin?: boolean;
@@ -2510,65 +2467,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Frontpage"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getFrontpageRandomMedia: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FrontpageRandomMedia"][];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getFrontpageStats: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FrontpageStats"];
                 };
             };
             /** @description Invalid request parameters. */
