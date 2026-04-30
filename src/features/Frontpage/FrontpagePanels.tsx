@@ -166,6 +166,17 @@ const rowClass = 'group/row flex items-start gap-3 px-4 py-2 sm:px-5 sm:py-2.5';
 const rowGridClass = 'min-w-0 flex-1';
 const rowLineClass = 'flex items-baseline justify-between gap-3';
 /**
+ * **Headline `<p>` size — locked to Activity feed (`listBody`)**: `13px` mobile, `14px` from `sm+`. Without this
+ * explicit cap, the `<p>` inherits the browser default (`font-size: 100%` → 16px on mobile from `html` in
+ * `index.css`), which made the route name dominate every row and read as outsized vs. the surrounding `11–12px`
+ * sublines. The compact frontpage panels need to match the global feed rhythm, not the page-default body size.
+ *
+ * Cascaded line box: `13px × leading-tight (1.25) = 16.25px` on mobile, `14px × 1.25 = 17.5px` on `sm+`. The right
+ * column `timeAgoClass` is `11–12px × 1.25 = 13.75–15px` so the headline still dictates line-1 height — skeleton
+ * mirrors this with `min-h-[17px] sm:min-h-[18px]` (see {@link SkeletonFeedRow}).
+ */
+const headlineLineClass = 'm-0 min-w-0 truncate text-[13px] leading-tight sm:text-[14px]';
+/**
  * **Trailing meta line-height = `leading-tight` (1.25)** — without this, the bare `<span>` inherits the body's
  * `leading-relaxed` (1.625), so on 12px text the line box is ~19.5px **regardless of whether the row has a byline**.
  * That left a phantom 4–5px under each row vs. the location `<p>` (which is 12px × 1.25 = 15px), and made it
@@ -394,7 +405,7 @@ function FirstAscentsPanel({ items, isBouldering }: { items: FirstAscent[]; isBo
                 </div>
                 <div className={rowGridClass}>
                   <div className={rowLineClass}>
-                    <p className='m-0 min-w-0 truncate leading-tight'>
+                    <p className={headlineLineClass}>
                       <ProblemTitleInline
                         problemId={a.problemId}
                         problemName={a.problemName}
@@ -456,7 +467,7 @@ function RecentAscentsPanel({ items }: { items: Ascent[] }) {
                 </div>
                 <div className={rowGridClass}>
                   <div className={rowLineClass}>
-                    <p className='m-0 min-w-0 truncate leading-tight'>
+                    <p className={headlineLineClass}>
                       <ProblemTitleInline
                         problemId={a.problemId}
                         problemName={a.problemName}
@@ -656,7 +667,7 @@ function CommentsPanel({ items }: { items: LastComment[] }) {
                 */}
                 <div className={rowGridClass}>
                   <div className={rowLineClass}>
-                    <p className='m-0 min-w-0 truncate leading-tight [overflow-wrap:anywhere]'>
+                    <p className={cn(headlineLineClass, '[overflow-wrap:anywhere]')}>
                       <ProblemTitleInline
                         problemId={a.problemId}
                         problemName={a.problemName}
@@ -701,26 +712,27 @@ function CommentsPanel({ items }: { items: LastComment[] }) {
  * **FA / Recent skeleton row — sized to match the real row's line boxes** so swapping skeleton → data doesn't shift
  * the page layout.
  *
- * **Final cascaded sizes** (after pinning trailing-meta spans to `leading-tight`):
- *   - Line 1: headline `<p>` inherits `font-size: 100%` from `html` (= **16px**) × `leading-tight` (1.25) =
- *     **20px line box**. The right-side `timeAgo` span is 12px × `leading-tight` = 15px — the `<p>` dominates,
- *     so the flex line is **20px**.
+ * **Final cascaded sizes** (after capping the headline `<p>` to `headlineLineClass` = `text-[13px] sm:text-[14px]`,
+ * matching Activity feed `listBody`):
+ *   - Line 1: headline `<p>` is `13px × leading-tight (1.25) = 16.25px` mobile, `14px × 1.25 = 17.5px` on `sm+`. The
+ *     right-side `timeAgo` span is `11–12px × leading-tight = 13.75–15px` — the `<p>` dominates, so the flex line is
+ *     **~17px mobile / ~18px sm+**. Skeleton floors at `min-h-[17px] sm:min-h-[18px]`.
  *   - Line 2: location `<p>` (`sublineClass`, 12px × 1.25 = 15px) and byline `<span>` (`bylineRightClass`, 12px ×
  *     **`leading-tight`** = 15px). With both pinned to `leading-tight`, the flex line is **15px regardless of
  *     whether the row has a byline**. Without `leading-tight` on the span, it inherited body's `leading-relaxed`
  *     (1.625) = ~19.5px, making the skeleton look ~5px tall per row vs. the eventual data — that's the "skeleton
  *     bigger than data → panel shrinks on load" jump the user reported.
  *
- * Skeleton therefore floors at `min-h-[20px]` / `min-h-[15px]` (= **35px content** per row) which matches the real
- * row down to the pixel. Bars use `h-3.5` (line 1, 14px) and `h-2.5` (line 2, 10px) so they visually approximate
- * the cap-height of the real text rather than reading as thin lines or overflowing the line box.
+ * Bars: `h-3 sm:h-3.5` on line 1 (12 / 14px) approximates cap height of `13 / 14px` text; `h-2.5` on line 2 (10px)
+ * matches the smaller subline / byline. Total content = ~32px mobile / ~33px sm+, matching the real row to the px
+ * (was 35px before the headline was pinned to feed sizing).
  */
 const SkeletonFeedRow = ({ hideOnMobile = false }: { hideOnMobile?: boolean }) => (
   <div className={cn(rowClass, 'animate-pulse', hideOnMobile && 'max-sm:hidden')}>
     <div className='skeleton-bar h-8 w-8 shrink-0 rounded-full' />
     <div className={rowGridClass}>
-      <div className={cn(rowLineClass, 'min-h-[20px]')}>
-        <div className='skeleton-bar h-3.5 w-[55%] min-w-0 rounded' />
+      <div className={cn(rowLineClass, 'min-h-[17px] sm:min-h-[18px]')}>
+        <div className='skeleton-bar h-3 w-[55%] min-w-0 rounded sm:h-3.5' />
         <div className='skeleton-bar-muted h-3 w-10 shrink-0 rounded' />
       </div>
       <div className={cn(rowLineClass, 'min-h-[15px]')}>
@@ -748,21 +760,23 @@ const SkeletonMediaTile = ({ hideOnMobile }: { hideOnMobile: boolean }) => (
  * Comments skeleton row — mirrors the **2-line** layout. Sized to the SHORTER (1-line comment) end of the
  * spectrum since comment length is unknown until the data lands:
  *
- *   - Line 1: headline `<p>` (16px × `leading-tight` = 20px) + `timeAgo` span (15px) → flex line = **20px**.
+ *   - Line 1: headline `<p>` (`headlineLineClass`, 13px × `leading-tight` = 16.25px mobile, 14px × 1.25 = 17.5px
+ *     on `sm+`) + `timeAgo` span (~15px) → flex line = **~17px mobile / ~18px sm+**.
  *   - Line 2: comment body (`commentBodyClass`, 12px × `leading-tight` = **15px** for a 1-line comment, up to 30px
  *     when `line-clamp-2` wraps) + area span (15px) → flex line = **15px**.
  *
- * Total content = **35px** (matches FA / Recent rows). 1-line comments load with **no shift**; longer comments
- * grow the row by ~15px on settle. We deliberately under-reserve here rather than over-reserve — Comments is the
- * **last** panel on the page (followed only by the footer), so panel growth pushes the footer down rather than
- * shoving frontpage content; that's the least-disruptive direction for any residual CLS we can't pre-measure.
+ * Total content = ~32px mobile / ~33px sm+ (matches FA / Recent rows). 1-line comments load with **no shift**;
+ * longer comments grow the row by ~15px on settle. We deliberately under-reserve here rather than over-reserve —
+ * Comments is the **last** panel on the page (followed only by the footer), so panel growth pushes the footer
+ * down rather than shoving frontpage content; that's the least-disruptive direction for any residual CLS we can't
+ * pre-measure.
  */
 const SkeletonCommentRow = ({ index }: { index: number }) => (
   <div className={cn(rowClass, 'animate-pulse sm:px-3', index % 2 === 1 && 'border-surface-border/30 sm:border-l')}>
     <div className='skeleton-bar h-8 w-8 shrink-0 rounded-full' />
     <div className={rowGridClass}>
-      <div className={cn(rowLineClass, 'min-h-[20px]')}>
-        <div className='skeleton-bar h-3.5 w-[55%] min-w-0 rounded' />
+      <div className={cn(rowLineClass, 'min-h-[17px] sm:min-h-[18px]')}>
+        <div className='skeleton-bar h-3 w-[55%] min-w-0 rounded sm:h-3.5' />
         <div className='skeleton-bar-muted h-3 w-12 shrink-0 rounded' />
       </div>
       <div className={cn(rowLineClass, 'min-h-[15px]')}>
