@@ -3,7 +3,7 @@ import { useData } from '../../api';
 import type { Success } from '../../@types/buldreinfo';
 import { FrontpageStats } from './FrontpageStats';
 import { RandomMediaCard } from './RandomMediaCard';
-import { FrontpageActivityPanels } from './FrontpageActivityPanels';
+import { FrontpagePanels } from './FrontpagePanels';
 import { designContract } from '../../design/contract';
 
 /**
@@ -70,7 +70,7 @@ const Frontpage = () => {
           </aside>
 
           <div className='order-2 md:col-span-9 md:pl-1'>
-            <FrontpageActivityPanels frontpage={frontpage} isLoading={isLoading} />
+            <FrontpagePanels frontpage={frontpage} isLoading={isLoading} />
           </div>
         </div>
       </div>

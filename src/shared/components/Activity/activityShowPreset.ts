@@ -2,9 +2,10 @@
  * Shared wire format for the `?show=` preset on `/activity` (and any page that mounts the activity feed).
  *
  * **Why a preset?**
- * The frontpage panels (`FrontpageActivityPanels`) link "See more" → `/activity?show=fa` (etc.) so the destination page
- * lands with **only that category enabled**. The toggle state stays sticky after that — the user can flip filters back
- * on as normal, and their selection persists in `localStorage` (same keys as the chips).
+ * The frontpage panels (`FrontpagePanels`) link "See more" → `/activity?show=fa` (etc.) so the destination page lands
+ * with **only that category enabled**. The user can then flip filters back on as normal — the selection lives in
+ * component state for the rest of that session and resets to the defaults the next time they open `/activity`
+ * directly (no `localStorage` persistence; see `Activity.tsx`).
  *
  * **Wire format**
  * - Single category: `?show=fa` — turns on `fa`, turns off the other three.
@@ -12,9 +13,8 @@
  * - Unknown tokens are ignored. If no known categories are present the preset is a no-op (the URL is still cleaned up).
  *
  * **Lifecycle**
- * The feed applies the preset once on mount, then strips `show` from the URL with `replace` so back-button history isn't
- * polluted. The result is written to `localStorage` via the normal filter setters, so the preset effectively *becomes*
- * the user's preference until they toggle again.
+ * The feed applies the preset once on mount, then strips `show` from the URL with `replace` so back-button history
+ * isn't polluted. The result becomes the in-memory filter state until the user navigates away.
  */
 export const ACTIVITY_SHOW_PARAM = 'show';
 

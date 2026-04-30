@@ -72,6 +72,20 @@ type PanelProps = {
  * predictable Y that aligns with the stats numbers, regardless of font metrics. Previously `pt-3 / pt-5` left the offset
  * dependent on text height + line-height of the section title and produced inconsistent alignment.
  */
+/**
+ * **Mobile-flush stack** — the four panel cards are presented as one continuous "feed surface" on phones (no
+ * gaps, edge-to-edge, sharing the dark `surface-card` fill so they read as a single material). Below `sm` the
+ * `Card` shell drops `rounded-xl` (`sm:rounded-xl` only) so adjacent cards meet at a flat seam — any gap between
+ * them shows the page background as a black band, which the user flagged as visual noise.
+ *
+ * Desktop keeps `md:space-y-5` (20px) so the rounded cards have breathing room around their pillowed edges.
+ */
+const panelStackClass = 'space-y-0 md:space-y-5';
+/**
+ * **Recent + FA side-by-side grid** — single column with 0 gap on mobile (flush stack, see {@link panelStackClass}),
+ * 2 columns with 20px column gap on `md+` so the two panels read as siblings on a desktop rail.
+ */
+const panelPairGridClass = 'grid grid-cols-1 gap-0 md:grid-cols-2 md:gap-5';
 const sectionHeaderRowClass = 'flex h-10 items-center justify-between gap-3 px-4 sm:px-5';
 const sectionTitleClass =
   'inline-flex items-center gap-2 text-[12px] font-semibold tracking-[0.14em] text-slate-300 uppercase sm:text-[13px]';
@@ -80,7 +94,7 @@ const seeAllLinkClass =
 const dividerClass = 'border-surface-border/40 border-t';
 const emptyRowClass = 'px-4 py-6 text-center text-[12px] text-slate-500 sm:px-5 sm:text-[13px]';
 
-const ActivityPanel = ({ icon, title, seeAllLabel, seeMoreCategory, children, bodyClassName }: PanelProps) => {
+const PanelCard = ({ icon, title, seeAllLabel, seeMoreCategory, children, bodyClassName }: PanelProps) => {
   const href = seeMoreCategory ? activityShowHref(seeMoreCategory) : '/activity';
   return (
     <Card flush>
@@ -323,7 +337,7 @@ function NameList({ users }: { users: { id?: number; name?: string }[] }) {
  */
 function FirstAscentsPanel({ items, isBouldering }: { items: FirstAscent[]; isBouldering: boolean }) {
   return (
-    <ActivityPanel
+    <PanelCard
       icon={<Plus size={13} strokeWidth={2.25} />}
       title={isBouldering ? 'New Boulders' : 'New Routes'}
       seeAllLabel='See more'
@@ -378,13 +392,13 @@ function FirstAscentsPanel({ items, isBouldering }: { items: FirstAscent[]; isBo
           })}
         </ul>
       )}
-    </ActivityPanel>
+    </PanelCard>
   );
 }
 
 function RecentAscentsPanel({ items }: { items: Ascent[] }) {
   return (
-    <ActivityPanel
+    <PanelCard
       icon={<Check size={13} strokeWidth={2.25} />}
       title='Recent Ascents'
       seeAllLabel='See more'
@@ -440,7 +454,7 @@ function RecentAscentsPanel({ items }: { items: Ascent[] }) {
           })}
         </ul>
       )}
-    </ActivityPanel>
+    </PanelCard>
   );
 }
 
@@ -489,7 +503,7 @@ function MediaThumbFill({ m }: { m: NewestMedia }) {
 function NewestMediaPanel({ items }: { items: NewestMedia[] }) {
   const tiles = items.filter((m) => mediaIdentityId(m.identity) > 0);
   return (
-    <ActivityPanel
+    <PanelCard
       icon={<Camera size={13} strokeWidth={2.25} />}
       title='Newest Media'
       seeAllLabel='See more'
@@ -562,7 +576,7 @@ function NewestMediaPanel({ items }: { items: NewestMedia[] }) {
           })}
         </div>
       )}
-    </ActivityPanel>
+    </PanelCard>
   );
 }
 
@@ -573,7 +587,7 @@ function NewestMediaPanel({ items }: { items: NewestMedia[] }) {
  */
 function CommentsPanel({ items }: { items: LastComment[] }) {
   return (
-    <ActivityPanel
+    <PanelCard
       icon={<MessageSquare size={13} strokeWidth={2.25} />}
       title='Last Comments'
       seeAllLabel='See more'
@@ -641,14 +655,14 @@ function CommentsPanel({ items }: { items: LastComment[] }) {
           })}
         </ul>
       )}
-    </ActivityPanel>
+    </PanelCard>
   );
 }
 
 /* ──────────────────────────── Loading skeleton ──────────────────────────── */
 
 /**
- * Skeleton bodies are rendered **inside the real `ActivityPanel`** below — no separate shell component, so the panel
+ * Skeleton bodies are rendered **inside the real `PanelCard`** below — no separate shell component, so the panel
  * frame (Card + header + See-more link + divider) is identical between loading and loaded states. The only thing
  * that animates in is the body content, which avoids any frame jitter when data resolves.
  */
@@ -747,7 +761,19 @@ function readBuckets(frontpage: Frontpage | undefined) {
   return { fas, ticks, media, comments };
 }
 
-export const FrontpageActivityPanels = ({ frontpage, isLoading = false }: Props) => {
+/**
+ * **Frontpage feed panels** — the right-hand column on the homepage.
+ *
+ * Renders four pre-bucketed sections from the `/frontpage` aggregate response (`recentAscents`, `firstAscents`,
+ * `newestMedia`, `lastComments`). Each section uses {@link PanelCard} as a shell with a fixed-height title
+ * row + "See more" link that deep-links to `/activity?show=<category>` (preselects the matching filter on the
+ * full activity feed page).
+ *
+ * Loading state renders skeleton bodies inside the **same** panel shells so only the inner content swaps when the
+ * request resolves — see the cascade-audit notes on `SkeletonFeedRow` / `SkeletonCommentRow` for how row heights
+ * are pinned to prevent CLS on settle.
+ */
+export const FrontpagePanels = ({ frontpage, isLoading = false }: Props) => {
   /** FA panel title flips between "New Routes" (default climbing) and "New Boulders" (bouldering site) — terminology
    *  the climbing community actually uses, more inviting than the literal "First Ascents" jargon. */
   const isBouldering = !!useMeta()?.isBouldering;
@@ -755,14 +781,14 @@ export const FrontpageActivityPanels = ({ frontpage, isLoading = false }: Props)
 
   if (isLoading || !frontpage) {
     /**
-     * Skeleton bodies live inside the **same `ActivityPanel`** the loaded state uses, so the panel frame (header,
+     * Skeleton bodies live inside the **same `PanelCard`** the loaded state uses, so the panel frame (header,
      * See-more link, divider, body padding) is byte-identical between states — only the inner content swaps. Row
      * counts mirror what the WS returns: 8 / 8 / 12 / 4. Anything smaller and the layout visibly jumps on settle.
      */
     return (
-      <div className='space-y-4 md:space-y-5'>
-        <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5'>
-          <ActivityPanel
+      <div className={panelStackClass}>
+        <div className={panelPairGridClass}>
+          <PanelCard
             icon={<Check size={13} strokeWidth={2.25} />}
             title='Recent Ascents'
             seeAllLabel='See more'
@@ -771,8 +797,8 @@ export const FrontpageActivityPanels = ({ frontpage, isLoading = false }: Props)
             {[...Array(8)].map((_, i) => (
               <SkeletonFeedRow key={i} hideOnMobile={i >= FEED_MOBILE_CAP} />
             ))}
-          </ActivityPanel>
-          <ActivityPanel
+          </PanelCard>
+          <PanelCard
             icon={<Plus size={13} strokeWidth={2.25} />}
             title={faTitle}
             seeAllLabel='See more'
@@ -781,9 +807,9 @@ export const FrontpageActivityPanels = ({ frontpage, isLoading = false }: Props)
             {[...Array(8)].map((_, i) => (
               <SkeletonFeedRow key={i} hideOnMobile={i >= FEED_MOBILE_CAP} />
             ))}
-          </ActivityPanel>
+          </PanelCard>
         </div>
-        <ActivityPanel
+        <PanelCard
           icon={<Camera size={13} strokeWidth={2.25} />}
           title='Newest Media'
           seeAllLabel='See more'
@@ -795,8 +821,8 @@ export const FrontpageActivityPanels = ({ frontpage, isLoading = false }: Props)
               <SkeletonMediaTile key={i} hideOnMobile={i >= MEDIA_MOBILE_CAP} />
             ))}
           </div>
-        </ActivityPanel>
-        <ActivityPanel
+        </PanelCard>
+        <PanelCard
           icon={<MessageSquare size={13} strokeWidth={2.25} />}
           title='Last Comments'
           seeAllLabel='See more'
@@ -808,7 +834,7 @@ export const FrontpageActivityPanels = ({ frontpage, isLoading = false }: Props)
               <SkeletonCommentRow key={i} index={i} />
             ))}
           </div>
-        </ActivityPanel>
+        </PanelCard>
       </div>
     );
   }
@@ -816,9 +842,9 @@ export const FrontpageActivityPanels = ({ frontpage, isLoading = false }: Props)
   const { fas, ticks, media, comments } = readBuckets(frontpage);
 
   return (
-    <div className='space-y-4 md:space-y-5'>
+    <div className={panelStackClass}>
       {/* Recent Ascents leads — higher cadence and chronologically "what just happened", so it earns the left/top slot. First Ascents follow as the rarer, more curated companion. */}
-      <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5'>
+      <div className={panelPairGridClass}>
         <RecentAscentsPanel items={ticks} />
         <FirstAscentsPanel items={fas} isBouldering={isBouldering} />
       </div>
@@ -827,5 +853,3 @@ export const FrontpageActivityPanels = ({ frontpage, isLoading = false }: Props)
     </div>
   );
 };
-
-export default FrontpageActivityPanels;
