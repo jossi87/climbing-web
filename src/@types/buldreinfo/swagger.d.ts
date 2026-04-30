@@ -143,6 +143,23 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/v2/frontpage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get frontpage */
+        get: operations["getFrontpage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/frontpage/random_media": {
         parameters: {
             query?: never;
@@ -150,7 +167,10 @@ export type paths = {
             path?: never;
             cookie?: never;
         };
-        /** Get frontpage (random media) */
+        /**
+         * Get frontpage (random media)
+         * @deprecated
+         */
         get: operations["getFrontpageRandomMedia"];
         put?: never;
         post?: never;
@@ -167,7 +187,10 @@ export type paths = {
             path?: never;
             cookie?: never;
         };
-        /** Get frontpage stats */
+        /**
+         * Get frontpage stats
+         * @deprecated
+         */
         get: operations["getFrontpageStats"];
         put?: never;
         post?: never;
@@ -1204,6 +1227,54 @@ export type components = {
             sunToHour?: number;
             problems?: components["schemas"]["DangerousProblem"][];
         };
+        Frontpage: {
+            stats?: components["schemas"]["FrontpageStats"];
+            randomMedia?: components["schemas"]["FrontpageRandomMedia"][];
+            firstAscents?: components["schemas"]["FrontpageFirstAscent"][];
+            recentAscents?: components["schemas"]["FrontpageRecentAscent"][];
+            newestMedia?: components["schemas"]["FrontpageNewestMedia"][];
+            lastComments?: components["schemas"]["FrontpageLastComment"][];
+        };
+        FrontpageFirstAscent: {
+            timeAgo?: string;
+            /** Format: int32 */
+            areaId?: number;
+            areaName?: string;
+            /** Format: int32 */
+            problemId?: number;
+            problemLockedAdmin?: boolean;
+            problemLockedSuperadmin?: boolean;
+            problemName?: string;
+            problemSubtype?: string;
+            grade?: string;
+            users?: components["schemas"]["User"][];
+        };
+        FrontpageLastComment: {
+            timeAgo?: string;
+            /** Format: int32 */
+            areaId?: number;
+            areaName?: string;
+            /** Format: int32 */
+            problemId?: number;
+            problemLockedAdmin?: boolean;
+            problemLockedSuperadmin?: boolean;
+            problemName?: string;
+            u?: components["schemas"]["User"];
+            comment?: string;
+        };
+        FrontpageNewestMedia: {
+            identity?: components["schemas"]["MediaIdentity"];
+            isMovie?: boolean;
+            /** Format: int32 */
+            areaId?: number;
+            areaName?: string;
+            /** Format: int32 */
+            problemId?: number;
+            problemLockedAdmin?: boolean;
+            problemLockedSuperadmin?: boolean;
+            problemName?: string;
+            grade?: string;
+        };
         FrontpageRandomMedia: {
             identity?: components["schemas"]["MediaIdentity"];
             /** Format: int32 */
@@ -1222,6 +1293,21 @@ export type components = {
             grade?: string;
             photographer?: components["schemas"]["User"];
             tagged?: components["schemas"]["User"][];
+        };
+        FrontpageRecentAscent: {
+            timeAgo?: string;
+            /** Format: int32 */
+            areaId?: number;
+            areaName?: string;
+            /** Format: int32 */
+            problemId?: number;
+            problemLockedAdmin?: boolean;
+            problemLockedSuperadmin?: boolean;
+            problemName?: string;
+            problemSubtype?: string;
+            grade?: string;
+            u?: components["schemas"]["User"];
+            repeat?: boolean;
         };
         FrontpageStats: {
             /** Format: int32 */
@@ -2395,6 +2481,39 @@ export interface operations {
             };
             /** @description Authentication required. */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getFrontpage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Frontpage"];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };

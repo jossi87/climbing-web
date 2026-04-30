@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect, type ElementType } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import Linkify from 'linkify-react';
 import { Filter, ChevronDown, Plus, Check, MessageSquare, Camera, Loader2 } from 'lucide-react';
-import { useLocalStorage } from '../../../utils/use-local-storage';
 import { useMeta } from '../Meta/context';
 import { useActivity } from '../../../api';
 import { Avatar, AvatarGroup, Card, SectionLabel } from '../../ui';
@@ -19,6 +18,7 @@ import { activityFrontpageToolbarClassName } from './activityFrontpageToolbar';
 import { ActivityFeedMetaRow } from './ActivityFeedMetaRow';
 import { ActivitySkeleton } from './ActivitySkeleton';
 import { LazyMedia } from './components/LazyMedia';
+import { ACTIVITY_SHOW_PARAM, parseActivityShowParam } from './activityShowPreset';
 import type { components } from '../../../@types/buldreinfo/swagger';
 
 type ActivitySchema = components['schemas']['Activity'];
@@ -32,13 +32,32 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
   const filterRef = useRef<HTMLDivElement>(null);
   const selectedGradeRef = useRef<HTMLButtonElement>(null);
 
-  const [lowerGradeId, setLowerGradeId] = useLocalStorage('lower_grade_id', 0);
-  const [lowerGradeText, setLowerGradeText] = useLocalStorage('lower_grade_text', 'n/a');
-  const [activityTypeTicks, setActivityTypeTicks] = useLocalStorage('activity_type_ticks', true);
-  const [activityTypeFa, setActivityTypeFa] = useLocalStorage('activity_type_fa', true);
-  const [activityTypeComments, setActivityTypeComments] = useLocalStorage('activity_type_comments', true);
-  const [activityTypeMedia, setActivityTypeMedia] = useLocalStorage('activity_type_media', true);
+  /**
+   * Filters are **session-local** (no `localStorage`) — every fresh visit to `/activity` (or `/area`/`/sector`) starts
+   * with all chips on and grade `n/a`, unless the URL carries a `?show=` preset (see {@link parseActivityShowParam}).
+   *
+   * The preset is read **once** via a lazy `useState` initializer so it lands before the first `useActivity` request
+   * and there's no skeleton flash. The URL is cleaned up immediately afterwards by the effect below, so chip toggles
+   * after arrival "win" without the param fighting back.
+   */
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [initialPreset] = useState(() => parseActivityShowParam(searchParams.get(ACTIVITY_SHOW_PARAM)));
+
+  const [lowerGradeId, setLowerGradeId] = useState(0);
+  const [lowerGradeText, setLowerGradeText] = useState('n/a');
+  const [activityTypeFa, setActivityTypeFa] = useState(initialPreset?.fa ?? true);
+  const [activityTypeTicks, setActivityTypeTicks] = useState(initialPreset?.ticks ?? true);
+  const [activityTypeMedia, setActivityTypeMedia] = useState(initialPreset?.media ?? true);
+  const [activityTypeComments, setActivityTypeComments] = useState(initialPreset?.comments ?? true);
   const normalizedLowerGradeText = lowerGradeText === 'ALL' ? 'All' : lowerGradeText;
+
+  /** Strip `?show=` from the URL once the preset has been read into state — keeps history clean and avoids re-applying on `searchParams` churn. */
+  useEffect(() => {
+    if (!searchParams.has(ACTIVITY_SHOW_PARAM)) return;
+    const next = new URLSearchParams(searchParams);
+    next.delete(ACTIVITY_SHOW_PARAM);
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams]);
 
   const meta = useMeta();
   const {

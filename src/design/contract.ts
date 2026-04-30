@@ -102,16 +102,20 @@ export const designContract = {
   },
   layout: {
     pageSection: 'w-full pb-0',
-    /** Home: fluid column only below `md` (phones); tablet / iPad / desktop share 12-col sidebar layout. */
-    /** `md:items-stretch`: left column matches feed height so `asideStack` sticky works (see Frontpage aside `md:h-full`). */
-    frontpageGrid: 'grid grid-cols-1 items-start gap-6 md:grid-cols-12 md:items-stretch md:gap-8',
     /**
-     * Frontpage aside (stats + random media): **`position: sticky`** only when the shell header is sticky — same rule as
-     * `Header.tsx` (`shouldStickHeader` = `!isDesktop || isTallEnough`, i.e. width &lt; 1024 **or** height ≥ 900px). For the
-     * `md+` sidebar that is: `(min-width: 768px) and ((max-width: 1023px) or (min-height: 900px))`.
+     * Home: fluid column only below `md` (phones); tablet / iPad / desktop share a 12-col layout (3 / 9 split).
+     *
+     * **No `items-stretch`**: the aside used to need the row's full height so its inner sticky stack had something to
+     * pin against, but the aside isn't sticky anymore (frontpage activity is short enough to read without scrolling
+     * past the stats), so plain `items-start` keeps both columns top-aligned with no extra layout machinery.
+     *
+     * Mobile `gap-0`: the random-media card and the first activity panel share the same dark surface tone, and any
+     * non-zero gap on phones reads as a stray "black band" between them. Desktop keeps `gap-8` for the horizontal
+     * gutter where breathing room is welcome.
      */
-    asideStack:
-      'w-full space-y-5 md:space-y-6 [@media(min-width:768px)_and_((max-width:1023px)_or_(min-height:900px))]:sticky [@media(min-width:768px)_and_((max-width:1023px)_or_(min-height:900px))]:top-20',
+    frontpageGrid: 'grid grid-cols-1 items-start gap-0 md:grid-cols-12 md:gap-8',
+    /** Frontpage aside (stats + random media) — plain vertical stack. No sticky behavior needed now that the activity feed lives on `/activity` and the frontpage panels are short. */
+    asideStack: 'w-full space-y-5 md:space-y-6',
     toolbar: 'mb-4 flex flex-col items-center justify-between gap-3 px-4 sm:flex-row sm:px-0',
     /**
      * Activity toolbar: below `md`, negate `main` horizontal padding so filter chips align with the activity

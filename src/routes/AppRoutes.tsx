@@ -4,6 +4,7 @@ import Frontpage from '../features/Frontpage/Frontpage';
 
 const AuthContainer = lazy(() => import('../shared/auth/AuthContainer'), 'auth');
 const About = lazy(() => import('../features/About/About'), 'about');
+const ActivityPage = lazy(() => import('../features/Activity/Activity'), 'activity');
 const Area = lazy(() => import('../features/Area/Area'), 'area');
 const AreaEdit = lazy(() => import('../features/AreaEdit'), 'area-edit');
 const Areas = lazy(() => import('../features/Areas/Areas'), 'areas');
@@ -44,6 +45,7 @@ function AppRoutes() {
         element={
           <Routes>
             <Route path='/about' element={<About />} />
+            <Route path='/activity' element={<ActivityPage />} />
             <Route path='/area/:areaId/:segment?' element={<Area />} />
             <Route
               path='/area/edit/:areaId'

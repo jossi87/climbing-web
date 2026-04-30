@@ -35,7 +35,11 @@ const Header = () => {
   }));
   const lastScrollYRef = useRef(0);
 
-  /** Keep in sync with `designContract.layout.asideStack` sticky media (Frontpage left column). */
+  /**
+   * Header sticks on phones / tablets and on tall desktops, falls back to `relative` on short desktops so the user
+   * can reclaim vertical space by scrolling. (Earlier this rule was kept in sync with the Frontpage aside's sticky
+   * media query — that aside is no longer sticky, so the rule stands on its own header-UX merits.)
+   */
   const isDesktop = viewport.width >= 1024;
   const isTallEnough = viewport.height >= 900;
   const shouldStickHeader = !isDesktop || isTallEnough;

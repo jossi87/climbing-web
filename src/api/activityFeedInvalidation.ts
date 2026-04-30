@@ -4,8 +4,11 @@ import type { QueryClient } from '@tanstack/react-query';
 export const ACTIVITY_AND_FRONTPAGE_INVALIDATION_EVENT = 'brattelinjer/invalidate-activity-frontpage';
 
 /**
- * Latest-activity (`/activity`) and frontpage stats / random media (`/frontpage/*`) must refetch after ticks, comments,
- * media, or area/sector/problem edits. Portaled menus and `consistencyAction: 'nop'` saves skip a full cache sweep.
+ * Latest-activity (`/activity`) and the aggregate `/frontpage` payload must refetch after ticks, comments, media, or
+ * area/sector/problem edits. Portaled menus and `consistencyAction: 'nop'` saves skip a full cache sweep.
+ *
+ * The frontpage was historically split into `/frontpage/stats`, `/frontpage/random_media`, `/frontpage/activity` —
+ * those are gone now (collapsed into the single `/frontpage` query that drives `Frontpage.tsx`).
  */
 export function invalidateActivityAndFrontpageQueries(client: QueryClient) {
   return client.invalidateQueries({
@@ -13,7 +16,7 @@ export function invalidateActivityAndFrontpageQueries(client: QueryClient) {
       const key = q.queryKey;
       if (!Array.isArray(key) || typeof key[0] !== 'string') return false;
       const prefix = key[0];
-      return prefix === '/activity' || prefix === '/frontpage/stats' || prefix === '/frontpage/random_media';
+      return prefix === '/activity' || prefix === '/frontpage';
     },
   });
 }
