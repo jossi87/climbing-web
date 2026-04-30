@@ -357,13 +357,18 @@ type ActivityItemProps = {
 const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
   const avatarItems =
     (a.activityThumbnails ?? []).length > 0
-      ? a.activityThumbnails!.map((m) => ({ mediaIdentity: m.identity }))
+      ? a.activityThumbnails!.map((t) => ({
+          name: t.name,
+          mediaIdentity: t.identity,
+          userId: t.userId,
+        }))
       : (a.users ?? []).length > 0
         ? a.users!.map((u) => ({
             name: u.name,
             mediaIdentity: u.mediaIdentity,
+            userId: u.id,
           }))
-        : [{ name: a.name, mediaIdentity: undefined }];
+        : [{ name: a.name, mediaIdentity: undefined, userId: a.id }];
 
   const statusIconGlyph = 'shrink-0 text-slate-300';
   const statusIconSize = 10;

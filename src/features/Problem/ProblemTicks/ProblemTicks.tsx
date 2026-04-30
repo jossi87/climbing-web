@@ -95,6 +95,7 @@ export const ProblemTicks = ({ ticks }: Props) => {
                 <ClickableAvatar
                   name={t.name}
                   mediaIdentity={t.mediaIdentity}
+                  userId={t.idUser}
                   size='tiny'
                   className={cn(isSelf && 'border-status-ticked/40 ring-status-ticked/25 ring-1')}
                 />

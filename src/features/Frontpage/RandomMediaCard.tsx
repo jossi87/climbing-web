@@ -315,7 +315,7 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
             {taggedUsers.length > 0 && (
               <div className='flex items-center gap-3 md:gap-2.5'>
                 <AvatarGroup
-                  items={taggedUsers.map((u) => ({ name: u.name, mediaIdentity: u.mediaIdentity }))}
+                  items={taggedUsers.map((u) => ({ name: u.name, mediaIdentity: u.mediaIdentity, userId: u.id }))}
                   size='mini'
                   max={3}
                 />
@@ -334,7 +334,12 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
             )}
             {showPhotographerByRow && photographer ? (
               <div className='flex items-center gap-2.5 md:gap-2'>
-                <ClickableAvatar name={photographer.name} mediaIdentity={photographer.mediaIdentity} size='mini' />
+                <ClickableAvatar
+                  name={photographer.name}
+                  mediaIdentity={photographer.mediaIdentity}
+                  userId={photographer.id}
+                  size='mini'
+                />
                 <div className={metaTextClass}>
                   <span className='mr-1 text-slate-400'>By</span>
                   <Link to={`/user/${photographer.id}`} className={`${interactiveLinkClass} ${touchTargetClass}`}>

@@ -36,6 +36,7 @@ export const UserCard = ({ user, variant = 'default', metaAction }: UserCardProp
     <ClickableAvatar
       name={user.name}
       mediaIdentity={user.mediaIdentity ?? user.randomMedia}
+      userId={user.userId}
       size={variant === 'minimal' ? 'tiny' : 'small'}
     />
     <div className='flex min-w-0 flex-1 flex-col'>

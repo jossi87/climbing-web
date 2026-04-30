@@ -852,7 +852,7 @@ export type components = {
     schemas: {
         Activity: {
             activityIds?: number[];
-            activityThumbnails?: components["schemas"]["ActivityMedia"][];
+            activityThumbnails?: components["schemas"]["ActivityThumbnail"][];
             timeAgo?: string;
             /** Format: int32 */
             areaId?: number;
@@ -886,6 +886,12 @@ export type components = {
             identity?: components["schemas"]["MediaIdentity"];
             movie?: boolean;
             embedUrl?: string;
+        };
+        ActivityThumbnail: {
+            identity?: components["schemas"]["MediaIdentity"];
+            /** Format: int32 */
+            userId?: number;
+            name?: string;
         };
         MediaIdentity: {
             /** Format: int32 */

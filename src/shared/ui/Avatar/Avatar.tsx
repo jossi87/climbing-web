@@ -11,6 +11,8 @@ type AvatarSize = 'micro' | 'mini' | 'tiny' | 'small' | 'medium' | 'large' | 'bi
 type AvatarProps = {
   name?: string;
   mediaIdentity?: MediaIdentity;
+  /** When set (>0), the {@link ClickableAvatar} modal surfaces a "View profile" link to `/user/{userId}`. */
+  userId?: number;
   size?: AvatarSize;
   className?: string;
   onClick?: (e: React.MouseEvent) => void;
@@ -47,6 +49,7 @@ export function Avatar({ name, mediaIdentity, size = 'mini', className, onClick 
       )}
       style={{ width: pixelSize, height: pixelSize, ...fallbackStyle }}
       onClick={onClick}
+      title={name}
     >
       {mid === 0 ? (
         <span
@@ -156,6 +159,7 @@ export function ClickableAvatar(props: AvatarProps) {
             <AvatarModal
               mid={mid}
               name={props.name}
+              userId={props.userId}
               stamp={Number(props.mediaIdentity?.versionStamp ?? 0)}
               onClose={closeModal}
             />
