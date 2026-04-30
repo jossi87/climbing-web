@@ -118,13 +118,13 @@ export const designContract = {
     asideStack: 'w-full space-y-5 md:space-y-6',
     toolbar: 'mb-4 flex flex-col items-center justify-between gap-3 px-4 sm:flex-row sm:px-0',
     /**
-     * Activity toolbar: below `md`, negate `main` horizontal padding so filter chips align with the activity
-     * `.app-card` feed (same breakout as the list — avoids double inset vs full-bleed card on phones).
+     * Filter pills row inside the Activity toolbar. `md:ml-auto` makes the cluster pin to the right edge of the
+     * toolbar even when the sibling `SectionHeader` is **omitted** (embedded mode in Area / Sector tabs) — without it,
+     * the parent's `justify-between` would push the only remaining child to the start, breaking right-alignment.
+     * With the header present (`/activity` page) the auto-margin is a no-op next to `justify-between`.
      */
-    activityToolbarFrontpage:
-      'flex max-sm:-mx-4 max-sm:w-[calc(100%+2rem)] flex-col items-center justify-between gap-3 px-4 md:mx-0 md:w-full md:flex-row md:px-0',
     activityToolbarActionsFrontpage:
-      'flex w-full flex-nowrap items-center justify-center gap-0.5 sm:gap-1.5 md:w-auto md:justify-end',
+      'flex w-full flex-nowrap items-center justify-center gap-0.5 sm:gap-1.5 md:ml-auto md:w-auto md:justify-end',
     /** Activity filters: one row; compact chips; labels always visible (tight gap on narrow screens). */
     toolbarActions: 'flex w-full flex-nowrap items-center justify-center gap-0.5 sm:gap-1.5 sm:w-auto sm:justify-end',
     /**

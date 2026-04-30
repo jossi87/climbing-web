@@ -1,10 +1,19 @@
 import { useState, useRef, useEffect, type ElementType } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import Linkify from 'linkify-react';
-import { Filter, ChevronDown, Plus, Check, MessageSquare, Camera, Loader2 } from 'lucide-react';
+import {
+  History as ActivityIcon,
+  Filter,
+  ChevronDown,
+  Plus,
+  Check,
+  MessageSquare,
+  Camera,
+  Loader2,
+} from 'lucide-react';
 import { useMeta } from '../Meta/context';
 import { useActivity } from '../../../api';
-import { Avatar, AvatarGroup, Card, SectionLabel } from '../../ui';
+import { Avatar, AvatarGroup, Card, SectionHeader } from '../../ui';
 import { Stars } from '../../ui/Indicators';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
@@ -14,7 +23,7 @@ import {
   activityFilterChipOff,
   activityFilterChipOn,
 } from '../../../design/activityFilterChips';
-import { activityFrontpageToolbarClassName } from './activityFrontpageToolbar';
+import { activityFrontpageToolbarClassName, activityToolbarDividerClassName } from './activityFrontpageToolbar';
 import { ActivityFeedMetaRow } from './ActivityFeedMetaRow';
 import { ActivitySkeleton } from './ActivitySkeleton';
 import { LazyMedia } from './components/LazyMedia';
@@ -24,8 +33,10 @@ import type { components } from '../../../@types/buldreinfo/swagger';
 type ActivitySchema = components['schemas']['Activity'];
 
 /**
- * Latest-activity list + toolbar. `embedded` swaps {@link Card} for `.app-card-surface` (borderless shell); no caller
- * uses it yet — kept for frontpage / inset layouts.
+ * Latest-activity list + toolbar. `embedded={true}` drops the outer `Card flush` wrapper entirely so the feed renders
+ * **inline** inside a parent panel (e.g. Area / Sector tab card) — no nested cards, no margin/border between the tab
+ * strip and the feed. Used by the Area / Sector "Activity" tabs to keep the tab content flush with the tab strip,
+ * matching the other tabs (map / distribution / top / todo).
  */
 const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSector: number; embedded?: boolean }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -106,12 +117,59 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
   const showActivityEmpty = !isPending && !isError && activityList.length === 0;
   const showActivityError = isError && activityList.length === 0;
 
-  return (
-    <div className='w-full'>
-      <div className={activityFrontpageToolbarClassName}>
-        <SectionLabel className='hidden text-slate-400 md:block'>Latest activity</SectionLabel>
+  /**
+   * **Page-level vs. embedded** — when the feed is rendered standalone at `/activity` (no scope), it gets a full
+   * {@link SectionHeader} matching `/graph`, `/about`, `/webcams` (same `History` icon as the footer's `Activity`
+   * `NavCard` — single design language across the app). When scoped to an Area / Sector tab
+   * (`idArea > 0 || idSector > 0`), the parent page already owns the title chrome (breadcrumb + page header), so
+   * the SectionHeader is suppressed and only the filter pills row renders.
+   */
+  const isScoped = idArea > 0 || idSector > 0;
 
-        <div className={designContract.layout.activityToolbarActionsFrontpage}>
+  /**
+   * **Chip row alignment** is conditional on whether the SectionHeader is present:
+   *
+   * - **Standalone `/activity`** (`!isScoped`) — the header sits on the left, chips on the right, anchored by the
+   *   parent toolbar's `md:justify-between`. `md:ml-auto md:w-auto md:justify-end` keeps the chip cluster pinned
+   *   right (the contract default).
+   * - **Embedded** (`isScoped`, Area / Sector tab) — there's no SectionHeader to balance the left side, so right-
+   *   aligning the chips left them stranded in the corner with empty space to their left (visible in the
+   *   tab-card layout). Center the cluster across the full toolbar width instead so it reads as the deliberate
+   *   focal point of the header band.
+   *
+   * Mobile (< md) keeps `w-full justify-center` either way — the toolbar is `flex-col` and the chips are the
+   * only meaningful affordance once the SectionHeader (when present) stacks above them.
+   */
+  const chipsRowClassName = isScoped
+    ? 'flex w-full flex-nowrap items-center justify-center gap-0.5 sm:gap-1.5'
+    : designContract.layout.activityToolbarActionsFrontpage;
+
+  /**
+   * Body shared by both the standalone `Card flush` shell (page-level `/activity`) and the **inline** render path
+   * used when `embedded=true` (Area / Sector tab cards, which already supply their own panel chrome). Same header
+   * row + divider + feed list either way, so the visual rhythm is identical regardless of context.
+   */
+  const cardBody = (
+    <>
+      <div className={activityFrontpageToolbarClassName}>
+        {!isScoped ? (
+          <SectionHeader
+            title='Activity'
+            icon={ActivityIcon}
+            /**
+             * `mb-0` overrides `SectionHeader`'s default 24px bottom margin — the toolbar row supplies its own
+             * `pb-3 sm:pb-4` and the divider below, so a stacked bottom margin would visibly push the chips down
+             * on `md+` (where header + chips share a row, vertically centered).
+             *
+             * `w-full md:w-auto` lets the header span the full toolbar width on phones (where the toolbar is
+             * `flex-col`, title above pills) and shrink to its content width on `md+` (where it sits on the left
+             * with the pills pushed right by `md:ml-auto`).
+             */
+            className='mb-0 w-full md:w-auto'
+          />
+        ) : null}
+
+        <div className={chipsRowClassName}>
           <div className='relative shrink-0' ref={filterRef}>
             <button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
@@ -198,55 +256,39 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
         </div>
       </div>
 
-      {embedded ? (
-        <div className='app-card-surface'>
-          {isPending ? (
-            [...Array(10)].map((_, i) => <ActivitySkeleton key={i} />)
-          ) : showActivityError ? (
-            <ActivityErrorState onRetry={() => void refetch()} />
-          ) : showActivityEmpty ? (
-            <ActivityEmptyState />
-          ) : (
-            activityList.map((a) => (
-              <ActivityItem
-                key={a.activityIds?.join('+') ?? `activity-${a.id}`}
-                a={a}
-                isBouldering={meta.isBouldering}
-              />
-            ))
-          )}
-          <ActivitySeeMore
-            show={!isPending && !showActivityError && !!hasNextPage}
-            loading={isFetchingNextPage}
-            onFetchMore={() => void fetchNextPage()}
-            embedded
-          />
-        </div>
+      <div className={activityToolbarDividerClassName} />
+
+      {isPending ? (
+        [...Array(10)].map((_, i) => <ActivitySkeleton key={i} />)
+      ) : showActivityError ? (
+        <ActivityErrorState onRetry={() => void refetch()} />
+      ) : showActivityEmpty ? (
+        <ActivityEmptyState />
       ) : (
-        <Card flush>
-          {isPending ? (
-            [...Array(10)].map((_, i) => <ActivitySkeleton key={i} />)
-          ) : showActivityError ? (
-            <ActivityErrorState onRetry={() => void refetch()} />
-          ) : showActivityEmpty ? (
-            <ActivityEmptyState />
-          ) : (
-            activityList.map((a) => (
-              <ActivityItem
-                key={a.activityIds?.join('+') ?? `activity-${a.id}`}
-                a={a}
-                isBouldering={meta.isBouldering}
-              />
-            ))
-          )}
-          <ActivitySeeMore
-            show={!isPending && !showActivityError && !!hasNextPage}
-            loading={isFetchingNextPage}
-            onFetchMore={() => void fetchNextPage()}
-            embedded={false}
-          />
-        </Card>
+        activityList.map((a) => (
+          <ActivityItem key={a.activityIds?.join('+') ?? `activity-${a.id}`} a={a} isBouldering={meta.isBouldering} />
+        ))
       )}
+      <ActivitySeeMore
+        show={!isPending && !showActivityError && !!hasNextPage}
+        loading={isFetchingNextPage}
+        onFetchMore={() => void fetchNextPage()}
+        embedded={embedded}
+      />
+    </>
+  );
+
+  /**
+   * Inline render (no `Card flush`) when embedded — the parent (Area / Sector tab card) already supplies the panel
+   * surface, so wrapping in another card produced the gap + nested-card seams the user flagged. `min-w-0` lets long
+   * route names truncate inside narrow flex parents (e.g. mobile viewport).
+   */
+  if (embedded) {
+    return <div className='min-w-0'>{cardBody}</div>;
+  }
+  return (
+    <div className='w-full'>
+      <Card flush>{cardBody}</Card>
     </div>
   );
 };

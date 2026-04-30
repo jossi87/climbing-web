@@ -1,10 +1,10 @@
 import type { LucideIcon } from 'lucide-react';
-import { Camera, Check, ChevronDown, Filter, MessageSquare, Plus } from 'lucide-react';
+import { History as ActivityIcon, Camera, Check, ChevronDown, Filter, MessageSquare, Plus } from 'lucide-react';
 import { designContract } from '../../../design/contract';
 import { activityFilterChipBase, activityFilterChipOn } from '../../../design/activityFilterChips';
 import { cn } from '../../../lib/utils';
-import { Card, SectionLabel } from '../../ui';
-import { activityFrontpageToolbarClassName } from './activityFrontpageToolbar';
+import { Card, SectionHeader } from '../../ui';
+import { activityFrontpageToolbarClassName, activityToolbarDividerClassName } from './activityFrontpageToolbar';
 
 /** Mirrors {@link ActivityFeedMetaRow}: story flex-1 + time on the far right; optional second row like stars/comment. */
 export const ActivitySkeleton = () => (
@@ -57,29 +57,38 @@ function ToolbarChipPlaceholder({
 }
 
 /**
- * Reserves the Activity toolbar (label + chip row) while the feed chunk loads; the card-only fallback used to
- * mount the real toolbar later and pushed the feed + aside down ~one toolbar height.
+ * Reserves the full in-card panel ({@link SectionHeader} + chip row + divider + 10 skeleton rows) while the lazy
+ * feed chunk loads — the card-only fallback used to mount the real toolbar later and pushed the feed + aside down
+ * ~one toolbar height.
+ *
+ * Only used by the **standalone `/activity` page** (`features/Activity/Activity.tsx`), so the header always renders
+ * here. Embedded Area / Sector usages don't go through Suspense and skip the header at runtime via the `isScoped`
+ * branch in {@link Activity}. The header uses the same `History as ActivityIcon` as the footer's `Activity` `NavCard`
+ * so the icon language is consistent across the app.
  */
 export const ActivityFrontpageSuspenseFallback = () => (
   <div className='w-full'>
-    <div className={activityFrontpageToolbarClassName} aria-hidden>
-      <SectionLabel className='hidden text-slate-400 md:block'>Latest activity</SectionLabel>
-
-      <div className={designContract.layout.activityToolbarActionsFrontpage}>
-        <div className='relative shrink-0'>
-          <div className={cn(activityFilterChipBase, activityFilterChipOn, 'min-w-0 max-sm:max-w-[min(100%,8.5rem)]')}>
-            <Filter size={12} className='shrink-0 text-slate-300' strokeWidth={2} />
-            <span className={cn(designContract.typography.uiCompact, 'min-w-0 truncate text-slate-300')}>All</span>
-            <ChevronDown size={10} className='shrink-0 text-slate-300' strokeWidth={2} />
-          </div>
-        </div>
-        <ToolbarChipPlaceholder icon={Plus} label='FA' />
-        <ToolbarChipPlaceholder icon={Check} label='Ticks' />
-        <ToolbarChipPlaceholder icon={Camera} label='Media' />
-        <ToolbarChipPlaceholder icon={MessageSquare} label='Comments' labelNarrow='Com' />
-      </div>
-    </div>
     <Card flush>
+      <div className={activityFrontpageToolbarClassName} aria-hidden>
+        <SectionHeader title='Activity' icon={ActivityIcon} className='mb-0 w-full md:w-auto' />
+
+        <div className={designContract.layout.activityToolbarActionsFrontpage}>
+          <div className='relative shrink-0'>
+            <div
+              className={cn(activityFilterChipBase, activityFilterChipOn, 'min-w-0 max-sm:max-w-[min(100%,8.5rem)]')}
+            >
+              <Filter size={12} className='shrink-0 text-slate-300' strokeWidth={2} />
+              <span className={cn(designContract.typography.uiCompact, 'min-w-0 truncate text-slate-300')}>All</span>
+              <ChevronDown size={10} className='shrink-0 text-slate-300' strokeWidth={2} />
+            </div>
+          </div>
+          <ToolbarChipPlaceholder icon={Plus} label='FA' />
+          <ToolbarChipPlaceholder icon={Check} label='Ticks' />
+          <ToolbarChipPlaceholder icon={Camera} label='Media' />
+          <ToolbarChipPlaceholder icon={MessageSquare} label='Comments' labelNarrow='Com' />
+        </div>
+      </div>
+      <div className={activityToolbarDividerClassName} />
       {[...Array(10)].map((_, i) => (
         <ActivitySkeleton key={i} />
       ))}

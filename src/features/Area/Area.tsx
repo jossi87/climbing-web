@@ -728,110 +728,117 @@ const Area = () => {
               })}
             </div>
 
-            {effectiveTab !== 'activity' && (
-              <div>
-                {effectiveTab === 'overview' && (
-                  <div className='space-y-4 p-4 sm:p-5'>
-                    {areaAccessRestrictions}
-                    {(data.media?.length ?? 0) > 0 && (
+            <div>
+              {effectiveTab === 'overview' && (
+                <div className='space-y-4 p-4 sm:p-5'>
+                  {areaAccessRestrictions}
+                  {(data.media?.length ?? 0) > 0 && (
+                    <Media
+                      pitches={null}
+                      media={data.media ?? []}
+                      orderableMedia={orderableMedia}
+                      carouselMedia={carouselMedia}
+                      optProblemId={null}
+                      showLocation={false}
+                      compactTiles
+                    />
+                  )}
+
+                  <div className='flex w-full min-w-0 flex-wrap content-start items-center gap-x-2 gap-y-1 sm:gap-y-1.5'>
+                    <ConditionLabels
+                      lat={data.coordinates?.latitude}
+                      lng={data.coordinates?.longitude}
+                      label={data.name ?? ''}
+                      wallDirectionCalculated={undefined}
+                      wallDirectionManual={undefined}
+                      sunFromHour={data.sunFromHour ?? 0}
+                      sunToHour={data.sunToHour ?? 0}
+                      pageViews={data.pageViews}
+                    />
+                    {data.forDevelopers && (
+                      <span
+                        className={cn(
+                          designContract.surfaces.inlineChip,
+                          'text-[11px] font-semibold tracking-wide text-amber-400/90 uppercase',
+                        )}
+                      >
+                        Under development
+                      </span>
+                    )}
+                    <ActionMenuChip
+                      label='PDF'
+                      icon={Download}
+                      title='Download PDF'
+                      items={[{ id: 'area-pdf', label: 'Area', href: `/areas/pdf?id=${data.id}`, kind: 'download' }]}
+                    />
+                    <ExternalLinkLabels externalLinks={data.externalLinks} />
+                  </div>
+
+                  {(data.comment ?? '').trim().length > 0 && (
+                    <ExpandableMarkdown key={data.id} content={data.comment ?? ''} contentClassName='max-w-none' />
+                  )}
+
+                  {(data.triviaMedia?.length ?? 0) > 0 && (
+                    <div className='pt-1'>
                       <Media
                         pitches={null}
-                        media={data.media ?? []}
+                        media={data.triviaMedia ?? []}
                         orderableMedia={orderableMedia}
                         carouselMedia={carouselMedia}
                         optProblemId={null}
                         showLocation={false}
-                        compactTiles
+                        triviaTiles
                       />
-                    )}
-
-                    <div className='flex w-full min-w-0 flex-wrap content-start items-center gap-x-2 gap-y-1 sm:gap-y-1.5'>
-                      <ConditionLabels
-                        lat={data.coordinates?.latitude}
-                        lng={data.coordinates?.longitude}
-                        label={data.name ?? ''}
-                        wallDirectionCalculated={undefined}
-                        wallDirectionManual={undefined}
-                        sunFromHour={data.sunFromHour ?? 0}
-                        sunToHour={data.sunToHour ?? 0}
-                        pageViews={data.pageViews}
-                      />
-                      {data.forDevelopers && (
-                        <span
-                          className={cn(
-                            designContract.surfaces.inlineChip,
-                            'text-[11px] font-semibold tracking-wide text-amber-400/90 uppercase',
-                          )}
-                        >
-                          Under development
-                        </span>
-                      )}
-                      <ActionMenuChip
-                        label='PDF'
-                        icon={Download}
-                        title='Download PDF'
-                        items={[{ id: 'area-pdf', label: 'Area', href: `/areas/pdf?id=${data.id}`, kind: 'download' }]}
-                      />
-                      <ExternalLinkLabels externalLinks={data.externalLinks} />
                     </div>
-
-                    {(data.comment ?? '').trim().length > 0 && (
-                      <ExpandableMarkdown key={data.id} content={data.comment ?? ''} contentClassName='max-w-none' />
-                    )}
-
-                    {(data.triviaMedia?.length ?? 0) > 0 && (
-                      <div className='pt-1'>
-                        <Media
-                          pitches={null}
-                          media={data.triviaMedia ?? []}
-                          orderableMedia={orderableMedia}
-                          carouselMedia={carouselMedia}
-                          optProblemId={null}
-                          showLocation={false}
-                          triviaTiles
-                        />
-                      </div>
-                    )}
-                  </div>
-                )}
-                {effectiveTab === 'map' && (
-                  <div className='relative z-0 -mx-px h-[35vh] min-h-[220px] w-[calc(100%+2px)] overflow-hidden sm:mx-0 sm:h-[40vh] sm:w-full'>
-                    <Leaflet
-                      key={'area=' + data.id}
-                      autoZoom={true}
-                      height='100%'
-                      markers={markers}
-                      outlines={outlines}
-                      slopes={slopes}
-                      defaultCenter={
-                        data.coordinates?.latitude && data.coordinates?.longitude
-                          ? { lat: data.coordinates.latitude, lng: data.coordinates.longitude }
-                          : meta.defaultCenter
-                      }
-                      defaultZoom={data.coordinates ? 14 : meta.defaultZoom}
-                      showSatelliteImage={false}
-                      clusterMarkers={false}
-                      flyToId={null}
-                    />
-                  </div>
-                )}
-                {effectiveTab === 'distribution' && (
-                  <div className='p-4 sm:p-5'>
-                    <ChartGradeDistribution idArea={data.id ?? 0} embedded />
-                  </div>
-                )}
-                {effectiveTab === 'top' && (
-                  <div className='p-4 sm:p-5'>
-                    <Top idArea={data.id ?? 0} idSector={0} />
-                  </div>
-                )}
-                {effectiveTab === 'todo' && (
-                  <div className='p-4 sm:p-5'>
-                    <Todo idArea={data.id ?? 0} idSector={0} />
-                  </div>
-                )}
-              </div>
-            )}
+                  )}
+                </div>
+              )}
+              {effectiveTab === 'map' && (
+                <div className='relative z-0 -mx-px h-[35vh] min-h-[220px] w-[calc(100%+2px)] overflow-hidden sm:mx-0 sm:h-[40vh] sm:w-full'>
+                  <Leaflet
+                    key={'area=' + data.id}
+                    autoZoom={true}
+                    height='100%'
+                    markers={markers}
+                    outlines={outlines}
+                    slopes={slopes}
+                    defaultCenter={
+                      data.coordinates?.latitude && data.coordinates?.longitude
+                        ? { lat: data.coordinates.latitude, lng: data.coordinates.longitude }
+                        : meta.defaultCenter
+                    }
+                    defaultZoom={data.coordinates ? 14 : meta.defaultZoom}
+                    showSatelliteImage={false}
+                    clusterMarkers={false}
+                    flyToId={null}
+                  />
+                </div>
+              )}
+              {effectiveTab === 'distribution' && (
+                <div className='p-4 sm:p-5'>
+                  <ChartGradeDistribution idArea={data.id ?? 0} embedded />
+                </div>
+              )}
+              {effectiveTab === 'top' && (
+                <div className='p-4 sm:p-5'>
+                  <Top idArea={data.id ?? 0} idSector={0} />
+                </div>
+              )}
+              {effectiveTab === 'todo' && (
+                <div className='p-4 sm:p-5'>
+                  <Todo idArea={data.id ?? 0} idSector={0} />
+                </div>
+              )}
+              {/*
+               * Activity tab now renders **inside** the same Card as the other tabs (was a separate Card with
+               * `mt-6 sm:mt-8` margin below `</Card>`, which left a visible gap between the tab strip and the
+               * feed). The shared `Activity` component drops its own `Card flush` shell when `embedded` is set
+               * (see `Activity.tsx`), so the toolbar/divider/feed sit flush against the tab strip — same rhythm
+               * as `distribution` / `top` / `todo`. No `p-4` wrapper because the Activity toolbar + rows supply
+               * their own horizontal padding (`px-4 sm:px-5`).
+               */}
+              {effectiveTab === 'activity' && <Activity idArea={data.id ?? 0} idSector={0} embedded />}
+            </div>
           </>
         )}
       </Card>
@@ -1052,12 +1059,6 @@ const Area = () => {
             )}
           </div>
         </Card>
-      )}
-
-      {effectiveTab === 'activity' && (
-        <div className='mt-6 min-w-0 sm:mt-8'>
-          <Activity idArea={data.id ?? 0} idSector={0} />
-        </div>
       )}
     </div>
   );

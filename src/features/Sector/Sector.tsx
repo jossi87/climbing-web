@@ -827,137 +827,143 @@ const Sector = () => {
               })}
             </div>
 
-            {effectiveTab !== 'activity' && (
-              <div>
-                {effectiveTab === 'overview' && (
-                  <div className='space-y-4 p-4 sm:p-5'>
-                    {sectorAccessRestrictions}
-                    {(data.media?.length ?? 0) > 0 && (
+            <div>
+              {effectiveTab === 'overview' && (
+                <div className='space-y-4 p-4 sm:p-5'>
+                  {sectorAccessRestrictions}
+                  {(data.media?.length ?? 0) > 0 && (
+                    <Media
+                      pitches={null}
+                      media={data.media ?? []}
+                      orderableMedia={orderableMedia}
+                      carouselMedia={carouselMedia}
+                      optProblemId={null}
+                      showLocation={false}
+                      compactTiles
+                    />
+                  )}
+
+                  <div className='flex w-full min-w-0 flex-wrap content-start items-center gap-x-2 gap-y-1 sm:gap-y-1.5'>
+                    <ConditionLabels
+                      lat={conditionLat > 0 ? conditionLat : undefined}
+                      lng={conditionLng > 0 ? conditionLng : undefined}
+                      label={data.name ?? ''}
+                      wallDirectionCalculated={data.wallDirectionCalculated}
+                      wallDirectionManual={data.wallDirectionManual}
+                      sunFromHour={data.sunFromHour ?? data.areaSunFromHour ?? 0}
+                      sunToHour={data.sunToHour ?? data.areaSunToHour ?? 0}
+                      pageViews={data.pageViews}
+                    />
+                    <ActionMenuChip
+                      label='PDF'
+                      icon={Download}
+                      title='Download PDF'
+                      items={[
+                        {
+                          id: 'sector-pdf',
+                          label: 'Sector',
+                          href: `/sectors/pdf?id=${data.id}`,
+                          kind: 'download',
+                        },
+                        { id: 'area-pdf', label: 'Area', href: `/areas/pdf?id=${data.areaId}`, kind: 'download' },
+                      ]}
+                    />
+                    <ActionMenuChip
+                      label='Google Maps'
+                      icon={MapIcon}
+                      title='Open in Google Maps'
+                      items={[
+                        ...(data.parking
+                          ? [
+                              {
+                                id: 'maps-parking',
+                                label: 'Parking',
+                                href: googleMapsSearchUrl(data.parking.latitude, data.parking.longitude),
+                                kind: 'link' as const,
+                              },
+                            ]
+                          : []),
+                        ...(meta.isClimbing && (data.outline ?? []).length > 0
+                          ? [
+                              {
+                                id: 'maps-sector',
+                                label: 'Sector',
+                                href: googleMapsSearchUrl(
+                                  (data.outline ?? [])[0]?.latitude,
+                                  (data.outline ?? [])[0]?.longitude,
+                                ),
+                                kind: 'link' as const,
+                              },
+                            ]
+                          : []),
+                      ]}
+                    />
+                    <ExternalLinkLabels externalLinks={data.externalLinks} />
+                  </div>
+
+                  {(data.comment ?? '').trim().length > 0 && (
+                    <ExpandableMarkdown key={data.id} content={data.comment ?? ''} contentClassName='max-w-none' />
+                  )}
+
+                  {(data.triviaMedia?.length ?? 0) > 0 && (
+                    <div className='pt-1'>
                       <Media
                         pitches={null}
-                        media={data.media ?? []}
+                        media={data.triviaMedia ?? []}
                         orderableMedia={orderableMedia}
                         carouselMedia={carouselMedia}
                         optProblemId={null}
                         showLocation={false}
-                        compactTiles
+                        triviaTiles
                       />
-                    )}
-
-                    <div className='flex w-full min-w-0 flex-wrap content-start items-center gap-x-2 gap-y-1 sm:gap-y-1.5'>
-                      <ConditionLabels
-                        lat={conditionLat > 0 ? conditionLat : undefined}
-                        lng={conditionLng > 0 ? conditionLng : undefined}
-                        label={data.name ?? ''}
-                        wallDirectionCalculated={data.wallDirectionCalculated}
-                        wallDirectionManual={data.wallDirectionManual}
-                        sunFromHour={data.sunFromHour ?? data.areaSunFromHour ?? 0}
-                        sunToHour={data.sunToHour ?? data.areaSunToHour ?? 0}
-                        pageViews={data.pageViews}
-                      />
-                      <ActionMenuChip
-                        label='PDF'
-                        icon={Download}
-                        title='Download PDF'
-                        items={[
-                          {
-                            id: 'sector-pdf',
-                            label: 'Sector',
-                            href: `/sectors/pdf?id=${data.id}`,
-                            kind: 'download',
-                          },
-                          { id: 'area-pdf', label: 'Area', href: `/areas/pdf?id=${data.areaId}`, kind: 'download' },
-                        ]}
-                      />
-                      <ActionMenuChip
-                        label='Google Maps'
-                        icon={MapIcon}
-                        title='Open in Google Maps'
-                        items={[
-                          ...(data.parking
-                            ? [
-                                {
-                                  id: 'maps-parking',
-                                  label: 'Parking',
-                                  href: googleMapsSearchUrl(data.parking.latitude, data.parking.longitude),
-                                  kind: 'link' as const,
-                                },
-                              ]
-                            : []),
-                          ...(meta.isClimbing && (data.outline ?? []).length > 0
-                            ? [
-                                {
-                                  id: 'maps-sector',
-                                  label: 'Sector',
-                                  href: googleMapsSearchUrl(
-                                    (data.outline ?? [])[0]?.latitude,
-                                    (data.outline ?? [])[0]?.longitude,
-                                  ),
-                                  kind: 'link' as const,
-                                },
-                              ]
-                            : []),
-                        ]}
-                      />
-                      <ExternalLinkLabels externalLinks={data.externalLinks} />
                     </div>
-
-                    {(data.comment ?? '').trim().length > 0 && (
-                      <ExpandableMarkdown key={data.id} content={data.comment ?? ''} contentClassName='max-w-none' />
-                    )}
-
-                    {(data.triviaMedia?.length ?? 0) > 0 && (
-                      <div className='pt-1'>
-                        <Media
-                          pitches={null}
-                          media={data.triviaMedia ?? []}
-                          orderableMedia={orderableMedia}
-                          carouselMedia={carouselMedia}
-                          optProblemId={null}
-                          showLocation={false}
-                          triviaTiles
-                        />
-                      </div>
-                    )}
-                  </div>
-                )}
-                {effectiveTab === 'map' && (
-                  <div className='relative z-0 -mx-px h-[35vh] min-h-[220px] w-[calc(100%+2px)] overflow-hidden sm:mx-0 sm:h-[50vh] sm:w-full'>
-                    <Leaflet
-                      key={'sector=' + data.id}
-                      autoZoom={true}
-                      height='100%'
-                      markers={markers}
-                      outlines={outlines}
-                      slopes={slopes}
-                      defaultCenter={defaultCenter}
-                      defaultZoom={defaultZoom}
-                      onMouseClick={undefined}
-                      onMouseMove={undefined}
-                      showSatelliteImage={isBouldering}
-                      clusterMarkers={true}
-                      rocks={uniqueRocks}
-                      flyToId={null}
-                    />
-                  </div>
-                )}
-                {effectiveTab === 'distribution' && (
-                  <div className='p-4 sm:p-5'>
-                    <ChartGradeDistribution idSector={data.id ?? 0} embedded />
-                  </div>
-                )}
-                {effectiveTab === 'top' && (
-                  <div className='p-4 sm:p-5'>
-                    <Top idArea={0} idSector={data.id ?? 0} />
-                  </div>
-                )}
-                {effectiveTab === 'todo' && (
-                  <div className='p-4 sm:p-5'>
-                    <Todo idArea={0} idSector={data.id ?? 0} />
-                  </div>
-                )}
-              </div>
-            )}
+                  )}
+                </div>
+              )}
+              {effectiveTab === 'map' && (
+                <div className='relative z-0 -mx-px h-[35vh] min-h-[220px] w-[calc(100%+2px)] overflow-hidden sm:mx-0 sm:h-[50vh] sm:w-full'>
+                  <Leaflet
+                    key={'sector=' + data.id}
+                    autoZoom={true}
+                    height='100%'
+                    markers={markers}
+                    outlines={outlines}
+                    slopes={slopes}
+                    defaultCenter={defaultCenter}
+                    defaultZoom={defaultZoom}
+                    onMouseClick={undefined}
+                    onMouseMove={undefined}
+                    showSatelliteImage={isBouldering}
+                    clusterMarkers={true}
+                    rocks={uniqueRocks}
+                    flyToId={null}
+                  />
+                </div>
+              )}
+              {effectiveTab === 'distribution' && (
+                <div className='p-4 sm:p-5'>
+                  <ChartGradeDistribution idSector={data.id ?? 0} embedded />
+                </div>
+              )}
+              {effectiveTab === 'top' && (
+                <div className='p-4 sm:p-5'>
+                  <Top idArea={0} idSector={data.id ?? 0} />
+                </div>
+              )}
+              {effectiveTab === 'todo' && (
+                <div className='p-4 sm:p-5'>
+                  <Todo idArea={0} idSector={data.id ?? 0} />
+                </div>
+              )}
+              {/*
+               * Activity tab renders **inside** the same Card as the other tabs (was a separate Card with `mt-4`
+               * margin below `</Card>`, leaving a visible gap between the tab strip and the feed). `embedded`
+               * drops `Activity`'s own `Card flush` wrapper so the toolbar / divider / feed sit flush against
+               * the tab strip — matches the rhythm of `distribution` / `top` / `todo`. No `p-4` wrapper because
+               * the Activity toolbar + rows supply their own horizontal padding (`px-4 sm:px-5`).
+               */}
+              {effectiveTab === 'activity' && <Activity idArea={0} idSector={data.id ?? 0} embedded />}
+            </div>
           </>
         )}
       </Card>
@@ -1059,12 +1065,6 @@ const Sector = () => {
               ) : null
             }
           />
-        </div>
-      )}
-
-      {effectiveTab === 'activity' && (
-        <div className='mt-4 min-w-0'>
-          <Activity idArea={0} idSector={data.id ?? 0} />
         </div>
       )}
     </div>
