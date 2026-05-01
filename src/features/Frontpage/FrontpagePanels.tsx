@@ -898,7 +898,18 @@ export const FrontpagePanels = ({ frontpage, isLoading = false }: Props) => {
         <FirstAscentsPanel items={fas} isBouldering={isBouldering} />
       </div>
       <NewestMediaPanel items={media} />
-      <CommentsPanel items={comments} />
+      {/*
+       * Comments panel hides entirely when the region has no comment activity (some smaller regions never get any).
+       * The other three buckets always have *something* to show across regions (FAs / ticks / media), so they keep
+       * their empty-state copy; comments are the only one frequently empty by structure, and a permanent
+       * "No comments yet." panel reads as a dead zone rather than a content slot.
+       *
+       * Note: the loading skeleton above always reserves a slot for the comments panel — when data resolves with
+       * `comments.length === 0` the panel collapses out, producing a small one-time layout shift. That's preferable
+       * to showing the empty panel indefinitely; the alternative (peek at frontpage data before deciding skeleton
+       * shape) would require a second render pass which we don't have on the initial load.
+       */}
+      {comments.length > 0 ? <CommentsPanel items={comments} /> : null}
     </div>
   );
 };
