@@ -31,7 +31,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { captureSentryException, captureSentryMessage } from '../../utils/sentry';
 import ExternalLink from '../../shared/ui/ExternalLinks';
-import { Calendar, Save, ChevronDown, AlertTriangle, Edit, Loader2, MapPinOff } from 'lucide-react';
+import { Calendar, Save, ChevronDown, AlertTriangle, Edit, Loader2, MapPinOff, Plus } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 import { Card, FormSwitch, MarkdownFieldLabel, NotFoundCard, SectionHeader } from '../../shared/ui';
@@ -310,23 +310,36 @@ const ProblemEdit = ({ problem, sector }: Props) => {
     'problem-edit-field w-full bg-surface-nav border border-surface-border rounded-lg px-3 py-2.5 text-sm text-white transition-colors focus:border-brand-border focus:outline-none focus:ring-0 focus-visible:ring-0';
   const labelClasses = 'ml-1 mb-1 block text-[12px] font-medium text-slate-400 sm:text-[13px]';
 
+  /*
+   * **Add vs Edit mode** — `problemId < 0` is the loader's convention for "no record exists yet"
+   * (the loader synthesises a placeholder with `id: -1` for new problems / routes). We branch on
+   * that here so the page title, HTML `<title>`, header icon, and subtitle all agree about which
+   * mode the user is in. Subtitle ("contact Jostein to move to another sector") is **hidden** in
+   * Add mode — the problem doesn't exist yet, so there's nothing to move.
+   */
+  const isNew = problemId < 0;
+  const noun = meta.isBouldering ? 'problem' : 'route';
+  const headerTitle = `${isNew ? 'Add' : 'Edit'} ${noun}`;
+
   return (
     <div className='w-full min-w-0 pb-20 text-left'>
-      <title>{`Edit ${data.name} | ${meta?.title}`}</title>
+      <title>{`${isNew ? `Add ${noun}` : `Edit ${data.name}`} | ${meta?.title}`}</title>
 
       <Card flush className='min-w-0 border-0'>
         <div className='p-4 sm:p-5'>
           <SectionHeader
-            title={meta.isBouldering ? 'Edit problem' : 'Edit route'}
-            icon={Edit}
+            title={headerTitle}
+            icon={isNew ? Plus : Edit}
             description={
-              <>
-                Contact{' '}
-                <a href='mailto:jostein.oygarden@gmail.com' className='hover:text-brand font-semibold text-slate-200'>
-                  Jostein Øygarden
-                </a>{' '}
-                if you want to move this {meta.isBouldering ? 'problem' : 'route'} to another sector.
-              </>
+              isNew ? undefined : (
+                <>
+                  Contact{' '}
+                  <a href='mailto:jostein.oygarden@gmail.com' className='hover:text-brand font-semibold text-slate-200'>
+                    Jostein Øygarden
+                  </a>{' '}
+                  if you want to move this {noun} to another sector.
+                </>
+              )
             }
           />
           <form

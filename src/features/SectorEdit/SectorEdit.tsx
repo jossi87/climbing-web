@@ -29,6 +29,7 @@ import {
   RotateCcw,
   Save,
   Loader2,
+  Plus,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
@@ -406,22 +407,34 @@ export const SectorEdit = ({ sector, area }: Props) => {
     'w-full bg-surface-nav border border-surface-border rounded-lg px-3 py-2.5 text-sm text-white transition-colors focus:border-brand focus:outline-none';
   const labelClasses = 'ml-1 mb-1 block text-[12px] font-medium text-slate-400 sm:text-[13px]';
 
+  /*
+   * **Add vs Edit mode** — `data.id <= 0` is the loader's convention for "no record exists yet"
+   * (the loader synthesises a placeholder with `id: -1` for new sectors). We branch on that here
+   * so the page title, HTML `<title>`, header icon, and subtitle all agree about which mode the
+   * user is in. Subtitle ("contact Jostein to move or split sector") is **hidden** in Add mode —
+   * the sector doesn't exist yet, so there's nothing to move or split.
+   */
+  const isNew = !data.id || data.id <= 0;
+  const headerTitle = isNew ? 'Add Sector' : 'Edit Sector';
+
   return (
     <div className='w-full min-w-0 pb-20'>
-      <title>{`Edit ${data.name} | ${meta?.title}`}</title>
+      <title>{`${isNew ? 'Add sector' : `Edit ${data.name}`} | ${meta?.title}`}</title>
       <Card flush className='min-w-0 border-0'>
         <div className='p-4 sm:p-5'>
           <SectionHeader
-            title='Edit Sector'
-            icon={Edit}
+            title={headerTitle}
+            icon={isNew ? Plus : Edit}
             description={
-              <>
-                Contact{' '}
-                <a href='mailto:jostein.oygarden@gmail.com' className='hover:text-brand font-semibold text-slate-200'>
-                  Jostein Øygarden
-                </a>{' '}
-                if you want to move or split sector.
-              </>
+              isNew ? undefined : (
+                <>
+                  Contact{' '}
+                  <a href='mailto:jostein.oygarden@gmail.com' className='hover:text-brand font-semibold text-slate-200'>
+                    Jostein Øygarden
+                  </a>{' '}
+                  if you want to move or split sector.
+                </>
+              )
             }
           />
           <form onSubmit={save} className='mt-3 space-y-3'>
