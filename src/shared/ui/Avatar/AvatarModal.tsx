@@ -2,6 +2,23 @@ import { Link } from 'react-router-dom';
 import { User } from 'lucide-react';
 import { getMediaFileUrl } from '../../../api/utils';
 
+/**
+ * **Layout strategy** — viewport-sized backdrop, three vertically-stacked sections inside a `max-w-5xl` column:
+ *
+ *   1. Image wrapper: `flex-1 min-h-0` — fills *remaining* vertical space after the footer claims its natural size,
+ *      and `min-h-0` lets the wrapper shrink below the image's intrinsic content size (without it, flex children
+ *      refuse to shrink below their content). The `<img>` inside uses `max-h-full max-w-full object-contain` to
+ *      scale down to fit while preserving aspect ratio.
+ *   2. Optional name caption (centered, shrink-0).
+ *   3. Action buttons (View profile / Close, shrink-0).
+ *
+ * **Why this isn't `max-h-[85vh]` on a single flex-col container** (the previous version) — `max-h: %` on a flex
+ * child evaluates to `none` when the containing block has auto height (CSS spec), so `max-h-full` on the `<img>`
+ * was silently ignored when the parent was sized by content. Tall images rendered at natural height, overflowed
+ * the column, and pushed the buttons below the viewport. Wrapping the image in a `flex-1 min-h-0` div gives the
+ * image a containing block with a *definite* height (the remaining space inside the column), so `max-h-full` is
+ * now respected and the image scales down on small screens.
+ */
 export default function AvatarModal({
   mid,
   name,
@@ -20,18 +37,30 @@ export default function AvatarModal({
 
   return (
     <div
-      className='bg-surface-dark animate-in fade-in fixed inset-0 z-9999 flex h-screen w-screen flex-col items-center justify-center p-4 transition-all duration-200'
+      className='bg-surface-dark animate-in fade-in fixed inset-0 z-9999 flex flex-col items-center justify-center p-4 transition-all duration-200'
       onClick={onClose}
     >
-      <div className='relative flex max-h-[85vh] max-w-5xl flex-col items-center' onClick={(e) => e.stopPropagation()}>
-        <img
-          src={getMediaFileUrl(mid, stamp ?? 0, false)}
-          alt={name ?? ''}
-          className='border-surface-border h-auto max-h-full w-auto max-w-full cursor-pointer rounded-xl border object-contain shadow-2xl'
-          onClick={onClose}
-        />
-        {name ? <div className='mt-5 text-center text-base font-semibold text-slate-100 sm:text-lg'>{name}</div> : null}
-        <div className='mt-4 flex items-center gap-3'>
+      <div
+        className='relative flex h-full w-full max-w-5xl flex-col items-center justify-center gap-5'
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/*
+          `flex-1 min-h-0` makes this wrapper claim the remaining height after the name + buttons measure their
+          natural size. The min-0 floor is critical — without it, the flex item would refuse to shrink below the
+          image's intrinsic height and the column would overflow downward, hiding the buttons.
+        */}
+        <div className='flex min-h-0 w-full flex-1 items-center justify-center'>
+          <img
+            src={getMediaFileUrl(mid, stamp ?? 0, false)}
+            alt={name ?? ''}
+            className='border-surface-border max-h-full max-w-full cursor-pointer rounded-xl border object-contain shadow-2xl'
+            onClick={onClose}
+          />
+        </div>
+        {name ? (
+          <div className='shrink-0 text-center text-base font-semibold text-slate-100 sm:text-lg'>{name}</div>
+        ) : null}
+        <div className='flex shrink-0 items-center gap-3'>
           {hasUser ? (
             <Link
               to={`/user/${userId}`}

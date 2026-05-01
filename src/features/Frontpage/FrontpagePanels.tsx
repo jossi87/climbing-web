@@ -622,9 +622,17 @@ function NewestMediaPanel({ items }: { items: NewestMedia[] }) {
 }
 
 /**
- * Comments mirror the FA / Recent layout: avatar → route headline → location subline → timeAgo. The comment text itself
- * sits between the headline and location as the row's "meat" (clamped to two lines so long replies stay scannable).
- * Two-column on `sm+` since each comment is short and the panel is full-bleed.
+ * Comments mirror the FA / Recent layout: avatar → route headline → location subline → timeAgo, with the comment
+ * text as the row's "meat" between the headline and the byline (clamped to two lines so long replies stay
+ * scannable). Two-column on `sm+` since each comment is short and the panel is full-bleed.
+ *
+ * **Right-column rhythm matches FA / Recent**: timeAgo on line 1, **commenter name** on line 2 — same trailing
+ * meta channel across all three feed-style panels (FA / Recent / Comments). The area used to live in the right
+ * column on line 2, but that left the panels reading as inconsistent (Comments had area-on-the-right while
+ * FA / Recent had climber-on-the-right) and put the loudest piece of metadata where the user expected the actor.
+ *
+ * The area now sits inline next to the route name on line 1, separated by a quiet middle dot — visually demoted
+ * from the bold route headline and aligned with the rest of the row's secondary metadata.
  */
 function CommentsPanel({ items }: { items: LastComment[] }) {
   return (
@@ -656,14 +664,11 @@ function CommentsPanel({ items }: { items: LastComment[] }) {
                   />
                 </div>
                 {/*
-                  Two-line shape mirroring FA / Recent rows so the four panels share one rhythm:
-                    line 1 → headline (left) + timeAgo (right)
-                    line 2 → comment body (up to 2 lines, left) + area (right)
-                  The old layout left the area dangling on a third line by itself, which read as awkward
-                  trailing metadata. Pairing area with the comment makes the right column a consistent
-                  "trailing meta" channel (timeAgo above, area below) and shaves ~15px off each row.
-                  `items-baseline` aligns the area to the **first baseline** of the comment, so for 2-line
-                  comments the area sits next to line 1 with line 2 wrapping under it.
+                  Two-line shape, identical right-column rhythm to FA / Recent rows:
+                    line 1 → route + middle-dot + area (left, truncates as one block) + timeAgo (right)
+                    line 2 → comment body (up to 2 lines, left) + commenter name (right, `bylineRightClass`)
+                  `items-baseline` aligns the byline to the **first baseline** of the comment so for 2-line
+                  comments the name sits next to line 1 with line 2 wrapping under it.
                 */}
                 <div className={rowGridClass}>
                   <div className={rowLineClass}>
@@ -674,18 +679,38 @@ function CommentsPanel({ items }: { items: LastComment[] }) {
                         problemLockedAdmin={a.problemLockedAdmin}
                         problemLockedSuperadmin={a.problemLockedSuperadmin}
                       />
+                      {a.areaName ? (
+                        <>
+                          {/*
+                            Quiet middle-dot separator — `slate-500` ink + `font-normal` so it reads as ambient
+                            punctuation rather than the bold `feed.metaSep` style used in the activity feed (which
+                            is `slate-300 font-semibold` and would compete with the route headline here).
+                          */}
+                          <span className='mx-1 align-baseline font-normal text-slate-500' aria-hidden>
+                            ·
+                          </span>
+                          {/*
+                            `muted` tone → `slate-400` location link — one step softer than the route name
+                            (`slate-50`) but still legible and clickable. Matches the location subline tone used
+                            on FA / Recent line 2, so "area as ambient context" reads consistently across panels.
+                          */}
+                          <LocationInline areaId={a.areaId} areaName={a.areaName} tone='muted' />
+                        </>
+                      ) : null}
                     </p>
                     <span className={timeAgoClass}>{a.timeAgo}</span>
                   </div>
-                  {(a.comment || a.areaName) && (
+                  {(a.comment || u) && (
                     <div className={rowLineClass}>
                       <p className={commentBodyClass}>{a.comment ? <Linkify>{a.comment}</Linkify> : null}</p>
-                      {a.areaName ? (
+                      {u ? (
                         <span className={bylineRightClass}>
-                          {/* `trailing` tone → `nameLinkClass` (slate-500) so the area matches the sibling
-                              `timeAgo` ink and the "trailing right column" reads as one unified channel
-                              (timeAgo + area), same design language as FA / Recent. */}
-                          <LocationInline areaId={a.areaId} areaName={a.areaName} tone='trailing' />
+                          {/*
+                            Commenter name on the right (line 2) — same `slate-500` byline tone as FA / Recent so
+                            the trailing right column reads as one unified channel (timeAgo above, name below)
+                            across all three feed panels.
+                          */}
+                          <NameList users={[u]} />
                         </span>
                       ) : null}
                     </div>
@@ -761,9 +786,14 @@ const SkeletonMediaTile = ({ hideOnMobile }: { hideOnMobile: boolean }) => (
  * spectrum since comment length is unknown until the data lands:
  *
  *   - Line 1: headline `<p>` (`headlineLineClass`, 13px × `leading-tight` = 16.25px mobile, 14px × 1.25 = 17.5px
- *     on `sm+`) + `timeAgo` span (~15px) → flex line = **~17px mobile / ~18px sm+**.
+ *     on `sm+`) holds **route + middle-dot + area** (one truncating block) + `timeAgo` span (~15px) → flex line =
+ *     **~17px mobile / ~18px sm+**.
  *   - Line 2: comment body (`commentBodyClass`, 12px × `leading-tight` = **15px** for a 1-line comment, up to 30px
- *     when `line-clamp-2` wraps) + area span (15px) → flex line = **15px**.
+ *     when `line-clamp-2` wraps) + commenter-name span (`bylineRightClass`, 11px / 12px × `leading-tight` ≈ 15px) →
+ *     flex line = **15px**.
+ *
+ * The line-2 right bar represents the **commenter name** (since the area moved to line 1 alongside the route);
+ * width is kept narrow (`w-[40%]`) because climber names are typically short and `bylineRightClass` truncates.
  *
  * Total content = ~32px mobile / ~33px sm+ (matches FA / Recent rows). 1-line comments load with **no shift**;
  * longer comments grow the row by ~15px on settle. We deliberately under-reserve here rather than over-reserve —
