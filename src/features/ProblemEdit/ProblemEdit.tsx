@@ -311,13 +311,16 @@ const ProblemEdit = ({ problem, sector }: Props) => {
   const labelClasses = 'ml-1 mb-1 block text-[12px] font-medium text-slate-400 sm:text-[13px]';
 
   /*
-   * **Add vs Edit mode** — `problemId < 0` is the loader's convention for "no record exists yet"
-   * (the loader synthesises a placeholder with `id: -1` for new problems / routes). We branch on
-   * that here so the page title, HTML `<title>`, header icon, and subtitle all agree about which
-   * mode the user is in. Subtitle ("contact Jostein to move to another sector") is **hidden** in
-   * Add mode — the problem doesn't exist yet, so there's nothing to move.
+   * **Add vs Edit mode** — the route is `/problem/edit/:sectorId/:problemId`. **New** problems use
+   * `problemId === 0` in the URL (see sector page link to `/problem/edit/${sectorId}/0`). The
+   * loader then synthesises a placeholder with `internalProblem.id === -1` because `useProblem`
+   * is `enabled` only for `id > 0`. We must key off the **URL param** (`problemId <= 0`), not
+   * `problemId < 0` — otherwise Add mode never trips and the header stays "Edit …".
+   *
+   * Subtitle ("contact Jostein to move to another sector") is **hidden** in Add mode — the
+   * problem doesn't exist yet, so there's nothing to move.
    */
-  const isNew = problemId < 0;
+  const isNew = problemId <= 0;
   const noun = meta.isBouldering ? 'problem' : 'route';
   const headerTitle = `${isNew ? 'Add' : 'Edit'} ${noun}`;
 
@@ -789,7 +792,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
               >
                 Cancel
               </button>
-              {problemId < 0 && (
+              {isNew && (
                 <button
                   type='button'
                   onClick={(e) => save(e, data).then((dest) => dest && navigate(0))}
