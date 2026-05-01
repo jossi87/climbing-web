@@ -84,7 +84,12 @@ export const ProblemEditLoader = () => {
       name: '',
       comment: '',
       rock: undefined,
-      originalGrade: 'n/a',
+      /*
+       * Empty (not `'n/a'`) so the grade `<select>` defaults to its placeholder option ("Select grade…")
+       * and the form's required-grade validation catches the omission. Forcing the user to pick a real
+       * grade up-front beats having `'n/a'` survive into search / sorts / topo lists later.
+       */
+      originalGrade: '',
       fa: [],
       faDate: convertFromDateToString(new Date()),
       nr: 0,
@@ -281,6 +286,25 @@ const ProblemEdit = ({ problem, sector }: Props) => {
   const hasProblemCoords =
     data.coordinates != null && (data.coordinates.latitude != null || data.coordinates.longitude != null);
 
+  /*
+   * **Required-field validation** for the form. Centralised here so the `<select>` red-border / inline message
+   * and the two save buttons (`Save` / `Save & add new`) all read from the same flags — drifting any of these
+   * would let one entrypoint accept input the others reject.
+   *
+   * - **Name** is mandatory everywhere (single text input, blank check).
+   * - **Grade** is mandatory and **must not be the legacy `'n/a'` placeholder** — `originalGrade` was historically
+   *   defaulted to `'n/a'` and rendered as a real option in the dropdown, which let people save problems with no
+   *   real grade and polluted search / sorts. We now default to `''` (placeholder option), filter `'n/a'` out of
+   *   the selectable grades, and treat both `''` and `'n/a'` as invalid so legacy-edited problems are also
+   *   forced to pick a real grade before they can re-save.
+   * - **Type** is mandatory **only on climbing route forms with more than one type**. Bouldering doesn't render
+   *   the field; sectors with a single type auto-fall back to that one in {@link postProblem}, so requiring a
+   *   manual pick there would be busywork. The `meta.types.length > 1` check mirrors that logic.
+   */
+  const gradeMissing = !data.originalGrade || data.originalGrade === 'n/a';
+  const typeMissing = meta.types.length > 1 && !data.t?.id;
+  const canSave = !!data.name && !gradeMissing && !typeMissing && !saving;
+
   const inputClasses =
     'problem-edit-field w-full bg-surface-nav border border-surface-border rounded-lg px-3 py-2.5 text-sm text-white transition-colors focus:border-brand-border focus:outline-none focus:ring-0 focus-visible:ring-0';
   const labelClasses = 'ml-1 mb-1 block text-[12px] font-medium text-slate-400 sm:text-[13px]';
@@ -358,21 +382,47 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                   <label className={labelClasses}>Grade</label>
                   <div className='relative'>
                     <select
-                      className={cn(inputClasses, 'cursor-pointer appearance-none pr-9')}
-                      value={data.originalGrade}
+                      className={cn(
+                        inputClasses,
+                        'cursor-pointer appearance-none pr-9',
+                        gradeMissing && 'border-red-500/50',
+                      )}
+                      /*
+                       * `value={originalGrade ?? ''}` so the placeholder option below resolves correctly when
+                       * the API ever returns `undefined` for the field — without the coercion the `<select>`
+                       * would silently fall back to its first DOM option and look "selected" when it isn't.
+                       */
+                      value={data.originalGrade ?? ''}
                       onChange={(e) => setData((prev) => ({ ...prev, originalGrade: e.target.value }))}
                     >
-                      {meta.grades.map((g, i) => (
-                        <option key={i} value={g.grade}>
-                          {g.grade}
-                        </option>
-                      ))}
+                      {/*
+                        Placeholder option — disabled so it can't be re-picked once the user moves off it, and
+                        rendered first so the browser's "value not in option list" fallback (legacy `'n/a'`
+                        problems opened for editing) lands here visually, prompting a real grade pick before
+                        the form will accept the save.
+                      */}
+                      <option value='' disabled>
+                        Select grade…
+                      </option>
+                      {/*
+                        Filter out the legacy `'n/a'` sentinel — it's still allowed as a stored value (so
+                        existing data round-trips through the form unchanged on cancel), but it's no longer
+                        a *selectable* option, so the only way out of the placeholder is a real grade.
+                      */}
+                      {meta.grades
+                        .filter((g) => g.grade !== 'n/a')
+                        .map((g, i) => (
+                          <option key={i} value={g.grade}>
+                            {g.grade}
+                          </option>
+                        ))}
                     </select>
                     <ChevronDown
                       size={16}
                       className='pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-slate-500'
                     />
                   </div>
+                  {gradeMissing && <p className='ml-1 text-[11px] font-bold text-red-500'>Grade required</p>}
                 </div>
 
                 <div className='space-y-2'>
@@ -478,10 +528,31 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                   <label className={labelClasses}>Type</label>
                   <div className='relative'>
                     <select
-                      className={cn(inputClasses, 'cursor-pointer appearance-none pr-9')}
-                      value={data.t?.id}
+                      className={cn(
+                        inputClasses,
+                        'cursor-pointer appearance-none pr-9',
+                        typeMissing && 'border-red-500/50',
+                      )}
+                      /*
+                       * `value={data.t?.id ?? ''}` so the placeholder option resolves on new problems (where
+                       * `data.t` is `undefined`). Without the coercion, an undefined `value` makes the
+                       * `<select>` look like it's auto-selected the first type — which is exactly the implicit
+                       * "you didn't pick, but we picked for you" behaviour the user wants gone.
+                       */
+                      value={data.t?.id ?? ''}
                       onChange={(e) => setData((p) => ({ ...p, t: { ...p.t, id: +e.target.value } }))}
                     >
+                      {/*
+                        Placeholder option only when there's actually a choice to make. With a single type the
+                        `<select>` is functionally a label and {@link postProblem} falls back to `meta.types[0]`,
+                        so showing a "Select type…" prompt would be busywork (matches the existing `typeMissing`
+                        validation, which only requires a pick when `meta.types.length > 1`).
+                      */}
+                      {meta.types.length > 1 && (
+                        <option value='' disabled>
+                          Select type…
+                        </option>
+                      )}
                       {meta.types.map((t, i) => (
                         <option key={i} value={t.id}>
                           {t.type + (t.subType ? ' - ' + t.subType : '')}
@@ -493,6 +564,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                       className='pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-slate-500'
                     />
                   </div>
+                  {typeMissing && <p className='ml-1 text-[11px] font-bold text-red-500'>Type required</p>}
                 </div>
 
                 <div className='space-y-2'>
@@ -713,7 +785,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                 <button
                   type='button'
                   onClick={(e) => save(e, data).then((dest) => dest && navigate(0))}
-                  disabled={!data.name || (meta.types.length > 1 && !data.t?.id) || saving}
+                  disabled={!canSave}
                   className='form-footer-secondary disabled:opacity-50'
                 >
                   Save &amp; add new
@@ -721,7 +793,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
               )}
               <button
                 type='submit'
-                disabled={!data.name || (meta.types.length > 1 && !data.t?.id) || saving}
+                disabled={!canSave}
                 className='type-label flex items-center gap-2 rounded-lg bg-emerald-400 px-8 py-2.5 text-slate-950 shadow-lg shadow-emerald-900/30 transition-all hover:bg-emerald-300 disabled:opacity-50'
               >
                 {saving ? <Loader2 className='animate-spin' size={16} /> : <Save size={16} />}
