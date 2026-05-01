@@ -292,16 +292,17 @@ const ProblemEdit = ({ problem, sector }: Props) => {
    * would let one entrypoint accept input the others reject.
    *
    * - **Name** is mandatory everywhere (single text input, blank check).
-   * - **Grade** is mandatory and **must not be the legacy `'n/a'` placeholder** — `originalGrade` was historically
-   *   defaulted to `'n/a'` and rendered as a real option in the dropdown, which let people save problems with no
-   *   real grade and polluted search / sorts. We now default to `''` (placeholder option), filter `'n/a'` out of
-   *   the selectable grades, and treat both `''` and `'n/a'` as invalid so legacy-edited problems are also
-   *   forced to pick a real grade before they can re-save.
+   * - **Grade** is mandatory but **`'n/a'` is a legal grade** (some problems / routes legitimately have no
+   *   numeric grade — projects, ungraded variations, ice grades not in the table, etc.). It's just no longer
+   *   the implicit *default*: `originalGrade` was historically initialised to `'n/a'` so people kept saving
+   *   problems without thinking about the grade. We now default to `''` (placeholder option) and force the
+   *   user to make an explicit pick — but `'n/a'` is still selectable in the dropdown and counts as a valid
+   *   pick for the save check. Only blank counts as "missing".
    * - **Type** is mandatory **only on climbing route forms with more than one type**. Bouldering doesn't render
    *   the field; sectors with a single type auto-fall back to that one in {@link postProblem}, so requiring a
    *   manual pick there would be busywork. The `meta.types.length > 1` check mirrors that logic.
    */
-  const gradeMissing = !data.originalGrade || data.originalGrade === 'n/a';
+  const gradeMissing = !data.originalGrade;
   const typeMissing = meta.types.length > 1 && !data.t?.id;
   const canSave = !!data.name && !gradeMissing && !typeMissing && !saving;
 
@@ -396,26 +397,20 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                       onChange={(e) => setData((prev) => ({ ...prev, originalGrade: e.target.value }))}
                     >
                       {/*
-                        Placeholder option — disabled so it can't be re-picked once the user moves off it, and
-                        rendered first so the browser's "value not in option list" fallback (legacy `'n/a'`
-                        problems opened for editing) lands here visually, prompting a real grade pick before
-                        the form will accept the save.
+                        Placeholder option — disabled so it can't be re-picked once the user moves off it,
+                        and rendered first so the `<select>` opens on it for new problems (where
+                        `originalGrade === ''`). The user must explicitly pick a grade — including `'n/a'`,
+                        which is itself a legal grade for ungraded routes / projects / ice — before the form
+                        will accept a save. Existing problems round-trip through their stored value unchanged.
                       */}
                       <option value='' disabled>
                         Select grade…
                       </option>
-                      {/*
-                        Filter out the legacy `'n/a'` sentinel — it's still allowed as a stored value (so
-                        existing data round-trips through the form unchanged on cancel), but it's no longer
-                        a *selectable* option, so the only way out of the placeholder is a real grade.
-                      */}
-                      {meta.grades
-                        .filter((g) => g.grade !== 'n/a')
-                        .map((g, i) => (
-                          <option key={i} value={g.grade}>
-                            {g.grade}
-                          </option>
-                        ))}
+                      {meta.grades.map((g, i) => (
+                        <option key={i} value={g.grade}>
+                          {g.grade}
+                        </option>
+                      ))}
                     </select>
                     <ChevronDown
                       size={16}
