@@ -7,6 +7,7 @@ import {
   type FormEvent,
   type UIEvent,
 } from 'react';
+import { parseCoordInput, sanitizeCoordInput, useCoordinateText } from '../../shared/hooks/useCoordinateText';
 import { UsersSelector } from '../../shared/ui/UserSelector';
 import RockSelector from '../../shared/components/RockSelector/RockSelector';
 import ProblemSection from '../../shared/components/ProblemSection/ProblemSection';
@@ -246,24 +247,33 @@ const ProblemEdit = ({ problem, sector }: Props) => {
       .filter((v, i, s) => s.indexOf(v) === i)
       .sort() ?? [];
 
-  const parseCoordInput = (raw: string): number | undefined => {
-    const t = raw.trim();
-    if (t === '') return undefined;
-    const n = parseFloat(t.replace(',', '.'));
-    return Number.isNaN(n) ? undefined : n;
-  };
+  /*
+   * Raw text-state for the lat / lng inputs (number → string round-trip would otherwise strip mid-typing
+   * decimals — see {@link useCoordinateText} for the full rationale). The parsed numbers still live in
+   * `data.coordinates`, so save / map preview / "Remove position" all work unchanged.
+   */
+  const lat = useCoordinateText(data.coordinates?.latitude);
+  const lng = useCoordinateText(data.coordinates?.longitude);
 
   const setCoordField = (field: 'latitude' | 'longitude') => (e: ChangeEvent<HTMLInputElement>) => {
+    /*
+     * Sanitize first, then route the **same** string into both the displayed text state and the parsed write
+     * to `data`. Sanitizing once at the boundary avoids a class of mismatch bugs where the visible text and
+     * the persisted number disagree (e.g. typing `"x60"` would otherwise render as `"60"` after the
+     * sanitizer but parse the raw `"x60"` to `NaN`, which the resync effect would then resync back to `""`).
+     */
+    const sanitized = sanitizeCoordInput(e.target.value);
+    (field === 'latitude' ? lat.setText : lng.setText)(sanitized);
     setData((prev) => {
-      const v = parseCoordInput(e.target.value);
-      const lat = field === 'latitude' ? v : prev.coordinates?.latitude;
-      const lng = field === 'longitude' ? v : prev.coordinates?.longitude;
-      if (lat == null && lng == null) {
+      const v = parseCoordInput(sanitized);
+      const nextLat = field === 'latitude' ? v : prev.coordinates?.latitude;
+      const nextLng = field === 'longitude' ? v : prev.coordinates?.longitude;
+      if (nextLat == null && nextLng == null) {
         return { ...prev, coordinates: undefined };
       }
       return {
         ...prev,
-        coordinates: { ...prev.coordinates, latitude: lat, longitude: lng },
+        coordinates: { ...prev.coordinates, latitude: nextLat, longitude: nextLng },
       };
     });
   };
@@ -672,7 +682,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                     className={inputClasses}
                     inputMode='decimal'
                     placeholder='e.g. 59.123'
-                    value={data.coordinates?.latitude != null ? String(data.coordinates.latitude) : ''}
+                    value={lat.text}
                     onChange={setCoordField('latitude')}
                   />
                 </div>
@@ -682,7 +692,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                     className={inputClasses}
                     inputMode='decimal'
                     placeholder='e.g. 10.456'
-                    value={data.coordinates?.longitude != null ? String(data.coordinates.longitude) : ''}
+                    value={lng.text}
                     onChange={setCoordField('longitude')}
                   />
                 </div>

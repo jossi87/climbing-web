@@ -33,6 +33,7 @@ import {
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 import { Card, FormSwitch, MarkdownFieldLabel, NotFoundCard, SectionHeader } from '../../shared/ui';
+import { sanitizeCoordInput, useCoordinateText } from '../../shared/hooks/useCoordinateText';
 
 type Area = components['schemas']['Area'];
 type Sector = components['schemas']['Sector'];
@@ -113,6 +114,17 @@ export const SectorEdit = ({ sector, area }: Props) => {
   const [sectorMarkers, setSectorMarkers] = useState<ComponentProps<typeof Leaflet>['markers'] | null>(null);
 
   const [saving, setSaving] = useState(false);
+
+  /*
+   * Lat/lng raw-text adapter — see {@link useCoordinateText} for the why. The parsed numbers still live in
+   * `data.parking.{latitude,longitude}` (so map markers / save payload are unchanged); we only adopt the raw
+   * text for what the inputs render, plus the consumer-side guard logic that survives mid-typed decimals like
+   * `"60."`. Pass the stored values **as-is**: `data.parking?.latitude` is `number | undefined` here (the
+   * existing handlers below do collapse blank input to `0`, but that's a pre-existing UX quirk for this form
+   * — preserving it keeps this change scoped to the dropped-decimals bug).
+   */
+  const lat = useCoordinateText(data.parking?.latitude);
+  const lng = useCoordinateText(data.parking?.longitude);
 
   let defaultCenter;
   let defaultZoom;
@@ -298,37 +310,40 @@ export const SectorEdit = ({ sector, area }: Props) => {
     }
   }
 
-  const onLatChanged = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    let lat = parseFloat(value.replace(',', '.'));
-    if (isNaN(lat)) {
-      lat = 0;
-    }
+  /*
+   * Lat / lng input handlers. Three steps per keystroke:
+   *   1. `sanitizeCoordInput(raw)` — strip non-numeric chars, convert `,` → `.`, dedupe leading `-` and `.`
+   *      so the field can only ever hold a finite signed decimal. Multi-coord polyline editors handle their
+   *      own commas/semicolons separately and do **not** route through this sanitizer (see PolylineEditor).
+   *   2. `lat.setText` / `lng.setText` keeps the sanitized text as the source of truth for the input (so
+   *      trailing decimals like `"60."` survive across re-renders — see {@link useCoordinateText}).
+   *   3. `setData(...)` parses the same sanitized string to a number and persists into `data.parking` so map
+   *      markers / save payload stay in their existing numeric shape.
+   * Empty / unparseable input collapses to `0` for the parsed write (preserves the existing reducer-shaped
+   * default), but the visible `"0"` round-trip is gated by the hook's sync effect — clearing the field shows
+   * `"0"` only because that's what the original behaviour did too (see initialisation comment above).
+   */
+  const onLatChanged = (e: ChangeEvent<HTMLInputElement>) => {
+    const sanitized = sanitizeCoordInput(e.target.value);
+    lat.setText(sanitized);
+    const parsed = parseFloat(sanitized);
+    const next = isNaN(parsed) ? 0 : parsed;
     setData((prevState) => ({
       ...prevState,
-      parking: {
-        longitude: 0,
-        ...prevState.parking,
-        latitude: lat,
-      },
+      parking: { longitude: 0, ...prevState.parking, latitude: next },
     }));
-  }, []);
+  };
 
-  const onLngChanged = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    let lng = parseFloat(value.replace(',', '.'));
-    if (isNaN(lng)) {
-      lng = 0;
-    }
+  const onLngChanged = (e: ChangeEvent<HTMLInputElement>) => {
+    const sanitized = sanitizeCoordInput(e.target.value);
+    lng.setText(sanitized);
+    const parsed = parseFloat(sanitized);
+    const next = isNaN(parsed) ? 0 : parsed;
     setData((prevState) => ({
       ...prevState,
-      parking: {
-        latitude: 0,
-        ...prevState.parking,
-        longitude: lng,
-      },
+      parking: { latitude: 0, ...prevState.parking, longitude: next },
     }));
-  }, []);
+  };
 
   const outlines: ComponentProps<typeof Leaflet>['outlines'] = [];
   const slopes: ComponentProps<typeof Leaflet>['slopes'] = [];
@@ -651,7 +666,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
                       className={inputClasses}
                       inputMode='decimal'
                       placeholder='e.g. 59.123'
-                      value={data.parking?.latitude ?? ''}
+                      value={lat.text}
                       onChange={onLatChanged}
                     />
                   </div>
@@ -661,7 +676,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
                       className={inputClasses}
                       inputMode='decimal'
                       placeholder='e.g. 10.456'
-                      value={data.parking?.longitude ?? ''}
+                      value={lng.text}
                       onChange={onLngChanged}
                     />
                   </div>

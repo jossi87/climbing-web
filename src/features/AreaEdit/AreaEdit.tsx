@@ -13,6 +13,7 @@ import ExternalLink from '../../shared/ui/ExternalLinks';
 import { Info, AlertTriangle, ChevronDown, ChevronRight, Hash, Edit, Save, Loader2 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { Card, FormSwitch, MarkdownFieldLabel, SectionHeader } from '../../shared/ui';
+import { sanitizeCoordInput, useCoordinateText } from '../../shared/hooks/useCoordinateText';
 
 const dummyEvent = {} as ChangeEvent<HTMLInputElement>;
 
@@ -69,6 +70,24 @@ export const AreaEdit = () => {
     const val = e.target.value === '' ? undefined : Number(e.target.value);
     setNumber(field)(dummyEvent, { value: val });
   };
+
+  /*
+   * Lat/lng raw-text adapter — see {@link useCoordinateText} for the why. The reducer keeps storing parsed
+   * **numbers** in `state.coordinates` (so map markers / save payload are unchanged); we only adopt the raw text
+   * for what the inputs render, plus the consumer-side guard logic that survives mid-typed decimals like `"60."`.
+   *
+   * `|| undefined` mapping: the reducer collapses blank / unparseable input to `0` (its `getCoordValue`
+   * fallback), and the original input rendered `0` as the empty placeholder via `value={… || ''}`. Mapping
+   * `0 → undefined` here preserves that UX — when the user clears the field, the hook stores `''`, the
+   * reducer stores `0`, and the sync effect treats them as equivalent so we don't bounce a stray `"0"` back
+   * into the input. Trade-off: typing literal `0` already collapsed to `''` in the original, so no regression.
+   *
+   * Ordering: hooks must run on every render in the same order, so they live above the `if (!data) return …`
+   * early-return below — moving them under it would break Rules of Hooks. Reading the (always-defined) reducer
+   * state for the initial value is fine because `state` is initialized to `DEFAULT_STATE` synchronously.
+   */
+  const lat = useCoordinateText(data?.coordinates?.latitude || undefined);
+  const lng = useCoordinateText(data?.coordinates?.longitude || undefined);
 
   if (!data) return <Loading />;
 
@@ -276,16 +295,33 @@ export const AreaEdit = () => {
                   <label className={labelClasses}>Latitude</label>
                   <input
                     className={inputClasses}
-                    value={data.coordinates?.latitude || ''}
-                    onChange={(e) => setCoord('latitude')(e, { value: e.target.value })}
+                    inputMode='decimal'
+                    placeholder='e.g. 59.123'
+                    value={lat.text}
+                    onChange={(e) => {
+                      /*
+                       * Sanitize once, route into both the displayed text and the reducer dispatch. The
+                       * reducer's `getCoordValue` will re-parse the sanitized string into a number; any
+                       * non-numeric noise has already been stripped here, so display + storage stay in sync.
+                       */
+                      const sanitized = sanitizeCoordInput(e.target.value);
+                      lat.setText(sanitized);
+                      setCoord('latitude')(e, { value: sanitized });
+                    }}
                   />
                 </div>
                 <div className='space-y-1'>
                   <label className={labelClasses}>Longitude</label>
                   <input
                     className={inputClasses}
-                    value={data.coordinates?.longitude || ''}
-                    onChange={(e) => setCoord('longitude')(e, { value: e.target.value })}
+                    inputMode='decimal'
+                    placeholder='e.g. 10.456'
+                    value={lng.text}
+                    onChange={(e) => {
+                      const sanitized = sanitizeCoordInput(e.target.value);
+                      lng.setText(sanitized);
+                      setCoord('longitude')(e, { value: sanitized });
+                    }}
                   />
                 </div>
               </div>

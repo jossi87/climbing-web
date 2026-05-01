@@ -3,6 +3,7 @@ import CreatableSelect from 'react-select/creatable';
 import type { GroupBase, SelectInstance, StylesConfig } from 'react-select';
 import { useUserSearch } from '../../api';
 import type { components } from '../../@types/buldreinfo/swagger';
+import { themedSelectStyles } from './reactSelectStyles';
 
 type UserOption = {
   value?: string | number;
@@ -26,87 +27,21 @@ type SingleUserProps = {
   matchInputLeadStyle?: boolean;
 };
 
-/** Portaled menus (`menuPortalTarget=document.body`) do not inherit the control’s font size — set explicitly or options look ~16px vs 13px fields. */
-const menuFontMd = '0.875rem';
+/**
+ * Portaled menus (`menuPortalTarget=document.body`) do not inherit the control's font size — the
+ * shared base sets the menu reading size to `0.875rem`; the variant builders below override
+ * `option`/`noOptionsMessage`/`loadingMessage` to `0.8125rem` so portaled options sit at the same
+ * 13px reading size as the compact / inline-style controls.
+ */
 const menuFontMatchField = '0.8125rem';
 
-/** Dark UI to match `bg-surface-nav` / cards (react-select defaults to white). */
-const darkSelectStyles: StylesConfig<UserOption, boolean, GroupBase<UserOption>> = {
-  control: (base, state) => ({
-    ...base,
-    cursor: 'text',
-    backgroundColor: 'var(--color-surface-nav)',
-    borderColor: state.isFocused ? 'var(--color-brand-border)' : 'var(--color-surface-border)',
-    borderRadius: '0.5rem',
-    minHeight: '2.625rem',
-    boxShadow: 'none',
-    outline: 'none',
-    '&:hover': {
-      borderColor: state.isFocused ? 'var(--color-brand-border)' : 'var(--color-surface-border)',
-    },
-  }),
-  menu: (base) => ({
-    ...base,
-    backgroundColor: 'var(--color-surface-card)',
-    border: '1px solid var(--color-surface-border)',
-    borderRadius: '0.5rem',
-    overflow: 'hidden',
-  }),
-  menuList: (base) => ({ ...base, padding: '0.25rem' }),
-  menuPortal: (base) => ({ ...base, zIndex: 1100 }),
-  option: (base, state) => ({
-    ...base,
-    fontSize: menuFontMd,
-    lineHeight: 1.35,
-    cursor: 'pointer',
-    backgroundColor: state.isFocused ? 'var(--color-surface-hover)' : 'transparent',
-    color: 'var(--color-datepicker-text)',
-  }),
-  multiValue: (base) => ({
-    ...base,
-    backgroundColor: 'color-mix(in srgb, var(--color-surface-hover) 88%, var(--color-surface-border))',
-    borderRadius: '0.375rem',
-  }),
-  multiValueLabel: (base) => ({ ...base, color: 'var(--color-datepicker-text)', fontSize: '0.8125rem' }),
-  multiValueRemove: (base) => ({
-    ...base,
-    cursor: 'pointer',
-    color: 'var(--color-muted-ink)',
-    ':hover': { backgroundColor: 'transparent', color: 'var(--color-datepicker-text)' },
-  }),
-  input: (base, _state) => ({
-    ...base,
-    color: 'var(--color-datepicker-text)',
-    boxShadow: 'none',
-    outline: 'none',
-  }),
-  placeholder: (base, _state) => ({ ...base, color: 'var(--color-datepicker-muted)' }),
-  singleValue: (base) => ({ ...base, color: 'var(--color-datepicker-text)' }),
-  indicatorSeparator: (base) => ({ ...base, backgroundColor: 'var(--color-surface-border)' }),
-  dropdownIndicator: (base, state) => ({
-    ...base,
-    color: state.isFocused ? 'var(--color-datepicker-nav)' : 'var(--color-datepicker-muted)',
-    ':hover': { color: 'var(--color-datepicker-nav-hover)' },
-  }),
-  clearIndicator: (base) => ({
-    ...base,
-    cursor: 'pointer',
-    color: 'var(--color-datepicker-muted)',
-    ':hover': { color: 'var(--color-datepicker-nav-hover)' },
-  }),
-  noOptionsMessage: (base, _props) => ({
-    ...base,
-    fontSize: menuFontMd,
-    lineHeight: 1.35,
-    color: 'var(--color-datepicker-muted)',
-  }),
-  loadingMessage: (base, _props) => ({
-    ...base,
-    fontSize: menuFontMd,
-    lineHeight: 1.35,
-    color: 'var(--color-datepicker-muted)',
-  }),
-};
+/**
+ * Theme-aware base for both the single + multi user pickers — see {@link themedSelectStyles} for
+ * the token mapping. The compact / inline-input variants below spread this base then override
+ * height + padding only, so any future palette change in the shared module flows through here for
+ * free.
+ */
+const darkSelectStyles = themedSelectStyles<UserOption, boolean>();
 
 /** Tighter control + border-only focus (avoid stacked ring + placeholder clash when focused). */
 function buildSelectStyles(
