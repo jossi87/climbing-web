@@ -100,8 +100,8 @@ const Footer = () => {
           <div className='space-y-2.5 sm:space-y-4'>
             <SectionLabel className={footerColumnHeadingClass}>Navigation</SectionLabel>
             <div className='flex flex-col gap-2 sm:gap-3'>
-              <NavCard to='/activity' icon={ActivityIcon} title='Activity' />
               <NavCard to='/about' icon={Info} title='About' />
+              <NavCard to='/activity' icon={ActivityIcon} title='Activity' />
               {!isBouldering && <NavCard to='/dangerous' icon={AlertTriangle} title='Dangerous' />}
               <NavCard to='/graph' icon={BarChart3} title='Graph' />
               <NavCard to='/webcams' icon={Camera} title='Webcams' />
