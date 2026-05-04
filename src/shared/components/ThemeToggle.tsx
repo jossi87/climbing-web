@@ -16,22 +16,14 @@ export function ThemeToggle() {
   const { resolved, toggle } = useTheme();
   const isDark = resolved === 'dark';
   const [hover, setHover] = useState(false);
-  const { data: profile, setProfile } = useProfile();
+  const { setThemePreference } = useProfile();
 
   const handleToggle = () => {
     const next = isDark ? 'light' : 'dark';
     toggle();
-    if (profile) {
-      setProfile({
-        firstname: profile.firstname ?? '',
-        lastname: profile.lastname ?? '',
-        emailVisibleToAll: !!profile.emailVisibleToAll,
-        avatarFile: undefined,
-        themePreference: next,
-      }).catch(() => {
-        /* Silently ignore — localStorage fallback is sufficient */
-      });
-    }
+    setThemePreference(next).catch(() => {
+      /* Silently ignore — localStorage fallback is sufficient */
+    });
   };
 
   return (

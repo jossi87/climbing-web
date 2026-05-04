@@ -466,12 +466,33 @@ export function useProfile(userId = -1) {
     },
   });
 
+  const setThemePreference = usePostData<string>(`/profile/theme`, {
+    createUrl: (themePreference) => `/profile/theme?themePreference=${encodeURIComponent(themePreference)}`,
+    fetchOptions: {
+      consistencyAction: 'nop',
+    },
+    onMutate: (themePreference) => {
+      client.setQueryData<components['schemas']['Profile']>([`/profile`, { id: userId, isAuthenticated }], (old) => {
+        if (old && typeof old === 'object') {
+          return { ...old, themePreference };
+        }
+        return old;
+      });
+    },
+    onError: () => {
+      client.refetchQueries({
+        queryKey: [`/profile`, { id: -1 }],
+      });
+    },
+  });
+
   return {
     ...profile,
     addRegion: addRegion.mutateAsync,
     setProfile: setProfile.mutateAsync,
     removeRegion: removeRegion.mutateAsync,
     setRegion: setRegion.mutateAsync,
+    setThemePreference: setThemePreference.mutateAsync,
   };
 }
 

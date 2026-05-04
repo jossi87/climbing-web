@@ -744,6 +744,23 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/v2/profile/theme": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Update theme preference (light/dark) */
+        post: operations["postProfileTheme"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/search": {
         parameters: {
             query?: never;
@@ -4041,6 +4058,41 @@ export interface operations {
             };
             /** @description Insufficient permissions. */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    postProfileTheme: {
+        parameters: {
+            query: {
+                /** @description Theme preference (light or dark) */
+                themePreference: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authentication required. */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
