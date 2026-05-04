@@ -2,6 +2,7 @@ import { useEffect, useReducer, useCallback } from 'react';
 import { useArea, usePostData } from '../../api';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { neverGuard } from '../../utils/neverGuard';
+import { uploadFilenameForApi } from '../../utils/uploadFilenameForApi';
 import type { UseMutateAsyncFunction } from '@tanstack/react-query';
 
 type NewMedia = components['schemas']['NewMedia'] & { file?: File };
@@ -149,7 +150,7 @@ export const useAreaEdit = ({ areaId }: { areaId: number }) => {
     createBody(area) {
       const formData = new FormData();
       const sanitizedMedia = area.newMedia.map((m) => ({
-        name: m.file?.name.replace(/[^-a-z0-9.]/gi, '_'),
+        name: m.file && uploadFilenameForApi(m.file),
         photographer: m.photographer,
         inPhoto: m.inPhoto,
         description: m.description,
@@ -174,7 +175,7 @@ export const useAreaEdit = ({ areaId }: { areaId: number }) => {
 
       area.newMedia.forEach((m) => {
         if (m.file) {
-          formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file);
+          formData.append(uploadFilenameForApi(m.file), m.file);
         }
       });
       return formData;

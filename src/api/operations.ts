@@ -13,6 +13,7 @@ type UploadMedia = {
   embedThumbnailUrl?: string;
   embedMilliseconds?: number;
 };
+import { uploadFilenameForApi } from '../utils/uploadFilenameForApi';
 import { downloadFileWithProgress, getUrl, makeAuthenticatedRequest } from './utils';
 
 /** Media writes change problem/area/sector payloads; opt into global invalidation (default mutation event is `nop`). */
@@ -81,7 +82,7 @@ export function postComment(
   const formData = new FormData();
   const newMedia = media.map((m) => {
     return {
-      name: m.file && m.file.name.replace(/[^-a-z0-9.]/gi, '_'),
+      name: m.file && uploadFilenameForApi(m.file),
       photographer: m.photographer,
       inPhoto: m.inPhoto,
       pitch: m.pitch,
@@ -104,7 +105,7 @@ export function postComment(
       newMedia,
     }),
   );
-  media.forEach((m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file));
+  media.forEach((m) => m.file && formData.append(uploadFilenameForApi(m.file), m.file));
 
   return makeAuthenticatedRequest(accessToken, url, {
     method: 'POST',
@@ -171,7 +172,7 @@ export function postProblem(
   const formData = new FormData();
   const newMedia = media.map((m) => {
     return {
-      name: m.file && m.file.name.replace(/[^-a-z0-9.]/gi, '_'),
+      name: m.file && uploadFilenameForApi(m.file),
       photographer: m.photographer,
       inPhoto: m.inPhoto,
       pitch: m.pitch,
@@ -211,7 +212,7 @@ export function postProblem(
       descent,
     }),
   );
-  media.forEach((m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file));
+  media.forEach((m) => m.file && formData.append(uploadFilenameForApi(m.file), m.file));
   return makeAuthenticatedRequest(accessToken, url, {
     method: 'POST',
     body: formData,
@@ -238,7 +239,7 @@ export function postProblemMedia(
   const formData = new FormData();
   const newMedia = media.map((m) => {
     return {
-      name: m.file && m.file.name.replace(/[^-a-z0-9.]/gi, '_'),
+      name: m.file && uploadFilenameForApi(m.file),
       photographer: m.photographer,
       inPhoto: m.inPhoto,
       pitch: m.pitch,
@@ -250,7 +251,7 @@ export function postProblemMedia(
     };
   });
   formData.append('json', JSON.stringify({ id, newMedia }));
-  media.forEach((m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file));
+  media.forEach((m) => m.file && formData.append(uploadFilenameForApi(m.file), m.file));
   return makeAuthenticatedRequest(accessToken, url, {
     method: 'POST',
     body: formData,
@@ -324,7 +325,7 @@ export function postSector(
   const formData = new FormData();
   const newMedia = media.map((m) => {
     return {
-      name: m.file && m.file.name.replace(/[^-a-z0-9.]/gi, '_'),
+      name: m.file && uploadFilenameForApi(m.file),
       photographer: m.photographer,
       inPhoto: m.inPhoto,
       description: m.description,
@@ -358,7 +359,7 @@ export function postSector(
       problemOrder,
     }),
   );
-  media.forEach((m) => m.file && formData.append(m.file.name.replace(/[^-a-z0-9.]/gi, '_'), m.file));
+  media.forEach((m) => m.file && formData.append(uploadFilenameForApi(m.file), m.file));
   return makeAuthenticatedRequest(accessToken, url, {
     method: 'POST',
     body: formData,
