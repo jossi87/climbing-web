@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from '../providers/useTheme';
 import { cn } from '../../lib/utils';
+import { useProfile } from '../../api';
 
 /** Inline hover fill avoids glass-header / `backdrop-filter` compositing bugs and `::before` z-index pitfalls. */
 const CHROME = 'rgb(28, 30, 36)';
@@ -15,11 +16,28 @@ export function ThemeToggle() {
   const { resolved, toggle } = useTheme();
   const isDark = resolved === 'dark';
   const [hover, setHover] = useState(false);
+  const { data: profile, setProfile } = useProfile();
+
+  const handleToggle = () => {
+    const next = isDark ? 'light' : 'dark';
+    toggle();
+    if (profile) {
+      setProfile({
+        firstname: profile.firstname ?? '',
+        lastname: profile.lastname ?? '',
+        emailVisibleToAll: !!profile.emailVisibleToAll,
+        avatarFile: undefined,
+        themePreference: next,
+      }).catch(() => {
+        /* Silently ignore — localStorage fallback is sufficient */
+      });
+    }
+  };
 
   return (
     <button
       type='button'
-      onClick={toggle}
+      onClick={handleToggle}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}

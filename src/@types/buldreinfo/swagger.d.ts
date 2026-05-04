@@ -1497,6 +1497,7 @@ export type components = {
             emails?: string[];
             userRegions?: components["schemas"]["UserRegion"][];
             lastActivity?: string;
+            themePreference?: string;
         };
         UserRegion: {
             /** Format: int32 */

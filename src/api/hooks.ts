@@ -372,8 +372,9 @@ export function useProfile(userId = -1) {
     lastname: string;
     emailVisibleToAll: boolean;
     avatarFile: File | undefined;
+    themePreference?: string;
   }>(`/profile`, {
-    createBody({ firstname, lastname, emailVisibleToAll, avatarFile }) {
+    createBody({ firstname, lastname, emailVisibleToAll, avatarFile, themePreference }) {
       const formData = new FormData();
       formData.append(
         'json',
@@ -381,6 +382,7 @@ export function useProfile(userId = -1) {
           firstname,
           lastname,
           emailVisibleToAll,
+          themePreference,
         }),
       );
       if (avatarFile) {

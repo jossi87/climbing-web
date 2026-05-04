@@ -3,12 +3,14 @@ import { appShellLightBackdropStripClass } from './design/twInk';
 import { MetaProvider } from './shared/components/Meta';
 import Header from './shared/layout/Header';
 import Footer from './shared/layout/Footer';
+import { ThemeSync } from './shared/components/ThemeSync';
 import { Suspense } from 'react';
 import { Loading } from './shared/ui/StatusWidgets';
 
 const App = () => {
   return (
     <MetaProvider>
+      <ThemeSync />
       <div className='bg-surface-dark flex min-h-screen flex-col font-sans text-slate-300 antialiased'>
         <a
           href='#main-content'
