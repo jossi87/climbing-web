@@ -1026,7 +1026,7 @@ const Area = () => {
                           )}
                         />
                         {/* Sector name — minimal overlay at top, just enough for readability */}
-                        <div className='absolute top-0 right-0 left-0 z-[4] flex justify-center px-3 pt-1.5 sm:px-4 sm:pt-2 md:px-5 md:pt-2.5'>
+                        <div className='absolute top-0 right-0 left-0 z-[4] flex flex-col items-center gap-0.5 pt-1.5 sm:pt-2 md:pt-2.5'>
                           <span className='inline-flex items-center gap-1.5 rounded-md bg-black/25 px-2 py-0.5 backdrop-blur-[2px]'>
                             <h4
                               className={cn(
@@ -1041,19 +1041,17 @@ const Area = () => {
                               lockedSuperadmin={!!sector.lockedSuperadmin}
                             />
                           </span>
-                        </div>
-                        {sector.accessClosed && (
-                          <div className='absolute top-2 right-2 z-[4]'>
-                            <span
+                          {sector.accessClosed && (
+                            <div
                               className={cn(
-                                'rounded bg-red-500/80 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide uppercase shadow-sm',
+                                'self-stretch rounded-none bg-red-500/70 px-1 py-[1px] text-center text-[9px] leading-tight font-medium tracking-wide shadow-sm',
                                 twInk.chromeNearWhite,
                               )}
                             >
                               {sector.accessClosed}
-                            </span>
-                          </div>
-                        )}
+                            </div>
+                          )}
+                        </div>
                         {/* Grade distribution overlaid at bottom of image */}
                         <div className='absolute right-0 bottom-0 left-0 z-[4]'>
                           <SectorCardGradeDistribution data={sector.gradeCounts ?? []} className='h-10 w-full px-3' />
