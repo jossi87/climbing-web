@@ -90,14 +90,15 @@ const areaListLockInlineClass = 'ml-0.5 inline-block align-middle';
 /**
  * Grade-group colours matching the SVG topo viewer (SvgRoute.tsx).
  *  0 = white, 1 = green, 2 = blue, 3 = yellow, 4 = red, 5 = magenta
+ *  Uses rgba so the sector background image shows through the bars.
  */
 const GRADE_GROUP_COLORS = [
-  '#FFFFFF', // 0
-  '#00FF00', // 1 — green
-  '#0000FF', // 2 — blue
-  '#FFFF00', // 3 — yellow
-  '#FF0000', // 4 — red
-  '#FF00FF', // 5 — magenta
+  'rgba(255, 255, 255, 0.55)', // 0
+  'rgba(0, 255, 0, 0.55)', // 1 — green
+  'rgba(0, 0, 255, 0.55)', // 2 — blue
+  'rgba(255, 255, 0, 0.55)', // 3 — yellow
+  'rgba(255, 0, 0, 0.55)', // 4 — red
+  'rgba(255, 0, 255, 0.55)', // 5 — magenta
 ];
 
 /** Map a French grade string to a grade group (0-5). */
