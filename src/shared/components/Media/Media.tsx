@@ -305,33 +305,35 @@ const Media = ({
   return (
     <div className={cn(triviaTiles ? 'space-y-2' : compactTiles ? 'space-y-3' : 'space-y-6')}>
       {' '}
-      {confirmation && (
-        <div className='animate-in fade-in fixed inset-0 z-100 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm duration-200'>
-          {' '}
-          <div className='bg-surface-card border-surface-border w-full max-w-sm rounded-2xl border p-6 shadow-2xl'>
+      {confirmation &&
+        createPortal(
+          <div className='animate-in fade-in fixed inset-0 z-200 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm duration-200'>
             {' '}
-            <h3 className='type-h2 mb-2'>Confirm Action</h3>{' '}
-            <p className='type-body mb-6 opacity-70'>{confirmation.message}</p>{' '}
-            <div className='flex justify-end gap-3'>
+            <div className='bg-surface-card border-surface-border w-full max-w-sm rounded-2xl border p-6 shadow-2xl'>
               {' '}
-              <button type='button' onClick={() => setConfirmation(null)} className='modal-action-cancel px-4 py-2'>
-                Cancel
-              </button>{' '}
-              <button
-                type='button'
-                onClick={() => {
-                  confirmation.action();
-                  setConfirmation(null);
-                }}
-                className='type-label rounded-lg bg-red-500 px-4 py-2 shadow-lg shadow-red-500/20 transition-colors hover:bg-red-600'
-              >
+              <h3 className='type-h2 mb-2'>Confirm Action</h3>{' '}
+              <p className='type-body mb-6 opacity-70'>{confirmation.message}</p>{' '}
+              <div className='flex justify-end gap-3'>
                 {' '}
-                Confirm{' '}
-              </button>{' '}
+                <button type='button' onClick={() => setConfirmation(null)} className='modal-action-cancel px-4 py-2'>
+                  Cancel
+                </button>{' '}
+                <button
+                  type='button'
+                  onClick={() => {
+                    confirmation.action();
+                    setConfirmation(null);
+                  }}
+                  className='type-label rounded-lg bg-red-500 px-4 py-2 shadow-lg shadow-red-500/20 transition-colors hover:bg-red-600'
+                >
+                  {' '}
+                  Confirm{' '}
+                </button>{' '}
+              </div>{' '}
             </div>{' '}
-          </div>{' '}
-        </div>
-      )}{' '}
+          </div>,
+          document.body,
+        )}{' '}
       {editM && (
         <MediaEditModal
           numPitches={pitches?.length || 0}
