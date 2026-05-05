@@ -29,7 +29,6 @@ import { TradGearMarker } from '../../shared/ui/TradGearMarker';
 import { climbingRouteUsesPassiveGear, formatRouteTypeLabel } from '../../utils/routeTradGear';
 import { compactFaDisplayLine, normalizeFaPeopleSeparators } from '../../utils/firstAscentDisplay';
 import {
-  Check,
   ChevronRight,
   Plus,
   Edit,
@@ -50,8 +49,8 @@ import {
   Clock,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import { designContract } from '../../design/contract';
 import { twInk } from '../../design/twInk';
+import { designContract } from '../../design/contract';
 import {
   tabBarButtonClassName,
   tabBarButtonClassNameInline,
@@ -87,6 +86,81 @@ type Props = {
 };
 
 const areaListLockInlineClass = 'ml-0.5 inline-block align-middle';
+
+/**
+ * Grade-group colours matching the SVG topo viewer (SvgRoute.tsx).
+ *  0 = white, 1 = green, 2 = blue, 3 = yellow, 4 = red, 5 = magenta
+ */
+const GRADE_GROUP_COLORS = [
+  '#FFFFFF', // 0
+  '#00FF00', // 1 — green
+  '#0000FF', // 2 — blue
+  '#FFFF00', // 3 — yellow
+  '#FF0000', // 4 — red
+  '#FF00FF', // 5 — magenta
+];
+
+/** Map a French grade string to a grade group (0-5). */
+function gradeToGroup(grade: string): number {
+  const m = grade.match(/^(\d+)/);
+  if (!m) return 0;
+  const n = parseInt(m[1], 10);
+  if (n <= 4) return 0;
+  if (n <= 5) return 1;
+  if (n <= 6) return 2;
+  if (n <= 7) return 3;
+  if (n <= 8) return 4;
+  return 5;
+}
+
+/** Full-width horizontal grade distribution bars for sector cards, using SVG topo grade colours.
+ *  Uses HTML/CSS layout so text is crisp and readable. Every grade gets a visible bar —
+ *  zero-count grades render a 2px-tall placeholder so the full grade spectrum is always visible. */
+const SectorCardGradeDistribution = ({
+  data,
+  className,
+}: {
+  data: components['schemas']['GradeCount'][];
+  className?: string;
+}) => {
+  const maxValue = Math.max(1, ...data.map((d) => d.num ?? 0));
+  const BAR_MAX_HEIGHT = 30;
+  return (
+    <div className={cn('flex w-full items-end gap-[2px]', className)}>
+      {data.map((g, i) => {
+        const total = g.num ?? 0;
+        const pct = maxValue > 0 ? total / maxValue : 0;
+        const group = gradeToGroup(g.grade ?? '');
+        const color = GRADE_GROUP_COLORS[group] ?? '#FFFFFF';
+        const barHeight = Math.max(Math.round(pct * BAR_MAX_HEIGHT), 2);
+        return (
+          <div key={i} className='flex min-w-0 flex-1 flex-col items-center gap-0.5'>
+            {/* Count number */}
+            {total > 0 && (
+              <span className={cn('text-xs leading-none font-semibold opacity-80', twInk.chromeNearWhite)}>
+                {total}
+              </span>
+            )}
+            {/* Bar */}
+            <div
+              className='w-full rounded-sm'
+              style={{
+                height: barHeight,
+                backgroundColor: color,
+                opacity: total > 0 ? 0.85 : 0.15,
+              }}
+              title={`${g.grade}: ${total} route${total !== 1 ? 's' : ''}`}
+            />
+            {/* Grade label — no truncate so "6A" shows fully */}
+            <span className={cn('text-center text-[10px] leading-none opacity-55', twInk.chromeNearWhite)}>
+              {g.grade}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 /** Area Routes tab row — same typography/layout as the sector problem list; includes sector name for context. */
 const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
@@ -429,13 +503,6 @@ function sumAreaProblemTicks(area: components['schemas']['Area']): number {
   );
 }
 
-/** Keep Todo tab unless `typeNumTickedTodo` has rows and every aggregate todo count is zero. */
-function shouldShowAreaTodoTabFromPayload(area: components['schemas']['Area']): boolean {
-  const rows = area.typeNumTickedTodo;
-  if (rows == null || rows.length === 0) return true;
-  return rows.reduce((s, x) => s + (x.todo ?? 0), 0) > 0;
-}
-
 const Area = () => {
   const meta = useMeta();
   const { areaId, segment } = useParams();
@@ -520,9 +587,7 @@ const Area = () => {
       if (problemCount > 0 && tickSum > 0) {
         t.push({ id: 'top', label: 'Top', icon: Trophy });
       }
-      if (shouldShowAreaTodoTabFromPayload(data)) {
-        t.push({ id: 'todo', label: 'Todo', icon: Bookmark });
-      }
+      t.push({ id: 'todo', label: 'Todo', icon: Bookmark });
       t.push({ id: 'activity', label: 'Activity', icon: Clock });
     }
     return t;
@@ -654,7 +719,7 @@ const Area = () => {
                 Areas
               </Link>
               {/*
-                Same chevron as sector/problem crumbs: single segment still reads as a path (“Areas” → title below).
+                Same chevron as sector/problem crumbs: single segment still reads as a path ("Areas" → title below).
               */}
               <ChevronRight size={12} className='shrink-0 translate-y-px opacity-30' aria-hidden />
             </nav>
@@ -829,14 +894,6 @@ const Area = () => {
                   <Todo idArea={data.id ?? 0} idSector={0} />
                 </div>
               )}
-              {/*
-               * Activity tab now renders **inside** the same Card as the other tabs (was a separate Card with
-               * `mt-6 sm:mt-8` margin below `</Card>`, which left a visible gap between the tab strip and the
-               * feed). The shared `Activity` component drops its own `Card flush` shell when `embedded` is set
-               * (see `Activity.tsx`), so the toolbar/divider/feed sit flush against the tab strip — same rhythm
-               * as `distribution` / `top` / `todo`. No `p-4` wrapper because the Activity toolbar + rows supply
-               * their own horizontal padding (`px-4 sm:px-5`).
-               */}
               {effectiveTab === 'activity' && <Activity idArea={data.id ?? 0} idSector={0} embedded />}
             </div>
           </>
@@ -894,24 +951,6 @@ const Area = () => {
               <div className={cn('min-w-0 p-4 sm:p-5', designContract.layout.areaSectorCardGrid)}>
                 {data.sectors?.map((sector) => {
                   const sectorHasThumb = mediaIdentityId(sector.randomMedia) > 0;
-                  /** Thumbnails + dark placeholders: light ink remaps break `text-slate-*`; use overlay tokens or `light:` for empty tiles. */
-                  const sectorCardTitleClass = cn(
-                    'line-clamp-2 min-w-0 flex-1 font-medium tracking-tight text-[0.95rem] leading-tight sm:text-[1.1rem] md:text-[1.25rem]',
-                    sectorHasThumb
-                      ? 'photo-overlay-fg drop-shadow-md'
-                      : cn('text-slate-100 drop-shadow-md light:drop-shadow-none', twInk.lightTextSlate900),
-                  );
-                  const sectorCardMetaClass = cn(
-                    'mt-1 flex min-w-0 flex-col gap-y-0.5 text-[11px] leading-none sm:mt-1.5 sm:text-[12px]',
-                    sectorHasThumb ? 'photo-overlay-fg-muted' : 'text-slate-400 light:text-slate-600',
-                  );
-                  /** On photo scrims, use `--color-status-*-imagery` (same as dark defaults; light body uses muted status tokens). */
-                  const sectorCardTickedClass = sectorHasThumb
-                    ? 'text-[color:var(--color-status-ticked-imagery)]'
-                    : designContract.ascentStatus.ticked;
-                  const sectorCardTodoClass = sectorHasThumb
-                    ? 'text-[color:var(--color-status-todo-imagery)]'
-                    : designContract.ascentStatus.todo;
                   return (
                     <div
                       key={sector.id}
@@ -919,8 +958,9 @@ const Area = () => {
                     >
                       <Link
                         to={`/sector/${sector.id}`}
-                        className='group relative block min-h-[12rem] overflow-hidden rounded-xl sm:min-h-[14rem] md:min-h-[15rem]'
+                        className='group relative block h-52 w-full overflow-hidden rounded-xl sm:h-60 md:h-64'
                       >
+                        {/* Background placeholder */}
                         <div
                           className={cn(
                             'absolute inset-0 bg-gradient-to-br from-slate-600 via-slate-800 to-slate-950',
@@ -936,7 +976,7 @@ const Area = () => {
                           aria-hidden
                         >
                           <MapPinned
-                            className='light:text-slate-600/40 h-[4.5rem] w-[4.5rem] text-slate-300/55 sm:h-[5.25rem] sm:w-[5.25rem] md:h-24 md:w-24'
+                            className='light:text-slate-600/40 h-14 w-14 text-slate-300/55 sm:h-16 sm:w-16'
                             strokeWidth={1.15}
                           />
                         </div>
@@ -958,13 +998,20 @@ const Area = () => {
                             }}
                           />
                         ) : null}
+                        {/* Gradient overlay from top (for title readability) */}
                         <div
                           className={cn(
-                            'absolute inset-0 z-[3]',
+                            'pointer-events-none absolute inset-0 z-[3] bg-linear-to-b from-black/60 via-transparent to-transparent',
+                          )}
+                        />
+                        {/* Gradient overlay from bottom (for chart readability) */}
+                        <div
+                          className={cn(
+                            'pointer-events-none absolute inset-0 z-[3]',
                             sectorHasThumb
                               ? cn(
-                                  'bg-linear-to-t from-black/72 via-black/32 to-transparent',
-                                  'light:from-black/52 light:via-black/18 light:to-transparent',
+                                  'bg-linear-to-t from-black/70 via-transparent to-transparent',
+                                  'light:from-black/50 light:via-transparent to-transparent',
                                 )
                               : cn(
                                   'bg-linear-to-t from-black/90 via-black/40 to-slate-800/25',
@@ -974,70 +1021,42 @@ const Area = () => {
                         />
                         <div
                           className={cn(
-                            'absolute inset-0 z-[3] bg-black/16 opacity-0 transition-opacity duration-300 group-hover:opacity-100',
+                            'pointer-events-none absolute inset-0 z-[3] bg-black/16 opacity-0 transition-opacity duration-300 group-hover:opacity-100',
                             'light:bg-slate-900/12',
                           )}
                         />
-                        <div className='relative z-[4] flex min-h-[12rem] flex-col justify-end p-2.5 sm:min-h-[14rem] sm:p-3 md:min-h-[15rem] md:p-4'>
-                          <div className='flex items-start justify-between gap-2'>
-                            <h4 className={sectorCardTitleClass}>{sector.name}</h4>
-                            <span className='shrink-0 drop-shadow'>
-                              <LockSymbol
-                                lockedAdmin={!!sector.lockedAdmin}
-                                lockedSuperadmin={!!sector.lockedSuperadmin}
-                              />
+                        {/* Sector name — minimal overlay at top, just enough for readability */}
+                        <div className='absolute top-0 right-0 left-0 z-[4] flex justify-center px-3 pt-1.5 sm:px-4 sm:pt-2 md:px-5 md:pt-2.5'>
+                          <span className='inline-flex items-center gap-1.5 rounded-md bg-black/25 px-2 py-0.5 backdrop-blur-[2px]'>
+                            <h4
+                              className={cn(
+                                'min-w-0 truncate text-sm leading-tight font-semibold tracking-tight drop-shadow sm:text-[15px]',
+                                twInk.chromeNearWhite,
+                              )}
+                            >
+                              {sector.name}
+                            </h4>
+                            <LockSymbol
+                              lockedAdmin={!!sector.lockedAdmin}
+                              lockedSuperadmin={!!sector.lockedSuperadmin}
+                            />
+                          </span>
+                        </div>
+                        {sector.accessClosed && (
+                          <div className='absolute top-2 right-2 z-[4]'>
+                            <span
+                              className={cn(
+                                'rounded bg-red-500/80 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide uppercase shadow-sm',
+                                twInk.chromeNearWhite,
+                              )}
+                            >
+                              {sector.accessClosed}
                             </span>
                           </div>
-                          {sector.typeNumTickedTodo && sector.typeNumTickedTodo.length > 0 && (
-                            <div className={sectorCardMetaClass}>
-                              {sector.typeNumTickedTodo.map((x, i) => {
-                                const n = x.num ?? 0;
-                                const nt = x.ticked ?? 0;
-                                const nd = x.todo ?? 0;
-                                return (
-                                  <div
-                                    key={`${sector.id}-${i}-${x.type ?? ''}`}
-                                    className='inline-flex min-w-0 items-center gap-x-0.5'
-                                  >
-                                    <span className='font-medium'>{x.type}</span>
-                                    <span aria-hidden>:</span>
-                                    <span className='tabular-nums'>{n}</span>
-                                    {nt > 0 ? (
-                                      <span className='inline-flex items-center gap-px'>
-                                        <Check
-                                          size={9}
-                                          strokeWidth={2.5}
-                                          className={cn('shrink-0', sectorCardTickedClass)}
-                                          aria-hidden
-                                        />
-                                        <span className={cn('font-medium tabular-nums', sectorCardTickedClass)}>
-                                          {nt}
-                                        </span>
-                                      </span>
-                                    ) : null}
-                                    {nd > 0 ? (
-                                      <span className='inline-flex items-center gap-px'>
-                                        <Bookmark
-                                          size={9}
-                                          strokeWidth={2.5}
-                                          className={cn('shrink-0', sectorCardTodoClass)}
-                                          aria-hidden
-                                        />
-                                        <span className={cn('font-medium tabular-nums', sectorCardTodoClass)}>
-                                          {nd}
-                                        </span>
-                                      </span>
-                                    ) : null}
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          )}
-                          {sector.accessClosed && (
-                            <p className='type-micro text-access-danger mt-1 font-semibold drop-shadow'>
-                              {sector.accessClosed}
-                            </p>
-                          )}
+                        )}
+                        {/* Grade distribution overlaid at bottom of image */}
+                        <div className='absolute right-0 bottom-0 left-0 z-[4]'>
+                          <SectorCardGradeDistribution data={sector.gradeCounts ?? []} className='h-10 w-full px-3' />
                         </div>
                       </Link>
                     </div>

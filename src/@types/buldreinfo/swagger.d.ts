@@ -947,7 +947,6 @@ export type components = {
             newMedia?: components["schemas"]["NewMedia"][];
             externalLinks?: components["schemas"]["ExternalLink"][];
             pageViews?: string;
-            typeNumTickedTodo?: components["schemas"]["TypeNumTickedTodo"][];
         };
         AreaSector: {
             areaName?: string;
@@ -973,7 +972,7 @@ export type components = {
             descent?: components["schemas"]["Slope"];
             randomMedia?: components["schemas"]["MediaIdentity"];
             problems?: components["schemas"]["SectorProblem"][];
-            typeNumTickedTodo?: components["schemas"]["TypeNumTickedTodo"][];
+            gradeCounts?: components["schemas"]["GradeCount"][];
             /** Format: int32 */
             numProblems?: number;
         };
@@ -1008,6 +1007,11 @@ export type components = {
             url?: string;
             title?: string;
             inherited?: boolean;
+        };
+        GradeCount: {
+            grade?: string;
+            /** Format: int32 */
+            num?: number;
         };
         Media: {
             identity?: components["schemas"]["MediaIdentity"];
@@ -1142,15 +1146,6 @@ export type components = {
             id?: number;
             type?: string;
             subType?: string;
-        };
-        TypeNumTickedTodo: {
-            type?: string;
-            /** Format: int32 */
-            num?: number;
-            /** Format: int32 */
-            ticked?: number;
-            /** Format: int32 */
-            todo?: number;
         };
         Webcam: {
             id?: string;
@@ -1302,6 +1297,8 @@ export type components = {
             rows?: components["schemas"]["GradeDistributionRow"][];
         };
         GradeDistributionRow: {
+            /** Format: int32 */
+            id?: number;
             name?: string;
             /** Format: int32 */
             numBoulder?: number;
@@ -1933,8 +1930,8 @@ export type components = {
             parameters?: {
                 [key: string]: string;
             };
-            wildcardType?: boolean;
             wildcardSubtype?: boolean;
+            wildcardType?: boolean;
         };
         MessageBodyWorkers: Record<string, never>;
         MultiPart: {
