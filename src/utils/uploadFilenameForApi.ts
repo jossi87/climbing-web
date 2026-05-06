@@ -35,5 +35,12 @@ export function uploadFilenameForApi(file: File): string {
   if (mime.startsWith('video/')) {
     return `${sanitized}.mp4`;
   }
-  return sanitized;
+  /*
+   * Last resort — mobile browsers (iOS Safari, Android Chrome) sometimes report an empty
+   * `file.type` for photos picked from the camera roll, and the file name is a bare UUID
+   * without any extension. Without a suffix the server's StorageType.fromFilename() throws
+   * "Unsupported file extension". Default to .jpeg because the overwhelming majority of
+   * camera-roll uploads are JPEG.
+   */
+  return `${sanitized}.jpeg`;
 }
