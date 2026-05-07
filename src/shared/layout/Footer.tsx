@@ -20,16 +20,15 @@ import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 import { twInk } from '../../design/twInk';
 
-/** Footer grid column titles — a step brighter and larger than default {@link SectionLabel} for `bg-surface-nav`. */
-const footerColumnHeadingClass =
-  'text-[12px] font-semibold tracking-[0.12em] text-slate-400 uppercase sm:text-[13px] sm:tracking-[0.1em] sm:text-slate-300';
+/** Footer grid column titles — compact for footer context. */
+const footerColumnHeadingClass = 'text-[10px] font-semibold tracking-[0.12em] text-slate-500 uppercase';
 
-/** Under nav card titles — clearly subordinate: smaller than title, normal weight, muted (not {@link designContract.typography.label} / `type-label`, which was 13px semibold uppercase). */
+/** Under nav card titles — clearly subordinate. */
 const navCardSubtitleClass =
-  'block text-[10px] font-normal leading-snug tracking-normal text-slate-500 sm:text-[11px] light:text-slate-600';
+  'block text-[8px] font-normal leading-snug tracking-normal text-slate-500 light:text-slate-600';
 
-/** Legal links + copyright: one step under default `type-label` (12px); shared scale so the row matches the line below. */
-const footerLegalTextClass = cn(designContract.typography.label, 'text-[11px] leading-tight sm:text-[12px]');
+/** Legal links + copyright: compact size. */
+const footerLegalTextClass = cn(designContract.typography.label, 'text-[9px] leading-tight');
 
 type NavCardProps = {
   to?: string;
@@ -50,21 +49,21 @@ const Footer = () => {
       <>
         <div
           className={cn(
-            'bg-surface-raised group-hover:border-brand-border/50 light:border-slate-400/60 light:group-hover:border-slate-500/80 light:group-hover:shadow-none flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-slate-600/45 text-slate-400 transition-[color,border-color,box-shadow] duration-200 group-hover:text-slate-100 group-hover:shadow-[0_0_0_1px_color-mix(in_srgb,var(--color-brand)_12%,transparent)] sm:h-9 sm:w-9',
+            'bg-surface-raised group-hover:border-brand-border/50 light:border-slate-400/60 light:group-hover:border-slate-500/80 light:group-hover:shadow-none flex h-4 w-4 shrink-0 items-center justify-center rounded border border-slate-600/45 text-slate-400 transition-[color,border-color,box-shadow] duration-200 group-hover:text-slate-100 group-hover:shadow-[0_0_0_1px_color-mix(in_srgb,var(--color-brand)_12%,transparent)]',
             twInk.lightGroupHoverSlate800,
             className,
           )}
         >
           {Icon ? (
-            <Icon size={16} />
+            <Icon size={10} />
           ) : (
-            <span className='text-xs font-semibold tracking-tight uppercase'>{fallbackText}</span>
+            <span className='text-[9px] font-semibold tracking-tight uppercase'>{fallbackText}</span>
           )}
         </div>
         <div className='flex flex-col text-left'>
           <span
             className={cn(
-              'light:group-hover:text-slate-950 block text-[12px] font-semibold text-slate-200 transition-colors duration-200 sm:text-[13px]',
+              'light:group-hover:text-slate-950 block text-[10px] font-semibold text-slate-200 transition-colors duration-200',
               twInk.groupHoverChromeNearWhite,
             )}
           >
@@ -76,7 +75,7 @@ const Footer = () => {
     );
 
     const baseClass = cn(
-      'group flex max-sm:-mx-1 max-sm:px-1.5 items-center gap-3 rounded-lg px-2 py-1.5 text-slate-400 transition-[color,background-color] duration-200 hover:bg-white/[0.07] hover:text-slate-100 light:hover:bg-slate-300/60',
+      'group flex max-sm:-mx-1 max-sm:px-1 items-center gap-1.5 rounded px-1 py-0.5 text-slate-400 transition-[color,background-color] duration-200 hover:bg-white/[0.07] hover:text-slate-100 light:hover:bg-slate-300/60',
       twInk.lightHoverSlate900,
     );
 
@@ -93,13 +92,13 @@ const Footer = () => {
 
   return (
     <footer
-      className={cn('bg-surface-nav isolate mt-0 w-full border-t py-7 sm:py-12', designContract.surfaces.shellHairline)}
+      className={cn('bg-surface-nav isolate mt-0 w-full border-t py-3 sm:py-4', designContract.surfaces.shellHairline)}
     >
       <div className='max-w-container mx-auto px-4 sm:px-6'>
-        <div className='mb-7 grid grid-cols-2 gap-4 sm:mb-12 sm:gap-8 lg:grid-cols-4'>
-          <div className='space-y-2.5 sm:space-y-4'>
+        <div className='mb-3 grid grid-cols-2 gap-2 sm:mb-4 sm:gap-3 lg:grid-cols-4'>
+          <div className='space-y-1 sm:space-y-1.5'>
             <SectionLabel className={footerColumnHeadingClass}>Navigation</SectionLabel>
-            <div className='flex flex-col gap-2 sm:gap-3'>
+            <div className='flex flex-col gap-1 sm:gap-1.5'>
               <NavCard to='/about' icon={Info} title='About' />
               <NavCard to='/activity' icon={ActivityIcon} title='Activity' />
               {!isBouldering && <NavCard to='/dangerous' icon={AlertTriangle} title='Dangerous' />}
@@ -108,9 +107,9 @@ const Footer = () => {
             </div>
           </div>
 
-          <div className='space-y-2.5 sm:space-y-4'>
+          <div className='space-y-1 sm:space-y-1.5'>
             <SectionLabel className={footerColumnHeadingClass}>Open Source Stack</SectionLabel>
-            <div className='flex flex-col gap-2 sm:gap-3'>
+            <div className='flex flex-col gap-1 sm:gap-1.5'>
               <NavCard
                 href='https://github.com/jossi87/climbing-web'
                 icon={Code2}
@@ -132,33 +131,33 @@ const Footer = () => {
             </div>
           </div>
 
-          <div className='space-y-2.5 sm:space-y-4'>
+          <div className='space-y-1 sm:space-y-1.5'>
             <SectionLabel className={footerColumnHeadingClass}>Affiliation</SectionLabel>
             <a
               href='https://brv.no'
               rel='noreferrer noopener'
               target='_blank'
               className={cn(
-                'group light:hover:bg-slate-300/60 flex items-center gap-3 rounded-lg px-2 py-1.5 text-slate-400 transition-[color,background-color] duration-200 hover:bg-white/[0.07] hover:text-slate-100 max-sm:-mx-1 max-sm:px-1.5',
+                'group light:hover:bg-slate-300/60 flex items-center gap-1.5 rounded px-1 py-0.5 text-slate-400 transition-[color,background-color] duration-200 hover:bg-white/[0.07] hover:text-slate-100 max-sm:-mx-1 max-sm:px-1',
                 twInk.lightHoverSlate900,
               )}
             >
               <div
                 className={cn(
-                  'bg-surface-raised group-hover:border-brand-border/50 light:border-slate-400/60 light:group-hover:border-slate-500/80 light:group-hover:shadow-none flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-slate-600/45 text-slate-400 transition-[color,border-color,box-shadow] duration-200 group-hover:text-slate-100 group-hover:shadow-[0_0_0_1px_color-mix(in_srgb,var(--color-brand)_12%,transparent)] sm:h-9 sm:w-9',
+                  'bg-surface-raised group-hover:border-brand-border/50 light:border-slate-400/60 light:group-hover:border-slate-500/80 light:group-hover:shadow-none flex h-4 w-4 shrink-0 items-center justify-center rounded border border-slate-600/45 text-slate-400 transition-[color,border-color,box-shadow] duration-200 group-hover:text-slate-100 group-hover:shadow-[0_0_0_1px_color-mix(in_srgb,var(--color-brand)_12%,transparent)]',
                   twInk.lightGroupHoverSlate800,
                 )}
               >
                 <img
                   src='/png/brv.png'
                   alt='BRV'
-                  className='footer-brv-logo h-5 w-5 border-0 object-contain transition-all outline-none'
+                  className='footer-brv-logo h-2.5 w-2.5 border-0 object-contain transition-all outline-none'
                 />
               </div>
               <div className='flex flex-col items-start text-left'>
                 <span
                   className={cn(
-                    'light:group-hover:text-slate-950 block text-[12px] font-semibold text-slate-200 transition-colors duration-200 sm:text-[13px]',
+                    'light:group-hover:text-slate-950 block text-[10px] font-semibold text-slate-200 transition-colors duration-200',
                     twInk.groupHoverChromeNearWhite,
                   )}
                 >
@@ -169,7 +168,7 @@ const Footer = () => {
             </a>
           </div>
 
-          <div className='space-y-2.5 sm:space-y-4'>
+          <div className='space-y-1 sm:space-y-1.5'>
             <SectionLabel className={footerColumnHeadingClass}>Community</SectionLabel>
             <NavCard
               href='https://www.facebook.com/groups/brattelinjer'
@@ -182,41 +181,41 @@ const Footer = () => {
 
         <div
           className={cn(
-            'flex flex-col items-center justify-between gap-4 border-t pt-6 sm:gap-6 sm:pt-8 md:flex-row',
+            'flex flex-col items-center justify-between gap-1.5 border-t pt-2 sm:gap-2 sm:pt-3 md:flex-row',
             designContract.surfaces.shellHairlineInner,
           )}
         >
           <div
             className={cn(
-              'flex max-w-full min-w-0 flex-nowrap items-center justify-center gap-x-1 sm:gap-x-3 md:gap-x-5',
+              'flex max-w-full min-w-0 flex-nowrap items-center justify-center gap-x-1 sm:gap-x-1.5 md:gap-x-2',
               footerLegalTextClass,
             )}
           >
             <a
               href='mailto:jostein.oygarden@gmail.com'
-              className='hover:text-brand hover:decoration-brand/55 light:text-slate-600 light:decoration-slate-400/55 light:hover:bg-slate-300/55 light:hover:decoration-brand/60 flex shrink-0 items-center gap-1 rounded-md px-1 py-0.5 font-bold text-slate-300 underline decoration-white/22 underline-offset-[3px] transition-[color,background-color,text-decoration-color] duration-200 hover:bg-white/[0.07] sm:px-1.5'
+              className='hover:text-brand hover:decoration-brand/55 light:text-slate-600 light:decoration-slate-400/55 light:hover:bg-slate-300/55 light:hover:decoration-brand/60 flex shrink-0 items-center gap-1 rounded px-1 py-0.5 font-bold text-slate-300 underline decoration-white/22 underline-offset-[3px] transition-[color,background-color,text-decoration-color] duration-200 hover:bg-white/[0.07]'
             >
-              <Mail className='h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5' strokeWidth={2} /> Contact
+              <Mail className='h-2.5 w-2.5 shrink-0' strokeWidth={2} /> Contact
             </a>
             <a
               href='/gpl-3.0.txt'
               target='_blank'
               rel='noreferrer'
-              className='hover:text-brand hover:decoration-brand/55 light:text-slate-600 light:decoration-slate-400/55 light:hover:bg-slate-300/55 light:hover:decoration-brand/60 flex shrink-0 items-center gap-1 rounded-md px-1 py-0.5 font-bold text-slate-300 underline decoration-white/22 underline-offset-[3px] transition-[color,background-color,text-decoration-color] duration-200 hover:bg-white/[0.07] sm:px-1.5'
+              className='hover:text-brand hover:decoration-brand/55 light:text-slate-600 light:decoration-slate-400/55 light:hover:bg-slate-300/55 light:hover:decoration-brand/60 flex shrink-0 items-center gap-1 rounded px-1 py-0.5 font-bold text-slate-300 underline decoration-white/22 underline-offset-[3px] transition-[color,background-color,text-decoration-color] duration-200 hover:bg-white/[0.07]'
             >
-              <FileText className='h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5' strokeWidth={2} /> License
+              <FileText className='h-2.5 w-2.5 shrink-0' strokeWidth={2} /> License
             </a>
             <a
               href='/privacy-policy'
-              className='hover:text-brand hover:decoration-brand/55 light:text-slate-600 light:decoration-slate-400/55 light:hover:bg-slate-300/55 light:hover:decoration-brand/60 flex shrink-0 items-center gap-1 rounded-md px-1 py-0.5 font-bold text-slate-300 underline decoration-white/22 underline-offset-[3px] transition-[color,background-color,text-decoration-color] duration-200 hover:bg-white/[0.07] sm:px-1.5'
+              className='hover:text-brand hover:decoration-brand/55 light:text-slate-600 light:decoration-slate-400/55 light:hover:bg-slate-300/55 light:hover:decoration-brand/60 flex shrink-0 items-center gap-1 rounded px-1 py-0.5 font-bold text-slate-300 underline decoration-white/22 underline-offset-[3px] transition-[color,background-color,text-decoration-color] duration-200 hover:bg-white/[0.07]'
             >
-              <ShieldCheck className='h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5' strokeWidth={2} /> Privacy
+              <ShieldCheck className='h-2.5 w-2.5 shrink-0' strokeWidth={2} /> Privacy
             </a>
             <a
               href='/donate'
-              className='hover:text-brand hover:decoration-brand/55 light:text-slate-600 light:decoration-slate-400/55 light:hover:bg-slate-300/55 light:hover:decoration-brand/60 flex shrink-0 items-center gap-1 rounded-md px-1 py-0.5 font-bold text-slate-300 underline decoration-white/22 underline-offset-[3px] transition-[color,background-color,text-decoration-color] duration-200 hover:bg-white/[0.07] sm:px-1.5'
+              className='hover:text-brand hover:decoration-brand/55 light:text-slate-600 light:decoration-slate-400/55 light:hover:bg-slate-300/55 light:hover:decoration-brand/60 flex shrink-0 items-center gap-1 rounded px-1 py-0.5 font-bold text-slate-300 underline decoration-white/22 underline-offset-[3px] transition-[color,background-color,text-decoration-color] duration-200 hover:bg-white/[0.07]'
             >
-              <Heart className='h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5' strokeWidth={2} /> Donate
+              <Heart className='h-2.5 w-2.5 shrink-0' strokeWidth={2} /> Donate
             </a>
           </div>
           <p className={cn('text-center select-none', footerLegalTextClass)}>
