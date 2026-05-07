@@ -1322,7 +1322,7 @@ export type components = {
             /** Format: int32 */
             id?: number;
             grade?: string;
-            labelMajor?: string;
+            labelCompact?: string;
             color?: string;
         };
         LatLng: {

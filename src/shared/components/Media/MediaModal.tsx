@@ -1014,15 +1014,16 @@ const MediaModal = ({
                   </h4>
                   <ul className='grid grid-cols-2 gap-4'>
                     {grades
-                      .filter((g) => g.labelMajor && g.color)
+                      .filter((g) => g.labelCompact && g.color)
                       .filter(
                         (g, i, arr) =>
-                          arr.findIndex((other) => other.labelMajor === g.labelMajor && other.color === g.color) === i,
+                          arr.findIndex((other) => other.labelCompact === g.labelCompact && other.color === g.color) ===
+                          i,
                       )
                       .map((g) => (
                         <li key={g.id} className='flex items-center gap-3'>
                           <div className='h-4 w-4 rounded shadow-lg' style={{ backgroundColor: g.color }} />
-                          <span className='text-xs font-bold text-slate-300'>{g.labelMajor}</span>
+                          <span className='text-xs font-bold text-slate-300'>{g.labelCompact}</span>
                         </li>
                       ))}
                   </ul>

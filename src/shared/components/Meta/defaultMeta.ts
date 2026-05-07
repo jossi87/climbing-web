@@ -8,7 +8,7 @@ export type CompassDirection = {
 export type Grade = {
   id: number;
   grade: string;
-  labelMajor?: string;
+  labelCompact?: string;
   color?: string;
 };
 
