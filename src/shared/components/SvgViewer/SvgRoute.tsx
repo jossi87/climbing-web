@@ -49,30 +49,7 @@ export const SvgRoute = ({
       gClassName += ' buldreinfo-svg-opacity-high';
     }
   }
-  let groupColor;
-  switch (svg.problemGradeGroup) {
-    case 0:
-      groupColor = '#FFFFFF';
-      break;
-    case 1:
-      groupColor = '#00FF00';
-      break;
-    case 2:
-      groupColor = '#0000FF';
-      break;
-    case 3:
-      groupColor = '#FFFF00';
-      break;
-    case 4:
-      groupColor = '#FF0000';
-      break;
-    case 5:
-      groupColor = '#FF00FF';
-      break;
-    default:
-      groupColor = '#000000';
-      break;
-  }
+  const groupColor = svg.problemGradeColor ?? '#000000';
   /* Typography uses `text-status-*`; topo numbers use the same tokens via CSS vars (light theme remaps in `index.css`). */
   let textColor = '#FFFFFF';
   if (svg.ticked) {

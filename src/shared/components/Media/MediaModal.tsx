@@ -107,7 +107,7 @@ function combinedSvgDifficulty(s: components['schemas']['Svg']): number {
   const kg = g && g !== '.' ? gradeLabelSortKeyMaxInText(g) : -1;
   const kn = n ? gradeLabelSortKeyMaxInText(n) : -1;
   const key = Math.max(kg, kn);
-  return key * 100 + (s.problemGradeGroup ?? -1);
+  return key * 100;
 }
 
 function gradeTieBreakText(s: components['schemas']['Svg']): number {

@@ -1125,8 +1125,7 @@ export type components = {
             problemId?: number;
             problemName?: string;
             problemGrade?: string;
-            /** Format: int32 */
-            problemGradeGroup?: number;
+            problemGradeColor?: string;
             problemSubtype?: string;
             /** Format: int32 */
             nr?: number;
