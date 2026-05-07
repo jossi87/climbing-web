@@ -1010,6 +1010,7 @@ export type components = {
         };
         GradeCount: {
             grade?: string;
+            color?: string;
             /** Format: int32 */
             num?: number;
         };
@@ -1288,6 +1289,7 @@ export type components = {
         };
         GradeDistribution: {
             grade?: string;
+            color?: string;
             /** Format: int32 */
             num?: number;
             /** Format: int32 */
@@ -1321,6 +1323,8 @@ export type components = {
             /** Format: int32 */
             id?: number;
             grade?: string;
+            /** Format: int32 */
+            deprecatedGradeId?: number;
         };
         LatLng: {
             /** Format: double */
@@ -1930,8 +1934,8 @@ export type components = {
             parameters?: {
                 [key: string]: string;
             };
-            wildcardSubtype?: boolean;
             wildcardType?: boolean;
+            wildcardSubtype?: boolean;
         };
         MessageBodyWorkers: Record<string, never>;
         MultiPart: {

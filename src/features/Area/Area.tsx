@@ -88,33 +88,28 @@ type Props = {
 const areaListLockInlineClass = 'ml-0.5 inline-block align-middle';
 
 /**
- * Grade-group colours matching the SVG topo viewer (SvgRoute.tsx).
- *  0 = white, 1 = green, 2 = blue, 3 = yellow, 4 = red, 5 = magenta
- *  Uses rgba so the sector background image shows through the bars.
+ * Parse a hex colour from the API (e.g. `"#ff0000"`) into an rgba string with the given alpha.
+ * Falls back to white if the colour is missing or unparseable.
  */
-const GRADE_GROUP_COLORS = [
-  'rgba(255, 255, 255, 0.55)', // 0
-  'rgba(0, 255, 0, 0.55)', // 1 — green
-  'rgba(0, 0, 255, 0.55)', // 2 — blue
-  'rgba(255, 255, 0, 0.55)', // 3 — yellow
-  'rgba(255, 0, 0, 0.55)', // 4 — red
-  'rgba(255, 0, 255, 0.55)', // 5 — magenta
-];
-
-/** Map a French grade string to a grade group (0-5). */
-function gradeToGroup(grade: string): number {
-  const m = grade.match(/^(\d+)/);
-  if (!m) return 0;
-  const n = parseInt(m[1], 10);
-  if (n <= 4) return 0;
-  if (n <= 5) return 1;
-  if (n <= 6) return 2;
-  if (n <= 7) return 3;
-  if (n <= 8) return 4;
-  return 5;
+function colorWithAlpha(color: string | undefined, alpha: number): string {
+  if (!color) return `rgba(255, 255, 255, ${alpha})`;
+  const hex = color.replace('#', '');
+  if (hex.length !== 6 && hex.length !== 3) return `rgba(255, 255, 255, ${alpha})`;
+  const full =
+    hex.length === 3
+      ? hex
+          .split('')
+          .map((c) => c + c)
+          .join('')
+      : hex;
+  const r = parseInt(full.slice(0, 2), 16);
+  const g = parseInt(full.slice(2, 4), 16);
+  const b = parseInt(full.slice(4, 6), 16);
+  if (isNaN(r) || isNaN(g) || isNaN(b)) return `rgba(255, 255, 255, ${alpha})`;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-/** Full-width horizontal grade distribution bars for sector cards, using SVG topo grade colours.
+/** Full-width horizontal grade distribution bars for sector cards, using grade colours from the API.
  *  Uses HTML/CSS layout so text is crisp and readable. Every grade gets a visible bar —
  *  zero-count grades render a 2px-tall placeholder so the full grade spectrum is always visible. */
 const SectorCardGradeDistribution = ({
@@ -131,8 +126,7 @@ const SectorCardGradeDistribution = ({
       {data.map((g, i) => {
         const total = g.num ?? 0;
         const pct = maxValue > 0 ? total / maxValue : 0;
-        const group = gradeToGroup(g.grade ?? '');
-        const color = GRADE_GROUP_COLORS[group] ?? '#FFFFFF';
+        const color = colorWithAlpha(g.color, 0.55);
         const barHeight = Math.max(Math.round(pct * BAR_MAX_HEIGHT), 2);
         return (
           <div key={i} className='flex min-w-0 flex-1 flex-col items-center gap-0.5'>

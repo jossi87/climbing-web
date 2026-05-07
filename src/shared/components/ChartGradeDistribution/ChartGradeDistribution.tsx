@@ -9,6 +9,28 @@ import { Card } from '../../ui';
 
 type Data = components['schemas']['GradeDistribution'][];
 
+/**
+ * Parse a hex colour from the API (e.g. `"#ff0000"`) into an rgba string with the given alpha.
+ * Falls back to white if the colour is missing or unparseable.
+ */
+function colorWithAlpha(color: string | undefined, alpha: number): string {
+  if (!color) return `rgba(255, 255, 255, ${alpha})`;
+  const hex = color.replace('#', '');
+  if (hex.length !== 6 && hex.length !== 3) return `rgba(255, 255, 255, ${alpha})`;
+  const full =
+    hex.length === 3
+      ? hex
+          .split('')
+          .map((c) => c + c)
+          .join('')
+      : hex;
+  const r = parseInt(full.slice(0, 2), 16);
+  const g = parseInt(full.slice(2, 4), 16);
+  const b = parseInt(full.slice(4, 6), 16);
+  if (isNaN(r) || isNaN(g) || isNaN(b)) return `rgba(255, 255, 255, ${alpha})`;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 type Props =
   | { idArea: number; idSector?: never; data?: never }
   | { idArea?: never; idSector: number; data?: never }
@@ -82,6 +104,13 @@ const ChartGradeDistribution = ({
             const pctSecInStack = totalH > 0 && hasSec && hasPrim ? (hSec / totalH) * 100 : hasSec ? 100 : 0;
             const pctPrimInStack = totalH > 0 && hasSec && hasPrim ? (hPrim / totalH) * 100 : hasPrim ? 100 : 0;
 
+            /*
+             * Use the grade colour from the API for both primary and secondary bars.
+             * Secondary gets a lower alpha so both segments are distinguishable in the stack.
+             */
+            const colorPrim = colorWithAlpha(g.color, isActive ? 0.9 : 0.7);
+            const colorSec = colorWithAlpha(g.color, isActive ? 0.45 : 0.25);
+
             return (
               <div
                 key={i}
@@ -127,30 +156,14 @@ const ChartGradeDistribution = ({
                     >
                       {hasSec ? (
                         <div
-                          style={{ height: hasPrim ? `${pctSecInStack}%` : '100%' }}
-                          className={`w-full shrink-0 transition-colors ${
-                            embedded
-                              ? isActive
-                                ? 'bg-blue-400/90'
-                                : 'bg-blue-400/40 group-hover:bg-blue-400/55'
-                              : isActive
-                                ? 'bg-blue-400'
-                                : 'bg-blue-400/45 group-hover:bg-blue-400/65'
-                          }`}
+                          style={{ height: hasPrim ? `${pctSecInStack}%` : '100%', backgroundColor: colorSec }}
+                          className='w-full shrink-0 transition-colors'
                         />
                       ) : null}
                       {hasPrim ? (
                         <div
-                          style={{ height: hasSec ? `${pctPrimInStack}%` : '100%' }}
-                          className={`w-full shrink-0 transition-colors ${
-                            embedded
-                              ? isActive
-                                ? 'bg-red-400/90'
-                                : 'bg-red-400/50 group-hover:bg-red-400/70'
-                              : isActive
-                                ? 'bg-red-400'
-                                : 'bg-red-400/55 group-hover:bg-red-400/80'
-                          }`}
+                          style={{ height: hasSec ? `${pctPrimInStack}%` : '100%', backgroundColor: colorPrim }}
+                          className='w-full shrink-0 transition-colors'
                         />
                       ) : null}
                     </div>
