@@ -1322,6 +1322,8 @@ export type components = {
             /** Format: int32 */
             id?: number;
             grade?: string;
+            labelMajor?: string;
+            color?: string;
             /** Format: int32 */
             deprecatedGradeId?: number;
         };

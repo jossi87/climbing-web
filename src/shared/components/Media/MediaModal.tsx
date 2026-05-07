@@ -239,7 +239,7 @@ const MediaModal = ({
   autoPlayVideo,
   optProblemId,
 }: Props) => {
-  const { isAuthenticated, isAdmin, isBouldering } = useMeta();
+  const { isAuthenticated, isAdmin, isBouldering, grades } = useMeta();
   const accessToken = useAccessToken();
   const navigate = useNavigate();
 
@@ -1011,30 +1011,18 @@ const MediaModal = ({
                     Line Colors (Difficulty)
                   </h4>
                   <ul className='grid grid-cols-2 gap-4'>
-                    <li className='flex items-center gap-3'>
-                      <div className='h-4 w-4 rounded bg-white shadow-lg' />
-                      <span className='text-xs font-bold text-slate-300'>White (Project)</span>
-                    </li>
-                    <li className='flex items-center gap-3'>
-                      <div className='h-4 w-4 rounded bg-green-500 shadow-lg' />
-                      <span className='text-xs font-bold text-slate-300'>Green (Grade 3-5)</span>
-                    </li>
-                    <li className='flex items-center gap-3'>
-                      <div className='h-4 w-4 rounded bg-blue-500 shadow-lg' />
-                      <span className='text-xs font-bold text-slate-300'>Blue (Grade 6)</span>
-                    </li>
-                    <li className='flex items-center gap-3'>
-                      <div className='h-4 w-4 rounded bg-yellow-400 shadow-lg' />
-                      <span className='text-xs font-bold text-slate-300'>Yellow (Grade 7)</span>
-                    </li>
-                    <li className='flex items-center gap-3'>
-                      <div className='h-4 w-4 rounded bg-red-500 shadow-lg' />
-                      <span className='text-xs font-bold text-slate-300'>Red (Grade 8)</span>
-                    </li>
-                    <li className='flex items-center gap-3'>
-                      <div className='h-4 w-4 rounded bg-fuchsia-500 shadow-lg' />
-                      <span className='text-xs font-bold text-slate-300'>Magenta (Grade 9-10)</span>
-                    </li>
+                    {grades
+                      .filter((g) => g.labelMajor && g.color)
+                      .filter(
+                        (g, i, arr) =>
+                          arr.findIndex((other) => other.labelMajor === g.labelMajor && other.color === g.color) === i,
+                      )
+                      .map((g) => (
+                        <li key={g.id} className='flex items-center gap-3'>
+                          <div className='h-4 w-4 rounded shadow-lg' style={{ backgroundColor: g.color }} />
+                          <span className='text-xs font-bold text-slate-300'>{g.labelMajor}</span>
+                        </li>
+                      ))}
                   </ul>
                 </div>
               </div>
