@@ -1087,7 +1087,7 @@ export type components = {
             rock?: string;
             comment?: string;
             /** Format: int32 */
-            gradeNumber?: number;
+            gradeWeight?: number;
             grade?: string;
             fa?: string;
             faDate?: string;
@@ -1324,8 +1324,6 @@ export type components = {
             grade?: string;
             labelMajor?: string;
             color?: string;
-            /** Format: int32 */
-            deprecatedGradeId?: number;
         };
         LatLng: {
             /** Format: double */
@@ -1571,7 +1569,7 @@ export type components = {
             fa?: boolean;
             grade?: string;
             /** Format: int32 */
-            gradeNumber?: number;
+            gradeWeight?: number;
             noPersonalGrade?: boolean;
             coordinates?: components["schemas"]["Coordinates"];
         };

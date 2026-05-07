@@ -148,14 +148,14 @@ const SORTS: Record<State['order'], (a: Row, b: Row) => number> = {
     return (a.faDate ?? '').localeCompare(b.faDate ?? '', getLocales()) || a.name.localeCompare(b.name, getLocales());
   },
 
-  'grade-desc': (a, b) => b.gradeNumber - a.gradeNumber || a.num - b.num || a.name.localeCompare(b.name, getLocales()),
+  'grade-desc': (a, b) => b.gradeWeight - a.gradeWeight || a.num - b.num || a.name.localeCompare(b.name, getLocales()),
 
-  'grade-asc': (a, b) => a.gradeNumber - b.gradeNumber || a.num - b.num || a.name.localeCompare(b.name, getLocales()),
+  'grade-asc': (a, b) => a.gradeWeight - b.gradeWeight || a.num - b.num || a.name.localeCompare(b.name, getLocales()),
 
   number: (a, b) => (a?.nr ?? 0) - (b?.nr ?? 0) || a.name.localeCompare(b.name, getLocales()),
 
   rating: (a, b) =>
-    b.stars - a.stars || b.gradeNumber - a.gradeNumber || a.num - b.num || a.name.localeCompare(b.name, getLocales()),
+    b.stars - a.stars || b.gradeWeight - a.gradeWeight || a.num - b.num || a.name.localeCompare(b.name, getLocales()),
 } as const;
 
 const CLEANED_ORDER: Record<OrderOption, OrderOption> = {
@@ -233,7 +233,7 @@ export const useProblemListState = ({
         const tKey = rowListTypeKey(problem);
         typeNames.add(tKey);
 
-        const index = mapping[idToGrade[problem.gradeNumber] ?? 'n/a'] ?? 0;
+        const index = mapping[idToGrade[problem.gradeWeight] ?? 'n/a'] ?? 0;
 
         return (
           index >= indexLow &&

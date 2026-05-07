@@ -4,7 +4,7 @@ export type Row = {
   sectorName: string;
   name: string;
   nr: number | null;
-  gradeNumber: number;
+  gradeWeight: number;
   stars: number;
   numTicks: number;
   ticked: boolean;
@@ -25,6 +25,6 @@ export type Row = {
 /** Matches sector type summaries: Projects (grade 0), Broken, else subtype or «Boulders». */
 export function rowListTypeKey(row: Row): string {
   if (row.broken) return 'Broken';
-  if (row.gradeNumber === 0) return 'Projects';
+  if (row.gradeWeight === 0) return 'Projects';
   return row.subType || 'Boulders';
 }

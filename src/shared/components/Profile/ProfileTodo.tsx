@@ -42,7 +42,7 @@ type TodoItem = {
   sectorLockedSuperadmin: boolean;
   problemName: string;
   grade: string;
-  gradeNumber: number;
+  gradeWeight: number;
   coordinates?: { latitude: number; longitude: number };
   problemLockedAdmin: boolean;
   problemLockedSuperadmin: boolean;
@@ -140,7 +140,7 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
             sectorLockedSuperadmin: !!sector.lockedSuperadmin,
             problemName: problem.name ?? '',
             grade: problem.grade ?? '',
-            gradeNumber: resolveGradeId(problem.grade ?? 'n/a'),
+            gradeWeight: resolveGradeId(problem.grade ?? 'n/a'),
             coordinates:
               problem.coordinates?.latitude != null && problem.coordinates?.longitude != null
                 ? {
@@ -202,7 +202,7 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
             sectorName: item.sectorName,
             name: item.problemName,
             nr: item.nr,
-            gradeNumber: item.gradeNumber,
+            gradeWeight: item.gradeWeight,
             stars: 0,
             numTicks: 0,
             ticked: false,

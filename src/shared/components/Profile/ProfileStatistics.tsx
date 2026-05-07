@@ -312,7 +312,7 @@ const ProfileStatistics = ({ userId, view }: ProfileStatisticsProps) => {
             sectorName: t.sectorName ?? '',
             name: t.name ?? '',
             nr: null,
-            gradeNumber: t.gradeNumber ?? 0,
+            gradeWeight: t.gradeWeight ?? 0,
             stars: t.stars ?? 0,
             numTicks: 0,
             ticked: false,

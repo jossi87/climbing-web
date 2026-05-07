@@ -538,7 +538,7 @@ const Sector = () => {
     new Set((data.problems ?? []).map((p) => p.t?.subType).filter((p): p is string => !!p)),
   );
   if ((data.problems ?? []).filter((p) => p.broken)?.length) uniqueTypes.push('Broken');
-  if ((data.problems ?? []).filter((p) => p.gradeNumber === 0)?.length) uniqueTypes.push('Projects');
+  if ((data.problems ?? []).filter((p) => p.gradeWeight === 0)?.length) uniqueTypes.push('Projects');
   uniqueTypes.sort();
 
   const [conditionLat, conditionLng] = (() => {
@@ -598,9 +598,9 @@ const Sector = () => {
       const problemsOfType =
         data.problems?.filter(
           (p) =>
-            (subType === 'Projects' && p.gradeNumber === 0) ||
+            (subType === 'Projects' && p.gradeWeight === 0) ||
             (subType === 'Broken' && p.broken) ||
-            (p.t?.subType === subType && p.gradeNumber !== 0),
+            (p.t?.subType === subType && p.gradeWeight !== 0),
         ) ?? [];
       const numTicked = problemsOfType.filter((p) => p.ticked).length;
       return { key: header, header, count: problemsOfType.length, numTicked };
@@ -612,7 +612,7 @@ const Sector = () => {
       element: <SectorListItem key={p.id} problem={p} />,
       name: p.name ?? '',
       nr: p.nr ?? 0,
-      gradeNumber: p.gradeNumber ?? 0,
+      gradeWeight: p.gradeWeight ?? 0,
       stars: p.stars ?? 0,
       numTicks: p.numTicks ?? 0,
       ticked: p.ticked ?? false,

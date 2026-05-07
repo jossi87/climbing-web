@@ -557,7 +557,7 @@ const MediaModal = ({
               <Info size={17} strokeWidth={2} />
             </button>
 
-            {!isBouldering && svgs.length > 0 && (
+            {svgs.length > 0 && (
               <button
                 type='button'
                 onClick={() => setShowHelp(true)}
@@ -987,25 +987,27 @@ const MediaModal = ({
 
             <div className='grid grid-cols-1 gap-12 md:grid-cols-2'>
               <div className='space-y-8'>
-                <div>
-                  <h4 className='text-brand mb-4 text-[11px] font-black tracking-widest uppercase'>Line Shapes</h4>
-                  <ul className='space-y-4'>
-                    <li className='flex items-center gap-4'>
-                      <div className='h-0.5 w-12 border-t-2 border-dashed border-white' />{' '}
-                      <div className='text-sm'>
-                        <p className='type-body font-semibold'>Dotted Line</p>
-                        <p className='text-xs text-slate-500'>Bolted sport route</p>
-                      </div>
-                    </li>
-                    <li className='flex items-center gap-4'>
-                      <div className='h-0.5 w-12 bg-white' />{' '}
-                      <div className='text-sm'>
-                        <p className='type-body font-semibold'>Unbroken Line</p>
-                        <p className='text-xs text-slate-500'>Traditionally protected route</p>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
+                {!isBouldering && (
+                  <div>
+                    <h4 className='text-brand mb-4 text-[11px] font-black tracking-widest uppercase'>Line Shapes</h4>
+                    <ul className='space-y-4'>
+                      <li className='flex items-center gap-4'>
+                        <div className='h-0.5 w-12 border-t-2 border-dashed border-white' />{' '}
+                        <div className='text-sm'>
+                          <p className='type-body font-semibold'>Dotted Line</p>
+                          <p className='text-xs text-slate-500'>Bolted sport route</p>
+                        </div>
+                      </li>
+                      <li className='flex items-center gap-4'>
+                        <div className='h-0.5 w-12 bg-white' />{' '}
+                        <div className='text-sm'>
+                          <p className='type-body font-semibold'>Unbroken Line</p>
+                          <p className='text-xs text-slate-500'>Traditionally protected route</p>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                )}
                 <div>
                   <h4 className='text-brand mb-4 text-[11px] font-black tracking-widest uppercase'>
                     Line Colors (Difficulty)
@@ -1074,57 +1076,59 @@ const MediaModal = ({
                     </li>
                   </ul>
                 </div>
-                <div>
-                  <h4 className='text-brand mb-4 text-[11px] font-black tracking-widest uppercase'>Other Symbols</h4>
-                  <ul className='space-y-6'>
-                    <li className='flex items-center gap-4'>
-                      <svg width='60' height='20' className='bg-surface-nav rounded'>
-                        <Descent scale={0.6} path={'M 0 10 C 30 10 30 10 60 10'} whiteNotBlack={true} thumb={false} />
-                      </svg>
-                      <span className='text-xs font-bold text-slate-300'>Descent Line</span>
-                    </li>
-                    <li className='flex items-center gap-4'>
-                      <svg
-                        width={40}
-                        height={40}
-                        viewBox='0 0 40 40'
-                        className='bg-surface-nav shrink-0 overflow-visible rounded-md'
-                        aria-hidden
-                      >
-                        <Rappel
-                          x={20}
-                          y={17}
-                          bolted={true}
-                          scale={0.72}
-                          thumb={false}
-                          backgroundColor='#334155'
-                          color='#f8fafc'
-                        />
-                      </svg>
-                      <span className='text-xs font-bold text-slate-300'>Bolted Anchor</span>
-                    </li>
-                    <li className='flex items-center gap-4'>
-                      <svg
-                        width={40}
-                        height={40}
-                        viewBox='0 0 40 40'
-                        className='bg-surface-nav shrink-0 overflow-visible rounded-md'
-                        aria-hidden
-                      >
-                        <Rappel
-                          x={20}
-                          y={17}
-                          bolted={false}
-                          scale={0.72}
-                          thumb={false}
-                          backgroundColor='#334155'
-                          color='#f8fafc'
-                        />
-                      </svg>
-                      <span className='text-xs font-bold text-slate-300'>Traditional Anchor</span>
-                    </li>
-                  </ul>
-                </div>
+                {!isBouldering && (
+                  <div>
+                    <h4 className='text-brand mb-4 text-[11px] font-black tracking-widest uppercase'>Other Symbols</h4>
+                    <ul className='space-y-6'>
+                      <li className='flex items-center gap-4'>
+                        <svg width='60' height='20' className='bg-surface-nav rounded'>
+                          <Descent scale={0.6} path={'M 0 10 C 30 10 30 10 60 10'} whiteNotBlack={true} thumb={false} />
+                        </svg>
+                        <span className='text-xs font-bold text-slate-300'>Descent Line</span>
+                      </li>
+                      <li className='flex items-center gap-4'>
+                        <svg
+                          width={40}
+                          height={40}
+                          viewBox='0 0 40 40'
+                          className='bg-surface-nav shrink-0 overflow-visible rounded-md'
+                          aria-hidden
+                        >
+                          <Rappel
+                            x={20}
+                            y={17}
+                            bolted={true}
+                            scale={0.72}
+                            thumb={false}
+                            backgroundColor='#334155'
+                            color='#f8fafc'
+                          />
+                        </svg>
+                        <span className='text-xs font-bold text-slate-300'>Bolted Anchor</span>
+                      </li>
+                      <li className='flex items-center gap-4'>
+                        <svg
+                          width={40}
+                          height={40}
+                          viewBox='0 0 40 40'
+                          className='bg-surface-nav shrink-0 overflow-visible rounded-md'
+                          aria-hidden
+                        >
+                          <Rappel
+                            x={20}
+                            y={17}
+                            bolted={false}
+                            scale={0.72}
+                            thumb={false}
+                            backgroundColor='#334155'
+                            color='#f8fafc'
+                          />
+                        </svg>
+                        <span className='text-xs font-bold text-slate-300'>Traditional Anchor</span>
+                      </li>
+                    </ul>
+                  </div>
+                )}
               </div>
             </div>
           </div>

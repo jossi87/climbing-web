@@ -29,15 +29,15 @@ function FaTickBar({ fa, tick, totalWidthPct }: { fa: number; tick: number; tota
 }
 
 function Chart({ ticks: data }: Props) {
-  type LocalGrade = { gradeNumber: number; grade: string; fa: number; tick: number };
+  type LocalGrade = { gradeWeight: number; grade: string; fa: number; tick: number };
   const grades: LocalGrade[] = [];
   data.forEach((t) => {
-    const gradeNumber = t.gradeNumber ?? 0;
+    const gradeWeight = t.gradeWeight ?? 0;
     const gradeLabel = t.grade ?? '';
-    const d = grades.find((val) => val.gradeNumber === gradeNumber);
+    const d = grades.find((val) => val.gradeWeight === gradeWeight);
     if (!d) {
       grades.push({
-        gradeNumber,
+        gradeWeight,
         grade: gradeLabel,
         fa: t.fa ? 1 : 0,
         tick: t.fa ? 0 : 1,
@@ -50,7 +50,7 @@ function Chart({ ticks: data }: Props) {
       }
     }
   });
-  grades.sort((a, b) => b.gradeNumber - a.gradeNumber);
+  grades.sort((a, b) => b.gradeWeight - a.gradeWeight);
   const maxValue = Math.max(
     1,
     ...grades.map((d) => {

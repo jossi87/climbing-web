@@ -627,7 +627,7 @@ const Area = () => {
           areaName: data.name ?? '',
           sectorName: name,
           nr: p.nr ?? 0,
-          gradeNumber: p.gradeNumber ?? 0,
+          gradeWeight: p.gradeWeight ?? 0,
           stars: p.stars ?? 0,
           numTicks: p.numTicks ?? 0,
           ticked: p.ticked ?? false,
@@ -639,7 +639,7 @@ const Area = () => {
           faDate: p.faDate ?? null,
         }));
       })
-      .sort((a, b) => b.gradeNumber - a.gradeNumber);
+      .sort((a, b) => b.gradeWeight - a.gradeWeight);
   }, [data]);
 
   if (redirectUi) return redirectUi;
