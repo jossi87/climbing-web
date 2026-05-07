@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useData } from '../../../api';
-import { DEFAULT_META, type Metadata } from './defaultMeta';
+import { type Metadata } from './context';
 import { MetaContext } from './context';
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
 };
 
 export const MetaProvider = ({ children }: Props) => {
-  const { data: meta } = useData<Metadata>(`/meta`, {
+  const { data: meta, isPending } = useData<Metadata>(`/meta`, {
     select: (data) => {
       if (data.faYears) {
         data.faYears.sort((a, b) => a - b);
@@ -17,6 +17,10 @@ export const MetaProvider = ({ children }: Props) => {
     },
     staleTime: Infinity,
   });
-  const contextValue = meta ?? DEFAULT_META;
-  return <MetaContext.Provider value={contextValue}>{children}</MetaContext.Provider>;
+
+  if (isPending || !meta) {
+    return null;
+  }
+
+  return <MetaContext.Provider value={meta}>{children}</MetaContext.Provider>;
 };
