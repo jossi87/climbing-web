@@ -5,6 +5,7 @@ import {
   convertFromDateToString,
   convertFromStringToDate,
   invalidateProblemQueries,
+  invalidateSectorQueries,
   postTicks,
   useAccessToken,
 } from '../../../api';
@@ -39,6 +40,10 @@ type TickModalProps = {
   onClose: () => void;
   idTick: number;
   idProblem: number;
+  /** Sector id — used to invalidate sector cache after tick so the problem list reflects the new status. */
+  idSector?: number;
+  /** Area id — used to invalidate area cache after tick so the problem list reflects the new status. */
+  idArea?: number;
   grades: components['schemas']['Grade'][];
   comment: string;
   grade: string;
@@ -55,6 +60,8 @@ const TickModal = ({
   onClose,
   idTick,
   idProblem,
+  idSector,
+  idArea,
   grades,
   comment: initialComment,
   grade: initialGrade,
@@ -141,6 +148,20 @@ const TickModal = ({
       postTicks(accessToken, isDelete, idTick, idProblem, comment, date, stars ?? -1, grade, repeats)
         .then(() => {
           void invalidateProblemQueries(queryClient, idProblem);
+          if (idSector) {
+            void invalidateSectorQueries(queryClient, idSector);
+          }
+          if (idArea) {
+            void queryClient.invalidateQueries({
+              predicate: (q) => {
+                const key = q.queryKey;
+                if (!Array.isArray(key) || key[0] !== '/areas') return false;
+                const meta = key[1];
+                if (meta == null || typeof meta !== 'object') return false;
+                return 'id' in meta && (meta as { id: number }).id === idArea;
+              },
+            });
+          }
           onClose();
         })
         .catch((error) => {
@@ -151,7 +172,22 @@ const TickModal = ({
           setIsSaving(false);
         });
     },
-    [accessToken, queryClient, idTick, idProblem, comment, date, stars, grade, repeats, onClose, validDate, isSaving],
+    [
+      accessToken,
+      queryClient,
+      idTick,
+      idProblem,
+      idSector,
+      idArea,
+      comment,
+      date,
+      stars,
+      grade,
+      repeats,
+      onClose,
+      validDate,
+      isSaving,
+    ],
   );
 
   if (!open) return null;

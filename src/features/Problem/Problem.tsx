@@ -451,6 +451,8 @@ function ProblemLoaded({
         <TickModal
           idTick={userTick?.id ?? -1}
           idProblem={data.id!}
+          idSector={data.sectorId ?? undefined}
+          idArea={data.areaId ?? undefined}
           date={userTick?.date}
           comment={userTick?.comment ?? ''}
           grade={userTick?.noPersonalGrade ? NO_PERSONAL_GRADE_LABEL : (userTick?.suggestedGrade ?? data.grade ?? '')}

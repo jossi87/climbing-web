@@ -324,25 +324,17 @@ export function useProblem(id: number, showHiddenMedia: boolean) {
     onSuccess: () => {
       problem.refetch();
       if (problem.data?.sectorId) {
-        client.refetchQueries({
-          queryKey: [
-            `/sectors`,
-            {
-              isAuthenticated: true,
-              id: problem.data.sectorId,
-            },
-          ],
-        });
+        invalidateSectorQueries(client, problem.data.sectorId);
       }
       if (problem.data?.areaId) {
-        client.refetchQueries({
-          queryKey: [
-            `/areas`,
-            {
-              isAuthenticated: true,
-              id: problem.data.areaId,
-            },
-          ],
+        client.invalidateQueries({
+          predicate: (q) => {
+            const key = q.queryKey;
+            if (!Array.isArray(key) || key[0] !== '/areas') return false;
+            const meta = key[1];
+            if (meta == null || typeof meta !== 'object') return false;
+            return 'id' in meta && (meta as { id: number }).id === problem.data!.areaId;
+          },
         });
       }
       if (profile?.id) {
