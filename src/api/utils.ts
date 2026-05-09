@@ -17,6 +17,22 @@ export function mediaIdentityVersionStamp(identity?: MediaIdentity | null): numb
 }
 
 /**
+ * Return the `primaryColorHex` from a MediaIdentity, or `undefined` if not set.
+ */
+export function mediaPrimaryColorHex(identity?: MediaIdentity | null): string | undefined {
+  return identity?.primaryColorHex || undefined;
+}
+
+/**
+ * Build a CSS `background-color` from the media's primary color hex, or return undefined.
+ * Useful for skeleton placeholders that transition smoothly into the loaded image.
+ */
+export function mediaPlaceholderStyle(identity?: MediaIdentity | null): { backgroundColor?: string } {
+  const hex = mediaPrimaryColorHex(identity);
+  return hex ? { backgroundColor: hex } : {};
+}
+
+/**
  * Build the `X% Y%` percent pair from API focus, falling back to centered (`50% 50%`) when no usable focus is set.
  *
  * Why always return a string (instead of `undefined`):

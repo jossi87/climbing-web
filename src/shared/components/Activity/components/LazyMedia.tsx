@@ -9,6 +9,7 @@ import {
   mediaIdentityId,
   mediaIdentityVersionStamp,
   mediaObjectPositionStyle,
+  mediaPlaceholderStyle,
 } from '../../../../api';
 import { VideoProcessingPlaceholder } from '../../Media/VideoProcessingPlaceholder';
 import { VideoThumbnailPlayOverlay } from '../../Media/VideoThumbnailPlayOverlay';
@@ -81,7 +82,7 @@ export const LazyMedia = ({ media, problemId }: { media: ActivityMedia[]; proble
           <ActivityMediaThumb key={mediaIdentityId(m.identity)} m={m} problemId={problemId} />
         ) : (
           <div key={mediaIdentityId(m.identity)} className={thumbCellClass}>
-            <div className='skeleton-bar h-full w-full animate-pulse' />
+            <div className='h-full w-full animate-pulse' style={mediaPlaceholderStyle(m.identity)} />
           </div>
         ),
       )}

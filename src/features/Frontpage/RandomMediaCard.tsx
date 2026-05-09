@@ -7,6 +7,7 @@ import {
   mediaIdentityId,
   mediaIdentityVersionStamp,
   mediaObjectPositionStyle,
+  mediaPrimaryColorHex,
 } from '../../api';
 import { cn } from '../../lib/utils';
 import { ClickableAvatar, AvatarGroup, Card } from '../../shared/ui';
@@ -202,11 +203,12 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
   const mobileGradeClass = 'photo-overlay-fg-muted text-[13px] font-light tabular-nums tracking-tight leading-none';
   const mobileLocationClass = 'photo-overlay-fg-muted text-[12px] font-normal leading-tight';
   const multi = items.length > 1;
+  const primaryColorHex = mediaPrimaryColorHex(randomMediaItem.identity);
 
   return (
     <Card flush className={cardShellClass}>
       <div
-        className={mediaFrameClass}
+        className={cn(mediaFrameClass, 'relative')}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
@@ -215,6 +217,14 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
           multiTouchGesture.current = false;
         }}
       >
+        {primaryColorHex && (
+          <div
+            className='pointer-events-none absolute inset-0 z-0'
+            style={{
+              background: `radial-gradient(ellipse at 50% 50%, ${primaryColorHex}44 0%, ${primaryColorHex}11 50%, transparent 80%)`,
+            }}
+          />
+        )}
         <Link
           to={`/problem/${randomMediaItem.idProblem}`}
           onClick={onLinkClick}

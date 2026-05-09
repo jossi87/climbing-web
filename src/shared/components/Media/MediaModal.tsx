@@ -33,6 +33,7 @@ import {
   getMediaFileUrlSrcSet,
   mediaIdentityId,
   mediaIdentityVersionStamp,
+  mediaPrimaryColorHex,
   useAccessToken,
 } from '../../../api';
 import SvgViewer from '../SvgViewer';
@@ -707,7 +708,21 @@ const MediaModal = ({
            * Do not use `items-center justify-center` here: the `<img>` would keep **intrinsic** layout size, so
            * `max-*` only caps and a 600px-wide bitmap stays ~600px on screen. Fill the stage with `h-full w-full` +
            * `object-contain` so the picture scales to the viewport (srcset still picks resolution).
+           *
+           * A subtle background glow from the media's primary color sits behind the image to soften the
+           * letterboxed black when the aspect ratio doesn't match the viewport.
            */}
+          {(() => {
+            const hex = mediaPrimaryColorHex(m.identity);
+            return hex ? (
+              <div
+                className='pointer-events-none absolute inset-0 z-0'
+                style={{
+                  background: `radial-gradient(ellipse at 50% 50%, ${hex}55 0%, ${hex}22 50%, transparent 80%)`,
+                }}
+              />
+            ) : null;
+          })()}
           <div
             className='flex h-full min-h-0 w-full min-w-0 transition-transform duration-300 ease-out'
             style={{ transform: `translateX(${offsetX}px)` }}

@@ -902,6 +902,7 @@ export type components = {
             focusX?: number;
             /** Format: int32 */
             focusY?: number;
+            primaryColorHex?: string;
         };
         User: {
             /** Format: int32 */
@@ -1933,8 +1934,8 @@ export type components = {
             parameters?: {
                 [key: string]: string;
             };
-            wildcardType?: boolean;
             wildcardSubtype?: boolean;
+            wildcardType?: boolean;
         };
         MessageBodyWorkers: Record<string, never>;
         MultiPart: {

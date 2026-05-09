@@ -1,6 +1,11 @@
 import { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import { createPortal } from 'react-dom';
-import { getMediaFileUrl, mediaObjectPositionStyle, type MediaIdentity } from '../../../api/utils';
+import {
+  getMediaFileUrl,
+  mediaObjectPositionStyle,
+  mediaPrimaryColorHex,
+  type MediaIdentity,
+} from '../../../api/utils';
 import { cn } from '../../../lib/utils';
 import { avatarFallbackColors, avatarInitialsFromName } from './avatarFallback';
 
@@ -36,8 +41,9 @@ export function Avatar({ name, mediaIdentity, size = 'mini', className, onClick 
   const mediaVersionStamp = Number(mediaIdentity?.versionStamp ?? 0);
   const initials = avatarInitialsFromName(name);
   const fallbackStyle = mid === 0 ? avatarFallbackColors(name) : undefined;
-  /** ~2× for retina; capped so we don’t request huge originals on modal-sized avatars. */
+  /** ~2× for retina; capped so we don't request huge originals on modal-sized avatars. */
   const mediaTargetWidth = Math.min(2048, Math.round(pixelSize * 2));
+  const primaryColorHex = mid !== 0 ? mediaPrimaryColorHex(mediaIdentity) : undefined;
 
   return (
     <div
@@ -47,7 +53,12 @@ export function Avatar({ name, mediaIdentity, size = 'mini', className, onClick 
         onClick && 'hover:border-brand-border cursor-pointer',
         className,
       )}
-      style={{ width: pixelSize, height: pixelSize, ...fallbackStyle }}
+      style={{
+        width: pixelSize,
+        height: pixelSize,
+        ...fallbackStyle,
+        ...(primaryColorHex ? { backgroundColor: primaryColorHex } : {}),
+      }}
       onClick={onClick}
       title={name}
     >
@@ -161,6 +172,7 @@ export function ClickableAvatar(props: AvatarProps) {
               name={props.name}
               userId={props.userId}
               stamp={Number(props.mediaIdentity?.versionStamp ?? 0)}
+              mediaIdentity={props.mediaIdentity}
               onClose={closeModal}
             />
           </Suspense>,

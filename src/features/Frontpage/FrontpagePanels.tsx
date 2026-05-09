@@ -8,6 +8,7 @@ import {
   mediaIdentityId,
   mediaIdentityVersionStamp,
   mediaObjectPositionStyle,
+  mediaPrimaryColorHex,
 } from '../../api';
 import { AvatarGroup, Card, ClickableAvatar, SectionLabel, TradGearMarker } from '../../shared/ui';
 import { LockSymbol } from '../../shared/ui/Indicators';
@@ -513,31 +514,38 @@ function MediaThumbFill({ m }: { m: NewestMedia }) {
   const stamp = mediaIdentityVersionStamp(m.identity);
   const thumbUrl = getMediaFileUrl(mid, stamp, false, { minDimension: 188 });
   const isMovie = !!m.isMovie;
+  const primaryColorHex = mediaPrimaryColorHex(m.identity);
 
   if (isMovie) {
     if (imgError) return <VideoProcessingPlaceholder compact className='absolute inset-0' />;
     return (
-      <img
-        src={thumbUrl}
-        alt={m.problemName ?? ''}
-        loading='lazy'
-        decoding='async'
-        className='absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover/tile:scale-110'
-        style={mediaObjectPositionStyle(m.identity)}
-        onError={() => setImgError(true)}
-      />
+      <>
+        {primaryColorHex && <div className='absolute inset-0' style={{ backgroundColor: primaryColorHex }} />}
+        <img
+          src={thumbUrl}
+          alt={m.problemName ?? ''}
+          loading='lazy'
+          decoding='async'
+          className='absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover/tile:scale-110'
+          style={mediaObjectPositionStyle(m.identity)}
+          onError={() => setImgError(true)}
+        />
+      </>
     );
   }
   return (
-    <div
-      role='img'
-      aria-label={m.problemName ?? ''}
-      className='animate-in fade-in fill-mode-both absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-500 ease-out group-hover/tile:scale-110'
-      style={{
-        backgroundImage: `url(${JSON.stringify(thumbUrl)})`,
-        ...mediaBackgroundPositionStyle(m.identity),
-      }}
-    />
+    <>
+      {primaryColorHex && <div className='absolute inset-0' style={{ backgroundColor: primaryColorHex }} />}
+      <div
+        role='img'
+        aria-label={m.problemName ?? ''}
+        className='animate-in fade-in fill-mode-both absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-500 ease-out group-hover/tile:scale-110'
+        style={{
+          backgroundImage: `url(${JSON.stringify(thumbUrl)})`,
+          ...mediaBackgroundPositionStyle(m.identity),
+        }}
+      />
+    </>
   );
 }
 

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { User } from 'lucide-react';
-import { getMediaFileUrl } from '../../../api/utils';
+import { getMediaFileUrl, mediaPrimaryColorHex } from '../../../api/utils';
+import type { MediaIdentity } from '../../../api/utils';
 
 /**
  * **Layout strategy** — viewport-sized backdrop, three vertically-stacked sections inside a `max-w-5xl` column:
@@ -25,21 +26,32 @@ export default function AvatarModal({
   userId,
   stamp,
   onClose,
+  mediaIdentity,
 }: {
   mid: number;
   name?: string;
   /** When set (>0), the modal renders a "View profile" link to `/user/{userId}`. */
   userId?: number;
   stamp?: number;
+  mediaIdentity?: MediaIdentity;
   onClose: () => void;
 }) {
   const hasUser = (userId ?? 0) > 0;
+  const primaryColorHex = mediaPrimaryColorHex(mediaIdentity);
 
   return (
     <div
       className='bg-surface-dark animate-in fade-in fixed inset-0 z-9999 flex flex-col items-center justify-center p-4 transition-all duration-200'
       onClick={onClose}
     >
+      {primaryColorHex && (
+        <div
+          className='pointer-events-none absolute inset-0'
+          style={{
+            background: `radial-gradient(ellipse at 50% 40%, ${primaryColorHex}44 0%, ${primaryColorHex}11 50%, transparent 75%)`,
+          }}
+        />
+      )}
       <div
         className='relative flex h-full w-full max-w-5xl flex-col items-center justify-center gap-5'
         onClick={(e) => e.stopPropagation()}

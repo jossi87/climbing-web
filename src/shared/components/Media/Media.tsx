@@ -10,6 +10,7 @@ import {
   mediaIdentityId,
   mediaIdentityVersionStamp,
   mediaObjectPositionStyle,
+  mediaPlaceholderStyle,
   moveMedia,
   putMediaInfo,
   putMediaJpegRotate,
@@ -296,7 +297,7 @@ const Media = ({
               />
             )
           ) : (
-            <div className='skeleton-bar absolute inset-0 animate-pulse' />
+            <div className='absolute inset-0 animate-pulse' style={mediaPlaceholderStyle(x.identity)} />
           )}{' '}
         </div>{' '}
       </div>

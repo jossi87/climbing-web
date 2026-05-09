@@ -33,6 +33,8 @@ export {
   mediaIdentityVersionStamp,
   mediaObjectPositionStyle,
   mediaBackgroundPositionStyle,
+  mediaPrimaryColorHex,
+  mediaPlaceholderStyle,
   type MediaIdentity,
 } from './utils';
 
