@@ -1093,6 +1093,8 @@ export type components = {
             fa?: string;
             faDate?: string;
             /** Format: int32 */
+            lengthMeter?: number;
+            /** Format: int32 */
             numPitches?: number;
             hasImages?: boolean;
             hasMovies?: boolean;
@@ -1428,6 +1430,8 @@ export type components = {
             faDate?: string;
             faDateHr?: string;
             fa?: components["schemas"]["User"][];
+            /** Format: int32 */
+            lengthMeter?: number;
             coordinates?: components["schemas"]["Coordinates"];
             media?: components["schemas"]["Media"][];
             /** Format: int32 */
@@ -1449,7 +1453,6 @@ export type components = {
             triviaMedia?: components["schemas"]["Media"][];
             startingAltitude?: string;
             aspect?: string;
-            routeLength?: string;
             descent?: string;
         };
         ProblemComment: {
@@ -1934,8 +1937,8 @@ export type components = {
             parameters?: {
                 [key: string]: string;
             };
-            wildcardSubtype?: boolean;
             wildcardType?: boolean;
+            wildcardSubtype?: boolean;
         };
         MessageBodyWorkers: Record<string, never>;
         MultiPart: {

@@ -97,7 +97,7 @@ export const ProblemEditLoader = () => {
       trivia: '',
       startingAltitude: '',
       aspect: '',
-      routeLength: '',
+      lengthMeter: undefined,
       descent: '',
       newMedia: [],
     } satisfies Problem);
@@ -190,7 +190,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
           data.externalLinks ?? [],
           data.startingAltitude ?? '',
           data.aspect ?? '',
-          data.routeLength ?? '',
+          data.lengthMeter ?? 0,
           data.descent ?? '',
         );
         const path = spaPathFromRedirectResponse(res);
@@ -394,7 +394,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                 </div>
               </div>
 
-              <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
+              <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
                 <div className='space-y-2'>
                   <label className={labelClasses}>Grade</label>
                   <div className='relative'>
@@ -469,6 +469,18 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                     />
                   </div>
                 </div>
+
+                {!meta.isBouldering && (
+                  <div className='space-y-2'>
+                    <label className={labelClasses}>Route length (m)</label>
+                    <input
+                      type='number'
+                      className={inputClasses}
+                      value={data.lengthMeter ?? ''}
+                      onChange={(e) => setData((prev) => ({ ...prev, lengthMeter: +e.target.value }))}
+                    />
+                  </div>
+                )}
               </div>
 
               {meta.isBouldering && (
@@ -684,6 +696,36 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                             prev.faAid ? { ...prev, faAid: { ...prev.faAid, description: e.target.value } } : prev,
                           )
                         }
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {meta.isIce && (
+                  <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+                    <div className='space-y-2'>
+                      <label className={labelClasses}>Starting altitude (m)</label>
+                      <input
+                        type='number'
+                        className={inputClasses}
+                        value={data.startingAltitude ?? ''}
+                        onChange={(e) => setData((prev) => ({ ...prev, startingAltitude: e.target.value }))}
+                      />
+                    </div>
+                    <div className='space-y-2'>
+                      <label className={labelClasses}>Aspect</label>
+                      <input
+                        className={inputClasses}
+                        value={data.aspect ?? ''}
+                        onChange={(e) => setData((prev) => ({ ...prev, aspect: e.target.value }))}
+                      />
+                    </div>
+                    <div className='space-y-2'>
+                      <label className={labelClasses}>Descent</label>
+                      <input
+                        className={inputClasses}
+                        value={data.descent ?? ''}
+                        onChange={(e) => setData((prev) => ({ ...prev, descent: e.target.value }))}
                       />
                     </div>
                   </div>

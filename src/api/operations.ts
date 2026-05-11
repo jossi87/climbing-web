@@ -165,7 +165,7 @@ export function postProblem(
   externalLinks: components['schemas']['ExternalLink'][],
   startingAltitude: string,
   aspect: string,
-  routeLength: string,
+  lengthMeter: number,
   descent: string,
 ): Promise<Success<'postProblems'>> {
   const url = `/problems`;
@@ -208,7 +208,7 @@ export function postProblem(
       externalLinks,
       startingAltitude,
       aspect,
-      routeLength,
+      lengthMeter,
       descent,
     }),
   );

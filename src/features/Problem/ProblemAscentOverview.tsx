@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, Tag } from 'lucide-react';
+import { Calendar, Ruler, Tag } from 'lucide-react';
 import { Avatar } from '../../shared/ui/Avatar/Avatar';
 import Media from '../../shared/components/Media/Media';
 import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
@@ -12,7 +12,7 @@ type Problem = components['schemas']['Problem'];
 type User = components['schemas']['User'];
 type ProblemTodo = components['schemas']['ProblemTodo'];
 type MediaItem = components['schemas']['Media'];
-type Meta = { isClimbing: boolean; isIce: boolean };
+type Meta = { isClimbing: boolean; isIce: boolean; isBouldering: boolean };
 
 type Props = {
   data: Problem;
@@ -122,13 +122,12 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
   const showFreeBlock =
     mergedForFree.length > 0 || !!freeDate || !!data.originalGrade || (meta.isClimbing && !!data.t?.subType);
 
-  const iceParts = [
+  const routeParts = [
     data.startingAltitude ? `Alt ${data.startingAltitude}` : null,
     data.aspect ? `Aspect ${data.aspect}` : null,
-    data.routeLength ? `Len ${data.routeLength}` : null,
     data.descent ? `Descent ${data.descent}` : null,
   ].filter(Boolean);
-  const showIce = meta.isIce && iceParts.length > 0;
+  const showRouteMeta = !meta.isBouldering && routeParts.length > 0;
 
   const todoNames = todoUserList(data.todos ?? [], 'todo-users');
   const showTodoRow = todoNames != null;
@@ -136,7 +135,7 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
   const triviaText = (data.trivia ?? '').trim();
   const showTriviaBlock = triviaText.length > 0 || (data.triviaMedia?.length ?? 0) > 0;
 
-  if (!showAidBlock && !showFreeBlock && !showIce && !showTodoRow && !showTriviaBlock) return null;
+  if (!showAidBlock && !showFreeBlock && !showRouteMeta && !showTodoRow && !showTriviaBlock) return null;
 
   const freeLead = faAid ? 'First free ascent:' : 'First ascent:';
 
@@ -174,6 +173,14 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
       </span>,
     );
   }
+  if (!meta.isBouldering && data.lengthMeter) {
+    freeRowBody.push(
+      <span key='len' className={cn(factSegmentClass, 'gap-1 tabular-nums')}>
+        <Ruler size={12} className={factIconClass} strokeWidth={2.25} aria-hidden />
+        {data.lengthMeter}m
+      </span>,
+    );
+  }
   if (freeDate) {
     freeRowBody.push(dateWithCalendar(freeDate, 'free-date'));
   }
@@ -202,9 +209,9 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
         </div>
       )}
 
-      {showIce ? (
+      {showRouteMeta ? (
         <p className={cn(designContract.typography.body, 'text-[14px] leading-normal sm:text-sm', factClass)}>
-          {iceParts.join(' · ')}
+          {routeParts.join(' · ')}
         </p>
       ) : null}
 

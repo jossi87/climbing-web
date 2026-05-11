@@ -425,7 +425,7 @@ function ProblemLoaded({
         )}
         <ProblemAscentOverview
           data={data}
-          meta={{ isClimbing: meta.isClimbing, isIce: meta.isIce }}
+          meta={{ isClimbing: meta.isClimbing, isIce: meta.isIce, isBouldering: meta.isBouldering }}
           orderableMedia={orderableMedia}
           carouselMedia={carouselMedia}
         />

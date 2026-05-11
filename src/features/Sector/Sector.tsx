@@ -113,6 +113,10 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
     isClimbing && (problem.numPitches ?? 1) > 1 ? (
       <span className={cn(tickListRowQuietMeta, 'align-baseline whitespace-nowrap')}>{problem.numPitches} pitches</span>
     ) : null;
+  const lengthLine =
+    !isBouldering && problem.lengthMeter ? (
+      <span className={cn(tickListRowQuietMeta, 'align-baseline whitespace-nowrap')}>{problem.lengthMeter}m</span>
+    ) : null;
   const rockLine = problem.rock ? <span className='not-italic'>Rock: {problem.rock}</span> : null;
   const faEl = faLine ? <span>{faLine}</span> : null;
   const commentEl = commentTrimmed ? <span className={tickCommentSmall}>{commentTrimmed}</span> : null;
@@ -206,9 +210,10 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
   const showPipeAfterGradeBeforeMediaCluster = !!problem.grade && (!!passiveGearAfterGrade || !!ratingIconsBlock);
 
   /** Pipe after stars/media when pitches and/or community ticks follow (pitches are listed before ticks). */
-  const showPipeAfterRatingIcons = hasRatingVisuals && (!!pitchLine || tickCount > 0);
+  const showPipeAfterRatingIcons = hasRatingVisuals && (!!pitchLine || !!lengthLine || tickCount > 0);
   const showPipeBeforePitchNoIcons = !!pitchLine && !ratingIconsBlock && (!!problem.grade || !!passiveGearAfterGrade);
   const showPipeBetweenPitchAndTicks = !!pitchLine && tickCount > 0;
+  const showPipeBetweenLengthAndTicks = !!lengthLine && tickCount > 0;
 
   const ticksMetaBlock =
     tickCount > 0 ? (
@@ -220,6 +225,7 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
     !!passiveGearAfterGrade ||
     !!ratingIconsBlock ||
     !!pitchLine ||
+    !!lengthLine ||
     !!ticksMetaBlock ||
     !!lockBrokenBlock;
   const showPipeBeforeMetaTail = !!metaTailBlock && hasContentBeforeMetaTail;
@@ -230,6 +236,9 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
     const faYear = problem.faDate && problem.faDate.length >= 4 ? problem.faDate.slice(0, 4) : '';
     const faLine = [faNames, faYear].filter(Boolean).join(' ');
     if (faLine) parts.push(faLine);
+    if (!isBouldering && problem.lengthMeter) {
+      parts.push(`${problem.lengthMeter}m`);
+    }
     if (isClimbing && (problem.numPitches ?? 1) > 1) {
       parts.push(`${problem.numPitches} pitches`);
     }
@@ -241,9 +250,11 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
   }, [
     commentTrimmed,
     compact,
+    isBouldering,
     isClimbing,
     problem.fa,
     problem.faDate,
+    problem.lengthMeter,
     problem.numPitches,
     problem.numTicks,
     problem.rock,
@@ -331,9 +342,20 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
                 |
               </span>
             ) : null}
-            {ticksMetaBlock ? (
+            {lengthLine ? (
               <>
                 {!pitchLine && !showPipeAfterRatingIcons ? ' ' : null}
+                {lengthLine}
+                {showPipeBetweenLengthAndTicks ? (
+                  <span className={problemListRowPipeSepClass} aria-hidden>
+                    |
+                  </span>
+                ) : null}
+              </>
+            ) : null}
+            {ticksMetaBlock ? (
+              <>
+                {!pitchLine && !lengthLine && !showPipeAfterRatingIcons ? ' ' : null}
                 {ticksMetaBlock}
                 {lockBrokenBlock ? (
                   <span className={problemListRowPipeSepClass} aria-hidden>
