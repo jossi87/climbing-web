@@ -30,7 +30,7 @@ async function ensureOkJson<T>(response: Response, url: string, fallback: T): Pr
 }
 
 export function downloadTocXlsx(accessToken: string | null) {
-  return downloadFileWithProgress(accessToken, '/toc/xlsx');
+  return downloadFileWithProgress(accessToken, getUrl('/toc/xlsx'));
 }
 
 export function deleteMedia(accessToken: string | null, id: number): Promise<Success<'deleteMedia'>> {
