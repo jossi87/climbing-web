@@ -212,6 +212,7 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
   /** Pipe after stars/media when pitches and/or community ticks follow (pitches are listed before ticks). */
   const showPipeAfterRatingIcons = hasRatingVisuals && (!!pitchLine || !!lengthLine || tickCount > 0);
   const showPipeBeforePitchNoIcons = !!pitchLine && !ratingIconsBlock && (!!problem.grade || !!passiveGearAfterGrade);
+  const showPipeBetweenPitchAndLength = !!pitchLine && !!lengthLine;
   const showPipeBetweenPitchAndTicks = !!pitchLine && tickCount > 0;
   const showPipeBetweenLengthAndTicks = !!lengthLine && tickCount > 0;
 
@@ -337,7 +338,12 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
               </span>
             ) : null}
             {pitchLine}
-            {showPipeBetweenPitchAndTicks ? (
+            {showPipeBetweenPitchAndLength ? (
+              <span className={problemListRowPipeSepClass} aria-hidden>
+                |
+              </span>
+            ) : null}
+            {showPipeBetweenPitchAndTicks && !lengthLine ? (
               <span className={problemListRowPipeSepClass} aria-hidden>
                 |
               </span>
