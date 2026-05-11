@@ -770,19 +770,29 @@ const MediaModal = ({
             ) : m.embedUrl ? (
               <div
                 data-modal-media-root
-                className='flex h-full min-h-0 w-full min-w-0 items-center justify-center px-4 py-6 sm:px-8'
+                className='flex h-full min-h-0 w-full min-w-0 items-center justify-center p-0 sm:p-2'
               >
                 {/*
-                  Vimeo / embed: `h-full w-full` + `aspect-video` on the iframe alone fights flex layout and sits off-center.
-                  Use a max-sized 16:9 box, centered, iframe `absolute inset-0` inside (standard responsive embed).
+                  Vimeo / YouTube embed: fill the stage as much as possible while keeping
+                  the video's natural 16:9 aspect ratio.
+                  
+                  The container uses `max-h-full` + `aspect-video` so the iframe never
+                  exceeds the stage bounds. On desktop/landscape the player grows to fill
+                  the available height; on portrait mobile it fills the width.
+                  
+                  The `min-h-0` on the outer flex prevents overflow in constrained layouts
+                  (e.g. sidebar open). The `max-w-full` + `max-h-full` on the wrapper
+                  ensures it stays within the viewport.
                 */}
-                <div className='relative aspect-video max-h-[min(85dvh,calc(100vw-2rem))] w-full max-w-5xl overflow-hidden rounded-2xl bg-black shadow-2xl ring-1 ring-black/70'>
-                  <iframe
-                    src={embedSrc}
-                    className='absolute inset-0 h-full w-full border-0 bg-black'
-                    allowFullScreen
-                    title='Video Content'
-                  />
+                <div className='flex h-full min-h-0 w-full min-w-0 items-center justify-center'>
+                  <div className='relative flex aspect-video max-h-full w-full max-w-full min-w-0 items-center justify-center bg-black sm:rounded-2xl sm:shadow-2xl sm:ring-1 sm:ring-black/70'>
+                    <iframe
+                      src={embedSrc}
+                      className='h-full w-full border-0 bg-black'
+                      allowFullScreen
+                      title='Video Content'
+                    />
+                  </div>
                 </div>
               </div>
             ) : autoPlayVideo ? (
