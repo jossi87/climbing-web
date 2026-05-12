@@ -385,18 +385,18 @@ export function useProfile(userId: number) {
         Accept: 'application/json',
       },
     },
-    onMutate: () => {
-      client.refetchQueries({
-        queryKey: [`/profile`],
+    onSuccess: () => {
+      client.invalidateQueries({
+        queryKey: [`/profile`, { id: userId, isAuthenticated }],
       });
     },
     onError: () => {
-      client.refetchQueries({
-        queryKey: [`/profile`],
+      client.invalidateQueries({
+        queryKey: [`/profile`, { id: userId, isAuthenticated }],
       });
     },
     onSettled: () => {
-      client.refetchQueries({
+      client.invalidateQueries({
         queryKey: [`/permissions`],
       });
     },

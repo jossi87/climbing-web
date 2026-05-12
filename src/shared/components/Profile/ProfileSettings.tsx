@@ -157,14 +157,18 @@ const ProfileSettings = () => {
             </div>
 
             <button
-              onClick={() => {
+              onClick={async () => {
                 setIsSaving(true);
-                setProfile({
-                  firstname,
-                  lastname,
-                  emailVisibleToAll,
-                  avatarFile: avatar?.file,
-                });
+                try {
+                  await setProfile({
+                    firstname,
+                    lastname,
+                    emailVisibleToAll,
+                    avatarFile: avatar?.file,
+                  });
+                } finally {
+                  setIsSaving(false);
+                }
               }}
               disabled={!hasChanges || !isFormValid || isSaving}
               className={cn(
