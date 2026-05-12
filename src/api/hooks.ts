@@ -318,7 +318,6 @@ export function useProblem(id: number, showHiddenMedia: boolean) {
       return data;
     },
   });
-  const { data: profile } = useProfile(-1);
   const toggleTodo = usePostData(`/todo?idProblem=${id}`, {
     mutationKey: [`/todo`, { id }],
     onSuccess: () => {
@@ -337,11 +336,9 @@ export function useProblem(id: number, showHiddenMedia: boolean) {
           },
         });
       }
-      if (profile?.id) {
-        client.refetchQueries({
-          queryKey: [`/profile/todo`, { id: +profile.id }],
-        });
-      }
+      client.refetchQueries({
+        queryKey: [`/profile/todo`],
+      });
     },
     fetchOptions: {
       consistencyAction: 'nop',
@@ -351,12 +348,12 @@ export function useProblem(id: number, showHiddenMedia: boolean) {
   return { ...problem, toggleTodo: toggleTodo.mutateAsync };
 }
 
-export function useProfile(userId = -1) {
+export function useProfile(userId: number) {
   const client = useQueryClient();
   const { isAuthenticated } = useAuth0();
   const profile = useData<components['schemas']['Profile']>(`/profile?id=${userId}`, {
     queryKey: [`/profile`, { id: userId }],
-    enabled: userId > 0 || isAuthenticated,
+    enabled: userId > 0 && (userId > 0 || isAuthenticated),
   });
 
   const setProfile = usePostData<{
@@ -365,12 +362,13 @@ export function useProfile(userId = -1) {
     emailVisibleToAll: boolean;
     avatarFile: File | undefined;
     themePreference?: string;
-  }>(`/profile`, {
+  }>(`/v2/profile/identity`, {
     createBody({ firstname, lastname, emailVisibleToAll, avatarFile, themePreference }) {
       const formData = new FormData();
       formData.append(
         'json',
         JSON.stringify({
+          id: userId,
           firstname,
           lastname,
           emailVisibleToAll,
@@ -423,17 +421,22 @@ export function useProfile(userId = -1) {
     onMutate: ({ region, del }) => {
       client.setQueryData<components['schemas']['Profile']>([`/profile`, { id: userId, isAuthenticated }], (old) => {
         if (old && typeof old === 'object') {
+          const identity = old.identity;
+          if (!identity) return old;
           const next = {
             ...old,
-            userRegions: old.userRegions?.map((oldRegion) => {
-              if (oldRegion.id !== region.id) {
-                return oldRegion;
-              }
-              return {
-                ...oldRegion,
-                enabled: !del,
-              };
-            }),
+            identity: {
+              ...identity,
+              userRegions: identity.userRegions?.map((oldRegion) => {
+                if (oldRegion.id !== region.id) {
+                  return oldRegion;
+                }
+                return {
+                  ...oldRegion,
+                  enabled: !del,
+                };
+              }),
+            },
           };
           return next;
         }
@@ -466,7 +469,9 @@ export function useProfile(userId = -1) {
     onMutate: (themePreference) => {
       client.setQueryData<components['schemas']['Profile']>([`/profile`, { id: userId, isAuthenticated }], (old) => {
         if (old && typeof old === 'object') {
-          return { ...old, themePreference };
+          const identity = old.identity;
+          if (!identity) return old;
+          return { ...old, identity: { ...identity, themePreference } };
         }
         return old;
       });
@@ -488,16 +493,30 @@ export function useProfile(userId = -1) {
   };
 }
 
-export function useProfileMedia({ userId, captured }: { userId: number; captured: boolean }) {
-  return useData<Success<'getProfileMedia'>>(`/profile/media?id=${userId}&captured=${captured}`, {
-    queryKey: [`/profile/media`, { id: userId, captured }],
+/**
+ * Standalone mutation to set the user's theme preference on the backend.
+ * Does not require fetching the profile first — can be used from ThemeSync and ThemeToggle
+ * without triggering a `/profile` API call.
+ */
+export function useSetThemePreference() {
+  return usePostData<string>(`/profile/theme`, {
+    createUrl: (themePreference) => `/profile/theme?themePreference=${encodeURIComponent(themePreference)}`,
+    fetchOptions: {
+      consistencyAction: 'nop',
+    },
   });
 }
 
-export function useProfileStatistics(id: number) {
-  return useData<components['schemas']['ProfileStatistics']>(`/profile/statistics?id=${id}`, {
-    queryKey: [`/profile/statistics`, { id }],
+export function useProfileAscents(id: number) {
+  return useData<Success<'getProfileAscents'>>(`/profile/ascents?id=${id}`, {
+    queryKey: [`/profile/ascents`, { id }],
     enabled: id > 0,
+  });
+}
+
+export function useProfileMedia({ userId, captured }: { userId: number; captured: boolean }) {
+  return useData<Success<'getProfileMedia'>>(`/profile/media?id=${userId}&captured=${captured}`, {
+    queryKey: [`/profile/media`, { id: userId, captured }],
   });
 }
 

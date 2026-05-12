@@ -290,8 +290,24 @@ export type paths = {
         /** Get profile by id */
         get: operations["getProfile"];
         put?: never;
-        /** Update profile (profile must be provided as json on field "json" in multiPart, "avatar" is optional) */
-        post: operations["postProfile"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/profile/ascents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get profile ascents */
+        get: operations["getProfileAscents"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -307,23 +323,6 @@ export type paths = {
         };
         /** Get profile media by id */
         get: operations["getProfileMedia"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/profile/statistics": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get profile statistics by id */
-        get: operations["getProfileStatistics"];
         put?: never;
         post?: never;
         delete?: never;
@@ -738,6 +737,23 @@ export type paths = {
         put?: never;
         /** Update topo line on route/boulder (SVG on sector/problem-image) */
         post: operations["postProblemsSvg"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/profile/identity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Update profile identity (profile must be provided as json on field "json" in multiPart, "avatar" is optional) */
+        post: operations["postProfileIdentity"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1339,7 +1355,10 @@ export type components = {
             isAuthenticated?: boolean;
             isAdmin?: boolean;
             isSuperAdmin?: boolean;
+            /** Format: int32 */
+            userId?: number;
             authenticatedName?: string;
+            themePreference?: string;
             mediaIdentity?: components["schemas"]["MediaIdentity"];
             grades?: components["schemas"]["Grade"][];
             faYears?: number[];
@@ -1509,26 +1528,31 @@ export type components = {
             date?: string;
         };
         Profile: {
+            identity?: components["schemas"]["ProfileIdentity"];
+            kpis?: components["schemas"]["ProfileKpis"];
+            gradeDistribution?: components["schemas"]["ProfileGradeDistribution"][];
+        };
+        ProfileGradeDistribution: {
+            grade?: string;
+            color?: string;
+            /** Format: int32 */
+            fa?: number;
+            /** Format: int32 */
+            tick?: number;
+        };
+        ProfileIdentity: {
             /** Format: int32 */
             id?: number;
             firstname?: string;
             lastname?: string;
             emailVisibleToAll?: boolean;
+            themePreference?: string;
             mediaIdentity?: components["schemas"]["MediaIdentity"];
             emails?: string[];
             userRegions?: components["schemas"]["UserRegion"][];
             lastActivity?: string;
-            themePreference?: string;
         };
-        UserRegion: {
-            /** Format: int32 */
-            id?: number;
-            name?: string;
-            role?: string;
-            enabled?: boolean;
-            readOnly?: boolean;
-        };
-        ProfileStatistics: {
+        ProfileKpis: {
             /** Format: int32 */
             numImagesCreated?: number;
             /** Format: int32 */
@@ -1537,9 +1561,17 @@ export type components = {
             numImageTags?: number;
             /** Format: int32 */
             numVideoTags?: number;
-            ticks?: components["schemas"]["ProfileStatisticsTick"][];
         };
-        ProfileStatisticsTick: {
+        UserRegion: {
+            /** Format: int32 */
+            id?: number;
+            name?: string;
+            role?: string;
+            enabled?: boolean;
+            readOnly?: boolean;
+            activity?: boolean;
+        };
+        ProfileAscent: {
             regionName?: string;
             /** Format: int32 */
             areaId?: number;
@@ -1732,6 +1764,8 @@ export type components = {
             nr?: number;
             name?: string;
             description?: string;
+            /** Format: int32 */
+            lengthMeter?: number;
             /** Format: int32 */
             startingAltitude?: number;
             coordinates?: components["schemas"]["Coordinates"];
@@ -2830,9 +2864,9 @@ export interface operations {
     };
     getProfile: {
         parameters: {
-            query?: {
-                /** @description User id (will return logged in user without this attribute) */
-                id?: number;
+            query: {
+                /** @description User id */
+                id: number;
             };
             header?: never;
             path?: never;
@@ -2871,28 +2905,28 @@ export interface operations {
             };
         };
     };
-    postProfile: {
+    getProfileAscents: {
         parameters: {
-            query?: never;
+            query: {
+                /** @description User id */
+                id: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody?: {
-            content: {
-                "multipart/form-data": components["schemas"]["FormDataMultiPart"];
-            };
-        };
+        requestBody?: never;
         responses: {
-            /** @description Invalid request parameters. */
-            400: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ProfileAscent"][];
+                };
             };
-            /** @description Authentication required. */
-            401: {
+            /** @description Invalid request parameters. */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2927,49 +2961,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Media"][];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description User not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getProfileStatistics: {
-        parameters: {
-            query: {
-                /** @description User id */
-                id: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProfileStatistics"];
                 };
             };
             /** @description Invalid request parameters. */
@@ -4062,6 +4053,42 @@ export interface operations {
             };
             /** @description Insufficient permissions. */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    postProfileIdentity: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": components["schemas"]["FormDataMultiPart"];
+            };
+        };
+        responses: {
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authentication required. */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };

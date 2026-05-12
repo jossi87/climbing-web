@@ -2,59 +2,52 @@ import { memo } from 'react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 
 type Props = {
-  ticks: NonNullable<components['schemas']['ProfileStatistics']['ticks']>;
+  gradeDistribution: components['schemas']['ProfileGradeDistribution'][];
 };
 
 /**
  * Bar length = (fa + tick) / maxValue of the column (distribution vs busiest grade).
- * Inside that pill: FA (red) and tick (blue) share width by count. `rounded-full` + `overflow-hidden`
+ * Inside that pill: FA and tick share width by count. `rounded-full` + `overflow-hidden`
  * keeps both ends round for one or two segments.
+ * Colors come from the API (gradeDistribution[].color), with a different shade for FA vs tick.
  */
-function FaTickBar({ fa, tick, totalWidthPct }: { fa: number; tick: number; totalWidthPct: number }) {
+function FaTickBar({
+  fa,
+  tick,
+  totalWidthPct,
+  color,
+}: {
+  fa: number;
+  tick: number;
+  totalWidthPct: number;
+  color?: string;
+}) {
   if (fa <= 0 && tick <= 0) {
     return <div className='mx-0 h-1.5 w-full sm:h-2' />;
   }
 
+  const faColor = color ? `${color}80` : 'bg-red-400'; // 50% opacity for FA
+  const tickColor = color ?? 'bg-blue-400'; // full color for tick
+
   return (
     <div className='mx-0 w-full'>
       <div
-        className='flex h-1.5 min-h-[6px] overflow-hidden rounded-full sm:h-2'
+        className='flex h-1.5 min-h-[6px] overflow-hidden rounded-full ring-1 ring-black/25 sm:h-2'
         style={{ width: `${totalWidthPct}%` }}
       >
-        {fa > 0 ? <div className='h-full min-w-0 bg-red-400' style={{ flex: fa }} /> : null}
-        {tick > 0 ? <div className='h-full min-w-0 bg-blue-400' style={{ flex: tick }} /> : null}
+        {fa > 0 ? <div className='h-full min-w-0' style={{ flex: fa, backgroundColor: faColor }} /> : null}
+        {tick > 0 ? <div className='h-full min-w-0' style={{ flex: tick, backgroundColor: tickColor }} /> : null}
       </div>
     </div>
   );
 }
 
-function Chart({ ticks: data }: Props) {
-  type LocalGrade = { gradeWeight: number; grade: string; fa: number; tick: number };
-  const grades: LocalGrade[] = [];
-  data.forEach((t) => {
-    const gradeWeight = t.gradeWeight ?? 0;
-    const gradeLabel = t.grade ?? '';
-    const d = grades.find((val) => val.gradeWeight === gradeWeight);
-    if (!d) {
-      grades.push({
-        gradeWeight,
-        grade: gradeLabel,
-        fa: t.fa ? 1 : 0,
-        tick: t.fa ? 0 : 1,
-      });
-    } else {
-      if (t.fa) {
-        d.fa++;
-      } else {
-        d.tick++;
-      }
-    }
-  });
-  grades.sort((a, b) => b.gradeWeight - a.gradeWeight);
+function Chart({ gradeDistribution: data }: Props) {
+  const grades = data;
   const maxValue = Math.max(
     1,
     ...grades.map((d) => {
-      return d.fa + d.tick;
+      return (d.fa ?? 0) + (d.tick ?? 0);
     }),
   );
 
@@ -86,27 +79,29 @@ function Chart({ ticks: data }: Props) {
         </thead>
         <tbody className='divide-surface-border/15 divide-y'>
           {grades.map((g) => {
-            const faPct = (g.fa / maxValue) * 100;
-            const tickPct = (g.tick / maxValue) * 100;
+            const fa = g.fa ?? 0;
+            const tick = g.tick ?? 0;
+            const faPct = (fa / maxValue) * 100;
+            const tickPct = (tick / maxValue) * 100;
             const totalWidthPct = faPct + tickPct;
-            const total = g.fa + g.tick;
+            const total = fa + tick;
 
             return (
-              <tr key={[g.grade, g.fa, g.tick].join('/')} className='hover:bg-surface-raised-hover transition-colors'>
+              <tr key={[g.grade, fa, tick].join('/')} className='hover:bg-surface-raised-hover transition-colors'>
                 <td className='px-1 py-0.5 text-[12px] leading-none font-medium whitespace-nowrap text-slate-400 sm:px-1.5 sm:py-0.5 sm:text-[13px]'>
                   {g.grade}
                 </td>
                 <td className='px-1 py-0.5 text-left text-[12px] leading-none whitespace-nowrap text-slate-400 sm:px-1.5 sm:py-0.5 sm:text-[13px]'>
-                  {g.fa}
+                  {fa}
                 </td>
                 <td className='px-1 py-0.5 text-left text-[12px] leading-none whitespace-nowrap text-slate-400 sm:px-1.5 sm:py-0.5 sm:text-[13px]'>
-                  {g.tick}
+                  {tick}
                 </td>
                 <td className='px-1 py-0.5 text-left text-[12px] leading-none whitespace-nowrap text-slate-400 sm:px-1.5 sm:py-0.5 sm:text-[13px]'>
                   {total}
                 </td>
                 <td className='w-full px-1 py-0.5 text-right sm:px-1.5 sm:py-0.5'>
-                  <FaTickBar fa={g.fa} tick={g.tick} totalWidthPct={totalWidthPct} />
+                  <FaTickBar fa={fa} tick={tick} totalWidthPct={totalWidthPct} color={g.color} />
                 </td>
               </tr>
             );

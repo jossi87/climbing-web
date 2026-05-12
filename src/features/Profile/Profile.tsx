@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { useMeta } from '../../shared/components/Meta/context';
-import { useProfile, useProfileStatistics } from '../../api';
+import { useProfile } from '../../api';
 import ProfileStatistics from '../../shared/components/Profile/ProfileStatistics';
 import { ClickableAvatar } from '../../shared/ui/Avatar/Avatar';
 import ProfileTodo from '../../shared/components/Profile/ProfileTodo';
@@ -29,15 +29,15 @@ enum Page {
 const Profile = () => {
   const { userId, page } = useParams();
   const navigate = useNavigate();
-  const { data: profile, isLoading, error } = useProfile(userId ? +userId : -1);
-  const { data: profileStats } = useProfileStatistics(profile?.id ?? -1);
+  const meta = useMeta();
+  const profileUserId = userId ? +userId : (meta.userId ?? -1);
+  const { data: profile, isLoading, error } = useProfile(profileUserId);
   const validPages = Object.values(Page);
   const rawPage = validPages.includes(page as Page) ? (page as Page) : Page.overview;
   const activePage = rawPage === Page.map ? Page.ascents : rawPage;
-  const meta = useMeta();
 
   function onPageChanged(newPage: Page) {
-    navigate(`/user/${profile?.id ?? -1}/${newPage}`);
+    navigate(`/user/${profileUserId}/${newPage}`);
   }
 
   if (isLoading) {
@@ -90,8 +90,19 @@ const Profile = () => {
     );
   }
 
-  const fullName = [profile.firstname ?? '', profile.lastname ?? ''].filter(Boolean).join(' ');
-  const regions = Array.from(new Set((profileStats?.ticks ?? []).map((t) => t.regionName).filter(Boolean))).sort();
+  const identity = profile.identity;
+  const kpis = profile.kpis;
+  const gradeDistribution = profile.gradeDistribution;
+
+  const fullName = [identity?.firstname ?? '', identity?.lastname ?? ''].filter(Boolean).join(' ');
+  const regions = Array.from(
+    new Set(
+      (identity?.userRegions ?? [])
+        .filter((r) => r.activity)
+        .map((r) => r.name)
+        .filter(Boolean),
+    ),
+  ).sort();
 
   const navItems = [
     { id: Page.overview, label: 'Overview', icon: LayoutDashboard },
@@ -109,10 +120,10 @@ const Profile = () => {
       <Card flush className='min-w-0 border-0'>
         <div className='p-4 sm:p-5'>
           <div className='flex min-w-0 items-start gap-3'>
-            <ClickableAvatar name={fullName} mediaIdentity={profile.mediaIdentity} size='small' />
+            <ClickableAvatar name={fullName} mediaIdentity={identity?.mediaIdentity} size='small' />
             <div className='min-w-0'>
               <h1 className='type-h1 truncate'>
-                {profile.firstname} {profile.lastname}
+                {identity?.firstname} {identity?.lastname}
               </h1>
               <div className='type-micro mt-2 grid min-w-0 grid-cols-1 gap-y-1.5 font-normal text-slate-400 sm:flex sm:flex-wrap sm:items-center sm:gap-x-3 sm:gap-y-1.5'>
                 {regions.length > 0 && (
@@ -121,7 +132,7 @@ const Profile = () => {
                     <span className='min-w-0 break-all'>{regions.join(', ')}</span>
                   </span>
                 )}
-                {(profile.emails ?? []).map((email) => (
+                {(identity?.emails ?? []).map((email) => (
                   <a
                     key={email}
                     href={`mailto:${email}`}
@@ -133,10 +144,10 @@ const Profile = () => {
                     <span className='min-w-0 break-all'>{email}</span>
                   </a>
                 ))}
-                {profile.lastActivity && (
+                {identity?.lastActivity && (
                   <span className='inline-flex max-w-full min-w-0 items-center gap-1.5'>
                     <Clock size={12} className='shrink-0 text-slate-500' aria-hidden />
-                    <span className='min-w-0 break-words'>Active {profile.lastActivity}</span>
+                    <span className='min-w-0 break-words'>Active {identity.lastActivity}</span>
                   </span>
                 )}
               </div>
@@ -174,13 +185,20 @@ const Profile = () => {
             'p-4 sm:p-6',
           )}
         >
-          {activePage === Page.overview && <ProfileStatistics userId={profile.id ?? 0} view='overview' />}
-          {activePage === Page.ascents && <ProfileStatistics userId={profile.id ?? 0} view='ascents' />}
-          {activePage === Page.todo && (
-            <ProfileTodo userId={profile.id ?? 0} defaultCenter={meta.defaultCenter} defaultZoom={meta.defaultZoom} />
+          {activePage === Page.overview && (
+            <ProfileStatistics
+              userId={profileUserId}
+              view='overview'
+              gradeDistribution={gradeDistribution ?? []}
+              kpis={kpis}
+            />
           )}
-          {activePage === Page.media && <ProfileMedia userId={profile.id ?? 0} captured={false} />}
-          {activePage === Page.captured && <ProfileMedia userId={profile.id ?? 0} captured={true} />}
+          {activePage === Page.ascents && <ProfileStatistics userId={profileUserId} view='ascents' />}
+          {activePage === Page.todo && (
+            <ProfileTodo userId={profileUserId} defaultCenter={meta.defaultCenter} defaultZoom={meta.defaultZoom} />
+          )}
+          {activePage === Page.media && <ProfileMedia userId={profileUserId} captured={false} />}
+          {activePage === Page.captured && <ProfileMedia userId={profileUserId} captured={true} />}
         </div>
       </Card>
     </div>

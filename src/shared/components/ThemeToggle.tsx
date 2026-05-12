@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from '../providers/useTheme';
 import { cn } from '../../lib/utils';
-import { useProfile } from '../../api';
+import { useSetThemePreference } from '../../api';
 
 /** Inline hover fill avoids glass-header / `backdrop-filter` compositing bugs and `::before` z-index pitfalls. */
 const CHROME = 'rgb(28, 30, 36)';
@@ -16,7 +16,7 @@ export function ThemeToggle() {
   const { resolved, toggle } = useTheme();
   const isDark = resolved === 'dark';
   const [hover, setHover] = useState(false);
-  const { setThemePreference } = useProfile();
+  const { mutateAsync: setThemePreference } = useSetThemePreference();
 
   const handleToggle = () => {
     const next = isDark ? 'light' : 'dark';

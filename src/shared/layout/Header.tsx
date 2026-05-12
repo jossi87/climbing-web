@@ -19,7 +19,7 @@ type DropdownItemProps = {
 };
 
 const Header = () => {
-  const { isSuperAdmin, isAuthenticated, authenticatedName, mediaIdentity } = useMeta();
+  const { isSuperAdmin, isAuthenticated, authenticatedName, mediaIdentity, userId } = useMeta();
   const { isLoading, loginWithRedirect, logout } = useAuth0();
   const accessToken = useAccessToken();
   const location = useLocation();
@@ -89,10 +89,9 @@ const Header = () => {
   }, []);
 
   const DropdownItem = ({ to, icon: Icon, children, onClick, className }: DropdownItemProps) => {
-    const isActive =
-      to === '/user'
-        ? location.pathname === '/user' || location.pathname === '/user/'
-        : location.pathname === to || location.pathname.startsWith(`${to}/`);
+    const isActive = to.startsWith('/user/')
+      ? location.pathname.startsWith('/user/')
+      : location.pathname === to || location.pathname.startsWith(`${to}/`);
     return (
       <Link
         to={to}
@@ -135,7 +134,7 @@ const Header = () => {
               </p>
             </div>
             <div className='border-surface-border/40 border-t pt-1'>
-              <DropdownItem to='/user' icon={User} onClick={() => setIsAccountOpen(false)}>
+              <DropdownItem to={'/user/' + userId} icon={User} onClick={() => setIsAccountOpen(false)}>
                 Profile
               </DropdownItem>
               <DropdownItem to='/settings' icon={Settings} onClick={() => setIsAccountOpen(false)}>

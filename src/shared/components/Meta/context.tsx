@@ -12,7 +12,9 @@ export type Metadata = {
   isAuthenticated: boolean;
   isAdmin: boolean;
   isSuperAdmin: boolean;
+  userId?: number;
   authenticatedName: string;
+  themePreference?: string;
   mediaIdentity?: components['schemas']['MediaIdentity'];
   title: string;
   grades: {

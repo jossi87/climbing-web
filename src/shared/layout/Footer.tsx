@@ -25,7 +25,7 @@ const footerColumnHeadingClass = 'text-[10px] font-semibold tracking-[0.12em] te
 
 /** Under nav card titles — clearly subordinate. */
 const navCardSubtitleClass =
-  'block text-[8px] font-normal leading-snug tracking-normal text-slate-500 light:text-slate-600';
+  'block text-[10px] font-normal leading-snug tracking-normal text-slate-500 light:text-slate-600';
 
 /** Legal links + copyright: compact size. */
 const footerLegalTextClass = cn(designContract.typography.label, 'text-[9px] leading-tight');
@@ -63,7 +63,7 @@ const Footer = () => {
         <div className='flex flex-col text-left'>
           <span
             className={cn(
-              'light:group-hover:text-slate-950 block text-[10px] font-semibold text-slate-200 transition-colors duration-200',
+              'light:group-hover:text-slate-950 block text-[11px] font-semibold text-slate-200 transition-colors duration-200',
               twInk.groupHoverChromeNearWhite,
             )}
           >
@@ -157,7 +157,7 @@ const Footer = () => {
               <div className='flex flex-col items-start text-left'>
                 <span
                   className={cn(
-                    'light:group-hover:text-slate-950 block text-[10px] font-semibold text-slate-200 transition-colors duration-200',
+                    'light:group-hover:text-slate-950 block text-[11px] font-semibold text-slate-200 transition-colors duration-200',
                     twInk.groupHoverChromeNearWhite,
                   )}
                 >

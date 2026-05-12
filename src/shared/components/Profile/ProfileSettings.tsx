@@ -1,34 +1,61 @@
 import { useState, type FC } from 'react';
+import { useMeta } from '../Meta/context';
 import { useProfile } from '../../../api';
 import { type DropzoneOptions, useDropzone } from 'react-dropzone';
-import { Save, X, Upload, Loader2, Globe, Settings as SettingsIcon } from 'lucide-react';
+import { Save, X, Upload, Loader2, Globe, Settings as SettingsIcon, Lock } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 import { Card, SectionHeader } from '../../ui';
 
 const ProfileSettings = () => {
-  const { setProfile, setRegion, data } = useProfile();
+  const meta = useMeta();
+  const userId = meta.userId ?? -1;
+  const { setProfile, setRegion, data } = useProfile(userId);
 
   if (!data) {
     return (
-      <Card flush className='border-0'>
-        <div className='animate-pulse space-y-5 p-8 sm:p-10' aria-busy aria-label='Loading profile settings'>
-          <div className='skeleton-bar h-8 w-[min(100%,14rem)] rounded-md' />
-          <div className='space-y-2.5'>
-            <div className='skeleton-bar-muted h-3 w-full max-w-md rounded' />
-            <div className='skeleton-bar-muted h-3 w-[88%] max-w-lg rounded' />
-            <div className='skeleton-bar-muted h-3 w-[72%] max-w-sm rounded' />
+      <div className='animate-pulse space-y-6' aria-busy aria-label='Loading profile settings'>
+        <Card flush className='border-0'>
+          <div className='space-y-6 p-4 sm:p-6'>
+            <div className='skeleton-bar h-8 w-[min(100%,14rem)] rounded-md' />
+            <div className='grid grid-cols-1 gap-6 sm:grid-cols-2'>
+              <div className='space-y-2'>
+                <div className='skeleton-bar-muted h-3 w-20 rounded' />
+                <div className='skeleton-bar h-10 w-full rounded-lg' />
+              </div>
+              <div className='space-y-2'>
+                <div className='skeleton-bar-muted h-3 w-20 rounded' />
+                <div className='skeleton-bar h-10 w-full rounded-lg' />
+              </div>
+            </div>
+            <div className='skeleton-bar-muted h-12 w-full rounded-lg' />
+            <div className='space-y-3'>
+              <div className='skeleton-bar-muted h-3 w-12 rounded' />
+              <div className='skeleton-bar-muted h-32 w-full rounded-xl border-2 border-dashed' />
+            </div>
+            <div className='skeleton-bar h-10 w-full rounded-lg sm:w-auto' />
           </div>
-          <div className='skeleton-bar-muted mx-auto h-10 w-full max-w-xs rounded-lg' />
-        </div>
-      </Card>
+        </Card>
+        <Card flush className='border-0'>
+          <div className='space-y-3 p-4 sm:p-6'>
+            <div className='skeleton-bar h-8 w-[min(100%,14rem)] rounded-md' />
+            <div className='space-y-2'>
+              <div className='skeleton-bar-muted h-5 w-full max-w-xs rounded' />
+              <div className='skeleton-bar-muted h-5 w-full max-w-sm rounded' />
+              <div className='skeleton-bar-muted h-5 w-full max-w-md rounded' />
+            </div>
+          </div>
+        </Card>
+      </div>
     );
   }
 
-  const ProfileForm: FC<{ data: typeof data }> = ({ data: d }) => {
-    const [firstname, setFirstname] = useState(d.firstname ?? '');
-    const [lastname, setLastname] = useState(d.lastname ?? '');
-    const [emailVisibleToAll, setEmailVisibleToAll] = useState(!!d.emailVisibleToAll);
+  const identity = data.identity;
+
+  const ProfileForm: FC<{ identity: typeof identity }> = ({ identity: d }) => {
+    const [firstname, setFirstname] = useState(d?.firstname ?? '');
+    const [lastname, setLastname] = useState(d?.lastname ?? '');
+    const [emailVisibleToAll, setEmailVisibleToAll] = useState(!!d?.emailVisibleToAll);
     const [avatar, setAvatar] = useState<{ file: File; preview: string } | null>(null);
     const [isSaving, setIsSaving] = useState(false);
 
@@ -48,9 +75,9 @@ const ProfileSettings = () => {
     });
 
     const hasChanges =
-      firstname !== (d.firstname ?? '') ||
-      lastname !== (d.lastname ?? '') ||
-      emailVisibleToAll !== !!d.emailVisibleToAll ||
+      firstname !== (d?.firstname ?? '') ||
+      lastname !== (d?.lastname ?? '') ||
+      emailVisibleToAll !== !!d?.emailVisibleToAll ||
       avatar !== null;
 
     const isFormValid = firstname.trim() !== '' && lastname.trim() !== '';
@@ -153,9 +180,9 @@ const ProfileSettings = () => {
 
         <Card flush className='border-0'>
           <section className='p-4 sm:p-6'>
-            <SectionHeader title='Display Regions' icon={Globe} subheader='Choose visible regions' />
+            <SectionHeader title='Display Regions' icon={Globe} />
             <div className='space-y-1'>
-              {(d.userRegions ?? []).map((region) => {
+              {(d?.userRegions ?? []).map((region) => {
                 const label = region.role ? `${region.name} (${region.role})` : region.name;
                 const id = `region-${region.id}`;
                 return (
@@ -164,7 +191,7 @@ const ProfileSettings = () => {
                       id={id}
                       type='checkbox'
                       disabled={region.readOnly}
-                      className='border-surface-border/80 bg-surface-nav text-brand focus:ring-brand-border/60 h-4 w-4 rounded-sm border shadow-[inset_0_0_0_1px_rgba(15,23,42,0.22)] disabled:cursor-not-allowed disabled:opacity-60'
+                      className='border-surface-border/80 bg-surface-nav text-brand focus:ring-brand-border/60 h-4 w-4 rounded-sm border shadow-[inset_0_0_0_1px_rgba(15,23,42,0.22)] disabled:cursor-default'
                       checked={region.enabled}
                       onChange={(e) => setRegion({ region, del: !e.target.checked })}
                     />
@@ -173,11 +200,12 @@ const ProfileSettings = () => {
                       className={cn(
                         'cursor-pointer text-sm font-medium transition-colors',
                         region.enabled ? 'text-slate-200' : 'text-slate-500',
-                        region.readOnly && 'cursor-not-allowed text-slate-400',
+                        region.readOnly && 'cursor-default text-slate-400',
                       )}
                     >
                       {label}
                     </label>
+                    {region.readOnly && <Lock size={12} className='shrink-0 text-slate-500' />}
                   </div>
                 );
               })}
@@ -188,7 +216,7 @@ const ProfileSettings = () => {
     );
   };
 
-  return <ProfileForm data={data} />;
+  return <ProfileForm identity={identity} />;
 };
 
 export default ProfileSettings;

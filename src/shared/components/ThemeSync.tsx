@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react';
-import { useProfile } from '../../api';
+import { useMeta } from './Meta/context';
+import { useSetThemePreference } from '../../api';
 import { useTheme } from '../providers/useTheme';
 
 /**
- * Syncs the backend `themePreference` into the frontend theme when the profile loads.
+ * Syncs the backend `themePreference` into the frontend theme when the meta loads.
  * The backend is the source of truth — always overrides any local preference so that
  * the user gets a consistent theme across all devices.
  *
@@ -11,15 +12,15 @@ import { useTheme } from '../providers/useTheme';
  * preference is saved to the backend so that subsequent logins on other devices pick it up.
  */
 export function ThemeSync() {
-  const { data: profile, setThemePreference } = useProfile();
+  const meta = useMeta();
+  const { mutateAsync: setThemePreference } = useSetThemePreference();
   const { stored, setStored } = useTheme();
   const synced = useRef(false);
 
   useEffect(() => {
-    if (!profile) return;
     if (synced.current) return;
 
-    const backendTheme = profile.themePreference;
+    const backendTheme = meta.themePreference;
     if (backendTheme === 'light' || backendTheme === 'dark') {
       // Backend has a preference — override local state so the user gets a consistent
       // experience across all devices.
@@ -33,7 +34,7 @@ export function ThemeSync() {
     }
 
     synced.current = true;
-  }, [profile, stored, setStored, setThemePreference]);
+  }, [meta.themePreference, stored, setStored, setThemePreference]);
 
   return null;
 }
