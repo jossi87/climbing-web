@@ -362,7 +362,7 @@ export function useProfile(userId: number) {
     emailVisibleToAll: boolean;
     avatarFile: File | undefined;
     themePreference?: string;
-  }>(`/v2/profile/identity`, {
+  }>(`/profile/identity`, {
     createBody({ firstname, lastname, emailVisibleToAll, avatarFile, themePreference }) {
       const formData = new FormData();
       formData.append(
