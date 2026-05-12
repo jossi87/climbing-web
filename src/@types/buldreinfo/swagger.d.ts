@@ -1539,6 +1539,8 @@ export type components = {
             fa?: number;
             /** Format: int32 */
             tick?: number;
+            /** Format: int32 */
+            repeat?: number;
         };
         ProfileIdentity: {
             /** Format: int32 */
@@ -1971,8 +1973,8 @@ export type components = {
             parameters?: {
                 [key: string]: string;
             };
-            wildcardType?: boolean;
             wildcardSubtype?: boolean;
+            wildcardType?: boolean;
         };
         MessageBodyWorkers: Record<string, never>;
         MultiPart: {

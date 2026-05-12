@@ -163,7 +163,7 @@ const ProfileOverview = ({
 }) => {
   const totalAscents = gradeDistribution.reduce((sum, g) => sum + (g.fa ?? 0) + (g.tick ?? 0), 0);
   const totalFas = gradeDistribution.reduce((sum, g) => sum + (g.fa ?? 0), 0);
-  const totalTicks = gradeDistribution.reduce((sum, g) => sum + (g.tick ?? 0), 0);
+  const totalRepeats = gradeDistribution.reduce((sum, g) => sum + (g.repeat ?? 0), 0);
 
   return (
     <div className='space-y-4'>
@@ -175,7 +175,7 @@ const ProfileOverview = ({
       >
         <OverviewStatItem icon={Check} label='Ascents' value={totalAscents} />
         <OverviewStatItem icon={Plus} label='FAs' value={totalFas} />
-        {isClimbing ? <OverviewStatItem icon={Repeat} label='Repeats' value={totalTicks} /> : null}
+        {isClimbing ? <OverviewStatItem icon={Repeat} label='Repeats' value={totalRepeats} /> : null}
         <OverviewStatItem icon={Camera} label='Tags' value={kpis?.numImageTags ?? 0} />
         <OverviewStatItem icon={Camera} label='Captured' value={kpis?.numImagesCreated ?? 0} />
         <OverviewStatItem icon={Video} label='Tags' value={kpis?.numVideoTags ?? 0} />

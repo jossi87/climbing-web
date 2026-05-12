@@ -26,8 +26,8 @@ function FaTickBar({
     return <div className='mx-0 h-1.5 w-full sm:h-2' />;
   }
 
-  const faColor = color ? `${color}80` : 'bg-red-400'; // 50% opacity for FA
-  const tickColor = color ?? 'bg-blue-400'; // full color for tick
+  const faColor = color ?? 'bg-red-400'; // full color for FA (more important)
+  const tickColor = color ?? 'bg-blue-400'; // full color for tick (base)
 
   return (
     <div className='mx-0 w-full'>
@@ -36,7 +36,11 @@ function FaTickBar({
         style={{ width: `${totalWidthPct}%` }}
       >
         {fa > 0 ? <div className='h-full min-w-0' style={{ flex: fa, backgroundColor: faColor }} /> : null}
-        {tick > 0 ? <div className='h-full min-w-0' style={{ flex: tick, backgroundColor: tickColor }} /> : null}
+        {tick > 0 ? (
+          <div className='relative h-full min-w-0' style={{ flex: tick, backgroundColor: tickColor }}>
+            <div className='absolute inset-0 bg-white/40' />
+          </div>
+        ) : null}
       </div>
     </div>
   );
