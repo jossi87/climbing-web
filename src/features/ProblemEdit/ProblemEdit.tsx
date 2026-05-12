@@ -324,6 +324,10 @@ const ProblemEdit = ({ problem, sector }: Props) => {
   const noun = meta.isBouldering ? 'problem' : 'route';
   const headerTitle = `${isNew ? 'Add' : 'Edit'} ${noun}`;
 
+  /** When `nr` is 0 the backend auto-assigns `maxNr + 1`. Show the actual next number instead of 0. */
+  const maxNr = Math.max(0, ...(sector.problems ?? []).map((p) => p.nr ?? 0));
+  const displayNr = isNew && data.nr === 0 ? maxNr + 1 : data.nr;
+
   return (
     <div className='w-full min-w-0 pb-20 text-left'>
       <title>{`${isNew ? `Add ${noun}` : `Edit ${data.name}`} | ${meta?.title}`}</title>
@@ -377,7 +381,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                   <input
                     type='number'
                     className={inputClasses}
-                    value={data.nr}
+                    value={displayNr}
                     onChange={(e) => setData((prev) => ({ ...prev, nr: +e.target.value }))}
                   />
                 </div>
