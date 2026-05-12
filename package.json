@@ -52,7 +52,7 @@
   "dependencies": {
     "@auth0/auth0-react": "^2.16.2",
     "@react-leaflet/core": "^3.0.0",
-    "@sentry/react": "^10.52.0",
+    "@sentry/react": "^10.53.1",
     "@tanstack/react-query": "^5.100.10",
     "clsx": "^2.1.1",
     "flat": "^6.0.1",
@@ -81,7 +81,7 @@
     "suncalc": "^1.9.0",
     "svg-path-parser": "^1.1.0",
     "svg-path-properties": "^2.0.2",
-    "swagger-ui-react": "^5.32.5",
+    "swagger-ui-react": "^5.32.6",
     "tailwind-merge": "^3.6.0"
   },
   "scripts": {
