@@ -320,7 +320,7 @@ function ProblemLoaded({
         items={[
           {
             id: 'problem-pdf',
-            label: 'Problem',
+            label: meta.isBouldering ? 'Problem' : 'Route',
             href: `/problem/pdf?id=${data.id}`,
             kind: 'download',
           },
