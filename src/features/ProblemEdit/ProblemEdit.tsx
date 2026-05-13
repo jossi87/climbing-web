@@ -31,7 +31,18 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { captureSentryException, captureSentryMessage } from '../../utils/sentry';
 import ExternalLink from '../../shared/ui/ExternalLinks';
-import { Calendar, Save, ChevronDown, AlertTriangle, Edit, Loader2, MapPinOff, Plus } from 'lucide-react';
+import {
+  Calendar,
+  Save,
+  ChevronDown,
+  AlertTriangle,
+  Edit,
+  Loader2,
+  MapPinOff,
+  MapPin,
+  Layers,
+  Plus,
+} from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 import { Card, FormSwitch, MarkdownFieldLabel, NotFoundCard, SectionHeader } from '../../shared/ui';
@@ -332,8 +343,16 @@ const ProblemEdit = ({ problem, sector }: Props) => {
     <div className='w-full min-w-0 pb-20 text-left'>
       <title>{`${isNew ? `Add ${noun}` : `Edit ${data.name}`} | ${meta?.title}`}</title>
 
-      <Card flush className='min-w-0 border-0'>
-        <div className='p-4 sm:p-5'>
+      <form
+        id='problem-edit-form'
+        className='mt-6 space-y-6'
+        onSubmit={(e) => {
+          e.preventDefault();
+          void save(e, data).then((dest) => dest && navigate(dest));
+        }}
+      >
+        {/* ── Basic info ── */}
+        <Card>
           <SectionHeader
             title={headerTitle}
             icon={isNew ? Plus : Edit}
@@ -349,522 +368,492 @@ const ProblemEdit = ({ problem, sector }: Props) => {
               )
             }
           />
-          <form
-            className='mt-3 space-y-3'
-            onSubmit={(e) => {
-              e.preventDefault();
-              void save(e, data).then((dest) => dest && navigate(dest));
-            }}
-          >
-            <div className='space-y-4'>
-              <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
-                <div className='space-y-2'>
-                  <label className={labelClasses}>Name</label>
-                  <input
-                    className={cn(inputClasses, !data.name ? 'border-red-500/50' : '')}
-                    value={data.name}
-                    onChange={(e) => setData((prev) => ({ ...prev, name: e.target.value }))}
-                  />
-                  {!data.name && <p className='ml-1 text-[11px] font-bold text-red-500'>Name required</p>}
-                </div>
+          <div className='space-y-4 p-3 sm:p-5'>
+            <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
+              <div className='space-y-2'>
+                <label className={labelClasses}>Name</label>
+                <input
+                  className={cn(inputClasses, !data.name ? 'border-red-500/50' : '')}
+                  value={data.name}
+                  onChange={(e) => setData((prev) => ({ ...prev, name: e.target.value }))}
+                />
+                {!data.name && <p className='ml-1 text-[11px] font-bold text-red-500'>Name required</p>}
+              </div>
 
-                <VisibilitySelectorField
-                  label='Visibility'
-                  value={{ lockedAdmin: !!data.lockedAdmin, lockedSuperadmin: !!data.lockedSuperadmin }}
-                  onChange={({ lockedAdmin, lockedSuperadmin }) =>
-                    setData((prev) => ({ ...prev, lockedAdmin, lockedSuperadmin }))
+              <VisibilitySelectorField
+                label='Visibility'
+                value={{ lockedAdmin: !!data.lockedAdmin, lockedSuperadmin: !!data.lockedSuperadmin }}
+                onChange={({ lockedAdmin, lockedSuperadmin }) =>
+                  setData((prev) => ({ ...prev, lockedAdmin, lockedSuperadmin }))
+                }
+              />
+
+              <div className='space-y-2'>
+                <label className={labelClasses}>Number</label>
+                <input
+                  type='number'
+                  className={inputClasses}
+                  value={displayNr}
+                  onChange={(e) => setData((prev) => ({ ...prev, nr: +e.target.value }))}
+                />
+              </div>
+
+              <div className='space-y-2'>
+                <label className={labelClasses}>Move to trash</label>
+                <FormSwitch
+                  checked={!!data.trash}
+                  onChange={() => setData((prev) => ({ ...prev, trash: !prev.trash }))}
+                  disabled={!data.id || data.id <= 0}
+                  variant='danger'
+                  aria-label='Move to trash'
+                />
+              </div>
+            </div>
+
+            <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
+              <div className='space-y-2'>
+                <label className={labelClasses}>Grade</label>
+                <div className='relative'>
+                  <select
+                    className={cn(
+                      inputClasses,
+                      'cursor-pointer appearance-none pr-9',
+                      gradeMissing && 'border-red-500/50',
+                    )}
+                    value={data.originalGrade ?? ''}
+                    onChange={(e) => setData((prev) => ({ ...prev, originalGrade: e.target.value }))}
+                  >
+                    <option value='' disabled>
+                      Select grade…
+                    </option>
+                    {meta.grades.map((g, i) => (
+                      <option key={i} value={g.grade}>
+                        {g.grade}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown
+                    size={16}
+                    className='pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-slate-500'
+                  />
+                </div>
+                {gradeMissing && <p className='ml-1 text-[11px] font-bold text-red-500'>Grade required</p>}
+              </div>
+
+              <div className='space-y-2'>
+                <label className={labelClasses}>FA user(s)</label>
+                <UsersSelector
+                  placeholder='Select FA user(s)'
+                  users={data.fa ?? []}
+                  onUsersUpdated={(users) =>
+                    setData((prev) => ({
+                      ...prev,
+                      fa: users.map((u) => ({
+                        id: typeof u.value === 'string' ? -1 : u.value,
+                        name: u.label,
+                      })),
+                    }))
                   }
                 />
+              </div>
 
-                <div className='space-y-2'>
-                  <label className={labelClasses}>Number</label>
-                  <input
-                    type='number'
-                    className={inputClasses}
-                    value={displayNr}
-                    onChange={(e) => setData((prev) => ({ ...prev, nr: +e.target.value }))}
+              <div className='space-y-2'>
+                <label className={labelClasses}>FA date</label>
+                <div className='relative'>
+                  <DatePicker
+                    wrapperClassName='w-full'
+                    className={cn(inputClasses, 'pr-3 pl-10')}
+                    dateFormat='dd-MM-yyyy'
+                    selected={data.faDate ? convertFromStringToDate(data.faDate) : undefined}
+                    onChange={(date: Date | null) => onFaDateChanged(date ?? undefined)}
                   />
-                </div>
-
-                <div className='space-y-2'>
-                  <label className={labelClasses}>Move to trash</label>
-                  <FormSwitch
-                    checked={!!data.trash}
-                    onChange={() => setData((prev) => ({ ...prev, trash: !prev.trash }))}
-                    disabled={!data.id || data.id <= 0}
-                    variant='danger'
-                    aria-label='Move to trash'
+                  <Calendar
+                    size={16}
+                    className='pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-500'
                   />
                 </div>
               </div>
 
-              <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
+              {!meta.isBouldering && (
                 <div className='space-y-2'>
-                  <label className={labelClasses}>Grade</label>
-                  <div className='relative'>
-                    <select
-                      className={cn(
-                        inputClasses,
-                        'cursor-pointer appearance-none pr-9',
-                        gradeMissing && 'border-red-500/50',
-                      )}
-                      /*
-                       * `value={originalGrade ?? ''}` so the placeholder option below resolves correctly when
-                       * the API ever returns `undefined` for the field — without the coercion the `<select>`
-                       * would silently fall back to its first DOM option and look "selected" when it isn't.
-                       */
-                      value={data.originalGrade ?? ''}
-                      onChange={(e) => setData((prev) => ({ ...prev, originalGrade: e.target.value }))}
-                    >
-                      {/*
-                        Placeholder option — disabled so it can't be re-picked once the user moves off it,
-                        and rendered first so the `<select>` opens on it for new problems (where
-                        `originalGrade === ''`). The user must explicitly pick a grade — including `'n/a'`,
-                        which is itself a legal grade for ungraded routes / projects / ice — before the form
-                        will accept a save. Existing problems round-trip through their stored value unchanged.
-                      */}
-                      <option value='' disabled>
-                        Select grade…
-                      </option>
-                      {meta.grades.map((g, i) => (
-                        <option key={i} value={g.grade}>
-                          {g.grade}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown
-                      size={16}
-                      className='pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-slate-500'
-                    />
-                  </div>
-                  {gradeMissing && <p className='ml-1 text-[11px] font-bold text-red-500'>Grade required</p>}
-                </div>
-
-                <div className='space-y-2'>
-                  <label className={labelClasses}>FA user(s)</label>
-                  <UsersSelector
-                    placeholder='Select FA user(s)'
-                    users={data.fa ?? []}
-                    onUsersUpdated={(users) =>
+                  <label className={labelClasses}>Route length (m)</label>
+                  <input
+                    type='number'
+                    className={inputClasses}
+                    value={data.lengthMeter ?? ''}
+                    onChange={(e) =>
                       setData((prev) => ({
                         ...prev,
-                        fa: users.map((u) => ({
-                          id: typeof u.value === 'string' ? -1 : u.value,
-                          name: u.label,
-                        })),
+                        lengthMeter: e.target.value === '' ? undefined : +e.target.value,
                       }))
                     }
                   />
                 </div>
-
-                <div className='space-y-2'>
-                  <label className={labelClasses}>FA date</label>
-                  <div className='relative'>
-                    <DatePicker
-                      wrapperClassName='w-full'
-                      className={cn(inputClasses, 'pr-3 pl-10')}
-                      dateFormat='dd-MM-yyyy'
-                      selected={data.faDate ? convertFromStringToDate(data.faDate) : undefined}
-                      onChange={(date: Date | null) => onFaDateChanged(date ?? undefined)}
-                    />
-                    <Calendar
-                      size={16}
-                      className='pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-500'
-                    />
-                  </div>
-                </div>
-
-                {!meta.isBouldering && (
-                  <div className='space-y-2'>
-                    <label className={labelClasses}>Route length (m)</label>
-                    <input
-                      type='number'
-                      className={inputClasses}
-                      value={data.lengthMeter ?? ''}
-                      onChange={(e) =>
-                        setData((prev) => ({
-                          ...prev,
-                          lengthMeter: e.target.value === '' ? undefined : +e.target.value,
-                        }))
-                      }
-                    />
-                  </div>
-                )}
-              </div>
-
-              {meta.isBouldering && (
-                <div className='space-y-2'>
-                  <label className={labelClasses}>Rock (grouping)</label>
-                  <RockSelector
-                    rock={data.rock ?? null}
-                    onRockUpdated={(rock) => setData((prev) => ({ ...prev, rock: rock ?? undefined }))}
-                    rocks={sectorRocks}
-                    placeholder='Search or select rock...'
-                  />
-                </div>
               )}
-
-              <div className='space-y-2'>
-                <MarkdownFieldLabel className={labelClasses}>Description</MarkdownFieldLabel>
-                <textarea
-                  className={cn(inputClasses, 'min-h-30 resize-none')}
-                  value={data.comment}
-                  onChange={(e) => setData((prev) => ({ ...prev, comment: e.target.value }))}
-                />
-              </div>
-
-              <div className='space-y-2'>
-                <MarkdownFieldLabel className={labelClasses}>Trivia</MarkdownFieldLabel>
-                <textarea
-                  className={cn(inputClasses, 'min-h-20 resize-none')}
-                  value={data.trivia}
-                  onChange={(e) => setData((prev) => ({ ...prev, trivia: e.target.value }))}
-                />
-              </div>
-
-              <div className='relative'>
-                <input
-                  className={cn(inputClasses, 'border-red-500/25 pl-10 focus:border-red-400/45')}
-                  value={data.broken}
-                  placeholder='Leave empty if not broken'
-                  onChange={(e) => setData((prev) => ({ ...prev, broken: e.target.value }))}
-                />
-                <AlertTriangle
-                  className='pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-red-400/90'
-                  size={14}
-                />
-                <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[11px] font-black tracking-tighter text-red-300/90 uppercase'>
-                  {meta.isBouldering ? 'Problem broken' : 'Route broken'}
-                </span>
-              </div>
             </div>
 
-            <ExternalLink
-              externalLinks={data.externalLinks?.filter((l) => !l.inherited) || []}
-              onExternalLinksUpdated={(links) => setData((p) => ({ ...p, externalLinks: links }))}
-              hideLabel
-              mobileFlat
-            />
-
-            <div className='space-y-4'>
-              <label className={labelClasses}>Add media</label>
-              <MediaUpload
-                onMediaChanged={(media) => setData((p) => ({ ...p, newMedia: media }))}
-                isMultiPitch={!!(data.sections && data.sections.length > 1)}
-              />
-            </div>
-
-            {meta.isClimbing && (
-              <div className='space-y-4'>
-                <div className='space-y-2'>
-                  <label className={labelClasses}>Type</label>
-                  <div className='relative'>
-                    <select
-                      className={cn(
-                        inputClasses,
-                        'cursor-pointer appearance-none pr-9',
-                        typeMissing && 'border-red-500/50',
-                      )}
-                      /*
-                       * `value={data.t?.id ?? ''}` so the placeholder option resolves on new problems (where
-                       * `data.t` is `undefined`). Without the coercion, an undefined `value` makes the
-                       * `<select>` look like it's auto-selected the first type — which is exactly the implicit
-                       * "you didn't pick, but we picked for you" behaviour the user wants gone.
-                       */
-                      value={data.t?.id ?? ''}
-                      onChange={(e) => setData((p) => ({ ...p, t: { ...p.t, id: +e.target.value } }))}
-                    >
-                      {/*
-                        Placeholder option only when there's actually a choice to make. With a single type the
-                        `<select>` is functionally a label and {@link postProblem} falls back to `meta.types[0]`,
-                        so showing a "Select type…" prompt would be busywork (matches the existing `typeMissing`
-                        validation, which only requires a pick when `meta.types.length > 1`).
-                      */}
-                      {meta.types.length > 1 && (
-                        <option value='' disabled>
-                          Select type…
-                        </option>
-                      )}
-                      {meta.types.map((t, i) => (
-                        <option key={i} value={t.id}>
-                          {t.type + (t.subType ? ' - ' + t.subType : '')}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown
-                      size={16}
-                      className='pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-slate-500'
-                    />
-                  </div>
-                  {typeMissing && <p className='ml-1 text-[11px] font-bold text-red-500'>Type required</p>}
-                </div>
-
-                <div className='space-y-2'>
-                  <label className={labelClasses}>First AID ascent?</label>
-                  <div className='flex gap-2'>
-                    <button
-                      type='button'
-                      onClick={() =>
-                        setData((p) => ({
-                          ...p,
-                          faAid: {
-                            ...(p.id != null && p.id > 0 ? { problemId: p.id } : {}),
-                            date: '',
-                            description: '',
-                            users: [],
-                          },
-                        }))
-                      }
-                      className={cn(
-                        designContract.typography.uiCompact,
-                        'rounded-lg px-4 py-1.5 uppercase transition-all',
-                        data.faAid
-                          ? designContract.surfaces.segmentActiveBrandBorder
-                          : designContract.surfaces.segmentIdleRaised,
-                      )}
-                    >
-                      Yes
-                    </button>
-                    <button
-                      type='button'
-                      onClick={() => setData((p) => ({ ...p, faAid: undefined }))}
-                      className={cn(
-                        designContract.typography.uiCompact,
-                        'rounded-lg px-4 py-1.5 uppercase transition-all',
-                        !data.faAid
-                          ? designContract.surfaces.segmentActiveBrandBorder
-                          : designContract.surfaces.segmentIdleRaised,
-                      )}
-                    >
-                      No
-                    </button>
-                  </div>
-                </div>
-
-                {data.faAid && (
-                  <div className='border-surface-border mt-4 space-y-4 border-t pt-4'>
-                    <p className='type-micro text-slate-500'>
-                      First AID ascent is separate from the free first ascent above. Add who, when, and optional notes —
-                      the problem page only shows this block when at least one of these is set.
-                    </p>
-                    <div className='space-y-2'>
-                      <label className={labelClasses}>First AID — climbers</label>
-                      <UsersSelector
-                        placeholder='Search climbers…'
-                        users={data.faAid.users ?? []}
-                        onUsersUpdated={(users) =>
-                          setData((prev) =>
-                            prev.faAid
-                              ? {
-                                  ...prev,
-                                  faAid: {
-                                    ...prev.faAid,
-                                    users: users.map((u) => ({
-                                      id: typeof u.value === 'string' ? -1 : u.value,
-                                      name: u.label,
-                                    })),
-                                  },
-                                }
-                              : prev,
-                          )
-                        }
-                      />
-                    </div>
-                    <div className='space-y-2'>
-                      <label className={labelClasses}>First AID — date</label>
-                      <div className='relative'>
-                        <DatePicker
-                          wrapperClassName='w-full'
-                          className={cn(inputClasses, 'pr-3 pl-10')}
-                          dateFormat='dd-MM-yyyy'
-                          selected={
-                            data.faAid.date ? (convertFromStringToDate(data.faAid.date) ?? undefined) : undefined
-                          }
-                          onChange={(date: Date | null) => {
-                            setData((prev) => {
-                              if (!prev.faAid) return prev;
-                              const dateString = date ? (convertFromDateToString(date) ?? '') : '';
-                              return { ...prev, faAid: { ...prev.faAid, date: dateString } };
-                            });
-                          }}
-                        />
-                        <Calendar
-                          size={16}
-                          className='pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-500'
-                        />
-                      </div>
-                    </div>
-                    <div className='space-y-2'>
-                      <MarkdownFieldLabel className={labelClasses}>First AID — notes</MarkdownFieldLabel>
-                      <textarea
-                        className={cn(inputClasses, 'min-h-20 resize-none')}
-                        value={data.faAid.description ?? ''}
-                        placeholder='Gear, style, or other context for the first aid ascent…'
-                        onChange={(e) =>
-                          setData((prev) =>
-                            prev.faAid ? { ...prev, faAid: { ...prev.faAid, description: e.target.value } } : prev,
-                          )
-                        }
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {meta.isIce && (
-                  <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'>
-                    <div className='space-y-2'>
-                      <label className={labelClasses}>Starting altitude (m)</label>
-                      <input
-                        type='number'
-                        className={inputClasses}
-                        value={data.startingAltitude ?? ''}
-                        onChange={(e) => setData((prev) => ({ ...prev, startingAltitude: e.target.value }))}
-                      />
-                    </div>
-                    <div className='space-y-2'>
-                      <label className={labelClasses}>Aspect</label>
-                      <input
-                        className={inputClasses}
-                        value={data.aspect ?? ''}
-                        onChange={(e) => setData((prev) => ({ ...prev, aspect: e.target.value }))}
-                      />
-                    </div>
-                    <div className='space-y-2'>
-                      <label className={labelClasses}>Descent</label>
-                      <input
-                        className={inputClasses}
-                        value={data.descent ?? ''}
-                        onChange={(e) => setData((prev) => ({ ...prev, descent: e.target.value }))}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                <div className='space-y-2'>
-                  <label className={labelClasses}>Pitches</label>
-                  <ProblemSection
-                    sections={data.sections ?? []}
-                    onSectionsUpdated={(sections) => setData((p) => ({ ...p, sections }))}
-                  />
-                </div>
+            {meta.isBouldering && (
+              <div className='space-y-2'>
+                <label className={labelClasses}>Rock (grouping)</label>
+                <RockSelector
+                  rock={data.rock ?? null}
+                  onRockUpdated={(rock) => setData((prev) => ({ ...prev, rock: rock ?? undefined }))}
+                  rocks={sectorRocks}
+                  placeholder='Search or select rock...'
+                />
               </div>
             )}
 
-            <div className='space-y-4'>
-              <div className='space-y-2'>
-                <label className={labelClasses}>
-                  {meta.isBouldering ? 'Mark problem on map' : 'Mark route on map'}
-                </label>
-                <div className='border-surface-border bg-surface-raised overflow-hidden rounded-lg border'>
-                  <div className='border-surface-border relative overflow-hidden border-b'>
-                    <Leaflet
-                      autoZoom={true}
-                      markers={markers}
-                      defaultCenter={defaultCenter}
-                      defaultZoom={defaultZoom}
-                      onMouseClick={(e) =>
-                        setData((p) => ({
-                          ...p,
-                          coordinates: {
-                            ...p.coordinates,
-                            latitude: e.latlng.lat,
-                            longitude: e.latlng.lng,
-                          },
-                        }))
-                      }
-                      height='300px'
-                      showSatelliteImage={true}
-                      clusterMarkers={false}
-                    />
-                  </div>
-                  <div className='border-surface-border bg-surface-card flex flex-nowrap items-center justify-between gap-2 px-2.5 py-2 sm:gap-3 sm:px-3 sm:py-2.5'>
-                    <div className='flex min-w-0 flex-1 items-center gap-2 sm:gap-2.5'>
-                      <FormSwitch
-                        checked={showSectorMarkers}
-                        onChange={() => setShowSectorMarkers(!showSectorMarkers)}
-                        variant='brand'
-                        aria-label='Include sibling problems and routes on the map'
-                      />
-                      <span className='min-w-0 text-[12px] font-medium whitespace-nowrap text-slate-300 sm:text-[13px]'>
-                        Include siblings
-                      </span>
-                    </div>
-                    <button
-                      type='button'
-                      onClick={() => setData((p) => ({ ...p, coordinates: undefined }))}
-                      disabled={!hasProblemCoords}
-                      title={hasProblemCoords ? 'Remove this problem’s coordinates from the map' : undefined}
-                      className={cn(
-                        designContract.typography.uiCompact,
-                        'inline-flex shrink-0 items-center gap-1 rounded-md border border-dashed border-orange-500/45 px-2 py-1 font-semibold tracking-wide text-orange-400 transition-colors',
-                        'dark:hover:bg-surface-hover hover:border-orange-400/75 dark:hover:text-orange-300',
-                        'light:border-orange-600/40 light:text-orange-700',
-                        'light:hover:bg-orange-500/14 light:hover:border-orange-600/60 light:hover:text-orange-950',
-                        'disabled:cursor-not-allowed disabled:opacity-40 sm:border-0 sm:px-2 sm:py-1',
-                      )}
-                    >
-                      <MapPinOff size={13} strokeWidth={2} aria-hidden />
-                      Remove position
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-                <div className='space-y-1'>
-                  <label className={labelClasses}>Latitude</label>
-                  <input
-                    className={inputClasses}
-                    inputMode='decimal'
-                    placeholder='e.g. 59.123'
-                    value={lat.text}
-                    onChange={setCoordField('latitude')}
-                  />
-                </div>
-                <div className='space-y-1'>
-                  <label className={labelClasses}>Longitude</label>
-                  <input
-                    className={inputClasses}
-                    inputMode='decimal'
-                    placeholder='e.g. 10.456'
-                    value={lng.text}
-                    onChange={setCoordField('longitude')}
-                  />
-                </div>
-              </div>
+            <div className='space-y-2'>
+              <MarkdownFieldLabel className={labelClasses}>Description</MarkdownFieldLabel>
+              <textarea
+                className={cn(inputClasses, 'min-h-30 resize-none')}
+                value={data.comment}
+                onChange={(e) => setData((prev) => ({ ...prev, comment: e.target.value }))}
+              />
             </div>
 
-            <div className='flex items-center justify-end gap-3'>
+            <div className='space-y-2'>
+              <MarkdownFieldLabel className={labelClasses}>Trivia</MarkdownFieldLabel>
+              <textarea
+                className={cn(inputClasses, 'min-h-20 resize-none')}
+                value={data.trivia}
+                onChange={(e) => setData((prev) => ({ ...prev, trivia: e.target.value }))}
+              />
+            </div>
+
+            <div className='relative'>
+              <input
+                className={cn(inputClasses, 'border-red-500/25 pl-10 focus:border-red-400/45')}
+                value={data.broken}
+                placeholder='Leave empty if not broken'
+                onChange={(e) => setData((prev) => ({ ...prev, broken: e.target.value }))}
+              />
+              <AlertTriangle
+                className='pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-red-400/90'
+                size={14}
+              />
+              <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[11px] font-black tracking-tighter text-red-300/90 uppercase'>
+                {meta.isBouldering ? 'Problem broken' : 'Route broken'}
+              </span>
+            </div>
+
+            <div>
+              <ExternalLink
+                externalLinks={data.externalLinks?.filter((l) => !l.inherited) || []}
+                onExternalLinksUpdated={(links) => setData((p) => ({ ...p, externalLinks: links }))}
+                hideLabel
+                mobileFlat
+              />
+            </div>
+          </div>
+        </Card>
+
+        {/* ── Climbing-specific details ── */}
+        {meta.isClimbing && (
+          <Card>
+            <SectionHeader title='Route details' icon={Edit} />
+            <div className='space-y-4 p-3 sm:p-5'>
+              <div className='space-y-2'>
+                <label className={labelClasses}>Type</label>
+                <div className='relative'>
+                  <select
+                    className={cn(
+                      inputClasses,
+                      'cursor-pointer appearance-none pr-9',
+                      typeMissing && 'border-red-500/50',
+                    )}
+                    value={data.t?.id ?? ''}
+                    onChange={(e) => setData((p) => ({ ...p, t: { ...p.t, id: +e.target.value } }))}
+                  >
+                    {meta.types.length > 1 && (
+                      <option value='' disabled>
+                        Select type…
+                      </option>
+                    )}
+                    {meta.types.map((t, i) => (
+                      <option key={i} value={t.id}>
+                        {t.type + (t.subType ? ' - ' + t.subType : '')}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown
+                    size={16}
+                    className='pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-slate-500'
+                  />
+                </div>
+                {typeMissing && <p className='ml-1 text-[11px] font-bold text-red-500'>Type required</p>}
+              </div>
+
+              <div className='space-y-2'>
+                <label className={labelClasses}>First AID ascent?</label>
+                <div className='flex gap-1.5 sm:gap-2'>
+                  <button
+                    type='button'
+                    onClick={() =>
+                      setData((p) => ({
+                        ...p,
+                        faAid: {
+                          ...(p.id != null && p.id > 0 ? { problemId: p.id } : {}),
+                          date: '',
+                          description: '',
+                          users: [],
+                        },
+                      }))
+                    }
+                    className={cn(
+                      designContract.typography.uiCompact,
+                      'rounded-lg px-3 py-1.5 uppercase transition-all sm:px-4',
+                      data.faAid
+                        ? designContract.surfaces.segmentActiveBrandBorder
+                        : designContract.surfaces.segmentIdleRaised,
+                    )}
+                  >
+                    Yes
+                  </button>
+                  <button
+                    type='button'
+                    onClick={() => setData((p) => ({ ...p, faAid: undefined }))}
+                    className={cn(
+                      designContract.typography.uiCompact,
+                      'rounded-lg px-3 py-1.5 uppercase transition-all sm:px-4',
+                      !data.faAid
+                        ? designContract.surfaces.segmentActiveBrandBorder
+                        : designContract.surfaces.segmentIdleRaised,
+                    )}
+                  >
+                    No
+                  </button>
+                </div>
+              </div>
+
+              {data.faAid && (
+                <div className='space-y-4'>
+                  <p className='type-micro text-slate-500'>
+                    First AID ascent is separate from the free first ascent above. Add who, when, and optional notes —
+                    the problem page only shows this block when at least one of these is set.
+                  </p>
+                  <div className='space-y-2'>
+                    <label className={labelClasses}>First AID — climbers</label>
+                    <UsersSelector
+                      placeholder='Search climbers…'
+                      users={data.faAid.users ?? []}
+                      onUsersUpdated={(users) =>
+                        setData((prev) =>
+                          prev.faAid
+                            ? {
+                                ...prev,
+                                faAid: {
+                                  ...prev.faAid,
+                                  users: users.map((u) => ({
+                                    id: typeof u.value === 'string' ? -1 : u.value,
+                                    name: u.label,
+                                  })),
+                                },
+                              }
+                            : prev,
+                        )
+                      }
+                    />
+                  </div>
+                  <div className='space-y-2'>
+                    <label className={labelClasses}>First AID — date</label>
+                    <div className='relative'>
+                      <DatePicker
+                        wrapperClassName='w-full'
+                        className={cn(inputClasses, 'pr-3 pl-10')}
+                        dateFormat='dd-MM-yyyy'
+                        selected={data.faAid.date ? (convertFromStringToDate(data.faAid.date) ?? undefined) : undefined}
+                        onChange={(date: Date | null) => {
+                          setData((prev) => {
+                            if (!prev.faAid) return prev;
+                            const dateString = date ? (convertFromDateToString(date) ?? '') : '';
+                            return { ...prev, faAid: { ...prev.faAid, date: dateString } };
+                          });
+                        }}
+                      />
+                      <Calendar
+                        size={16}
+                        className='pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-500'
+                      />
+                    </div>
+                  </div>
+                  <div className='space-y-2'>
+                    <MarkdownFieldLabel className={labelClasses}>First AID — notes</MarkdownFieldLabel>
+                    <textarea
+                      className={cn(inputClasses, 'min-h-20 resize-none')}
+                      value={data.faAid.description ?? ''}
+                      placeholder='Gear, style, or other context for the first aid ascent…'
+                      onChange={(e) =>
+                        setData((prev) =>
+                          prev.faAid ? { ...prev, faAid: { ...prev.faAid, description: e.target.value } } : prev,
+                        )
+                      }
+                    />
+                  </div>
+                </div>
+              )}
+
+              {meta.isIce && (
+                <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+                  <div className='space-y-2'>
+                    <label className={labelClasses}>Starting altitude (m)</label>
+                    <input
+                      type='number'
+                      className={inputClasses}
+                      value={data.startingAltitude ?? ''}
+                      onChange={(e) => setData((prev) => ({ ...prev, startingAltitude: e.target.value }))}
+                    />
+                  </div>
+                  <div className='space-y-2'>
+                    <label className={labelClasses}>Aspect</label>
+                    <input
+                      className={inputClasses}
+                      value={data.aspect ?? ''}
+                      onChange={(e) => setData((prev) => ({ ...prev, aspect: e.target.value }))}
+                    />
+                  </div>
+                  <div className='space-y-2'>
+                    <label className={labelClasses}>Descent</label>
+                    <input
+                      className={inputClasses}
+                      value={data.descent ?? ''}
+                      onChange={(e) => setData((prev) => ({ ...prev, descent: e.target.value }))}
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className='space-y-2'>
+                <label className={labelClasses}>Pitches</label>
+                <ProblemSection
+                  sections={data.sections ?? []}
+                  onSectionsUpdated={(sections) => setData((p) => ({ ...p, sections }))}
+                />
+              </div>
+            </div>
+          </Card>
+        )}
+
+        {/* ── Map ── */}
+        <Card>
+          <SectionHeader title='Map' icon={MapPin} />
+          <div className='relative z-0 h-[35vh] min-h-[220px] w-full overflow-hidden sm:h-[50vh]'>
+            <Leaflet
+              autoZoom={true}
+              markers={markers}
+              defaultCenter={defaultCenter}
+              defaultZoom={defaultZoom}
+              onMouseClick={(e) =>
+                setData((p) => ({
+                  ...p,
+                  coordinates: {
+                    ...p.coordinates,
+                    latitude: e.latlng.lat,
+                    longitude: e.latlng.lng,
+                  },
+                }))
+              }
+              height='100%'
+              showSatelliteImage={true}
+              clusterMarkers={false}
+            />
+          </div>
+          <div className='flex items-center gap-2 px-0 py-2 sm:gap-3 sm:px-0'>
+            <FormSwitch
+              checked={showSectorMarkers}
+              onChange={() => setShowSectorMarkers(!showSectorMarkers)}
+              variant='brand'
+              aria-label='Include sibling problems and routes on the map'
+            />
+            <span className='text-[12px] font-medium text-slate-300 sm:text-[13px]'>Include siblings</span>
+            <div className='ml-auto'>
               <button
                 type='button'
-                onClick={() =>
-                  problemId && problemId > 0 ? navigate(`/problem/${problemId}`) : navigate(`/sector/${sectorId}`)
-                }
-                className='form-footer-cancel'
+                onClick={() => setData((p) => ({ ...p, coordinates: undefined }))}
+                disabled={!hasProblemCoords}
+                title={hasProblemCoords ? 'Remove this problem\u2019s coordinates from the map' : undefined}
+                className={cn(
+                  designContract.typography.uiCompact,
+                  'inline-flex shrink-0 items-center gap-1 rounded-md border border-dashed border-orange-500/45 px-2 py-1 font-semibold tracking-wide text-orange-400 transition-colors',
+                  'dark:hover:bg-surface-hover hover:border-orange-400/75 dark:hover:text-orange-300',
+                  'light:border-orange-600/40 light:text-orange-700',
+                  'light:hover:bg-orange-500/14 light:hover:border-orange-600/60 light:hover:text-orange-950',
+                  'disabled:cursor-not-allowed disabled:opacity-40',
+                )}
               >
-                Cancel
-              </button>
-              {isNew && (
-                <button
-                  type='button'
-                  onClick={(e) => save(e, data).then((dest) => dest && navigate(0))}
-                  disabled={!canSave}
-                  className='form-footer-secondary disabled:opacity-50'
-                >
-                  Save &amp; add new
-                </button>
-              )}
-              <button
-                type='submit'
-                disabled={!canSave}
-                className='type-label flex items-center gap-2 rounded-lg bg-emerald-400 px-8 py-2.5 text-slate-950 shadow-lg shadow-emerald-900/30 transition-all hover:bg-emerald-300 disabled:opacity-50'
-              >
-                {saving ? <Loader2 className='animate-spin' size={16} /> : <Save size={16} />}
-                {meta.isBouldering ? 'Save problem' : 'Save route'}
+                <MapPinOff size={13} strokeWidth={2} aria-hidden />
+                Remove position
               </button>
             </div>
-          </form>
+          </div>
+          <div className='grid grid-cols-1 gap-4 px-0 pb-3 sm:grid-cols-2 sm:px-0 sm:pb-5'>
+            <div className='space-y-1'>
+              <label className={labelClasses}>Latitude</label>
+              <input
+                className={inputClasses}
+                inputMode='decimal'
+                placeholder='e.g. 59.123'
+                value={lat.text}
+                onChange={setCoordField('latitude')}
+              />
+            </div>
+            <div className='space-y-1'>
+              <label className={labelClasses}>Longitude</label>
+              <input
+                className={inputClasses}
+                inputMode='decimal'
+                placeholder='e.g. 10.456'
+                value={lng.text}
+                onChange={setCoordField('longitude')}
+              />
+            </div>
+          </div>
+        </Card>
+
+        {/* ── Media ── */}
+        <Card>
+          <SectionHeader title='Media' icon={Layers} />
+          <div className='p-3 sm:p-5'>
+            <MediaUpload
+              onMediaChanged={(media) => setData((p) => ({ ...p, newMedia: media }))}
+              isMultiPitch={!!(data.sections && data.sections.length > 1)}
+            />
+          </div>
+        </Card>
+
+        {/* ── Save / Cancel ── */}
+        <div className='flex items-center justify-end gap-3'>
+          <button
+            type='button'
+            onClick={() =>
+              problemId && problemId > 0 ? navigate(`/problem/${problemId}`) : navigate(`/sector/${sectorId}`)
+            }
+            className='form-footer-cancel'
+          >
+            Cancel
+          </button>
+          {isNew && (
+            <button
+              type='button'
+              onClick={(e) => save(e, data).then((dest) => dest && navigate(0))}
+              disabled={!canSave}
+              className='form-footer-secondary disabled:opacity-50'
+            >
+              Save & add new
+            </button>
+          )}
+          <button
+            type='submit'
+            form='problem-edit-form'
+            disabled={!canSave}
+            className='type-label flex items-center gap-2 rounded-lg bg-emerald-400 px-8 py-2.5 text-slate-950 shadow-lg shadow-emerald-900/30 transition-all hover:bg-emerald-300 disabled:opacity-50'
+          >
+            {saving ? <Loader2 className='animate-spin' size={16} /> : <Save size={16} />}
+            {meta.isBouldering ? 'Save problem' : 'Save route'}
+          </button>
         </div>
-      </Card>
+      </form>
     </div>
   );
 };

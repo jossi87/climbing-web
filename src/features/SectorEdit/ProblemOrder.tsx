@@ -15,7 +15,7 @@ export const ProblemOrder = ({ problemOrder, onChange }: Props) => {
   ).current;
 
   return (
-    <div className='space-y-3'>
+    <div className='space-y-1.5'>
       {problemOrder?.map(({ id, name, nr }) => {
         const isModified = nr !== originalOrder[id ?? TYPE_IMPOSSIBILITY];
 
@@ -24,10 +24,10 @@ export const ProblemOrder = ({ problemOrder, onChange }: Props) => {
             <div className='relative flex-1'>
               <Hash
                 className={cn(
-                  'absolute top-1/2 left-3 -translate-y-1/2 transition-colors',
+                  'absolute top-1/2 left-2.5 -translate-y-1/2 transition-colors',
                   isModified ? 'text-orange-500' : 'text-slate-500',
                 )}
-                size={14}
+                size={12}
               />
               <input
                 type='number'
@@ -35,7 +35,7 @@ export const ProblemOrder = ({ problemOrder, onChange }: Props) => {
                 defaultValue={nr}
                 placeholder='Number'
                 className={cn(
-                  'bg-surface-nav type-body w-full rounded-l-lg border py-2 pr-3 pl-9 transition-colors focus:outline-none',
+                  'bg-surface-nav w-full rounded-l-lg border py-1.5 pr-2.5 pl-8 text-[13px] transition-colors focus:outline-none',
                   isModified
                     ? 'border-orange-500/50 focus:border-orange-500'
                     : 'border-surface-border focus:border-brand',
@@ -58,7 +58,7 @@ export const ProblemOrder = ({ problemOrder, onChange }: Props) => {
             </div>
             <div
               className={cn(
-                'bg-surface-raised min-w-35 rounded-r-lg border border-l-0 px-4 py-2 text-xs font-bold transition-colors',
+                'bg-surface-raised min-w-28 rounded-r-lg border border-l-0 px-3 py-1.5 text-[12px] font-bold transition-colors',
                 isModified ? 'border-orange-500/50 text-orange-500' : 'border-surface-border text-slate-400',
               )}
             >

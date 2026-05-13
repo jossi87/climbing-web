@@ -50,23 +50,18 @@ const ExternalLinks = ({ externalLinks, onExternalLinksUpdated, hideLabel = fals
   );
 
   const inputClasses =
-    'w-full bg-surface-nav border border-surface-border rounded-lg px-9 py-1.5 text-xs text-white transition-colors focus:border-brand-border focus:outline-none focus:ring-0 focus-visible:ring-0';
+    'w-full bg-surface-nav border border-surface-border rounded-lg px-9 py-2.5 text-sm text-white transition-colors focus:border-brand focus:outline-none';
   const labelClasses = 'ml-1 mb-1 block';
 
   return (
-    <div
-      className={cn(
-        'bg-surface-card border-surface-border space-y-4 rounded-xl border p-4 shadow-sm',
-        mobileFlat && 'rounded-none border-0 p-0 shadow-none sm:rounded-xl sm:p-4 sm:shadow-sm',
-      )}
-    >
+    <div className={cn(mobileFlat && 'rounded-none border-0 p-0 shadow-none')}>
       <div className='flex items-center gap-2'>
         {!hideLabel && <label className={`${labelClasses} ${designContract.typography.label}`}>External Links</label>}
-        <div className='relative mb-1 inline-block'>
+        <div className='relative inline-block'>
           <select
             value={links.length}
             onChange={onNumberOfExternalLinksChange}
-            className='type-label border-surface-border bg-surface-nav focus:border-brand-border cursor-pointer appearance-none rounded-lg border py-1 pr-7 pl-2.5 text-slate-200 transition-colors focus:ring-0 focus:outline-none focus-visible:ring-0'
+            className='type-label border-surface-border bg-surface-nav focus:border-brand cursor-pointer appearance-none rounded-lg border py-2 pr-7 pl-2.5 text-sm text-slate-200 transition-colors focus:outline-none'
           >
             <option value={0} className='bg-surface-card'>
               No external links
@@ -95,12 +90,9 @@ const ExternalLinks = ({ externalLinks, onExternalLinksUpdated, hideLabel = fals
       </div>
 
       {links.length > 0 && (
-        <div className='space-y-3'>
+        <div className='space-y-3 pt-3'>
           {links.map((l, index) => (
-            <div
-              key={index}
-              className='border-surface-border/50 grid grid-cols-1 gap-3 border-b pb-3 last:border-0 last:pb-0 sm:grid-cols-2'
-            >
+            <div key={index} className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
               <div className='relative'>
                 <Link className='absolute top-1/2 left-3 -translate-y-1/2 text-slate-500' size={14} />
                 <input

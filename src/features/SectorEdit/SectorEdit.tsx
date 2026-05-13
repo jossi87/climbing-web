@@ -16,20 +16,7 @@ import { PolylineMarkers } from './PolylineMarkers';
 import { captureSentryException } from '../../utils/sentry';
 import { hours } from '../../utils/hours';
 import ExternalLink from '../../shared/ui/ExternalLinks';
-import {
-  Info,
-  Edit,
-  MapPin,
-  AlertTriangle,
-  Layers,
-  Route,
-  ArrowDownCircle,
-  RotateCcw,
-  Save,
-  Loader2,
-  Plus,
-  Copy,
-} from 'lucide-react';
+import { Info, Edit, MapPin, AlertTriangle, Layers, Hash, RotateCcw, Save, Loader2, Plus, Copy } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 import { Card, FormSwitch, MarkdownFieldLabel, NotFoundCard, SectionHeader } from '../../shared/ui';
@@ -457,7 +444,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
               )
             }
           />
-          <div className='space-y-4 p-4 sm:p-5'>
+          <div className='space-y-4 p-3 sm:p-5'>
             <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
               <div className='space-y-2 md:col-span-2 lg:col-span-1'>
                 <label className={labelClasses}>Sector name</label>
@@ -590,7 +577,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
             </div>
 
             {/* ── External links (inside basic info) ── */}
-            <div className='border-surface-border border-t pt-4'>
+            <div>
               <ExternalLink
                 externalLinks={data.externalLinks?.filter((l) => !l.inherited) || []}
                 onExternalLinksUpdated={onExternalLinksUpdated}
@@ -604,87 +591,89 @@ export const SectorEdit = ({ sector, area }: Props) => {
         {/* ── Map ── */}
         <Card>
           <SectionHeader title='Map' icon={MapPin} />
-          <div className='space-y-4 p-4 sm:p-5'>
-            <div
-              className='border-surface-border bg-surface-card -mx-4 -mt-4 flex flex-wrap items-stretch gap-0.5 border-b px-4 py-2.5 sm:-mx-5 sm:-mt-5 sm:px-5'
-              role='group'
-              aria-label='Map drawing mode'
-            >
-              {[
-                { id: 'PARKING', label: 'Parking', icon: MapPin },
-                { id: 'POLYGON', label: 'Outline', icon: Layers },
-                { id: 'APPROACH', label: 'Approach', icon: Route },
-                { id: 'DESCENT', label: 'Descent', icon: ArrowDownCircle },
-              ].map((m) => (
-                <button
-                  key={m.id}
-                  type='button'
-                  onClick={() => setLeafletMode(m.id)}
-                  className={cn(
-                    designContract.typography.uiCompact,
-                    'inline-flex min-h-9 items-center justify-center gap-1.5 rounded-md px-3 py-1.5 tracking-wide transition-colors',
-                    leafletMode === m.id
-                      ? designContract.surfaces.segmentActiveBrandBorder
-                      : designContract.surfaces.segmentIdleRaised,
-                  )}
-                >
-                  <m.icon size={14} strokeWidth={2} className='shrink-0 opacity-80' aria-hidden />
-                  <span className='min-w-0 whitespace-nowrap'>{m.label}</span>
-                </button>
-              ))}
+          {/* Toolbar */}
+          <div
+            className='border-surface-border bg-surface-card flex flex-wrap items-stretch gap-0.5 border-b px-0 py-1.5 sm:px-0 sm:py-2.5'
+            role='group'
+            aria-label='Map drawing mode'
+          >
+            {[
+              { id: 'PARKING', label: 'Parking', hasData: !!(data.parking?.latitude && data.parking?.longitude) },
+              { id: 'POLYGON', label: 'Outline', hasData: !!data.outline?.length },
+              { id: 'APPROACH', label: 'Approach', hasData: !!data.approach?.coordinates?.length },
+              { id: 'DESCENT', label: 'Descent', hasData: !!data.descent?.coordinates?.length },
+            ].map((m) => (
               <button
+                key={m.id}
                 type='button'
-                onClick={clearDrawing}
-                className='border-surface-border hover:bg-surface-hover inline-flex min-h-9 items-center justify-center gap-1.5 rounded-md border border-dashed px-3 py-1.5 text-[12px] font-semibold tracking-wide text-orange-400 transition-colors hover:text-orange-300'
+                onClick={() => setLeafletMode(m.id)}
+                className={cn(
+                  designContract.typography.uiCompact,
+                  'inline-flex min-h-7 items-center justify-center rounded-md px-1.5 py-0.5 text-[11px] tracking-wide transition-colors sm:min-h-9 sm:px-3 sm:py-1.5 sm:text-[12px]',
+                  leafletMode === m.id
+                    ? designContract.surfaces.segmentActiveBrandBorder
+                    : designContract.surfaces.segmentIdleRaised,
+                )}
               >
-                <RotateCcw size={14} strokeWidth={2} aria-hidden /> Reset
+                {m.label}
+                {m.hasData ? '*' : ''}
               </button>
-            </div>
+            ))}
+            <button
+              type='button'
+              onClick={clearDrawing}
+              className='border-surface-border hover:bg-surface-hover inline-flex min-h-7 items-center justify-center gap-0.5 rounded-md border border-dashed px-1.5 py-0.5 text-[11px] font-semibold tracking-wide text-orange-400 transition-colors hover:text-orange-300 sm:min-h-9 sm:gap-1.5 sm:px-3 sm:py-1.5 sm:text-[12px]'
+            >
+              <RotateCcw size={12} strokeWidth={2} aria-hidden /> Reset
+            </button>
+          </div>
 
-            <div className='-mx-4 sm:-mx-5'>
-              <Leaflet
-                markers={markers}
-                outlines={outlines}
-                slopes={slopes}
-                defaultCenter={defaultCenter}
-                defaultZoom={defaultZoom}
-                onMouseClick={onMapMouseClick}
-                onMouseMove={onMouseMove}
-                height={'300px'}
-                showSatelliteImage={meta.isBouldering}
-                clusterMarkers={false}
-                rocks={undefined}
-                flyToId={null}
-              >
-                <ZoomLogic area={area} sector={data} />
-                {leafletMode === 'POLYGON' && <PolylineMarkers coordinates={data.outline ?? []} />}
-                {leafletMode === 'APPROACH' && <PolylineMarkers coordinates={data.approach?.coordinates ?? []} />}
-                {leafletMode === 'DESCENT' && <PolylineMarkers coordinates={data.descent?.coordinates ?? []} />}
-              </Leaflet>
-            </div>
+          {/* Map */}
+          <div className='relative z-0 h-[35vh] min-h-[220px] w-full overflow-hidden sm:h-[50vh]'>
+            <Leaflet
+              markers={markers}
+              outlines={outlines}
+              slopes={slopes}
+              defaultCenter={defaultCenter}
+              defaultZoom={defaultZoom}
+              onMouseClick={onMapMouseClick}
+              onMouseMove={onMouseMove}
+              height='100%'
+              showSatelliteImage={meta.isBouldering}
+              clusterMarkers={false}
+              rocks={undefined}
+              flyToId={null}
+            >
+              <ZoomLogic area={area} sector={data} />
+              {leafletMode === 'POLYGON' && <PolylineMarkers coordinates={data.outline ?? []} />}
+              {leafletMode === 'APPROACH' && <PolylineMarkers coordinates={data.approach?.coordinates ?? []} />}
+              {leafletMode === 'DESCENT' && <PolylineMarkers coordinates={data.descent?.coordinates ?? []} />}
+            </Leaflet>
+          </div>
 
-            <div className='flex items-center gap-3'>
-              <FormSwitch
-                checked={sectorMarkers !== null}
-                onChange={() => {
-                  if (sectorMarkers === null) {
-                    setSectorMarkers(
-                      data.problems
-                        ?.filter((p): p is Required<Pick<typeof p, 'coordinates' | 'name'>> => !!p.coordinates)
-                        .map((p) => ({ coordinates: p.coordinates, label: p.name })) ?? [],
-                    );
-                  } else {
-                    setSectorMarkers(null);
-                  }
-                }}
-                variant='brand'
-                aria-label='Include all markers in sector'
-              />
-              <span className='text-[12px] font-medium text-slate-300 sm:text-[13px]'>
-                Include all markers in sector
-              </span>
-            </div>
+          {/* Include all markers */}
+          <div className='flex items-center gap-2 px-0 py-2 sm:gap-3 sm:px-0'>
+            <FormSwitch
+              checked={sectorMarkers !== null}
+              onChange={() => {
+                if (sectorMarkers === null) {
+                  setSectorMarkers(
+                    data.problems
+                      ?.filter((p): p is Required<Pick<typeof p, 'coordinates' | 'name'>> => !!p.coordinates)
+                      .map((p) => ({ coordinates: p.coordinates, label: p.name })) ?? [],
+                  );
+                } else {
+                  setSectorMarkers(null);
+                }
+              }}
+              variant='brand'
+              aria-label='Include all markers in sector'
+            />
+            <span className='text-[12px] font-medium text-slate-300 sm:text-[13px]'>Include all markers in sector</span>
+          </div>
 
+          {/* Lat/lng or polyline editor */}
+          <div className='px-0 pb-3 sm:px-0 sm:pb-5'>
             {leafletMode === 'PARKING' && (
               <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
                 <div className='space-y-1'>
@@ -756,7 +745,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
                         key={n.id}
                         type='button'
                         onClick={() => loadFromNeighbour('DESCENT', n)}
-                        className='inline-flex items-center gap-1 rounded-md border border-purple-700/40 bg-purple-950/30 px-2.5 py-1 text-[11px] font-semibold text-purple-400 transition-colors hover:bg-purple-900/40'
+                        className='inline-flex items-center gap-1 rounded-md border border-purple-700/40 bg-purple-950/30 px-2.5 py-1 text-[11px] font-semibold text-purple-400 transition-colors hover:bg-purple-950/40'
                         title={`Copy descent from ${n.name}`}
                       >
                         <Copy size={11} strokeWidth={2} />
@@ -773,7 +762,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
         {/* ── Media ── */}
         <Card>
           <SectionHeader title='Media' icon={Layers} />
-          <div className='p-4 sm:p-5'>
+          <div className='p-3 sm:p-5'>
             <MediaUpload onMediaChanged={onNewMediaChanged} isMultiPitch={false} />
           </div>
         </Card>
@@ -781,8 +770,8 @@ export const SectorEdit = ({ sector, area }: Props) => {
         {/* ── Problem order ── */}
         {data.problemOrder && data.problemOrder.length > 1 && (
           <Card>
-            <SectionHeader title='Problem order' icon={Route} />
-            <div className='p-4 sm:p-5'>
+            <SectionHeader title='Problem order' icon={Hash} />
+            <div className='p-3 sm:p-5'>
               <ProblemOrder
                 problemOrder={data.problemOrder}
                 onChange={(problemOrder) => setData((prev) => ({ ...prev, problemOrder }))}
