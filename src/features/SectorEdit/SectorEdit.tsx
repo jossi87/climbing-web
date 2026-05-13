@@ -21,8 +21,6 @@ import {
   Edit,
   MapPin,
   AlertTriangle,
-  ChevronDown,
-  ChevronRight,
   Layers,
   Route,
   ArrowDownCircle,
@@ -30,6 +28,7 @@ import {
   Save,
   Loader2,
   Plus,
+  Copy,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
@@ -106,11 +105,10 @@ export const SectorEdit = ({ sector, area }: Props) => {
   const accessToken = useAccessToken();
   const { areaId, sectorId } = useIds();
   const [leafletMode, setLeafletMode] = useState('PARKING');
-  const { elevation, setLocation } = useElevation();
+  const { setLocation } = useElevation();
 
   const [data, setData] = useState<Sector>(sector);
 
-  const [showProblemOrder, setShowProblemOrder] = useState(false);
   /** `null` = do not show problem markers; array (possibly empty) = include-all mode is on. */
   const [sectorMarkers, setSectorMarkers] = useState<ComponentProps<typeof Leaflet>['markers'] | null>(null);
 
@@ -346,31 +344,51 @@ export const SectorEdit = ({ sector, area }: Props) => {
     }));
   };
 
+  /** Neighbour sectors (excluding the current one) that have approach/descent data. */
+  const neighbourSectors = (area.sectors ?? []).filter((s) => s.id !== data.id);
+  const neighboursWithApproach = neighbourSectors.filter((s) => (s.approach?.coordinates?.length ?? 0) >= 2);
+  const neighboursWithDescent = neighbourSectors.filter((s) => (s.descent?.coordinates?.length ?? 0) >= 2);
+
+  /**
+   * Load approach or descent from a neighbour sector, replacing the current data.
+   */
+  const loadFromNeighbour = useCallback(
+    (type: 'APPROACH' | 'DESCENT', neighbour: (typeof neighbourSectors)[number]) => {
+      const slope = type === 'APPROACH' ? neighbour.approach : neighbour.descent;
+      const coords = slope?.coordinates;
+      if (!coords?.length) return;
+      if (type === 'APPROACH') {
+        setData((prev) => ({ ...prev, approach: { coordinates: [...coords] } }));
+      } else {
+        setData((prev) => ({ ...prev, descent: { coordinates: [...coords] } }));
+      }
+    },
+    [],
+  );
+
   const outlines: ComponentProps<typeof Leaflet>['outlines'] = [];
   const slopes: ComponentProps<typeof Leaflet>['slopes'] = [];
-  area.sectors?.forEach((s) => {
-    if (s.id !== data.id) {
-      if (s.outline?.length) {
-        outlines.push({
-          outline: s.outline,
-          background: true,
-          label: s.name,
-        });
-      }
-      if (s.approach?.coordinates?.length) {
-        slopes.push({
-          slope: s.approach,
-          backgroundColor: SLOPE_APPROACH_COLOR,
-          background: true,
-        });
-      }
-      if (s.descent?.coordinates?.length) {
-        slopes.push({
-          slope: s.descent,
-          backgroundColor: SLOPE_DESCENT_COLOR,
-          background: true,
-        });
-      }
+  neighbourSectors.forEach((s) => {
+    if (s.outline?.length) {
+      outlines.push({
+        outline: s.outline,
+        background: true,
+        label: s.name,
+      });
+    }
+    if (s.approach?.coordinates?.length) {
+      slopes.push({
+        slope: s.approach,
+        backgroundColor: SLOPE_APPROACH_COLOR,
+        background: true,
+      });
+    }
+    if (s.descent?.coordinates?.length) {
+      slopes.push({
+        slope: s.descent,
+        backgroundColor: SLOPE_DESCENT_COLOR,
+        background: true,
+      });
     }
   });
 
@@ -420,8 +438,10 @@ export const SectorEdit = ({ sector, area }: Props) => {
   return (
     <div className='w-full min-w-0 pb-20'>
       <title>{`${isNew ? 'Add sector' : `Edit ${data.name}`} | ${meta?.title}`}</title>
-      <Card flush className='min-w-0 border-0'>
-        <div className='p-4 sm:p-5'>
+
+      <form onSubmit={save} className='mt-6 space-y-6'>
+        {/* ── Basic info ── */}
+        <Card>
           <SectionHeader
             title={headerTitle}
             icon={isNew ? Plus : Edit}
@@ -437,331 +457,359 @@ export const SectorEdit = ({ sector, area }: Props) => {
               )
             }
           />
-          <form onSubmit={save} className='mt-3 space-y-3'>
-            <div className='space-y-4'>
-              <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
-                <div className='space-y-2 md:col-span-2 lg:col-span-1'>
-                  <label className={labelClasses}>Sector name</label>
-                  <input
-                    className={cn(inputClasses, !data.name && 'border-red-500/50')}
-                    value={data.name ?? ''}
-                    onChange={(e) => onNameChanged(dummyEvent, { value: e.target.value })}
-                  />
-                  {!data.name && <p className='ml-1 text-[11px] font-bold text-red-500'>Sector name required</p>}
-                </div>
-
-                {meta.isClimbing && (
-                  <div className='space-y-2'>
-                    <label className={labelClasses}>Wall Direction</label>
-                    <select
-                      className={inputClasses}
-                      value={data.wallDirectionManual?.id || 0}
-                      onChange={(e) => onWallDirectionManualIdChanged(dummyEvent, { value: e.target.value })}
-                    >
-                      <option value={0}>
-                        {data.wallDirectionCalculated
-                          ? `${data.wallDirectionCalculated.direction} (calculated)`
-                          : '<calculate from outline>'}
-                      </option>
-                      {meta.compassDirections.map((cd) => (
-                        <option key={cd.id} value={cd.id}>
-                          {cd.direction}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-
-                <VisibilitySelectorField
-                  value={{ lockedAdmin: !!data.lockedAdmin, lockedSuperadmin: !!data.lockedSuperadmin }}
-                  onChange={onLockedChanged}
+          <div className='space-y-4 p-4 sm:p-5'>
+            <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
+              <div className='space-y-2 md:col-span-2 lg:col-span-1'>
+                <label className={labelClasses}>Sector name</label>
+                <input
+                  className={cn(inputClasses, !data.name && 'border-red-500/50')}
+                  value={data.name ?? ''}
+                  onChange={(e) => onNameChanged(dummyEvent, { value: e.target.value })}
                 />
-
-                <div className='space-y-2'>
-                  <label className={labelClasses}>Move to trash</label>
-                  <FormSwitch
-                    checked={!!data.trash}
-                    onChange={() => setData((p) => ({ ...p, trash: !p.trash }))}
-                    disabled={!data.id || data.id <= 0}
-                    variant='danger'
-                    aria-label='Move to trash'
-                  />
-                </div>
+                {!data.name && <p className='ml-1 text-[11px] font-bold text-red-500'>Sector name required</p>}
               </div>
 
               {meta.isClimbing && (
-                <div className='grid grid-cols-2 gap-4'>
-                  <div className='space-y-2'>
-                    <label className={labelClasses}>Sun from hour</label>
-                    <select
-                      className={inputClasses}
-                      value={data.sunFromHour || ''}
-                      onChange={(e) => onSunFromHourChanged(dummyEvent, { value: e.target.value })}
-                    >
-                      <option value=''>Empty</option>
-                      {hours
-                        .filter((h) => h.value > 0)
-                        .map((h) => (
-                          <option key={h.key} value={h.value}>
-                            {h.text}
-                          </option>
-                        ))}
-                    </select>
-                  </div>
-                  <div className='space-y-2'>
-                    <label className={labelClasses}>Sun to hour</label>
-                    <select
-                      className={inputClasses}
-                      value={data.sunToHour || ''}
-                      onChange={(e) => onSunToHourChanged(dummyEvent, { value: e.target.value })}
-                    >
-                      <option value=''>Empty</option>
-                      {hours
-                        .filter((h) => h.value > 0)
-                        .map((h) => (
-                          <option key={h.key} value={h.value}>
-                            {h.text}
-                          </option>
-                        ))}
-                    </select>
-                  </div>
+                <div className='space-y-2'>
+                  <label className={labelClasses}>Wall Direction</label>
+                  <select
+                    className={inputClasses}
+                    value={data.wallDirectionManual?.id || 0}
+                    onChange={(e) => onWallDirectionManualIdChanged(dummyEvent, { value: e.target.value })}
+                  >
+                    <option value={0}>
+                      {data.wallDirectionCalculated
+                        ? `${data.wallDirectionCalculated.direction} (calculated)`
+                        : '<calculate from outline>'}
+                    </option>
+                    {meta.compassDirections.map((cd) => (
+                      <option key={cd.id} value={cd.id}>
+                        {cd.direction}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               )}
 
+              <VisibilitySelectorField
+                value={{ lockedAdmin: !!data.lockedAdmin, lockedSuperadmin: !!data.lockedSuperadmin }}
+                onChange={onLockedChanged}
+              />
+
               <div className='space-y-2'>
-                <MarkdownFieldLabel className={labelClasses}>Description</MarkdownFieldLabel>
-                <textarea
-                  className={cn(inputClasses, 'min-h-30 resize-none')}
-                  value={data.comment ?? ''}
-                  onChange={(e) => onCommentChanged(dummyEvent, { value: e.target.value })}
+                <label className={labelClasses}>Move to trash</label>
+                <FormSwitch
+                  checked={!!data.trash}
+                  onChange={() => setData((p) => ({ ...p, trash: !p.trash }))}
+                  disabled={!data.id || data.id <= 0}
+                  variant='danger'
+                  aria-label='Move to trash'
                 />
               </div>
-
-              <div className='space-y-4'>
-                <div className='relative'>
-                  <input
-                    className={cn(
-                      inputClasses,
-                      'border-red-500/25 pl-10 focus:border-red-400/45 focus:ring-1 focus:ring-red-400/15',
-                    )}
-                    placeholder='Sector closed reason...'
-                    value={data.accessClosed ?? ''}
-                    onChange={(e) => onAccessClosedChanged(dummyEvent, { value: e.target.value })}
-                  />
-                  <AlertTriangle className='absolute top-1/2 left-3 -translate-y-1/2 text-red-400/90' size={14} />
-                  <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[11px] font-black tracking-tighter text-red-300/90 uppercase'>
-                    Sector Closed
-                  </span>
-                </div>
-                <div className='relative'>
-                  <input
-                    className={cn(
-                      inputClasses,
-                      'border-orange-500/25 pl-10 focus:border-orange-400/45 focus:ring-1 focus:ring-orange-400/15',
-                    )}
-                    placeholder='Sector restrictions...'
-                    value={data.accessInfo ?? ''}
-                    onChange={(e) => onAccessInfoChanged(dummyEvent, { value: e.target.value })}
-                  />
-                  <Info className='absolute top-1/2 left-3 -translate-y-1/2 text-orange-400/90' size={14} />
-                  <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[11px] font-black tracking-tighter text-orange-300/90 uppercase'>
-                    Restrictions
-                  </span>
-                </div>
-              </div>
             </div>
 
-            <ExternalLink
-              externalLinks={data.externalLinks?.filter((l) => !l.inherited) || []}
-              onExternalLinksUpdated={onExternalLinksUpdated}
-              hideLabel
-              mobileFlat
-            />
-
-            <div className='space-y-4'>
-              <label className={labelClasses}>Add media</label>
-              <MediaUpload onMediaChanged={onNewMediaChanged} isMultiPitch={false} />
-            </div>
-
-            <div className='space-y-4'>
-              <div className='space-y-2'>
-                <label className={labelClasses}>Sector map</label>
-                <div className='border-surface-border bg-surface-raised overflow-hidden rounded-lg border'>
-                  <div
-                    className='border-surface-border bg-surface-card border-b px-3 py-2.5'
-                    role='group'
-                    aria-label='Map drawing mode'
-                  >
-                    <div className='max-sm:grid max-sm:grid-cols-2 max-sm:gap-1.5 sm:flex sm:flex-wrap sm:items-stretch sm:gap-0.5'>
-                      {[
-                        { id: 'PARKING', label: 'Parking', icon: MapPin },
-                        { id: 'POLYGON', label: 'Outline', icon: Layers },
-                        { id: 'APPROACH', label: 'Approach', icon: Route },
-                        { id: 'DESCENT', label: 'Descent', icon: ArrowDownCircle },
-                      ].map((m) => (
-                        <button
-                          key={m.id}
-                          type='button'
-                          onClick={() => setLeafletMode(m.id)}
-                          className={cn(
-                            designContract.typography.uiCompact,
-                            'inline-flex min-h-10 w-full items-center justify-center gap-1.5 rounded-md px-2 py-2 tracking-wide transition-colors sm:min-h-9 sm:w-auto sm:justify-start sm:rounded-lg sm:px-3',
-                            leafletMode === m.id
-                              ? designContract.surfaces.segmentActiveBrandBorder
-                              : designContract.surfaces.segmentIdleRaised,
-                          )}
-                        >
-                          <m.icon size={14} strokeWidth={2} className='shrink-0 opacity-80' aria-hidden />
-                          <span className='min-w-0 whitespace-nowrap'>{m.label}</span>
-                        </button>
-                      ))}
-                      <button
-                        type='button'
-                        onClick={clearDrawing}
-                        className='border-surface-border hover:bg-surface-hover inline-flex min-h-10 w-full items-center justify-center gap-1.5 rounded-md border border-dashed px-2 py-2 text-[12px] font-semibold tracking-wide text-orange-400 transition-colors hover:text-orange-300 max-sm:col-span-2 sm:ml-0.5 sm:w-auto sm:border-0 sm:border-l sm:border-solid sm:pl-3'
-                      >
-                        <RotateCcw size={14} strokeWidth={2} aria-hidden /> Reset
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className='border-surface-border relative overflow-hidden border-b'>
-                    <Leaflet
-                      markers={markers}
-                      outlines={outlines}
-                      slopes={slopes}
-                      defaultCenter={defaultCenter}
-                      defaultZoom={defaultZoom}
-                      onMouseClick={onMapMouseClick}
-                      onMouseMove={onMouseMove}
-                      height={'300px'}
-                      showSatelliteImage={meta.isBouldering}
-                      clusterMarkers={false}
-                      rocks={undefined}
-                      flyToId={null}
-                    >
-                      <ZoomLogic area={area} sector={data} />
-                      {leafletMode === 'POLYGON' && <PolylineMarkers coordinates={data.outline ?? []} />}
-                      {leafletMode === 'APPROACH' && <PolylineMarkers coordinates={data.approach?.coordinates ?? []} />}
-                      {leafletMode === 'DESCENT' && <PolylineMarkers coordinates={data.descent?.coordinates ?? []} />}
-                    </Leaflet>
-                  </div>
-
-                  <div className='border-surface-border bg-surface-card relative z-10 flex items-center gap-3 border-t px-3 py-2.5'>
-                    <FormSwitch
-                      checked={sectorMarkers !== null}
-                      onChange={() => {
-                        if (sectorMarkers === null) {
-                          setSectorMarkers(
-                            data.problems
-                              ?.filter((p): p is Required<Pick<typeof p, 'coordinates' | 'name'>> => !!p.coordinates)
-                              .map((p) => ({ coordinates: p.coordinates, label: p.name })) ?? [],
-                          );
-                        } else {
-                          setSectorMarkers(null);
-                        }
-                      }}
-                      variant='brand'
-                      aria-label='Include all markers in sector'
-                    />
-                    <span className='text-[12px] font-medium text-slate-300 sm:text-[13px]'>
-                      Include all markers in sector
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {leafletMode === 'PARKING' && (
-                <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-                  <div className='space-y-1'>
-                    <label className={labelClasses}>Latitude</label>
-                    <input
-                      className={inputClasses}
-                      inputMode='decimal'
-                      placeholder='e.g. 59.123'
-                      value={lat.text}
-                      onChange={onLatChanged}
-                    />
-                  </div>
-                  <div className='space-y-1'>
-                    <label className={labelClasses}>Longitude</label>
-                    <input
-                      className={inputClasses}
-                      inputMode='decimal'
-                      placeholder='e.g. 10.456'
-                      value={lng.text}
-                      onChange={onLngChanged}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {['POLYGON', 'APPROACH', 'DESCENT'].includes(leafletMode) && (
+            {meta.isClimbing && (
+              <div className='grid grid-cols-2 gap-4'>
                 <div className='space-y-2'>
-                  <label className={labelClasses}>{['Outline', elevation].filter(Boolean).join(' ')}</label>
-                  <PolylineEditor
-                    coordinates={
-                      leafletMode === 'POLYGON'
-                        ? (data.outline ?? [])
-                        : leafletMode === 'APPROACH'
-                          ? (data.approach?.coordinates ?? [])
-                          : (data.descent?.coordinates ?? [])
-                    }
-                    parking={data.parking ?? {}}
-                    onChange={(coordinates) => {
-                      if (leafletMode === 'POLYGON') setData((prev) => ({ ...prev, outline: coordinates }));
-                      else if (leafletMode === 'APPROACH') setData((prev) => ({ ...prev, approach: { coordinates } }));
-                      else if (leafletMode === 'DESCENT') setData((prev) => ({ ...prev, descent: { coordinates } }));
-                    }}
-                    upload={leafletMode !== 'POLYGON'}
-                  />
+                  <label className={labelClasses}>Sun from hour</label>
+                  <select
+                    className={inputClasses}
+                    value={data.sunFromHour || ''}
+                    onChange={(e) => onSunFromHourChanged(dummyEvent, { value: e.target.value })}
+                  >
+                    <option value=''>Empty</option>
+                    {hours
+                      .filter((h) => h.value > 0)
+                      .map((h) => (
+                        <option key={h.key} value={h.value}>
+                          {h.text}
+                        </option>
+                      ))}
+                  </select>
                 </div>
-              )}
+                <div className='space-y-2'>
+                  <label className={labelClasses}>Sun to hour</label>
+                  <select
+                    className={inputClasses}
+                    value={data.sunToHour || ''}
+                    onChange={(e) => onSunToHourChanged(dummyEvent, { value: e.target.value })}
+                  >
+                    <option value=''>Empty</option>
+                    {hours
+                      .filter((h) => h.value > 0)
+                      .map((h) => (
+                        <option key={h.key} value={h.value}>
+                          {h.text}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              </div>
+            )}
+
+            <div className='space-y-2'>
+              <MarkdownFieldLabel className={labelClasses}>Description</MarkdownFieldLabel>
+              <textarea
+                className={cn(inputClasses, 'min-h-30 resize-none')}
+                value={data.comment ?? ''}
+                onChange={(e) => onCommentChanged(dummyEvent, { value: e.target.value })}
+              />
             </div>
 
-            {data.problemOrder && data.problemOrder.length > 1 && (
-              <div>
+            <div className='space-y-4'>
+              <div className='relative'>
+                <input
+                  className={cn(
+                    inputClasses,
+                    'border-red-500/25 pl-10 focus:border-red-400/45 focus:ring-1 focus:ring-red-400/15',
+                  )}
+                  placeholder='Sector closed reason...'
+                  value={data.accessClosed ?? ''}
+                  onChange={(e) => onAccessClosedChanged(dummyEvent, { value: e.target.value })}
+                />
+                <AlertTriangle className='absolute top-1/2 left-3 -translate-y-1/2 text-red-400/90' size={14} />
+                <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[11px] font-black tracking-tighter text-red-300/90 uppercase'>
+                  Sector Closed
+                </span>
+              </div>
+              <div className='relative'>
+                <input
+                  className={cn(
+                    inputClasses,
+                    'border-orange-500/25 pl-10 focus:border-orange-400/45 focus:ring-1 focus:ring-orange-400/15',
+                  )}
+                  placeholder='Sector restrictions...'
+                  value={data.accessInfo ?? ''}
+                  onChange={(e) => onAccessInfoChanged(dummyEvent, { value: e.target.value })}
+                />
+                <Info className='absolute top-1/2 left-3 -translate-y-1/2 text-orange-400/90' size={14} />
+                <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[11px] font-black tracking-tighter text-orange-300/90 uppercase'>
+                  Restrictions
+                </span>
+              </div>
+            </div>
+
+            {/* ── External links (inside basic info) ── */}
+            <div className='border-surface-border border-t pt-4'>
+              <ExternalLink
+                externalLinks={data.externalLinks?.filter((l) => !l.inherited) || []}
+                onExternalLinksUpdated={onExternalLinksUpdated}
+                hideLabel
+                mobileFlat
+              />
+            </div>
+          </div>
+        </Card>
+
+        {/* ── Map ── */}
+        <Card>
+          <SectionHeader title='Map' icon={MapPin} />
+          <div className='space-y-4 p-4 sm:p-5'>
+            <div
+              className='border-surface-border bg-surface-card -mx-4 -mt-4 flex flex-wrap items-stretch gap-0.5 border-b px-4 py-2.5 sm:-mx-5 sm:-mt-5 sm:px-5'
+              role='group'
+              aria-label='Map drawing mode'
+            >
+              {[
+                { id: 'PARKING', label: 'Parking', icon: MapPin },
+                { id: 'POLYGON', label: 'Outline', icon: Layers },
+                { id: 'APPROACH', label: 'Approach', icon: Route },
+                { id: 'DESCENT', label: 'Descent', icon: ArrowDownCircle },
+              ].map((m) => (
                 <button
+                  key={m.id}
                   type='button'
-                  onClick={() => setShowProblemOrder(!showProblemOrder)}
-                  className='bg-surface-card type-label flex w-full items-center justify-between rounded-lg p-3 sm:p-4'
+                  onClick={() => setLeafletMode(m.id)}
+                  className={cn(
+                    designContract.typography.uiCompact,
+                    'inline-flex min-h-9 items-center justify-center gap-1.5 rounded-md px-3 py-1.5 tracking-wide transition-colors',
+                    leafletMode === m.id
+                      ? designContract.surfaces.segmentActiveBrandBorder
+                      : designContract.surfaces.segmentIdleRaised,
+                  )}
                 >
-                  <span className='flex items-center gap-2'>
-                    <Route size={14} className='text-brand' /> Change order of problems in sector
-                  </span>
-                  {showProblemOrder ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                  <m.icon size={14} strokeWidth={2} className='shrink-0 opacity-80' aria-hidden />
+                  <span className='min-w-0 whitespace-nowrap'>{m.label}</span>
                 </button>
-                {showProblemOrder && (
-                  <div className='animate-in fade-in slide-in-from-top-2 space-y-3 p-3 pt-0 duration-200 sm:p-4 sm:pt-0'>
-                    <ProblemOrder
-                      problemOrder={data.problemOrder}
-                      onChange={(problemOrder) => setData((prev) => ({ ...prev, problemOrder }))}
-                    />
+              ))}
+              <button
+                type='button'
+                onClick={clearDrawing}
+                className='border-surface-border hover:bg-surface-hover inline-flex min-h-9 items-center justify-center gap-1.5 rounded-md border border-dashed px-3 py-1.5 text-[12px] font-semibold tracking-wide text-orange-400 transition-colors hover:text-orange-300'
+              >
+                <RotateCcw size={14} strokeWidth={2} aria-hidden /> Reset
+              </button>
+            </div>
+
+            <div className='-mx-4 sm:-mx-5'>
+              <Leaflet
+                markers={markers}
+                outlines={outlines}
+                slopes={slopes}
+                defaultCenter={defaultCenter}
+                defaultZoom={defaultZoom}
+                onMouseClick={onMapMouseClick}
+                onMouseMove={onMouseMove}
+                height={'300px'}
+                showSatelliteImage={meta.isBouldering}
+                clusterMarkers={false}
+                rocks={undefined}
+                flyToId={null}
+              >
+                <ZoomLogic area={area} sector={data} />
+                {leafletMode === 'POLYGON' && <PolylineMarkers coordinates={data.outline ?? []} />}
+                {leafletMode === 'APPROACH' && <PolylineMarkers coordinates={data.approach?.coordinates ?? []} />}
+                {leafletMode === 'DESCENT' && <PolylineMarkers coordinates={data.descent?.coordinates ?? []} />}
+              </Leaflet>
+            </div>
+
+            <div className='flex items-center gap-3'>
+              <FormSwitch
+                checked={sectorMarkers !== null}
+                onChange={() => {
+                  if (sectorMarkers === null) {
+                    setSectorMarkers(
+                      data.problems
+                        ?.filter((p): p is Required<Pick<typeof p, 'coordinates' | 'name'>> => !!p.coordinates)
+                        .map((p) => ({ coordinates: p.coordinates, label: p.name })) ?? [],
+                    );
+                  } else {
+                    setSectorMarkers(null);
+                  }
+                }}
+                variant='brand'
+                aria-label='Include all markers in sector'
+              />
+              <span className='text-[12px] font-medium text-slate-300 sm:text-[13px]'>
+                Include all markers in sector
+              </span>
+            </div>
+
+            {leafletMode === 'PARKING' && (
+              <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+                <div className='space-y-1'>
+                  <label className={labelClasses}>Latitude</label>
+                  <input
+                    className={inputClasses}
+                    inputMode='decimal'
+                    placeholder='e.g. 59.123'
+                    value={lat.text}
+                    onChange={onLatChanged}
+                  />
+                </div>
+                <div className='space-y-1'>
+                  <label className={labelClasses}>Longitude</label>
+                  <input
+                    className={inputClasses}
+                    inputMode='decimal'
+                    placeholder='e.g. 10.456'
+                    value={lng.text}
+                    onChange={onLngChanged}
+                  />
+                </div>
+              </div>
+            )}
+
+            {['POLYGON', 'APPROACH', 'DESCENT'].includes(leafletMode) && (
+              <div className='space-y-2'>
+                <label className={labelClasses}>
+                  {leafletMode === 'POLYGON' ? 'Outline' : leafletMode === 'APPROACH' ? 'Approach' : 'Descent'}
+                </label>
+                <PolylineEditor
+                  coordinates={
+                    leafletMode === 'POLYGON'
+                      ? (data.outline ?? [])
+                      : leafletMode === 'APPROACH'
+                        ? (data.approach?.coordinates ?? [])
+                        : (data.descent?.coordinates ?? [])
+                  }
+                  parking={data.parking ?? {}}
+                  onChange={(coordinates) => {
+                    if (leafletMode === 'POLYGON') setData((prev) => ({ ...prev, outline: coordinates }));
+                    else if (leafletMode === 'APPROACH') setData((prev) => ({ ...prev, approach: { coordinates } }));
+                    else if (leafletMode === 'DESCENT') setData((prev) => ({ ...prev, descent: { coordinates } }));
+                  }}
+                  upload={leafletMode !== 'POLYGON'}
+                />
+
+                {leafletMode === 'APPROACH' && neighboursWithApproach.length > 0 && (
+                  <div className='flex flex-wrap gap-2 pt-1'>
+                    {neighboursWithApproach.map((n) => (
+                      <button
+                        key={n.id}
+                        type='button'
+                        onClick={() => loadFromNeighbour('APPROACH', n)}
+                        className='inline-flex items-center gap-1 rounded-md border border-lime-700/40 bg-lime-950/30 px-2.5 py-1 text-[11px] font-semibold text-lime-400 transition-colors hover:bg-lime-900/40'
+                        title={`Copy approach from ${n.name}`}
+                      >
+                        <Copy size={11} strokeWidth={2} />
+                        Load {n.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {leafletMode === 'DESCENT' && neighboursWithDescent.length > 0 && (
+                  <div className='flex flex-wrap gap-2 pt-1'>
+                    {neighboursWithDescent.map((n) => (
+                      <button
+                        key={n.id}
+                        type='button'
+                        onClick={() => loadFromNeighbour('DESCENT', n)}
+                        className='inline-flex items-center gap-1 rounded-md border border-purple-700/40 bg-purple-950/30 px-2.5 py-1 text-[11px] font-semibold text-purple-400 transition-colors hover:bg-purple-900/40'
+                        title={`Copy descent from ${n.name}`}
+                      >
+                        <Copy size={11} strokeWidth={2} />
+                        Load {n.name}
+                      </button>
+                    ))}
                   </div>
                 )}
               </div>
             )}
+          </div>
+        </Card>
 
-            <div className='flex items-center justify-end gap-3'>
-              <button
-                type='button'
-                onClick={() => navigate(sectorId ? `/sector/${sectorId}` : `/area/${areaId}`)}
-                className='form-footer-cancel'
-              >
-                Cancel
-              </button>
-              <button
-                type='submit'
-                disabled={saving || !data.name || !!data.sunFromHour !== !!data.sunToHour}
-                className='type-label flex items-center gap-2 rounded-lg bg-emerald-400 px-8 py-2.5 text-slate-950 shadow-lg shadow-emerald-900/30 transition-all hover:bg-emerald-300 disabled:opacity-50'
-              >
-                {saving ? <Loader2 className='animate-spin' size={16} /> : <Save size={16} />}
-                Save Sector
-              </button>
+        {/* ── Media ── */}
+        <Card>
+          <SectionHeader title='Media' icon={Layers} />
+          <div className='p-4 sm:p-5'>
+            <MediaUpload onMediaChanged={onNewMediaChanged} isMultiPitch={false} />
+          </div>
+        </Card>
+
+        {/* ── Problem order ── */}
+        {data.problemOrder && data.problemOrder.length > 1 && (
+          <Card>
+            <SectionHeader title='Problem order' icon={Route} />
+            <div className='p-4 sm:p-5'>
+              <ProblemOrder
+                problemOrder={data.problemOrder}
+                onChange={(problemOrder) => setData((prev) => ({ ...prev, problemOrder }))}
+              />
             </div>
-          </form>
+          </Card>
+        )}
+
+        {/* ── Save / Cancel ── */}
+        <div className='flex items-center justify-end gap-3'>
+          <button
+            type='button'
+            onClick={() => navigate(sectorId ? `/sector/${sectorId}` : `/area/${areaId}`)}
+            className='form-footer-cancel'
+          >
+            Cancel
+          </button>
+          <button
+            type='submit'
+            disabled={saving || !data.name || !!data.sunFromHour !== !!data.sunToHour}
+            className='type-label flex items-center gap-2 rounded-lg bg-emerald-400 px-8 py-2.5 text-slate-950 shadow-lg shadow-emerald-900/30 transition-all hover:bg-emerald-300 disabled:opacity-50'
+          >
+            {saving ? <Loader2 className='animate-spin' size={16} /> : <Save size={16} />}
+            Save Sector
+          </button>
         </div>
-      </Card>
+      </form>
     </div>
   );
 };
