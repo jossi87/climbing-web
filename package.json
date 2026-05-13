@@ -62,7 +62,7 @@
     "leaflet.fullscreen": "^5.3.1",
     "leaflet.locatecontrol": "^0.90.0",
     "leaflet.markercluster": "^1.5.3",
-    "linkify-react": "^4.3.2",
+    "linkify-react": "^4.3.3",
     "linkifyjs": "^4.3.2",
     "lucide-react": "^1.14.0",
     "react": "^19.2.6",
