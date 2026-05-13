@@ -481,7 +481,12 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                       type='number'
                       className={inputClasses}
                       value={data.lengthMeter ?? ''}
-                      onChange={(e) => setData((prev) => ({ ...prev, lengthMeter: +e.target.value }))}
+                      onChange={(e) =>
+                        setData((prev) => ({
+                          ...prev,
+                          lengthMeter: e.target.value === '' ? undefined : +e.target.value,
+                        }))
+                      }
                     />
                   </div>
                 )}

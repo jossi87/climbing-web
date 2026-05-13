@@ -405,7 +405,7 @@ const MediaModal = ({
 
   const canSetMediaAsAvatar = isAuthenticated && isImage;
   const canEdit = isAdmin;
-  const canDelete = isAdmin;
+  const canDelete = isAdmin || m.uploadedByMe;
   const canRotate =
     (isAdmin || m.uploadedByMe) && isImage && (m.svgs ?? []).length === 0 && (m.mediaSvgs ?? []).length === 0;
   const canDrawTopo = isAdmin && isImage && !!optProblemId;
