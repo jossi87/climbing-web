@@ -91,10 +91,7 @@ const ProblemSection = ({ sections: initSections, onSectionsUpdated }: Props) =>
       {sections && sections.length > 1 && (
         <div className='space-y-3'>
           {sections.map((s, index) => (
-            <div
-              key={index}
-              className='border-surface-border/50 grid grid-cols-1 gap-y-3 border-b pb-3 last:border-0 last:pb-0 sm:grid-cols-12 sm:items-start sm:gap-x-3 sm:gap-y-0'
-            >
+            <div key={index} className='grid grid-cols-1 gap-y-3 sm:grid-cols-12 sm:items-start sm:gap-x-3 sm:gap-y-0'>
               {/*
                 Mobile: pitch # + grade on one row; description full width below.
                 sm+: 1 + 2 + 9 cols — nr fits ≤99, grade stays compact, comment uses the rest.
