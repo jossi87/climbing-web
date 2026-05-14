@@ -46,7 +46,7 @@
     "tailwindcss": "^4.3.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.59.3",
-    "vite": "^8.0.12",
+    "vite": "^8.0.13",
     "vite-tsconfig-paths": "^6.1.1"
   },
   "dependencies": {
@@ -64,7 +64,7 @@
     "leaflet.markercluster": "^1.5.3",
     "linkify-react": "^4.3.3",
     "linkifyjs": "^4.3.2",
-    "lucide-react": "^1.14.0",
+    "lucide-react": "^1.16.0",
     "react": "^19.2.6",
     "react-datepicker": "^9.1.0",
     "react-dom": "^19.2.6",
