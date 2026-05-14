@@ -96,6 +96,15 @@ const About = () => {
         <Card>
           <SectionHeader title='History' icon={Book} subheader='First published in 2003' />
           <Timeline>
+            <TimelineItem year='2026' title='Complete redesign' description='Semantic UI -> TailwindCSS'>
+              <Badge href='/png/archive/20260514_brattelinjer_dark.png' icon={Camera}>
+                Screenshot (dark)
+              </Badge>
+              <Badge href='/png/archive/20260514_brattelinjer_light.png' icon={Camera}>
+                Screenshot (light)
+              </Badge>
+            </TimelineItem>
+
             <TimelineItem year='2023' title='github.com/jossi87' description='The project is now open source'>
               <Badge href='https://github.com/jossi87/climbing-web' icon={Code}>
                 Frontend
