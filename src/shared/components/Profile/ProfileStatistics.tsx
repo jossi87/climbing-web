@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import Chart from '../Chart/Chart';
 import ProblemList from '../ProblemList';
@@ -32,6 +33,7 @@ import {
   tickWhenGrade,
 } from './profileRowTypography';
 import { captureSentryException } from '../../../utils/sentry';
+import type { MarkerDef } from '../Leaflet/markers';
 
 type TickListItemProps = {
   tick: components['schemas']['ProfileAscent'];
@@ -193,6 +195,138 @@ const ProfileAscentsView = ({ userId }: { userId: number }) => {
   const { defaultCenter, defaultZoom } = useMeta();
   const { data: ascents, isLoading, error } = useProfileAscents(userId);
 
+  // Compute area-level markers from all ascents (must be before early returns for hooks consistency)
+  const areaMarkers = useMemo<MarkerDef[]>(() => {
+    if (!ascents) return [];
+    // Group ascents by area
+    const areaMap = new Map<
+      number,
+      {
+        name: string;
+        lockedAdmin: boolean;
+        lockedSuperadmin: boolean;
+        ascents: components['schemas']['ProfileAscent'][];
+      }
+    >();
+
+    for (const ascent of ascents) {
+      const areaId = ascent.areaId ?? 0;
+      if (!areaId) continue;
+      const existing = areaMap.get(areaId);
+      if (existing) {
+        existing.ascents.push(ascent);
+      } else {
+        areaMap.set(areaId, {
+          name: ascent.areaName ?? '',
+          lockedAdmin: !!ascent.areaLockedAdmin,
+          lockedSuperadmin: !!ascent.areaLockedSuperadmin,
+          ascents: [ascent],
+        });
+      }
+    }
+
+    const markers: MarkerDef[] = [];
+
+    for (const [areaId, area] of areaMap.entries()) {
+      // Collect ascents with coordinates
+      const ascentsWithCoords = area.ascents.filter(
+        (a) => a.coordinates?.latitude != null && a.coordinates?.longitude != null,
+      );
+
+      if (ascentsWithCoords.length === 0) continue;
+
+      // Compute centroid
+      const sumLat = ascentsWithCoords.reduce((sum, a) => sum + (a.coordinates?.latitude ?? 0), 0);
+      const sumLng = ascentsWithCoords.reduce((sum, a) => sum + (a.coordinates?.longitude ?? 0), 0);
+      const centerLat = sumLat / ascentsWithCoords.length;
+      const centerLng = sumLng / ascentsWithCoords.length;
+
+      // Group ascents by sector for the popup
+      const sectorGroups = new Map<
+        number,
+        {
+          name: string;
+          lockedAdmin: boolean;
+          lockedSuperadmin: boolean;
+          ascents: components['schemas']['ProfileAscent'][];
+        }
+      >();
+
+      for (const a of ascentsWithCoords) {
+        const sectorId = a.sectorId ?? 0;
+        const existing = sectorGroups.get(sectorId);
+        if (existing) {
+          existing.ascents.push(a);
+        } else {
+          sectorGroups.set(sectorId, {
+            name: a.sectorName ?? '',
+            lockedAdmin: !!a.sectorLockedAdmin,
+            lockedSuperadmin: !!a.sectorLockedSuperadmin,
+            ascents: [a],
+          });
+        }
+      }
+
+      const popupContent = (
+        <div className='max-h-[280px] min-w-48 space-y-3 overflow-y-auto py-1'>
+          {Array.from(sectorGroups.entries()).map(([sectorId, group]) => (
+            <div key={sectorId} className='space-y-1'>
+              <div className='flex items-center gap-1'>
+                <Link
+                  to={`/sector/${sectorId}`}
+                  className={cn(
+                    designContract.typography.meta,
+                    'font-medium underline-offset-2 transition-colors hover:underline',
+                    'text-slate-400 hover:text-slate-200',
+                  )}
+                >
+                  {group.name}
+                </Link>
+                <LockSymbol lockedAdmin={group.lockedAdmin} lockedSuperadmin={group.lockedSuperadmin} />
+              </div>
+              <div className='flex flex-col gap-0.5'>
+                {group.ascents.map((ascent) => (
+                  <div
+                    key={`${ascent.idProblem}-${ascent.idTickRepeat ?? '0'}`}
+                    className='flex items-center gap-1.5 pl-2'
+                  >
+                    {ascent.dateHr ? (
+                      <span className='text-[11px] text-slate-500 tabular-nums'>{ascent.dateHr}</span>
+                    ) : null}
+                    <Link
+                      to={`/problem/${ascent.idProblem}`}
+                      className={cn(
+                        designContract.typography.body,
+                        'buldreinfo-popup-primary-link font-medium underline-offset-2 transition-colors hover:underline',
+                      )}
+                    >
+                      {ascent.name}
+                    </Link>
+                    {ascent.grade ? (
+                      <span className='text-[11px] font-medium whitespace-nowrap text-slate-500 tabular-nums'>
+                        {ascent.grade}
+                      </span>
+                    ) : null}
+                    {ascent.fa ? <span className={cn(tickFa, 'text-[11px]')}>FA</span> : null}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+
+      markers.push({
+        id: areaId,
+        coordinates: { latitude: centerLat, longitude: centerLng },
+        label: `${area.name} [${ascentsWithCoords.length}]`,
+        html: popupContent,
+      } as MarkerDef);
+    }
+
+    return markers;
+  }, [ascents]);
+
   if (isLoading) return <Loading inline />;
 
   if (error || !ascents) {
@@ -271,19 +405,22 @@ const ProfileAscentsView = ({ userId }: { userId: number }) => {
               </div>
             ) : null;
 
-          const filteredMarkers = filteredRows.flatMap((row) => (row.marker ? [row.marker] : []));
+          // Show area-level markers when unfiltered, individual markers when filtered
+          const isFiltered = filteredRows.length < ascents.length;
+          const markers = isFiltered ? filteredRows.flatMap((row) => (row.marker ? [row.marker] : [])) : areaMarkers;
+
           const mapBlock =
-            filteredMarkers.length > 0 ? (
+            markers.length > 0 ? (
               <div className='-mx-4 mb-2 h-[35vh] w-[calc(100%+2rem)] min-w-0 overflow-hidden sm:-mx-6 sm:w-[calc(100%+3rem)]'>
                 <Leaflet
-                  key={'ticked-inline=' + userId}
+                  key={'ticked-inline=' + userId + (isFiltered ? '-filtered' : '-areas')}
                   autoZoom={true}
                   height='100%'
-                  markers={filteredMarkers}
+                  markers={markers}
                   defaultCenter={defaultCenter}
                   defaultZoom={defaultZoom}
                   showSatelliteImage={false}
-                  clusterMarkers={true}
+                  clusterMarkers={!isFiltered}
                   flyToId={null}
                 />
               </div>

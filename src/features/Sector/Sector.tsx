@@ -780,7 +780,7 @@ const Sector = () => {
                       aria-selected={current}
                     >
                       <Link
-                        to={`/sector/${s.id}`}
+                        to={`/sector/${s.id}${effectiveTab && effectiveTab !== 'overview' ? `/${effectiveTab}` : ''}`}
                         className={cn(
                           'flex min-w-0 items-center gap-2 px-3 py-2 text-sm transition-colors',
                           current
