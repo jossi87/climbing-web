@@ -1596,6 +1596,8 @@ export type components = {
             numPitches?: number;
             /** Format: int32 */
             idProblem?: number;
+            /** Format: int32 */
+            nr?: number;
             lockedAdmin?: boolean;
             lockedSuperadmin?: boolean;
             name?: string;
@@ -1921,8 +1923,8 @@ export type components = {
             value?: string;
             content?: Record<string, never>;
             fileName?: string;
-            formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
             simple?: boolean;
+            formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
             parameterizedHeaders?: {
                 empty?: boolean;
             } & {

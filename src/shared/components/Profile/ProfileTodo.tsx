@@ -137,16 +137,25 @@ function computeFilteredAreaMarkers(rows: Row[]): MarkerDef[] {
       }
     }
 
+    // Sort problems by number within each sector group
+    for (const sectorRows of sectorGroups.values()) {
+      sectorRows.sort((a, b) => (a.nr ?? 0) - (b.nr ?? 0));
+    }
+
+    // Sort sectors by name
+    const sortedSectors = Array.from(sectorGroups.entries()).sort(([aName], [bName]) => aName.localeCompare(bName));
+
     const popupContent = (
       <div className='max-h-[280px] min-w-48 space-y-3 overflow-y-auto py-1'>
-        {Array.from(sectorGroups.entries()).map(([sectorName, sectorRows]) => (
+        {sortedSectors.map(([sectorName, sectorRows]) => (
           <div key={sectorName} className='space-y-1'>
             <div className='flex items-center gap-1'>
               <span className={cn(designContract.typography.meta, 'font-medium text-slate-400')}>{sectorName}</span>
             </div>
             <div className='flex flex-col gap-0.5'>
               {sectorRows.map((row, idx) => (
-                <div key={`${row.name}-${idx}`} className='flex items-center gap-1.5 pl-2'>
+                <div key={`${row.name}-${idx}`} className='flex items-baseline gap-1.5 pl-2'>
+                  {row.nr != null ? <span className={cn(designContract.typography.grade)}>#{row.nr}</span> : null}
                   <a
                     href={row.marker!.url}
                     className={cn(
@@ -154,9 +163,9 @@ function computeFilteredAreaMarkers(rows: Row[]): MarkerDef[] {
                       'buldreinfo-popup-primary-link font-medium underline-offset-2 transition-colors hover:underline',
                     )}
                   >
-                    {row.nr != null ? `#${row.nr} ` : ''}
                     {row.name}
                   </a>
+                  {row.grade ? <span className={cn(designContract.typography.grade)}>{row.grade}</span> : null}
                 </div>
               ))}
             </div>
@@ -289,6 +298,7 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
             sectorName: item.sectorName,
             name: item.problemName,
             nr: item.nr,
+            grade: item.grade,
             gradeWeight: item.gradeWeight,
             stars: 0,
             numTicks: 0,

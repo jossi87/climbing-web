@@ -12,7 +12,7 @@ import { LockSymbol } from '../../../ui/Indicators';
 import { ChevronRight } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
 import { designContract } from '../../../../design/contract';
-import { tickProblemLinkWithStatus, tickWhenGrade } from '../../Profile/profileRowTypography';
+import { tickProblemLinkWithStatus } from '../../Profile/profileRowTypography';
 
 type Props = Pick<TocProps, 'areas'>;
 
@@ -145,10 +145,17 @@ const useAreaMarkers = (areas: Props['areas']): MarkerDef[] => {
           });
         }
       }
+      // Sort problems by number within each sector group
+      for (const group of sectorGroups.values()) {
+        group.problems.sort((a, b) => a.nr - b.nr);
+      }
+
+      // Sort sectors by name
+      const sortedSectors = Array.from(sectorGroups.entries()).sort(([, a], [, b]) => a.name.localeCompare(b.name));
 
       const popupContent = (
         <div className='max-h-[280px] min-w-48 space-y-3 overflow-y-auto py-1'>
-          {Array.from(sectorGroups.entries()).map(([sectorId, group]) => (
+          {sortedSectors.map(([sectorId, group]) => (
             <div key={sectorId} className='space-y-1'>
               <div className='flex items-center gap-1'>
                 <Link
@@ -165,7 +172,8 @@ const useAreaMarkers = (areas: Props['areas']): MarkerDef[] => {
               </div>
               <div className='flex flex-col gap-0.5'>
                 {group.problems.map((problem) => (
-                  <div key={problem.id} className='flex items-center gap-1.5 pl-2'>
+                  <div key={problem.id} className='flex items-baseline gap-1.5 pl-2'>
+                    <span className={cn(designContract.typography.grade)}>#{problem.nr}</span>
                     <Link
                       to={`/problem/${problem.id}`}
                       className={cn(
@@ -178,12 +186,10 @@ const useAreaMarkers = (areas: Props['areas']): MarkerDef[] => {
                         }),
                       )}
                     >
-                      #{problem.nr} {problem.name}
+                      {problem.name}
                     </Link>
                     {problem.grade ? (
-                      <span className='text-[11px] font-medium whitespace-nowrap text-slate-500 tabular-nums'>
-                        {problem.grade}
-                      </span>
+                      <span className={cn(designContract.typography.grade)}>{problem.grade}</span>
                     ) : null}
                   </div>
                 ))}
@@ -212,7 +218,52 @@ const useMarkers = (areas: Props['areas']): MarkerDef[] => {
     for (const area of areas) {
       for (const sector of area.sectors ?? []) {
         let sectorBounds: LatLngBounds | null = null;
+        // Collect problems with coordinates, then sort by number
+        const sectorProblems: (typeof sector.problems)[number][] = [];
         for (const problem of sector.problems ?? []) {
+          let lat = 0;
+          let lng = 0;
+
+          if (!problem.coordinates) {
+            if ((sector.outline ?? []).length > 0) {
+              if (!sectorBounds) {
+                sectorBounds = latLngBounds([]);
+                for (const c of sector.outline ?? []) {
+                  if (typeof c.latitude === 'number' && typeof c.longitude === 'number') {
+                    sectorBounds.extend([c.latitude, c.longitude]);
+                  }
+                }
+              }
+              if (sectorBounds && sectorBounds.isValid()) {
+                const center = sectorBounds.getCenter();
+                lat = center.lat;
+                lng = center.lng;
+              }
+            } else if (
+              sector.parking &&
+              typeof sector.parking.latitude === 'number' &&
+              typeof sector.parking.longitude === 'number'
+            ) {
+              lat = sector.parking.latitude;
+              lng = sector.parking.longitude;
+            }
+          } else if (
+            typeof problem.coordinates.latitude === 'number' &&
+            typeof problem.coordinates.longitude === 'number'
+          ) {
+            lat = problem.coordinates.latitude;
+            lng = problem.coordinates.longitude;
+          }
+
+          if (!lat || !lng) continue;
+
+          sectorProblems.push(problem);
+        }
+
+        // Sort problems by number
+        sectorProblems.sort((a, b) => (a.nr ?? 0) - (b.nr ?? 0));
+
+        for (const problem of sectorProblems) {
           let lat = 0;
           let lng = 0;
 
@@ -273,7 +324,7 @@ const useMarkers = (areas: Props['areas']): MarkerDef[] => {
                   <LockSymbol lockedAdmin={sector.lockedAdmin} lockedSuperadmin={sector.lockedSuperadmin} />
                 </nav>
                 <div className='border-surface-border/40 flex flex-wrap items-baseline gap-x-2 gap-y-1 border-t border-dashed pt-2.5'>
-                  <span className={cn(tickWhenGrade, 'font-mono tabular-nums')}>#{problem.nr}</span>
+                  <span className={cn(designContract.typography.grade)}>#{problem.nr}</span>
                   <Link
                     to={`/problem/${problem.id}`}
                     className={cn(

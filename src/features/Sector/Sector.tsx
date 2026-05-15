@@ -640,6 +640,7 @@ const Sector = () => {
       element: <SectorListItem key={p.id} problem={p} />,
       name: p.name ?? '',
       nr: p.nr ?? 0,
+      grade: p.grade ?? '',
       gradeWeight: p.gradeWeight ?? 0,
       stars: p.stars ?? 0,
       numTicks: p.numTicks ?? 0,

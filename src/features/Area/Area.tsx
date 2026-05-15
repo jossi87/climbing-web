@@ -627,6 +627,7 @@ const Area = () => {
           areaName: data.name ?? '',
           sectorName: name,
           nr: p.nr ?? 0,
+          grade: p.grade ?? '',
           gradeWeight: p.gradeWeight ?? 0,
           stars: p.stars ?? 0,
           numTicks: p.numTicks ?? 0,

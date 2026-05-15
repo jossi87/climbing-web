@@ -4,6 +4,7 @@ export type Row = {
   sectorName: string;
   name: string;
   nr: number | null;
+  grade: string;
   gradeWeight: number;
   stars: number;
   numTicks: number;
