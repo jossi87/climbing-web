@@ -1973,8 +1973,8 @@ export type components = {
             parameters?: {
                 [key: string]: string;
             };
-            wildcardSubtype?: boolean;
             wildcardType?: boolean;
+            wildcardSubtype?: boolean;
         };
         MessageBodyWorkers: Record<string, never>;
         MultiPart: {
@@ -2015,15 +2015,16 @@ export type components = {
         Providers: Record<string, never>;
         Search: {
             title?: string;
-            description?: string;
+            subTitle?: string;
+            breadcrumb?: string;
             url?: string;
             externalUrl?: string;
             mediaIdentity?: components["schemas"]["MediaIdentity"];
-            lockedAdmin?: boolean;
-            lockedSuperadmin?: boolean;
             /** Format: int64 */
             hits?: number;
             pageViews?: string;
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
         };
         SearchRequest: {
             value?: string;

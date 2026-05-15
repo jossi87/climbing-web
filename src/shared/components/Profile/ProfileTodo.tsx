@@ -17,8 +17,8 @@ import {
 import { cn } from '../../../lib/utils';
 import { ProfileRowTextSep } from './ProfileRowTextSep';
 import type { MarkerDef } from '../Leaflet/markers';
+import type { Row } from '../ProblemList/types';
 import { designContract } from '../../../design/contract';
-import type { components } from '../../../@types/buldreinfo/swagger';
 
 type ProfileTodoProps = {
   userId: number;
@@ -94,87 +94,86 @@ const TodoListItem = ({ item }: { item: TodoItem }) => (
 );
 
 /**
- * Compute a single marker per area, placed at the centroid of all problems in that area.
- * Clicking the marker shows a popup listing all problems grouped by sector.
+ * Compute area-level markers from filtered ProblemList rows.
+ * Groups rows by areaName, computes centroid from marker coordinates,
+ * and builds a popup listing all problems in that area.
  */
-function computeAreaMarkers(areas: components['schemas']['ProfileTodoArea'][]): MarkerDef[] {
-  return areas
-    .map((area) => {
-      const sectors = area.sectors ?? [];
-      // Collect all problems with coordinates in this area
-      const problemsWithCoords = sectors.flatMap((sector) =>
-        (sector.problems ?? []).filter((p) => p.coordinates?.latitude != null && p.coordinates?.longitude != null),
-      );
+function computeFilteredAreaMarkers(rows: Row[]): MarkerDef[] {
+  // Group rows by area
+  const areaGroups = new Map<string, { areaName: string; rows: Row[] }>();
 
-      if (problemsWithCoords.length === 0) return null;
+  for (const row of rows) {
+    if (!row.marker?.coordinates) continue;
+    const key = row.areaName;
+    const existing = areaGroups.get(key);
+    if (existing) {
+      existing.rows.push(row);
+    } else {
+      areaGroups.set(key, { areaName: key, rows: [row] });
+    }
+  }
 
-      // Compute centroid
-      const sumLat = problemsWithCoords.reduce((sum, p) => sum + (p.coordinates?.latitude ?? 0), 0);
-      const sumLng = problemsWithCoords.reduce((sum, p) => sum + (p.coordinates?.longitude ?? 0), 0);
-      const centerLat = sumLat / problemsWithCoords.length;
-      const centerLng = sumLng / problemsWithCoords.length;
+  const markers: MarkerDef[] = [];
 
-      // Build popup content: problems grouped by sector
-      const popupContent = (
-        <div className='max-h-[280px] min-w-48 space-y-3 overflow-y-auto py-1'>
-          {sectors
-            .filter((s) => (s.problems ?? []).some((p) => p.coordinates?.latitude != null))
-            .map((sector) => {
-              const sectorProblems = (sector.problems ?? []).filter((p) => p.coordinates?.latitude != null);
-              return (
-                <div key={sector.id} className='space-y-1'>
-                  <div className='flex items-center gap-1'>
-                    <Link
-                      to={`/sector/${sector.id}`}
-                      className={cn(
-                        designContract.typography.meta,
-                        'font-medium underline-offset-2 transition-colors hover:underline',
-                        'text-slate-400 hover:text-slate-200',
-                      )}
-                    >
-                      {sector.name}
-                    </Link>
-                    <LockSymbol lockedAdmin={sector.lockedAdmin} lockedSuperadmin={sector.lockedSuperadmin} />
-                  </div>
-                  <div className='flex flex-col gap-0.5'>
-                    {sectorProblems.map((problem) => (
-                      <div key={problem.id} className='flex items-center gap-1.5 pl-2'>
-                        <Link
-                          to={`/problem/${problem.id}`}
-                          className={cn(
-                            designContract.typography.body,
-                            'buldreinfo-popup-primary-link font-medium underline-offset-2 transition-colors hover:underline',
-                          )}
-                        >
-                          {problem.nr != null ? `#${problem.nr} ` : ''}
-                          {problem.name}
-                        </Link>
-                        {problem.grade ? (
-                          <span className='text-[11px] font-medium whitespace-nowrap text-slate-500 tabular-nums'>
-                            {problem.grade}
-                          </span>
-                        ) : null}
-                        <LockSymbol lockedAdmin={problem.lockedAdmin} lockedSuperadmin={problem.lockedSuperadmin} />
-                      </div>
-                    ))}
-                  </div>
+  for (const [, group] of areaGroups) {
+    const rowsWithCoords = group.rows.filter((r) => r.marker?.coordinates);
+    if (rowsWithCoords.length === 0) continue;
+
+    // Compute centroid
+    const sumLat = rowsWithCoords.reduce((sum, r) => sum + r.marker!.coordinates.latitude, 0);
+    const sumLng = rowsWithCoords.reduce((sum, r) => sum + r.marker!.coordinates.longitude, 0);
+    const centerLat = sumLat / rowsWithCoords.length;
+    const centerLng = sumLng / rowsWithCoords.length;
+
+    // Group by sector for the popup
+    const sectorGroups = new Map<string, Row[]>();
+    for (const row of rowsWithCoords) {
+      const key = row.sectorName;
+      const existing = sectorGroups.get(key);
+      if (existing) {
+        existing.push(row);
+      } else {
+        sectorGroups.set(key, [row]);
+      }
+    }
+
+    const popupContent = (
+      <div className='max-h-[280px] min-w-48 space-y-3 overflow-y-auto py-1'>
+        {Array.from(sectorGroups.entries()).map(([sectorName, sectorRows]) => (
+          <div key={sectorName} className='space-y-1'>
+            <div className='flex items-center gap-1'>
+              <span className={cn(designContract.typography.meta, 'font-medium text-slate-400')}>{sectorName}</span>
+            </div>
+            <div className='flex flex-col gap-0.5'>
+              {sectorRows.map((row, idx) => (
+                <div key={`${row.name}-${idx}`} className='flex items-center gap-1.5 pl-2'>
+                  <a
+                    href={row.marker!.url}
+                    className={cn(
+                      designContract.typography.body,
+                      'buldreinfo-popup-primary-link font-medium underline-offset-2 transition-colors hover:underline',
+                    )}
+                  >
+                    {row.nr != null ? `#${row.nr} ` : ''}
+                    {row.name}
+                  </a>
                 </div>
-              );
-            })}
-        </div>
-      );
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
 
-      return {
-        id: area.id ?? 0,
-        coordinates: {
-          latitude: centerLat,
-          longitude: centerLng,
-        },
-        label: `${area.name ?? ''} [${problemsWithCoords.length}]`,
-        html: popupContent,
-      } as MarkerDef;
-    })
-    .filter((m): m is MarkerDef => m !== null);
+    markers.push({
+      id: group.areaName.charCodeAt(0) + markers.length,
+      coordinates: { latitude: centerLat, longitude: centerLng },
+      label: `${group.areaName} [${rowsWithCoords.length}]`,
+      html: popupContent,
+    } as MarkerDef);
+  }
+
+  return markers;
 }
 
 const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) => {
@@ -247,9 +246,6 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
     [areas, resolveGradeId],
   );
 
-  // Compute area-level markers for the map
-  const areaMarkers = useMemo<MarkerDef[]>(() => computeAreaMarkers(areas), [areas]);
-
   if (!data) {
     return <Loading inline />;
   }
@@ -268,22 +264,20 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
           defaultOrder='name'
           excludedSortOptions={['date']}
           contentBeforeList={(filteredRows) => {
-            // When filtering is active, show individual problem markers on the map
-            // When no filter is active, show area-level markers
-            const isFiltered = filteredRows.length < items.length;
-            const markers = isFiltered ? filteredRows.flatMap((row) => (row.marker ? [row.marker] : [])) : areaMarkers;
-            if (markers.length === 0) return null;
+            // Compute area-level markers from the filtered rows so the map updates when filtering
+            const filteredAreaMarkers = computeFilteredAreaMarkers(filteredRows);
+            if (filteredAreaMarkers.length === 0) return null;
             return (
               <div className='-mx-4 mb-3 h-[35vh] w-[calc(100%+2rem)] min-w-0 overflow-hidden sm:-mx-6 sm:w-[calc(100%+3rem)]'>
                 <Leaflet
-                  key={'todo-inline=' + userId + (isFiltered ? '-filtered' : '-areas')}
+                  key={'todo-inline=' + userId + '-areas'}
                   autoZoom={true}
                   height='100%'
-                  markers={markers}
+                  markers={filteredAreaMarkers}
                   defaultCenter={defaultCenter}
                   defaultZoom={defaultZoom}
                   showSatelliteImage={false}
-                  clusterMarkers={!isFiltered}
+                  clusterMarkers={true}
                   flyToId={null}
                 />
               </div>

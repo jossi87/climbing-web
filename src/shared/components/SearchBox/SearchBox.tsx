@@ -9,8 +9,8 @@ import {
   useSearch,
 } from '../../../api';
 import type { components } from '../../../@types/buldreinfo/swagger';
-import { LockSymbol } from '../../ui/Indicators';
 import { cn } from '../../../lib/utils';
+import { LockSymbol } from '../../ui/Indicators';
 import { SearchInput, Card, avatarFallbackColors, avatarInitialsFromName } from '../../ui';
 import { designContract } from '../../../design/contract';
 import { twInk } from '../../../design/twInk';
@@ -19,20 +19,6 @@ import { useMeta } from '../Meta/context';
 type SearchResult = components['schemas']['Search'];
 
 type SearchEntityKind = 'area' | 'sector' | 'problem' | 'user' | 'unknown';
-
-/**
- * Search API often returns problem titles as `Name (grade)`. Match problem lists elsewhere
- * by showing the grade with {@link designContract.typography.grade} instead of parentheses.
- */
-function splitSearchProblemTitle(title: string): { name: string; grade: string | null } {
-  const t = title.trim();
-  const m = t.match(/^(.*)\s+\(([^)]+)\)\s*$/);
-  if (!m) return { name: t, grade: null };
-  const inner = m[2].trim();
-  if (inner.length === 0 || inner.length > 18) return { name: t, grade: null };
-  if (/,/.test(inner)) return { name: t, grade: null };
-  return { name: m[1].trim(), grade: inner };
-}
 
 function getSearchEntityKind(result: SearchResult): SearchEntityKind {
   if (result.externalUrl) return 'unknown';
@@ -209,10 +195,6 @@ const SearchBox = () => {
               const versionStamp = mediaIdentityVersionStamp(result?.mediaIdentity);
               const imageSrc = mid > 0 ? getMediaFileUrl(mid, versionStamp, false, { minDimension: 48 }) : null;
               const entityKind = getSearchEntityKind(result);
-              const problemTitle =
-                entityKind === 'problem' && !result.externalUrl
-                  ? splitSearchProblemTitle(result.title ?? '')
-                  : { name: result.title ?? '', grade: null as string | null };
               const fallbackMeta = getSearchFallbackMeta(entityKind);
               const FallbackIcon = fallbackMeta.Icon;
               const userInitialsFallback = entityKind === 'user' && !result.externalUrl && !imageSrc;
@@ -272,7 +254,8 @@ const SearchBox = () => {
                     <div className='flex items-baseline justify-between gap-2'>
                       <div
                         className={cn(
-                          'type-body min-w-0 truncate',
+                          'type-body min-w-0',
+                          result.subTitle ? '' : 'truncate',
                           result.externalUrl ? 'font-semibold italic opacity-80' : 'font-semibold',
                         )}
                       >
@@ -280,31 +263,32 @@ const SearchBox = () => {
                           result.title
                         ) : (
                           <>
-                            {problemTitle.name}
-                            {problemTitle.grade ? (
+                            {result.title}
+                            {result.subTitle ? (
                               <>
                                 {' '}
-                                <span className={cn(designContract.typography.grade, 'font-normal text-slate-400')}>
-                                  {problemTitle.grade}
-                                </span>
+                                <span className='font-normal text-slate-400'>{result.subTitle}</span>
                               </>
                             ) : null}
+                            <LockSymbol
+                              lockedAdmin={!!result.lockedAdmin}
+                              lockedSuperadmin={!!result.lockedSuperadmin}
+                            />
                           </>
                         )}
-                        <LockSymbol lockedAdmin={!!result.lockedAdmin} lockedSuperadmin={!!result.lockedSuperadmin} />
                       </div>
                       {result.pageViews && (
-                        <span className='text-xs font-medium text-slate-400 tabular-nums'>{result.pageViews}</span>
+                        <span className='text-xs font-normal text-slate-400 tabular-nums'>{result.pageViews}</span>
                       )}
                     </div>
-                    {result.description && (
+                    {result.breadcrumb && (
                       <div
                         className={cn(
-                          'truncate text-sm text-slate-400 group-hover:text-slate-300',
+                          'truncate text-sm text-slate-500 group-hover:text-slate-400',
                           twInk.lightGroupHoverSlate700,
                         )}
                       >
-                        {result.description}
+                        {result.breadcrumb}
                       </div>
                     )}
                   </div>
