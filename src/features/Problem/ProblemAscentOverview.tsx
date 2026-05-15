@@ -23,12 +23,12 @@ type Props = {
 
 const rowClass = cn(
   designContract.typography.body,
-  'flex min-w-0 flex-col gap-1 text-[14px] leading-normal text-slate-300 sm:flex-row sm:flex-wrap sm:items-start sm:gap-x-2 sm:gap-y-1 sm:text-sm',
+  'flex min-w-0 flex-col gap-1 text-[14px] leading-normal text-slate-300 sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-2 sm:gap-y-1 sm:text-sm',
 );
 
 /** Row label (First ascent, etc.) — full width above facts on mobile; inline from sm up. */
 const leadClass =
-  'block text-[15px] font-medium leading-snug tracking-tight text-slate-50 sm:inline-flex sm:shrink-0 sm:self-start sm:text-sm';
+  'block text-[15px] font-medium leading-snug tracking-tight text-slate-50 sm:inline-flex sm:shrink-0 sm:items-baseline sm:text-sm';
 
 /** One style for every fact in the row (grade, type, date, names) — same size, weight, color. */
 export const problemOverviewFactClass = 'text-[14px] font-normal leading-normal text-slate-300 sm:text-sm';
