@@ -1021,17 +1021,22 @@ const Area = () => {
                             'light:bg-slate-900/12',
                           )}
                         />
-                        {/* Sector name — minimal overlay at top, just enough for readability */}
+                        {/* Sector name — centered overlay at top, progress percentage inline when > 0 */}
                         <div className='absolute top-0 right-0 left-0 z-[4] flex flex-col items-center gap-0.5 pt-1.5 sm:pt-2 md:pt-2.5'>
-                          <span className='inline-flex items-center gap-1.5 rounded-md bg-black/25 px-2 py-0.5 backdrop-blur-[2px]'>
+                          <span className='inline-flex max-w-[calc(100%-1rem)] items-center gap-1 rounded-md bg-black/25 px-2 py-0.5 backdrop-blur-[2px]'>
                             <h4
                               className={cn(
-                                'min-w-0 truncate text-sm leading-tight font-semibold tracking-tight drop-shadow sm:text-[15px]',
+                                'min-w-0 truncate text-xs leading-tight font-semibold tracking-tight drop-shadow sm:text-sm',
                                 twInk.chromeNearWhite,
                               )}
                             >
                               {sector.name}
                             </h4>
+                            {(sector.progress ?? 0) > 0 && (
+                              <span className='shrink-0 text-[10px] leading-tight font-normal tracking-wide text-emerald-300/80 drop-shadow'>
+                                {sector.progress}%
+                              </span>
+                            )}
                             <LockSymbol
                               lockedAdmin={!!sector.lockedAdmin}
                               lockedSuperadmin={!!sector.lockedSuperadmin}

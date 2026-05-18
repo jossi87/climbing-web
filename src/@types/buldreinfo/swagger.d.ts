@@ -1006,6 +1006,8 @@ export type components = {
             descent?: components["schemas"]["Slope"];
             randomMedia?: components["schemas"]["MediaIdentity"];
             problems?: components["schemas"]["SectorProblem"][];
+            /** Format: int32 */
+            progress?: number;
             gradeCounts?: components["schemas"]["GradeCount"][];
             /** Format: int32 */
             numProblems?: number;
