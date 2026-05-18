@@ -12,6 +12,7 @@ import {
   Clock,
   Loader2,
   AlertCircle,
+  Image,
 } from 'lucide-react';
 import VideoEmbedder from './VideoEmbedder';
 import { UserSelector } from '../../ui/UserSelector';
@@ -20,7 +21,6 @@ import type { components } from '../../../@types/buldreinfo/swagger';
 import { useMeta } from '../Meta/context';
 import { cn } from '../../../lib/utils';
 import { FormSwitch } from '../../ui';
-import { captureVideoPosterFrame } from '../../../utils/captureVideoPosterFrame';
 
 /**
  * Cap uploads below the tab memory ceiling. iOS Safari crashes silently around
@@ -77,7 +77,7 @@ const different = (a: UploadedMedia, b: UploadedMedia) => {
 
 /** Icon-led fields: one visual rhythm for native inputs + react-select (compact). */
 const fieldIcon = 'pointer-events-none absolute top-1/2 left-2 -translate-y-1/2 text-slate-500';
-/** Single focus cue (border only) + placeholder fades while focused so it doesn’t stack with the caret. */
+/** Single focus cue (border only) + placeholder fades while focused so it doesn't stack with the caret. */
 const inputLeadClass =
   'bg-surface-nav placeholder:text-slate-500/85 h-9 w-full rounded-lg border border-surface-border/80 py-0 pr-2 pl-8 text-[13px] leading-none outline-none transition-[color,background-color,border-color,opacity] duration-100 focus:border-brand focus:outline-none focus:ring-0 focus-visible:ring-0 placeholder:transition-opacity focus:placeholder:opacity-0 sm:pl-9 sm:text-sm';
 const timestampInputClass =
@@ -131,7 +131,8 @@ const MediaUpload = ({ onMediaChanged, isMultiPitch, variant = 'default' }: Prop
             if (file.type.startsWith('image/')) {
               preview = URL.createObjectURL(file);
             } else if (file.type.startsWith('video/')) {
-              preview = (await captureVideoPosterFrame(file)) ?? undefined;
+              // For videos, use object URL so we can show the player directly
+              preview = URL.createObjectURL(file);
             }
             return {
               file,
@@ -270,16 +271,13 @@ const MediaUpload = ({ onMediaChanged, isMultiPitch, variant = 'default' }: Prop
                 className='bg-surface-card border-surface-border animate-in fade-in zoom-in-95 flex flex-col overflow-hidden rounded-xl border shadow-md duration-300 sm:rounded-2xl sm:shadow-xl'
               >
                 <div className='group relative aspect-video w-full overflow-hidden bg-black'>
-                  {m.preview || m.embedThumbnailUrl ? (
+                  {m.file?.type?.startsWith('video/') && m.preview ? (
+                    <VideoPreviewPlayer
+                      src={m.preview}
+                      onTimeUpdate={(t) => updateItem({ thumbnailSeconds: Math.floor(t) })}
+                    />
+                  ) : m.preview || m.embedThumbnailUrl ? (
                     <img src={m.preview ?? m.embedThumbnailUrl} className='h-full w-full object-cover' alt='' />
-                  ) : m.file?.type?.startsWith('video/') ? (
-                    <div className='flex h-full w-full flex-col items-center justify-center gap-1.5 bg-gradient-to-b from-slate-800 to-slate-950 px-3 text-center'>
-                      <Film className='text-slate-500' size={36} aria-hidden />
-                      <p className='text-[12px] font-medium text-slate-300'>Preview shortly</p>
-                      <p className='text-[12px] leading-snug text-slate-500'>
-                        Can’t preview this file — it will still upload, and a thumbnail will appear after processing.
-                      </p>
-                    </div>
                   ) : (
                     <div className='flex h-full w-full flex-col items-center justify-center gap-1 bg-gradient-to-b from-slate-800 to-slate-950 px-3 text-center'>
                       <Film className='text-slate-500 opacity-50' size={40} aria-hidden />
@@ -391,10 +389,173 @@ const MediaUpload = ({ onMediaChanged, isMultiPitch, variant = 'default' }: Prop
                       </div>
                     </div>
                   )}
+
+                  {/* Thumbnail picker for uploaded video files */}
+                  {m.file?.type?.startsWith('video/') && (
+                    <VideoThumbnailField
+                      file={m.file}
+                      thumbnailSeconds={m.thumbnailSeconds}
+                      onChange={(s) => updateItem({ thumbnailSeconds: s })}
+                    />
+                  )}
                 </div>
               </div>
             );
           })}
+        </div>
+      )}
+    </div>
+  );
+};
+
+/** Shows a video player in the card preview area. The user can seek to any position,
+ *  and the current time is automatically used as the thumbnail timestamp. */
+const VideoPreviewPlayer = ({ src, onTimeUpdate }: { src: string; onTimeUpdate: (seconds: number) => void }) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const initializedRef = useRef(false);
+
+  const handleLoadedMetadata = () => {
+    if (initializedRef.current) return;
+    initializedRef.current = true;
+    const video = videoRef.current;
+    if (!video) return;
+    const dur = video.duration || 0;
+    // Default to -10 seconds from end
+    const target = dur > 10 ? dur - 10 : 0;
+    video.currentTime = target;
+    onTimeUpdate(Math.floor(target));
+  };
+
+  return (
+    <video
+      ref={videoRef}
+      src={src}
+      className='h-full w-full object-contain'
+      controls
+      preload='metadata'
+      onLoadedMetadata={handleLoadedMetadata}
+      onTimeUpdate={() => {
+        if (videoRef.current && !videoRef.current.seeking) {
+          onTimeUpdate(videoRef.current.currentTime);
+        }
+      }}
+      onSeeked={() => {
+        if (videoRef.current) {
+          onTimeUpdate(videoRef.current.currentTime);
+        }
+      }}
+    />
+  );
+};
+
+/** Compact inline thumbnail picker for a local video file being uploaded. */
+const VideoThumbnailField = ({
+  file,
+  thumbnailSeconds,
+  onChange,
+}: {
+  file: File;
+  thumbnailSeconds?: number;
+  onChange: (seconds: number) => void;
+}) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [showPicker, setShowPicker] = useState(false);
+  const objectUrlRef = useRef<string | null>(null);
+
+  // Create object URL for the local file
+  useEffect(() => {
+    const url = URL.createObjectURL(file);
+    objectUrlRef.current = url;
+    return () => {
+      URL.revokeObjectURL(url);
+      objectUrlRef.current = null;
+    };
+  }, [file]);
+
+  const handleLoadedMetadata = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    const dur = video.duration || 0;
+    setDuration(dur);
+    // Default to -10 seconds from end
+    const target = dur > 10 ? dur - 10 : 0;
+    video.currentTime = target;
+    setCurrentTime(target);
+    if (thumbnailSeconds == null) {
+      onChange(Math.floor(target));
+    }
+  };
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const time = Number(e.target.value);
+    setCurrentTime(time);
+    if (videoRef.current) {
+      videoRef.current.currentTime = time;
+    }
+    onChange(Math.floor(time));
+  };
+
+  const formatTime = (seconds: number): string => {
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
+
+  return (
+    <div className='border-surface-border/30 space-y-1.5 border-t border-dashed pt-1.5'>
+      <button
+        type='button'
+        onClick={() => setShowPicker(!showPicker)}
+        className='flex w-full items-center gap-2 rounded-lg px-1 py-1 text-left text-[12px] font-medium text-slate-400 transition-colors hover:bg-white/5 hover:text-slate-200'
+      >
+        <Image size={14} className='shrink-0' />
+        <span>Thumbnail</span>
+        <span className='ml-auto text-[11px] text-slate-500'>
+          {thumbnailSeconds != null ? formatTime(thumbnailSeconds) : 'auto (-10s)'}
+        </span>
+      </button>
+
+      {showPicker && (
+        <div className='space-y-2 rounded-lg bg-black/30 p-2'>
+          <video
+            ref={videoRef}
+            src={objectUrlRef.current ?? undefined}
+            className='w-full rounded-lg'
+            controls
+            preload='metadata'
+            onLoadedMetadata={handleLoadedMetadata}
+            onTimeUpdate={() => {
+              if (videoRef.current && !videoRef.current.seeking) {
+                setCurrentTime(videoRef.current.currentTime);
+              }
+            }}
+            onSeeked={() => {
+              if (videoRef.current) {
+                setCurrentTime(videoRef.current.currentTime);
+                onChange(Math.floor(videoRef.current.currentTime));
+              }
+            }}
+          />
+          {duration > 0 && (
+            <div className='space-y-1'>
+              <div className='flex items-center justify-between'>
+                <span className='text-[11px] text-slate-400'>Position</span>
+                <span className='text-[11px] text-slate-500 tabular-nums'>{formatTime(currentTime)}</span>
+              </div>
+              <input
+                type='range'
+                min={0}
+                max={Math.floor(duration)}
+                step={1}
+                value={Math.floor(currentTime)}
+                onChange={handleSeek}
+                className='accent-brand w-full cursor-pointer'
+                aria-label='Thumbnail position'
+              />
+            </div>
+          )}
         </div>
       )}
     </div>

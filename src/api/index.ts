@@ -15,6 +15,7 @@ export {
   postUserRegion,
   putMediaInfo,
   putMediaJpegRotate,
+  putMediaVideoThumbnail,
 } from './operations';
 
 export {

@@ -443,3 +443,15 @@ export function putMediaJpegRotate(accessToken: string | null, idMedia: number, 
     ...invalidateQueriesAfter,
   }).then((response) => ensureOkResponse(response, url));
 }
+
+export function putMediaVideoThumbnail(
+  accessToken: string | null,
+  mediaId: number,
+  thumbnailSeconds: number,
+): Promise<unknown> {
+  const url = `/media/video/thumbnail?mediaId=${mediaId}&thumbnailSeconds=${thumbnailSeconds}`;
+  return makeAuthenticatedRequest(accessToken, url, {
+    method: 'PUT',
+    ...invalidateQueriesAfter,
+  }).then((response) => ensureOkResponse(response, url));
+}

@@ -14,6 +14,7 @@ import {
   moveMedia,
   putMediaInfo,
   putMediaJpegRotate,
+  putMediaVideoThumbnail,
   setMediaAsAvatar,
 } from '../../../api';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -26,6 +27,7 @@ import { VideoProcessingPlaceholder } from './VideoProcessingPlaceholder';
 import { Loading } from '../../ui/StatusWidgets';
 import MediaEditModal from './MediaEditModal';
 import MediaModal from './MediaModal';
+import VideoThumbnailPicker from './VideoThumbnailPicker';
 type MediaItem = components['schemas']['Media'];
 type ProblemSection = components['schemas']['ProblemSection'];
 type Props = Pick<ComponentProps<typeof MediaModal>, 'optProblemId'> & {
@@ -138,6 +140,7 @@ const Media = ({
   const [isSaving, setIsSaving] = useState(false);
   const [m, setM] = useState<MediaItem | null>(null);
   const [editM, setEditM] = useState<MediaItem | null>(null);
+  const [thumbnailPickerM, setThumbnailPickerM] = useState<MediaItem | null>(null);
   const [autoPlayVideo, setAutoPlayVideo] = useState(false);
   const { isLoading, getAccessTokenSilently } = useAuth0();
   const [confirmation, setConfirmation] = useState<{ message: string; action: () => void } | null>(null);
@@ -347,6 +350,19 @@ const Media = ({
           onCloseWithoutReload={() => setEditM(null)}
         />
       )}{' '}
+      {thumbnailPickerM && (
+        <VideoThumbnailPicker
+          m={thumbnailPickerM}
+          onClose={() => setThumbnailPickerM(null)}
+          onSave={async (mediaId, timestampSeconds) => {
+            const token = await getAccessTokenSilently();
+            await putMediaVideoThumbnail(token, mediaId, timestampSeconds);
+            setThumbnailPickerM(null);
+            // Close the media modal so the page re-fetches with the new thumbnail
+            closeModal();
+          }}
+        />
+      )}{' '}
       {m &&
         createPortal(
           <MediaModal
@@ -389,6 +405,7 @@ const Media = ({
                 action: () => executeMediaAction((token) => setMediaAsAvatar(token, mediaIdentityId(m.identity))),
               })
             }
+            onChangeThumbnail={() => setThumbnailPickerM(m)}
             orderableMedia={orderableMedia ?? []}
             carouselIndex={
               (carouselMedia?.findIndex((x) => mediaIdentityId(x.identity) === mediaIdentityId(m.identity)) ?? -1) + 1

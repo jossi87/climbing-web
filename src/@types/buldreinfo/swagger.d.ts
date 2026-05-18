@@ -862,6 +862,23 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/v2/media/video/thumbnail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update video thumbnail position */
+        put: operations["putMediaVideoThumbnail"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 };
 export type webhooks = Record<string, never>;
 export type components = {
@@ -1050,6 +1067,8 @@ export type components = {
             svgs?: components["schemas"]["Svg"][];
             mediaMetadata?: components["schemas"]["MediaMetadata"];
             embedUrl?: string;
+            /** Format: int32 */
+            thumbnailSeconds?: number;
             inherited?: boolean;
             /** Format: int32 */
             enableMoveToIdArea?: number;
@@ -1091,6 +1110,8 @@ export type components = {
             embedThumbnailUrl?: string;
             /** Format: int64 */
             embedMilliseconds?: number;
+            /** Format: int32 */
+            thumbnailSeconds?: number;
         };
         SectorProblem: {
             /** Format: int32 */
@@ -1923,8 +1944,8 @@ export type components = {
             value?: string;
             content?: Record<string, never>;
             fileName?: string;
-            simple?: boolean;
             formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
+            simple?: boolean;
             parameterizedHeaders?: {
                 empty?: boolean;
             } & {
@@ -4309,6 +4330,48 @@ export interface operations {
                 idMedia: number;
                 /** @description Degrees (90/180/270) */
                 degrees: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    putMediaVideoThumbnail: {
+        parameters: {
+            query?: {
+                mediaId?: number;
+                thumbnailSeconds?: number;
             };
             header?: never;
             path?: never;
