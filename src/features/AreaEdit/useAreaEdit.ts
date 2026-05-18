@@ -1,4 +1,5 @@
 import { useEffect, useReducer, useCallback } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useArea, usePostData } from '../../api';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { neverGuard } from '../../utils/neverGuard';
@@ -138,6 +139,7 @@ const reducer = (state: State, update: Update): State => {
 export const useAreaEdit = ({ areaId }: { areaId: number }) => {
   const [state, dispatch] = useReducer(reducer, DEFAULT_STATE);
   const { data, status, isLoading } = useArea(areaId);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (status === 'success' && data) {
@@ -185,6 +187,14 @@ export const useAreaEdit = ({ areaId }: { areaId: number }) => {
       headers: { Accept: 'application/json' },
       consistencyAction: 'nop',
       invalidateActivityFeed: true,
+    },
+    onSuccess: (redirect) => {
+      const id = redirect.idArea && redirect.idArea > 0 ? redirect.idArea : areaId;
+      if (id > 0) {
+        queryClient.invalidateQueries({
+          queryKey: ['/areas', { id }],
+        });
+      }
     },
   });
 
