@@ -133,7 +133,12 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
   const showTodoRow = todoNames != null;
 
   const triviaText = (data.trivia ?? '').trim();
-  const showTriviaBlock = triviaText.length > 0 || (data.triviaMedia?.length ?? 0) > 0;
+  const hasTriviaMedia = (data.triviaMedia?.length ?? 0) > 0;
+  const showTriviaBlock = triviaText.length > 0 || hasTriviaMedia;
+  /** When there are only trivia images (no text), use `items-start` so the "Trivia:" label
+   *  aligns to the top of the images instead of baseline-aligning with the bottom of the tiles. */
+  const triviaRowClass =
+    hasTriviaMedia && triviaText.length === 0 ? rowClass.replace('sm:items-baseline', 'sm:items-start') : rowClass;
 
   if (!showAidBlock && !showFreeBlock && !showRouteMeta && !showTodoRow && !showTriviaBlock) return null;
 
@@ -216,7 +221,7 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
       ) : null}
 
       {showTriviaBlock && (
-        <div className={rowClass}>
+        <div className={triviaRowClass}>
           <span className={leadClass}>Trivia:</span>
           {factsBand([
             <div key='trivia-inline' className='flex min-w-0 flex-1 flex-col gap-2 sm:gap-2.5'>

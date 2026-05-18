@@ -110,45 +110,47 @@ const VideoThumbnailPicker = ({ m, onClose, onSave }: Props) => {
         </div>
 
         {/* Body */}
-        <div className='min-h-0 space-y-4 overflow-y-auto overscroll-contain px-4 py-3.5 text-left max-sm:flex-1 sm:max-h-[calc(min(94dvh,56rem)-9.5rem)] sm:flex-none sm:space-y-5 sm:px-6 sm:py-4'>
-          {/* Video player */}
-          <div className='bg-surface-nav border-surface-border overflow-hidden rounded-xl border'>
-            <video
-              ref={videoRef}
-              src={videoUrl}
-              className='w-full'
-              controls
-              preload='metadata'
-              onTimeUpdate={handleTimeUpdate}
-              onLoadedMetadata={handleLoadedMetadata}
-              onSeeked={() => setIsSeeking(false)}
-              onSeeking={() => setIsSeeking(true)}
-            />
-          </div>
-
-          {/* Seek slider */}
-          {duration > 0 && (
-            <div className='space-y-2'>
-              <div className='flex items-center justify-between'>
-                <label className={cn('ml-1', fieldLabelClass)}>Thumbnail position</label>
-                <span className='type-small text-slate-400 tabular-nums'>{formatTime(currentTime)}</span>
-              </div>
-              <input
-                type='range'
-                min={0}
-                max={Math.floor(duration)}
-                step={1}
-                value={Math.floor(currentTime)}
-                onChange={handleSeek}
-                className='accent-brand w-full cursor-pointer'
-                aria-label='Seek to timestamp'
+        <div className='min-h-0 overflow-y-auto overscroll-contain px-4 py-3.5 text-left max-sm:flex-1 sm:max-h-[calc(min(94dvh,56rem)-9.5rem)] sm:flex-none sm:px-6 sm:py-4'>
+          <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5'>
+            {/* Video player */}
+            <div className='bg-surface-nav border-surface-border min-h-0 overflow-hidden rounded-xl border sm:min-w-0 sm:flex-1'>
+              <video
+                ref={videoRef}
+                src={videoUrl}
+                className='block max-h-[50vh] w-full sm:max-h-[55vh]'
+                controls
+                preload='metadata'
+                onTimeUpdate={handleTimeUpdate}
+                onLoadedMetadata={handleLoadedMetadata}
+                onSeeked={() => setIsSeeking(false)}
+                onSeeking={() => setIsSeeking(true)}
               />
-              <div className='flex justify-between text-[11px] text-slate-500 tabular-nums'>
-                <span>0:00</span>
-                <span>{formatTime(duration)}</span>
-              </div>
             </div>
-          )}
+
+            {/* Seek slider */}
+            {duration > 0 && (
+              <div className='space-y-2 sm:w-56 sm:shrink-0 sm:self-stretch sm:pt-1'>
+                <div className='flex items-center justify-between sm:flex-col sm:items-start sm:gap-1.5'>
+                  <label className={cn('ml-1', fieldLabelClass)}>Thumbnail position</label>
+                  <span className='type-small text-slate-400 tabular-nums'>{formatTime(currentTime)}</span>
+                </div>
+                <input
+                  type='range'
+                  min={0}
+                  max={Math.floor(duration)}
+                  step={1}
+                  value={Math.floor(currentTime)}
+                  onChange={handleSeek}
+                  className='accent-brand w-full cursor-pointer sm:min-h-0 sm:flex-1'
+                  aria-label='Seek to timestamp'
+                />
+                <div className='flex justify-between text-[11px] text-slate-500 tabular-nums'>
+                  <span>0:00</span>
+                  <span>{formatTime(duration)}</span>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Footer */}
