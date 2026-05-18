@@ -174,6 +174,7 @@ export const SvgViewer = ({
     problemIdHoveredNum,
     setProblemIdHovered,
     pitchNum,
+    isBouldering,
   ]);
 
   return (
