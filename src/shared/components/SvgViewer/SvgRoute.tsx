@@ -20,7 +20,6 @@ type Props = {
   problemIdHovered: number;
   setProblemIdHovered?: (problemId: number | null) => void;
   pitch: number;
-  isBouldering?: boolean;
 };
 
 export const SvgRoute = ({
@@ -37,7 +36,6 @@ export const SvgRoute = ({
   problemIdHovered,
   setProblemIdHovered,
   pitch,
-  isBouldering,
 }: Props) => {
   // On mobile the SVG viewBox is scaled down to fit a small viewport, making
   // stroke widths proportionally thinner. Apply a multiplier so lines remain
@@ -181,18 +179,14 @@ export const SvgRoute = ({
       }}
       onClick={() => {
         if (!thumbnail) {
-          if (isBouldering) {
-            navigate('/problem/' + svg.problemId);
-          } else {
-            let url = '/problem/' + svg.problemId + '/' + mediaId;
-            if (
-              optProblemId === svg.problemId &&
-              ((!pitch && (svg.pitch ?? 0) > 0) || (pitch && (svg.pitch ?? 0) != pitch))
-            ) {
-              url += '/' + (svg.pitch ?? 0);
-            }
-            navigate(url);
+          let url = '/problem/' + svg.problemId + '/' + mediaId;
+          if (
+            optProblemId === svg.problemId &&
+            ((!pitch && (svg.pitch ?? 0) > 0) || (pitch && (svg.pitch ?? 0) != pitch))
+          ) {
+            url += '/' + (svg.pitch ?? 0);
           }
+          navigate(url);
         }
       }}
       onMouseEnter={() => setProblemIdHovered && setProblemIdHovered(svg.problemId ?? null)}

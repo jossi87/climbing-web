@@ -24,7 +24,6 @@ type SvgProps = {
   showText: boolean;
   problemIdHovered?: number | null;
   setProblemIdHovered?: (problemId: number | null) => void;
-  isBouldering?: boolean;
 };
 
 export const SvgViewer = ({
@@ -38,7 +37,6 @@ export const SvgViewer = ({
   showText,
   problemIdHovered,
   setProblemIdHovered,
-  isBouldering,
 }: SvgProps) => {
   const pitchNum = pitch ?? 0;
   const optProblemIdNum = optProblemId ?? 0;
@@ -158,7 +156,6 @@ export const SvgViewer = ({
           problemIdHovered={problemIdHoveredNum}
           setProblemIdHovered={setProblemIdHovered}
           pitch={pitchNum}
-          isBouldering={isBouldering}
         />
       ));
   }, [
@@ -174,7 +171,6 @@ export const SvgViewer = ({
     problemIdHoveredNum,
     setProblemIdHovered,
     pitchNum,
-    isBouldering,
   ]);
 
   return (
@@ -191,12 +187,12 @@ export const SvgViewer = ({
           'buldreinfo-svg absolute inset-0 h-full w-full select-none',
           /**
            * Thumbs: `touch-none` blocked vertical page scroll on mobile (SVG ate the gesture). Match photo tiles:
-           * don’t capture pointers — the card wrapper handles open; scrolling uses the document/body chain.
+           * don't capture pointers — the card wrapper handles open; scrolling uses the document/body chain.
            */
           thumb ? 'pointer-events-none' : 'touch-pan-pinch',
         )}
         viewBox={`0 0 ${imgW} ${imgH}`}
-        /** Thumbs: `meet` (like `object-contain`) so portrait SVG topos aren’t cropped; full view keeps `slice`. */
+        /** Thumbs: `meet` (like `object-contain`) so portrait SVG topos aren't cropped; full view keeps `slice`. */
         preserveAspectRatio='xMidYMid meet'
         onClick={(e: MouseEvent<SVGSVGElement>) => {
           if (e.target === e.currentTarget && close) close();

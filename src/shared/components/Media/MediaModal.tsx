@@ -755,7 +755,6 @@ const MediaModal = ({
                     problemIdHovered={problemIdHovered}
                     setProblemIdHovered={setProblemIdHovered}
                     className='h-full w-full object-contain'
-                    isBouldering={isBouldering}
                   />
                 </div>
               ) : (
