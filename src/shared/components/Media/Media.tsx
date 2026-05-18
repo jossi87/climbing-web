@@ -415,6 +415,7 @@ const Media = ({
             gotoPrev={gotoPrev}
             gotoNext={gotoNext}
             playVideo={() => setAutoPlayVideo(true)}
+            stopVideo={() => setAutoPlayVideo(false)}
             optProblemId={optProblemId}
           />,
           document.body,

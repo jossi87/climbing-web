@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Image, Play } from 'lucide-react';
+import { X, Image } from 'lucide-react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { getMediaFileUrl, mediaIdentityId, mediaIdentityVersionStamp } from '../../../api';
 import { cn } from '../../../lib/utils';
@@ -16,33 +16,16 @@ type Props = {
 
 /**
  * Modal that lets users seek through a video and pick a timestamp to use as the thumbnail.
- * Shows a preview of the selected frame.
  */
 const VideoThumbnailPicker = ({ m, onClose, onSave }: Props) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isSeeking, setIsSeeking] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   const mediaId = mediaIdentityId(m.identity);
   const videoUrl = getMediaFileUrl(mediaId, mediaIdentityVersionStamp(m.identity), true);
-
-  const captureFrame = useCallback(() => {
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    if (!video || !canvas) return;
-
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    setPreviewUrl(canvas.toDataURL('image/jpeg', 0.92));
-  }, []);
 
   const handleTimeUpdate = useCallback(() => {
     if (!videoRef.current || isSeeking) return;
@@ -138,12 +121,8 @@ const VideoThumbnailPicker = ({ m, onClose, onSave }: Props) => {
               preload='metadata'
               onTimeUpdate={handleTimeUpdate}
               onLoadedMetadata={handleLoadedMetadata}
-              onSeeked={() => {
-                setIsSeeking(false);
-                captureFrame();
-              }}
+              onSeeked={() => setIsSeeking(false)}
               onSeeking={() => setIsSeeking(true)}
-              onPlay={captureFrame}
             />
           </div>
 
@@ -170,22 +149,6 @@ const VideoThumbnailPicker = ({ m, onClose, onSave }: Props) => {
               </div>
             </div>
           )}
-
-          {/* Preview of selected frame */}
-          {previewUrl && (
-            <div className='space-y-1.5'>
-              <label className={cn('ml-1', fieldLabelClass)}>Preview</label>
-              <div className='bg-surface-nav border-surface-border relative overflow-hidden rounded-xl border'>
-                <img src={previewUrl} alt='Thumbnail preview' className='w-full object-contain' />
-                <div className='pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100'>
-                  <Play size={32} className='text-slate-200/60' />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Hidden canvas for frame capture */}
-          <canvas ref={canvasRef} className='hidden' />
         </div>
 
         {/* Footer */}

@@ -213,6 +213,7 @@ type Props = {
   gotoPrev: () => void;
   gotoNext: () => void;
   playVideo: () => void;
+  stopVideo: () => void;
   autoPlayVideo: boolean;
   optProblemId: number | null;
 };
@@ -240,6 +241,7 @@ const MediaModal = ({
   gotoPrev,
   gotoNext,
   playVideo,
+  stopVideo,
   autoPlayVideo,
   optProblemId,
 }: Props) => {
@@ -685,12 +687,26 @@ const MediaModal = ({
                     </>
                   )}
                   {canEdit && (
-                    <button type='button' onClick={onEdit} className={mediaMenuItemClass}>
+                    <button
+                      type='button'
+                      onClick={() => {
+                        stopVideo();
+                        onEdit();
+                      }}
+                      className={mediaMenuItemClass}
+                    >
                       <Edit size={14} className={mediaMenuIconClass} strokeWidth={2} /> Edit Information
                     </button>
                   )}
                   {canChangeThumbnail && (
-                    <button type='button' onClick={onChangeThumbnail} className={mediaMenuItemClass}>
+                    <button
+                      type='button'
+                      onClick={() => {
+                        stopVideo();
+                        onChangeThumbnail();
+                      }}
+                      className={mediaMenuItemClass}
+                    >
                       <Image size={14} className={mediaMenuIconClass} strokeWidth={2} /> Change thumbnail
                     </button>
                   )}
