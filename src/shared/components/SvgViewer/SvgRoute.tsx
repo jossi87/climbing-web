@@ -11,6 +11,7 @@ type Props = {
   thumbnail: boolean;
   showText: boolean;
   scale: number;
+  mobile: boolean;
   mediaId: number;
   mediaHeight: number;
   mediaWidth: number;
@@ -19,6 +20,7 @@ type Props = {
   problemIdHovered: number;
   setProblemIdHovered?: (problemId: number | null) => void;
   pitch: number;
+  isBouldering?: boolean;
 };
 
 export const SvgRoute = ({
@@ -26,6 +28,7 @@ export const SvgRoute = ({
   thumbnail,
   showText,
   scale,
+  mobile,
   mediaId,
   mediaHeight,
   mediaWidth,
@@ -34,7 +37,12 @@ export const SvgRoute = ({
   problemIdHovered,
   setProblemIdHovered,
   pitch,
+  isBouldering,
 }: Props) => {
+  // On mobile the SVG viewBox is scaled down to fit a small viewport, making
+  // stroke widths proportionally thinner. Apply a multiplier so lines remain
+  // visible without affecting desktop appearance.
+  const mobileScale = mobile ? 1.5 : 1;
   const navigate = useNavigate();
   const path = makeAbsolute(parseSVG(svg.path ?? '')); // Note: mutates the commands in place!
   if (!path || path.length === 0) {
@@ -93,22 +101,22 @@ export const SvgRoute = ({
         key={[a.x, a.y].join('x')}
         fill={groupColor}
         stroke='black'
-        strokeWidth={scale * 2 * hoveredOrActiveScale * (thumbnail ? 3 : 1)}
+        strokeWidth={scale * 2 * hoveredOrActiveScale * (thumbnail ? 3 : 1) * mobileScale}
         cx={a.x}
         cy={a.y}
-        r={8 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1)}
+        r={8 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1) * mobileScale}
       />
     ));
   const tradBelayStations =
     svg.tradBelayStations &&
     (JSON.parse(svg.tradBelayStations ?? '[]') as Anchor[]).map((a: Anchor) => {
-      const r = 8 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1);
+      const r = 8 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1) * mobileScale;
       return (
         <polygon
           key={[a.x, a.y].join('x')}
           fill='white'
           stroke='black'
-          strokeWidth={scale * 2 * hoveredOrActiveScale * (thumbnail ? 3 : 1)}
+          strokeWidth={scale * 2 * hoveredOrActiveScale * (thumbnail ? 3 : 1) * mobileScale}
           points={`${a.x},${a.y - r}, ${a.x - r},${a.y + r}, ${a.x + r},${a.y + r}`}
         />
       );
@@ -173,14 +181,18 @@ export const SvgRoute = ({
       }}
       onClick={() => {
         if (!thumbnail) {
-          let url = '/problem/' + svg.problemId + '/' + mediaId;
-          if (
-            optProblemId === svg.problemId &&
-            ((!pitch && (svg.pitch ?? 0) > 0) || (pitch && (svg.pitch ?? 0) != pitch))
-          ) {
-            url += '/' + (svg.pitch ?? 0);
+          if (isBouldering) {
+            navigate('/problem/' + svg.problemId);
+          } else {
+            let url = '/problem/' + svg.problemId + '/' + mediaId;
+            if (
+              optProblemId === svg.problemId &&
+              ((!pitch && (svg.pitch ?? 0) > 0) || (pitch && (svg.pitch ?? 0) != pitch))
+            ) {
+              url += '/' + (svg.pitch ?? 0);
+            }
+            navigate(url);
           }
-          navigate(url);
         }
       }}
       onMouseEnter={() => setProblemIdHovered && setProblemIdHovered(svg.problemId ?? null)}
@@ -197,12 +209,12 @@ export const SvgRoute = ({
       <use
         xlinkHref={`#${pathIdentifier}`}
         style={{ fill: 'none', stroke: 'black' }}
-        strokeWidth={5 * scale * (thumbnail ? 3 : 1)}
+        strokeWidth={5 * scale * (thumbnail ? 3 : 1) * mobileScale}
       />
       <use
         xlinkHref={`#${pathIdentifier}`}
         style={{ fill: 'none', stroke: groupColor }}
-        strokeWidth={2 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1)}
+        strokeWidth={2 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1) * mobileScale}
       />
       <text
         fill={textColor}
@@ -225,10 +237,10 @@ export const SvgRoute = ({
         <circle
           fill={groupColor}
           stroke='black'
-          strokeWidth={scale * 2 * hoveredOrActiveScale * (thumbnail ? 3 : 1)}
+          strokeWidth={scale * 2 * hoveredOrActiveScale * (thumbnail ? 3 : 1) * mobileScale}
           cx={path[ixAnchor].x}
           cy={path[ixAnchor].y}
-          r={8 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1)}
+          r={8 * scale * hoveredOrActiveScale * (thumbnail ? 3 : 1) * mobileScale}
         />
       )}
       {tradBelayStations}

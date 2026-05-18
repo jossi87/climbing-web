@@ -2,7 +2,7 @@ import { getMediaFileUrl, mediaIdentityId, mediaIdentityVersionStamp } from '../
 import { SvgRoute } from './SvgRoute';
 import { Descent, Rappel } from '../../../utils/svg-utils';
 import type { components } from '../../../@types/buldreinfo/swagger';
-import { type CSSProperties, type MouseEvent, useMemo } from 'react';
+import { type CSSProperties, type MouseEvent, useEffect, useMemo, useState } from 'react';
 import {
   calculateMediaRegion,
   isPathVisible,
@@ -24,6 +24,7 @@ type SvgProps = {
   showText: boolean;
   problemIdHovered?: number | null;
   setProblemIdHovered?: (problemId: number | null) => void;
+  isBouldering?: boolean;
 };
 
 export const SvgViewer = ({
@@ -37,11 +38,20 @@ export const SvgViewer = ({
   showText,
   problemIdHovered,
   setProblemIdHovered,
+  isBouldering,
 }: SvgProps) => {
   const pitchNum = pitch ?? 0;
   const optProblemIdNum = optProblemId ?? 0;
   const problemIdHoveredNum = problemIdHovered ?? 0;
   const mediaFileNumericId = mediaIdentityId(m.identity);
+
+  // Detect mobile viewport so SVG stroke widths can be scaled up for readability
+  const [mobile, setMobile] = useState(() => window.innerWidth <= 768);
+  useEffect(() => {
+    const handleResize = () => setMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Process dimensions and regions
   const processed = useMemo(() => {
@@ -139,6 +149,7 @@ export const SvgViewer = ({
           thumbnail={thumb}
           showText={showText}
           scale={scale}
+          mobile={mobile}
           mediaId={mediaFileNumericId}
           mediaHeight={imgH}
           mediaWidth={imgW}
@@ -147,6 +158,7 @@ export const SvgViewer = ({
           problemIdHovered={problemIdHoveredNum}
           setProblemIdHovered={setProblemIdHovered}
           pitch={pitchNum}
+          isBouldering={isBouldering}
         />
       ));
   }, [
@@ -155,6 +167,7 @@ export const SvgViewer = ({
     thumb,
     showText,
     scale,
+    mobile,
     imgH,
     imgW,
     optProblemIdNum,
