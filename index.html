@@ -5,7 +5,6 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- `display=optional` avoids swap-induced layout shift (CrUX desktop CLS was ~0.19); may use system UI font on very slow first paint. -->
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=optional" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=optional" media="print" onload="this.media='all'" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=6.0, minimum-scale=1.0, user-scalable=yes" />
@@ -13,7 +12,6 @@
     <meta name="author" content="Jostein Øygarden" />
     <meta name="theme-color" content="#060709" />
     <script>
-      /* Theme order: saved `theme_preference` → OS light/dark → default dark (keep in sync with `themeStorage.ts`). */
       (function () {
         try {
           var k = 'theme_preference';
@@ -47,7 +45,6 @@
         }
       })();
     </script>
-    <title>Climbing Web</title>
   </head>
   <body>
     <div id="root"></div>
