@@ -12,6 +12,7 @@ type UploadMedia = {
   embedVideoUrl?: string;
   embedThumbnailUrl?: string;
   embedMilliseconds?: number;
+  thumbnailSeconds?: number;
 };
 import { uploadFilenameForApi } from '../utils/uploadFilenameForApi';
 import { downloadFileWithProgress, getUrl, makeAuthenticatedRequest } from './utils';
@@ -91,6 +92,7 @@ export function postComment(
       embedVideoUrl: m.embedVideoUrl,
       embedThumbnailUrl: m.embedThumbnailUrl,
       embedMilliseconds: m.embedMilliseconds,
+      thumbnailSeconds: m.thumbnailSeconds,
     };
   });
   formData.append(
@@ -181,6 +183,7 @@ export function postProblem(
       embedVideoUrl: m.embedVideoUrl,
       embedThumbnailUrl: m.embedThumbnailUrl,
       embedMilliseconds: m.embedMilliseconds,
+      thumbnailSeconds: m.thumbnailSeconds,
     };
   });
   formData.append(
@@ -248,6 +251,7 @@ export function postProblemMedia(
       embedVideoUrl: m.embedVideoUrl,
       embedThumbnailUrl: m.embedThumbnailUrl,
       embedMilliseconds: m.embedMilliseconds,
+      thumbnailSeconds: m.thumbnailSeconds,
     };
   });
   formData.append('json', JSON.stringify({ id, newMedia }));
@@ -333,6 +337,7 @@ export function postSector(
       embedVideoUrl: m.embedVideoUrl,
       embedThumbnailUrl: m.embedThumbnailUrl,
       embedMilliseconds: m.embedMilliseconds,
+      thumbnailSeconds: m.thumbnailSeconds,
     };
   });
   formData.append(

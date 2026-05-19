@@ -160,6 +160,7 @@ export const useAreaEdit = ({ areaId }: { areaId: number }) => {
         embedVideoUrl: m.embedVideoUrl,
         embedThumbnailUrl: m.embedThumbnailUrl,
         embedMilliseconds: m.embedMilliseconds,
+        thumbnailSeconds: m.thumbnailSeconds,
       }));
 
       formData.append(
