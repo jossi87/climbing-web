@@ -1423,6 +1423,16 @@ export type components = {
             description?: string;
             users?: components["schemas"]["User"][];
         };
+        Neighbour: {
+            /** Format: int32 */
+            id?: number;
+            /** Format: int32 */
+            nr?: number;
+            name?: string;
+            grade?: string;
+            ticked?: boolean;
+            todo?: boolean;
+        };
         Problem: {
             redirectUrl?: string;
             /** Format: int32 */
@@ -1454,8 +1464,7 @@ export type components = {
             sectorWallDirectionManual?: components["schemas"]["CompassDirection"];
             sectorApproach?: components["schemas"]["Slope"];
             sectorDescent?: components["schemas"]["Slope"];
-            neighbourPrev?: components["schemas"]["SectorProblem"];
-            neighbourNext?: components["schemas"]["SectorProblem"];
+            neighbours?: components["schemas"]["Neighbour"][];
             /** Format: int32 */
             id?: number;
             broken?: string;

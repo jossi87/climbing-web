@@ -5,11 +5,10 @@ import type { components } from '../../@types/buldreinfo/swagger';
 import { problemOverviewFactClass } from './ProblemAscentOverview';
 import { problemSurroundingsLeadClass, problemSurroundingsRowClass } from './problemSurroundingsLayout';
 
-type SectorProblem = components['schemas']['SectorProblem'];
+type Neighbour = components['schemas']['Neighbour'];
 
 type Props = {
-  neighbourPrev?: SectorProblem;
-  neighbourNext?: SectorProblem;
+  neighbours?: Neighbour[];
 };
 
 /** Same typography as neighbour links — also used for boulder “on rock” inline list. */
@@ -18,8 +17,8 @@ export function SectorProblemLink({
   relation,
   currentProblemId,
 }: {
-  problem: SectorProblem;
-  relation: 'prev' | 'next' | 'rock';
+  problem: Neighbour;
+  relation: 'neighbour' | 'rock';
   currentProblemId?: number;
 }) {
   const id = problem.id;
@@ -28,14 +27,11 @@ export function SectorProblemLink({
   const name = problem.name ?? '';
   const grade = problem.grade ?? '';
   const label = `#${nr} ${name} · ${grade}`;
-  const title =
-    relation === 'prev' ? `Previous: ${label}` : relation === 'next' ? `Next: ${label}` : `Same rock: ${label}`;
+  const title = relation === 'rock' ? `Same rock: ${label}` : label;
   const ariaLabel =
-    relation === 'prev'
-      ? `Previous route: number ${nr}, ${name}, grade ${grade}`
-      : relation === 'next'
-        ? `Next route: number ${nr}, ${name}, grade ${grade}`
-        : `Route on same rock: number ${nr}, ${name}, grade ${grade}`;
+    relation === 'rock'
+      ? `Route on same rock: number ${nr}, ${name}, grade ${grade}`
+      : `Neighbour: number ${nr}, ${name}, grade ${grade}`;
   const isCurrent = currentProblemId != null && id === currentProblemId;
   const routeTicked = !!problem.ticked;
   const routeTodo = !!problem.todo && !routeTicked;
@@ -74,20 +70,17 @@ export function SectorProblemLink({
   );
 }
 
-function NeighbourLink({ direction, problem }: { direction: 'prev' | 'next'; problem: SectorProblem }) {
-  return <SectorProblemLink problem={problem} relation={direction} />;
-}
-
 /** Adjacent routes in the sector — matches Problem ascent metadata row typography. */
-export function ProblemNeighboursRow({ neighbourPrev, neighbourNext }: Props) {
-  if (!neighbourPrev?.id && !neighbourNext?.id) return null;
+export function ProblemNeighboursRow({ neighbours }: Props) {
+  if (!neighbours?.length) return null;
 
   return (
     <p className={problemSurroundingsRowClass}>
       <span className={problemSurroundingsLeadClass}>Neighbours:</span>
       <span className='inline-flex w-full min-w-0 flex-wrap items-baseline gap-x-4 gap-y-1 sm:flex-1'>
-        {neighbourPrev?.id != null ? <NeighbourLink direction='prev' problem={neighbourPrev} /> : null}
-        {neighbourNext?.id != null ? <NeighbourLink direction='next' problem={neighbourNext} /> : null}
+        {neighbours.map((n) => (
+          <SectorProblemLink key={n.id} problem={n} relation='neighbour' />
+        ))}
       </span>
     </p>
   );

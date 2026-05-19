@@ -413,15 +413,9 @@ function ProblemLoaded({
       )}
       <div className='space-y-2 sm:space-y-2.5'>
         {meta.isClimbing ? (
-          <ProblemNeighboursRow neighbourPrev={data.neighbourPrev} neighbourNext={data.neighbourNext} />
+          <ProblemNeighboursRow neighbours={data.neighbours} />
         ) : (
-          <ProblemBoulderRockOrNeighboursRow
-            sectorId={data.sectorId}
-            problemId={+problemId}
-            rock={data.rock}
-            neighbourPrev={data.neighbourPrev}
-            neighbourNext={data.neighbourNext}
-          />
+          <ProblemBoulderRockOrNeighboursRow problemId={+problemId} rock={data.rock} neighbours={data.neighbours} />
         )}
         <ProblemAscentOverview
           data={data}
