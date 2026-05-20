@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import { getMediaFileUrl, getMediaFileUrlSrcSet, mediaIdentityId, mediaIdentityVersionStamp } from '../../../api';
 import { SvgRoute } from '../SvgViewer/SvgRoute';
@@ -20,6 +20,7 @@ type Props = {
 
 export const ZoomableImage = ({ m, onExitZoom }: Props) => {
   const [loaded, setLoaded] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   // Hide body scrollbar while zoom overlay is active
   useEffect(() => {
@@ -29,6 +30,24 @@ export const ZoomableImage = ({ m, onExitZoom }: Props) => {
       document.body.style.overflow = prev;
     };
   }, []);
+
+  // Scroll to center when content loads and is larger than viewport
+  useEffect(() => {
+    if (!loaded) return;
+    const el = scrollRef.current;
+    if (!el) return;
+    const scrollW = el.scrollWidth;
+    const scrollH = el.scrollHeight;
+    const clientW = el.clientWidth;
+    const clientH = el.clientHeight;
+    if (scrollW > clientW || scrollH > clientH) {
+      el.scrollTo({
+        left: Math.max(0, (scrollW - clientW) / 2),
+        top: Math.max(0, (scrollH - clientH) / 2),
+        behavior: 'instant',
+      });
+    }
+  }, [loaded]);
 
   // ── image src (high-res) ──────────────────────────────────────────────
   const midId = mediaIdentityId(m.identity);
@@ -162,8 +181,8 @@ export const ZoomableImage = ({ m, onExitZoom }: Props) => {
         </div>
       )}
 
-      {/* Full-size content with native scroll */}
-      <div className='h-full w-full overflow-auto' onClick={(e) => e.stopPropagation()}>
+      {/* Full-size content with native scroll; centered when smaller than viewport */}
+      <div ref={scrollRef} className='flex h-full w-full flex-col overflow-auto' onClick={(e) => e.stopPropagation()}>
         {hasSvgs && svgOverlay ? (
           <>
             {/* Hidden img to preload the high-res image and signal when loaded */}
@@ -178,6 +197,8 @@ export const ZoomableImage = ({ m, onExitZoom }: Props) => {
               style={{
                 width: 'min(1920px, 150vw)',
                 height: 'auto',
+                marginTop: 'auto',
+                marginBottom: 'auto',
                 opacity: loaded ? 1 : 0,
                 transition: 'opacity 0.2s',
               }}
@@ -198,6 +219,8 @@ export const ZoomableImage = ({ m, onExitZoom }: Props) => {
               height: 'auto',
               maxWidth: 'none',
               maxHeight: 'none',
+              marginTop: 'auto',
+              marginBottom: 'auto',
               opacity: loaded ? 1 : 0,
               transition: 'opacity 0.2s',
             }}
