@@ -100,17 +100,17 @@ const About = () => {
             />
             <List>
               <ListItem>
-                Help keep the guide accurate. If you find any factual errors, typos, or outdated information, please
-                report them to a regional administrator or{' '}
-                <TextLink href='mailto:jostein.oygarden@gmail.com'>Jostein</TextLink>. You can also reach out here
-                regarding offensive or inappropriate content.
+                If you find any factual errors, typos, or outdated information, please report them to a regional
+                administrator <TextLink href='mailto:jostein.oygarden@gmail.com'>Jostein</TextLink>.
               </ListItem>
               <ListItem>
-                For guidance on creating welcoming route and boulder names, see the Norwegian Climbing Federation's{' '}
+                Names are given by the first ascensionists. For guidance on creating welcoming names, see the{' '}
                 <TextLink href='https://klatring.no/siteassets/dokumenter/klatrefelt-og-anlegg/klatrefelt/2022-retningslinjer-for-rutenavn-.pdf'>
-                  recommendations for route naming <ExternalLink className='inline h-3 w-3' />
+                  Norwegian Climbing Federation's recommendations for route naming{' '}
+                  <ExternalLink className='inline h-3 w-3' />
                 </TextLink>
-                .
+                . If you find any content offensive or inappropriate, please contact a regional administrator or{' '}
+                <TextLink href='mailto:jostein.oygarden@gmail.com'>Jostein</TextLink>.
               </ListItem>
             </List>
           </Card>
