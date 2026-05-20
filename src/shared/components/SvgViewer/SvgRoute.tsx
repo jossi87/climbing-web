@@ -140,17 +140,11 @@ export const SvgRoute = ({
     ));
   let info;
   if (showText && !thumbnail && optProblemId === svg.problemId && svg.pitch === 0) {
-    let text = `#${svg.nr} - ${svg.problemName} [${svg.problemGrade}]`;
-    if (svg.problemSubtype) {
-      text += ' - ' + svg.problemSubtype;
-    }
-    if (svg.ticked) {
-      text += ' - Ticked';
-    } else if (svg.todo) {
-      text += ' - In TODO-list';
-    }
-    if (svg.dangerous) {
-      text += ' - Flagged as dangerous';
+    const grade = svg.problemGrade?.trim();
+    const gradeDisplay = grade && grade !== '.' ? grade : null;
+    let text = `#${svg.nr} · ${svg.problemName}`;
+    if (gradeDisplay) {
+      text += ` · ${gradeDisplay}`;
     }
     info = (
       <text

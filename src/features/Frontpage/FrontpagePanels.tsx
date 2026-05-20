@@ -175,7 +175,7 @@ const PanelCard = ({
  * third line — the whole point of the redesign.
  */
 const rowClass = 'group/row flex items-start gap-3 px-4 py-2 sm:px-5 sm:py-2.5';
-const rowGridClass = 'min-w-0 flex-1 space-y-0.5 sm:space-y-1';
+const rowGridClass = 'min-w-0 flex-1 space-y-0 sm:space-y-0.5';
 const rowLineClass = 'flex items-baseline justify-between gap-3';
 /**
  * **Headline `<p>` size — locked to Activity feed (`listBody`)**: `13px` mobile, `14px` from `sm+`. Without this
@@ -213,7 +213,13 @@ const timeAgoClass =
  */
 const bylineRightClass =
   'shrink-0 max-w-[55%] truncate whitespace-nowrap text-right text-[11px] font-normal leading-tight tracking-tight text-slate-500 sm:text-[12px]';
-const problemLinkClass = designContract.typography.feed.routeTitle;
+/**
+ * **Expanded hit box for problem name links** — `inline-block` with `py-0.5 -my-0.5` adds 4px of invisible padding
+ * top and bottom that grows the clickable area without changing the visual spacing (the negative margin cancels the
+ * padding's effect on layout). Combined with the reduced `space-y` between lines, this makes the links much easier
+ * to tap without making the row feel taller.
+ */
+const problemLinkClass = cn(designContract.typography.feed.routeTitle, 'inline-block py-0.5 -my-0.5');
 
 /**
  * **Two-tier hierarchy** — bright headline, muted everything else (slate-50 headline, slate-400 secondary).
@@ -231,9 +237,18 @@ const sublineClass = 'm-0 min-w-0 truncate text-[11.5px] leading-tight text-slat
  */
 const commentBodyClass =
   'm-0 line-clamp-2 text-[11.5px] leading-tight text-slate-300 [overflow-wrap:anywhere] sm:text-[12px]';
+/**
+ * **Expanded hit box for inline links** — `inline-block py-0.5 -my-0.5` adds 4px of invisible padding top and bottom
+ * that grows the clickable area without changing the visual spacing (the negative margin cancels the padding's effect
+ * on layout). Applied to climber names, area links, and any other inline link in the feed rows.
+ */
+const hitBoxLink = 'inline-block py-0.5 -my-0.5';
 /** Climber-name links inside `NameList` — `slate-500` to match the trailing right-column tone (see {@link bylineRightClass}). */
-const nameLinkClass = 'font-normal text-slate-500 antialiased transition-colors hover:text-brand';
-const mutedLocationLinkClass = 'font-normal text-slate-400 antialiased transition-colors hover:text-brand';
+const nameLinkClass = cn('font-normal text-slate-500 antialiased transition-colors hover:text-brand', hitBoxLink);
+const mutedLocationLinkClass = cn(
+  'font-normal text-slate-400 antialiased transition-colors hover:text-brand',
+  hitBoxLink,
+);
 
 /**
  * Single-avatar halo so Recent Ascents / Last Comments match the First Ascents look (where `AvatarGroup` adds the ring
@@ -326,7 +341,7 @@ function LocationInline({
       ? nameLinkClass
       : tone === 'muted'
         ? mutedLocationLinkClass
-        : designContract.typography.feed.locationLink;
+        : cn(designContract.typography.feed.locationLink, hitBoxLink);
   return (
     <Link to={`/area/${areaId ?? 0}`} className={linkClass}>
       {areaName.trim()}
