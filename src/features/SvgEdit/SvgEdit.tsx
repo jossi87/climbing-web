@@ -35,6 +35,7 @@ import {
   X,
   Trash2,
   Spline,
+  ZoomIn,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
@@ -234,6 +235,7 @@ export const SvgEdit = ({
   const [activeTab, setActiveTab] = useState<EditorTab>('segment');
   const [selectedOverlay, setSelectedOverlay] = useState<OverlaySelection | null>(null);
   const [draggingOverlay, setDraggingOverlay] = useState<OverlaySelection | null>(null);
+  const [zoomMode, setZoomMode] = useState(false);
   const suppressNextSvgClickRef = useRef(false);
 
   useEffect(() => {
@@ -457,6 +459,15 @@ export const SvgEdit = ({
                   >
                     <Video size={14} strokeWidth={2.25} />
                   </Link>
+                  <button
+                    type='button'
+                    title={zoomMode ? 'Fit to screen' : 'Zoom and pan'}
+                    aria-label={zoomMode ? 'Fit to screen' : 'Zoom and pan'}
+                    className={cn(pageActionIconBtn, zoomMode ? pageActionIconBtnBrand : pageActionIconBtnGlass)}
+                    onClick={() => setZoomMode(!zoomMode)}
+                  >
+                    <ZoomIn size={14} strokeWidth={2.25} />
+                  </button>
                   <button
                     type='button'
                     title='Cancel'
@@ -773,12 +784,23 @@ export const SvgEdit = ({
             </div>
           </div>
 
-          <div className='border-surface-border relative w-full min-w-0 cursor-crosshair overflow-hidden bg-black select-none'>
+          <div
+            className={cn(
+              'border-surface-border relative w-full min-w-0 cursor-crosshair bg-black select-none',
+              zoomMode ? 'overflow-auto' : 'overflow-hidden',
+            )}
+            style={zoomMode ? { maxHeight: '100dvh' } : undefined}
+          >
             <svg
               viewBox={`0 0 ${w} ${h}`}
               onClick={handleOnClick}
               onMouseMove={(e) => dispatch({ action: 'mouse-move', ...getMouseCoords(e, true) })}
-              className={cn('block h-auto w-full', draggingOverlay && 'cursor-grabbing')}
+              className={cn(
+                'block select-none',
+                zoomMode ? 'h-auto' : 'h-auto w-full',
+                draggingOverlay && 'cursor-grabbing',
+              )}
+              style={zoomMode ? { width: 'min(1920px, 150vw)', maxWidth: 'none' } : undefined}
             >
               <image
                 ref={imageRef}

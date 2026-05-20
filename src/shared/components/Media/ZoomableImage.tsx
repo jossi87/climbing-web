@@ -123,7 +123,7 @@ export const ZoomableImage = ({ m, onExitZoom }: Props) => {
         xmlns='http://www.w3.org/2000/svg'
         overflow='visible'
         className='pointer-events-none block select-none'
-        style={{ width: imgW, height: imgH }}
+        style={{ width: 'min(1920px, 150vw)', height: 'auto' }}
         viewBox={`0 0 ${imgW} ${imgH}`}
         preserveAspectRatio='xMidYMid meet'
       >
@@ -176,8 +176,8 @@ export const ZoomableImage = ({ m, onExitZoom }: Props) => {
             />
             <div
               style={{
-                width: processed ? `${processed.imgW}px` : 'auto',
-                height: processed ? `${processed.imgH}px` : 'auto',
+                width: 'min(1920px, 150vw)',
+                height: 'auto',
                 opacity: loaded ? 1 : 0,
                 transition: 'opacity 0.2s',
               }}
