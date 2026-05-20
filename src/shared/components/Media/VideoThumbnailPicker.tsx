@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Image } from 'lucide-react';
+import { X, Image, Video } from 'lucide-react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { getMediaFileUrl, mediaIdentityId, mediaIdentityVersionStamp } from '../../../api';
 import { cn } from '../../../lib/utils';
@@ -15,22 +15,28 @@ type Props = {
 };
 
 /**
- * Modal that lets users seek through a video and pick a timestamp to use as the thumbnail.
+ * Modal that lets users pick a video frame to use as the thumbnail.
+ *
+ * **How it works (intuitive):**
+ * - Seek to the desired frame using the **video player's native controls** (play, pause, scrub the timeline).
+ * - The current position is shown below the video.
+ * - Click **Set thumbnail** to save that frame.
+ *
+ * There is no separate slider — the video player itself is the picker.
  */
 const VideoThumbnailPicker = ({ m, onClose, onSave }: Props) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [isSeeking, setIsSeeking] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const mediaId = mediaIdentityId(m.identity);
   const videoUrl = getMediaFileUrl(mediaId, mediaIdentityVersionStamp(m.identity), true);
 
   const handleTimeUpdate = useCallback(() => {
-    if (!videoRef.current || isSeeking) return;
+    if (!videoRef.current) return;
     setCurrentTime(videoRef.current.currentTime);
-  }, [isSeeking]);
+  }, []);
 
   const handleLoadedMetadata = useCallback(() => {
     const video = videoRef.current;
@@ -51,14 +57,6 @@ const VideoThumbnailPicker = ({ m, onClose, onSave }: Props) => {
     video.currentTime = targetTime;
     setCurrentTime(targetTime);
   }, [m.thumbnailSeconds]);
-
-  const handleSeek = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const time = Number(e.target.value);
-    setCurrentTime(time);
-    if (videoRef.current) {
-      videoRef.current.currentTime = time;
-    }
-  }, []);
 
   const handleSave = async () => {
     if (saving) return;
@@ -111,9 +109,18 @@ const VideoThumbnailPicker = ({ m, onClose, onSave }: Props) => {
 
         {/* Body */}
         <div className='min-h-0 overflow-y-auto overscroll-contain px-4 py-3.5 text-left max-sm:flex-1 sm:max-h-[calc(min(94dvh,56rem)-9.5rem)] sm:flex-none sm:px-6 sm:py-4'>
-          <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5'>
+          <div className='flex flex-col gap-4'>
+            {/* Instructional text */}
+            <div className='flex items-start gap-2.5 rounded-xl border border-sky-500/25 bg-sky-500/8 px-3.5 py-2.5 sm:px-4 sm:py-3'>
+              <Video size={16} className='mt-0.5 shrink-0 text-sky-400' />
+              <p className='text-[13px] leading-snug text-slate-300 sm:text-[14px]'>
+                <strong className='text-slate-100'>Seek</strong> in the video below to find the frame you want as the
+                thumbnail, then click <strong className='text-slate-100'>Set thumbnail</strong>.
+              </p>
+            </div>
+
             {/* Video player */}
-            <div className='bg-surface-nav border-surface-border min-h-0 overflow-hidden rounded-xl border sm:min-w-0 sm:flex-1'>
+            <div className='bg-surface-nav border-surface-border overflow-hidden rounded-xl border'>
               <video
                 ref={videoRef}
                 src={videoUrl}
@@ -122,31 +129,21 @@ const VideoThumbnailPicker = ({ m, onClose, onSave }: Props) => {
                 preload='metadata'
                 onTimeUpdate={handleTimeUpdate}
                 onLoadedMetadata={handleLoadedMetadata}
-                onSeeked={() => setIsSeeking(false)}
-                onSeeking={() => setIsSeeking(true)}
               />
             </div>
 
-            {/* Seek slider */}
+            {/* Current position indicator */}
             {duration > 0 && (
-              <div className='space-y-2 sm:w-56 sm:shrink-0 sm:self-stretch sm:pt-1'>
-                <div className='flex items-center justify-between sm:flex-col sm:items-start sm:gap-1.5'>
-                  <label className={cn('ml-1', fieldLabelClass)}>Thumbnail position</label>
-                  <span className='type-small text-slate-400 tabular-nums'>{formatTime(currentTime)}</span>
+              <div className='bg-surface-raised flex items-center justify-between gap-3 rounded-xl border border-white/8 px-4 py-3'>
+                <div className='flex items-center gap-2'>
+                  <span className={cn(fieldLabelClass)}>Selected frame</span>
                 </div>
-                <input
-                  type='range'
-                  min={0}
-                  max={Math.floor(duration)}
-                  step={1}
-                  value={Math.floor(currentTime)}
-                  onChange={handleSeek}
-                  className='accent-brand w-full cursor-pointer sm:min-h-0 sm:flex-1'
-                  aria-label='Seek to timestamp'
-                />
-                <div className='flex justify-between text-[11px] text-slate-500 tabular-nums'>
-                  <span>0:00</span>
-                  <span>{formatTime(duration)}</span>
+                <div className='flex items-center gap-2'>
+                  <div className='flex h-7 items-center gap-1.5 rounded-lg bg-slate-800 px-2.5 font-mono text-[13px] font-semibold text-slate-100 tabular-nums shadow-inner'>
+                    <Image size={13} className='text-slate-400' />
+                    {formatTime(currentTime)}
+                  </div>
+                  <span className='text-[12px] text-slate-500'>/ {formatTime(duration)}</span>
                 </div>
               </div>
             )}
