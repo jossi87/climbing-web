@@ -101,15 +101,22 @@ const About = () => {
             <List>
               <ListItem>
                 If you find any factual errors, typos, or outdated information, please report them to a regional
-                administrator <TextLink href='mailto:jostein.oygarden@gmail.com'>Jostein</TextLink>.
+                administrator or <TextLink href='mailto:jostein.oygarden@gmail.com'>Jostein</TextLink>.
               </ListItem>
               <ListItem>
-                Names are given by the first ascensionists. For guidance on creating welcoming names, see the{' '}
+                Names are given by the first ascensionists. Some routes and boulders have trivia to provide context
+                behind the name.
+              </ListItem>
+              <ListItem>
+                For guidance on creating welcoming names, see the{' '}
                 <TextLink href='https://klatring.no/siteassets/dokumenter/klatrefelt-og-anlegg/klatrefelt/2022-retningslinjer-for-rutenavn-.pdf'>
                   Norwegian Climbing Federation's recommendations for route naming{' '}
                   <ExternalLink className='inline h-3 w-3' />
                 </TextLink>
-                . If you find any content offensive or inappropriate, please contact a regional administrator or{' '}
+                .
+              </ListItem>
+              <ListItem>
+                If you find any content offensive or inappropriate, please contact a regional administrator or{' '}
                 <TextLink href='mailto:jostein.oygarden@gmail.com'>Jostein</TextLink>.
               </ListItem>
             </List>
