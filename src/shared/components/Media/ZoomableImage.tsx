@@ -199,6 +199,8 @@ export const ZoomableImage = ({ m, onExitZoom }: Props) => {
                 height: 'auto',
                 marginTop: 'auto',
                 marginBottom: 'auto',
+                marginLeft: 'auto',
+                marginRight: 'auto',
                 opacity: loaded ? 1 : 0,
                 transition: 'opacity 0.2s',
               }}
@@ -221,6 +223,8 @@ export const ZoomableImage = ({ m, onExitZoom }: Props) => {
               maxHeight: 'none',
               marginTop: 'auto',
               marginBottom: 'auto',
+              marginLeft: 'auto',
+              marginRight: 'auto',
               opacity: loaded ? 1 : 0,
               transition: 'opacity 0.2s',
             }}
