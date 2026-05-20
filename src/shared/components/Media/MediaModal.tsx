@@ -25,6 +25,7 @@ import {
   Calendar,
   User as UserIcon,
   Maximize2,
+  ZoomIn,
 } from 'lucide-react';
 
 import { useLocalStorage } from '../../../utils/use-local-storage';
@@ -40,6 +41,7 @@ import {
 import SvgViewer from '../SvgViewer';
 import VideoPlayer from './VideoPlayer';
 import { VideoPlayOverlayDisc } from './VideoThumbnailPlayOverlay';
+import { ZoomableImage } from './ZoomableImage';
 import { Descent, Rappel } from '../../../utils/svg-utils';
 import { useMeta } from '../Meta';
 import type { components } from '../../../@types/buldreinfo/swagger';
@@ -253,6 +255,7 @@ const MediaModal = ({
   const [showInfo, setShowInfo] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [zoomMode, setZoomMode] = useState(false);
 
   const [problemIdHovered, setProblemIdHovered] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -265,6 +268,18 @@ const MediaModal = ({
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  /** Hide body/html scrollbar while modal is open */
+  useEffect(() => {
+    const prevBody = document.body.style.overflow;
+    const prevHtml = document.documentElement.style.overflow;
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevBody;
+      document.documentElement.style.overflow = prevHtml;
+    };
   }, []);
 
   /** While pinch-zoomed, detach carousel swipe handlers so pan/zoom gestures stay native. */
@@ -309,13 +324,6 @@ const MediaModal = ({
   });
 
   const svgs = useMemo(() => (m.svgs ?? m.mediaSvgs ?? []) as components['schemas']['Svg'][], [m.svgs, m.mediaSvgs]);
-
-  /**
-   * {@link getMediaFileUrlSrcSet} only emits `…w` entries ≤ `originalWidth`. A low/legacy `m.width` from the API
-   * (e.g. 600) would cap the whole srcset at 600w even in fullscreen — the modal then loads a tiny bitmap. Floor the
-   * cap so we still offer 800–1920+ candidates; the file endpoint scales from the stored original.
-   */
-  const modalImageWidthForSrcSet = useMemo(() => Math.max(m.width ?? 0, 1920), [m.width]);
 
   const canShowSidebar =
     svgs
@@ -439,9 +447,9 @@ const MediaModal = ({
    * turn those into dark ink; Lucide icons then read as dark-on-dark. Hex keeps correct contrast in both themes.
    */
   const mediaModalToolbarIconBtnClass =
-    'ring-surface-border/50 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-900 text-[#e2e8f0] shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all hover:bg-slate-800 hover:text-[#f1f5f9] active:scale-95 sm:h-11 sm:w-11';
+    'ring-surface-border/50 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-900 text-[#e2e8f0] shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all hover:bg-slate-800 hover:text-[#f1f5f9] active:scale-95 sm:h-11 sm:w-11';
   const mediaModalToolbarIconBtnCloseClass =
-    'ring-surface-border/50 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-900 text-[#e2e8f0] shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all hover:bg-red-700 hover:text-[#f8fafc] active:scale-95 sm:h-11 sm:w-11';
+    'ring-surface-border/50 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-900 text-[#e2e8f0] shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all hover:bg-red-700 hover:text-[#f8fafc] active:scale-95 sm:h-11 sm:w-11';
 
   /** “More” (⋮) menu — same label + icon tone for every row; delete keeps destructive red. */
   const mediaMenuItemClass =
@@ -527,7 +535,7 @@ const MediaModal = ({
           className='relative flex h-full min-h-0 w-full min-w-0 flex-1 items-center justify-center overflow-hidden'
           {...(attachCarouselSwipeHandlers ? handlers : {})}
         >
-          <div className='absolute top-3 right-3 z-170 flex max-w-[calc(100vw-1.5rem)] flex-wrap items-center justify-end gap-1.5 sm:top-4 sm:right-4 sm:gap-2'>
+          <div className='absolute top-3 right-3 z-170 flex max-w-[calc(100vw-1.5rem)] flex-nowrap items-center justify-end gap-1 sm:top-4 sm:right-4 sm:gap-2'>
             {m.url && (
               <button
                 type='button'
@@ -545,7 +553,7 @@ const MediaModal = ({
                 onClick={() => setShowSidebar(!showSidebar)}
                 title={showSidebar ? 'Hide problem list' : 'Show problem list'}
                 className={cn(
-                  'flex h-10 w-10 shrink-0 items-center justify-center rounded-full shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all active:scale-95 sm:h-11 sm:w-11',
+                  'flex h-9 w-9 shrink-0 items-center justify-center rounded-full shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all active:scale-95 sm:h-11 sm:w-11',
                   showSidebar
                     ? 'btn-brand-solid ring-1 ring-black/20'
                     : 'ring-surface-border/50 bg-slate-900 text-[#e2e8f0] hover:bg-slate-800 hover:text-[#f1f5f9]',
@@ -577,13 +585,25 @@ const MediaModal = ({
               </button>
             )}
 
+            {isImage && (
+              <button
+                type='button'
+                onClick={() => setZoomMode(true)}
+                title='Zoom and pan'
+                aria-label='Zoom and pan'
+                className={mediaModalToolbarIconBtnClass}
+              >
+                <ZoomIn size={17} strokeWidth={2} />
+              </button>
+            )}
+
             <div className='relative inline-flex shrink-0'>
               <button
                 type='button'
                 onClick={() => setShowMenu(!showMenu)}
                 title='More actions'
                 className={cn(
-                  'flex h-10 w-10 items-center justify-center rounded-full shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all active:scale-95 sm:h-11 sm:w-11',
+                  'flex h-9 w-9 items-center justify-center rounded-full shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all active:scale-95 sm:h-11 sm:w-11',
                   showMenu
                     ? 'bg-surface-hover ring-surface-border/50 text-[#f1f5f9]'
                     : 'ring-surface-border/50 bg-slate-900 text-[#e2e8f0] hover:bg-slate-800 hover:text-[#f1f5f9]',
@@ -778,12 +798,12 @@ const MediaModal = ({
                   data-modal-media-root
                   className='touch-pan-pinch h-full min-h-0 w-full min-w-0 cursor-pointer object-contain select-none'
                   src={getMediaFileUrl(mediaIdentityId(m.identity), mediaIdentityVersionStamp(m.identity), false, {
-                    targetWidth: Math.min(1920, modalImageWidthForSrcSet),
+                    targetWidth: Math.min(1920, Math.max(m.width ?? 0, 1920)),
                   })}
                   srcSet={getMediaFileUrlSrcSet(
                     mediaIdentityId(m.identity),
                     mediaIdentityVersionStamp(m.identity),
-                    modalImageWidthForSrcSet,
+                    Math.max(m.width ?? 0, 1920),
                   )}
                   sizes='100vw'
                   alt=''
@@ -1015,6 +1035,8 @@ const MediaModal = ({
           </div>
         </div>
       )}
+
+      {zoomMode && <ZoomableImage m={m} onExitZoom={() => setZoomMode(false)} />}
 
       {showHelp && (
         <div
