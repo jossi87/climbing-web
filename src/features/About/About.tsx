@@ -1,6 +1,6 @@
 import { useMeta } from '../../shared/components/Meta/context';
 import { useData } from '../../api';
-import { FileText, Info, Users, Pencil, Book, Code, Globe, Heart, Camera } from 'lucide-react';
+import { Flag, FileText, Info, Users, Pencil, Book, Code, Globe, Heart, Camera, ExternalLink } from 'lucide-react';
 import type { Success } from '../../@types/buldreinfo';
 import {
   BRV_PLATFORM_AGREEMENT_DATE_LABEL,
@@ -88,6 +88,29 @@ const About = () => {
                 {meta.isBouldering
                   ? 'Sit start means feet/behind leave the ground last'
                   : 'Tighten loose hangers (17mm spanner)'}
+              </ListItem>
+            </List>
+          </Card>
+
+          <Card>
+            <SectionHeader
+              title='Content & Moderation'
+              icon={Flag}
+              subheader='Help us keep the platform accurate and safe'
+            />
+            <List>
+              <ListItem>
+                Help keep the guide accurate. If you find any factual errors, typos, or outdated information, please
+                report them to a regional administrator or{' '}
+                <TextLink href='mailto:jostein.oygarden@gmail.com'>Jostein</TextLink>. You can also reach out here
+                regarding offensive or inappropriate content.
+              </ListItem>
+              <ListItem>
+                For guidance on creating welcoming route and boulder names, see the Norwegian Climbing Federation's{' '}
+                <TextLink href='https://klatring.no/siteassets/dokumenter/klatrefelt-og-anlegg/klatrefelt/2022-retningslinjer-for-rutenavn-.pdf'>
+                  recommendations for route naming <ExternalLink className='inline h-3 w-3' />
+                </TextLink>
+                .
               </ListItem>
             </List>
           </Card>
