@@ -133,7 +133,18 @@ const PanelCard = ({
         <Link
           to={href}
           className={seeAllLinkClass}
-          aria-label={titleLoading ? 'See more' : `See all ${title.toLowerCase()}`}
+          aria-label={
+            titleLoading
+              ? 'See more'
+              : seeMoreCategory
+                ? ({
+                    fa: `View all first ascents and newest ${title.toLowerCase()} on the activity feed`,
+                    ticks: 'View all recent climbing ascents and logged ticks on the activity feed',
+                    media: 'View all newest climbing photos and videos on the activity feed',
+                    comments: 'View all recent climbing comments and discussions on the activity feed',
+                  }[seeMoreCategory] ?? `See all ${title.toLowerCase()}`)
+                : `See all ${title.toLowerCase()}`
+          }
         >
           {seeAllLabel ?? 'See all'}
           <ArrowRight size={11} strokeWidth={2.25} />
@@ -164,7 +175,7 @@ const PanelCard = ({
  * third line — the whole point of the redesign.
  */
 const rowClass = 'group/row flex items-start gap-3 px-4 py-2 sm:px-5 sm:py-2.5';
-const rowGridClass = 'min-w-0 flex-1';
+const rowGridClass = 'min-w-0 flex-1 space-y-0.5 sm:space-y-1';
 const rowLineClass = 'flex items-baseline justify-between gap-3';
 /**
  * **Headline `<p>` size — locked to Activity feed (`listBody`)**: `13px` mobile, `14px` from `sm+`. Without this
