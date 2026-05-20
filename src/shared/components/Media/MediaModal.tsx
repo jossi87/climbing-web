@@ -585,7 +585,7 @@ const MediaModal = ({
               </button>
             )}
 
-            {isImage && (
+            {(isImage || (m.idType === 2 && !m.embedUrl)) && !(svgs.length > 0 && pitch > 0) && (
               <button
                 type='button'
                 onClick={() => setZoomMode(true)}
