@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, type FC, type MouseEvent } from 'react';
 import ReactPlayer from 'react-player';
+import { List } from 'lucide-react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { getMediaFileUrl, mediaIdentityId, mediaIdentityVersionStamp } from '../../../api';
 import { cn } from '../../../lib/utils';
@@ -39,7 +40,9 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
   const [hoveredChapterIndex, setHoveredChapterIndex] = useState(-1);
   const [hoverX, setHoverX] = useState(0);
   const [isHoveringSeekbar, setIsHoveringSeekbar] = useState(false);
+
   const videoRef = useRef<HTMLVideoElement>(null);
+  const chaptersContainerRef = useRef<HTMLDivElement>(null);
   const hasSetTimestampRef = useRef<number | null>(null);
 
   const chapters: VideoChapter[] = media.chapters ?? [];
@@ -95,12 +98,6 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
     }
   };
 
-  useEffect(() => {
-    return () => {
-      hasSetTimestampRef.current = null;
-    };
-  }, []);
-
   // Find the current chapter index based on currentTimeMs
   const currentChapterIndex = (() => {
     if (chapters.length === 0) return -1;
@@ -115,6 +112,23 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
     }
     return idx;
   })();
+
+  // Auto-scroll the chapters list to the currently active chapter
+  useEffect(() => {
+    if (showChapters && chaptersContainerRef.current && currentChapterIndex >= 0) {
+      const container = chaptersContainerRef.current;
+      const activeButton = container.querySelector<HTMLButtonElement>(`[data-chapter-index="${currentChapterIndex}"]`);
+      if (activeButton) {
+        activeButton.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }
+  }, [showChapters, currentChapterIndex]);
+
+  useEffect(() => {
+    return () => {
+      hasSetTimestampRef.current = null;
+    };
+  }, []);
 
   const currentChapter = currentChapterIndex >= 0 ? chapters[currentChapterIndex] : null;
 
@@ -137,25 +151,29 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
         onClick={(e: MouseEvent) => e.stopPropagation()}
       />
 
-      {/* Chapter overlay button (top-left, above native controls) */}
+      {/* Chapter overlay button (top-left, above native controls) — matches media modal toolbar icon style */}
       {hasMeaningfulChapters && (
         <button
           type='button'
           onClick={() => setShowChapters(!showChapters)}
+          title='Chapters'
+          aria-label='Chapters'
           className={cn(
-            'absolute top-3 left-3 z-10 rounded-full px-3 py-1.5 text-xs font-semibold shadow-lg transition-all',
+            'absolute top-3 left-3 z-10',
+            'flex h-9 w-9 shrink-0 items-center justify-center rounded-full shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all active:scale-95 sm:h-11 sm:w-11',
+            'cursor-pointer select-none',
             showChapters
               ? 'bg-brand type-on-accent ring-2 ring-white/40'
-              : 'bg-black/60 text-[#f1f5f9] hover:bg-black/80 hover:text-[rgb(255_255_255)]',
+              : 'ring-surface-border/50 bg-slate-900 text-[#e2e8f0] hover:bg-slate-800 hover:text-[#f1f5f9]',
           )}
         >
-          Chapters
+          <List size={17} strokeWidth={2} />
         </button>
       )}
 
       {/* Current chapter name indicator — only for meaningful chapters */}
       {currentChapter && hasMeaningfulChapters && !showChapters && !isHoveringSeekbar && (
-        <div className='pointer-events-none absolute top-3 left-24 z-10 max-w-[60%] truncate rounded-full bg-black/50 px-3 py-1.5 text-xs font-medium text-[#f1f5f9] shadow-lg'>
+        <div className='pointer-events-none absolute top-3 left-14 z-10 max-w-[60%] truncate rounded-full bg-black/50 px-3 py-1.5 text-xs font-medium text-[#f1f5f9] shadow-lg sm:left-16'>
           {currentChapter.problemName ?? `Chapter ${currentChapterIndex + 1}`}
           {currentChapter.problemGrade ? ` (${currentChapter.problemGrade})` : ''}
         </div>
@@ -168,6 +186,7 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
           onClick={() => setShowChapters(false)}
         >
           <div
+            ref={chaptersContainerRef}
             className='mx-4 max-h-[60%] w-full max-w-md overflow-y-auto rounded-2xl bg-[#0f172a] p-2 shadow-2xl ring-1 ring-white/10'
             onClick={(e) => e.stopPropagation()}
           >
@@ -180,6 +199,7 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
                   <button
                     key={`${ch.problemId ?? 'ch'}-${i}`}
                     type='button'
+                    data-chapter-index={i}
                     onClick={() => {
                       seekToChapter(chMs);
                       setShowChapters(false);
@@ -217,7 +237,10 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
         </div>
       )}
 
-      {/* Chapter markers — small dots at the bottom edge of the video */}
+      {/* Chapter markers — small dots at the bottom edge of the video.
+          The container is always pointer-events-none so it never blocks the native video controls.
+          On desktop (sm+): the individual marker buttons are pointer-events-auto so they are clickable
+          with hover tooltips. On mobile: markers are inert visual indicators only. */}
       {hasMeaningfulChapters && durationMs > 0 && (
         <div
           className='pointer-events-none absolute inset-x-0 bottom-0 z-10'
@@ -244,7 +267,7 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
                   setHoverX(pct);
                 }}
                 onClick={() => seekToChapter(chMs)}
-                className='pointer-events-auto absolute -translate-x-1/2'
+                className='pointer-events-none absolute -translate-x-1/2 sm:pointer-events-auto'
                 style={{
                   left: `${pct}%`,
                   bottom: '40px',
@@ -264,7 +287,7 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
             );
           })}
 
-          {/* Hover tooltip */}
+          {/* Hover tooltip — desktop only */}
           {hoveredChapter && (
             <div
               className='pointer-events-none absolute z-30 -translate-x-1/2'
