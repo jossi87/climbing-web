@@ -13,8 +13,8 @@ export type paths = {
         };
         /** Get Media by id */
         get: operations["getMedia"];
-        /** Update media location */
-        put: operations["putMedia"];
+        /** Update media */
+        put: operations["putMediaInfo"];
         post?: never;
         /** Move media to trash */
         delete: operations["deleteMedia"];
@@ -280,6 +280,23 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/v2/problems/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search for user */
+        get: operations["getProblemsSearch"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/profile": {
         parameters: {
             query?: never;
@@ -529,7 +546,7 @@ export type paths = {
             path?: never;
             cookie?: never;
         };
-        /** Search for user */
+        /** Search for problem */
         get: operations["getUsersSearch"];
         put?: never;
         post?: never;
@@ -828,23 +845,6 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/v2/media/info": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Update media info */
-        put: operations["putMediaInfo"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v2/media/jpeg/rotate": {
         parameters: {
             query?: never;
@@ -1082,7 +1082,21 @@ export type components = {
             /** Format: int32 */
             enableMoveToIdProblem?: number;
             url?: string;
-            chapters?: components["schemas"]["VideoChapter"][];
+            problems?: components["schemas"]["MediaProblem"][];
+        };
+        MediaProblem: {
+            /** Format: int32 */
+            problemId?: number;
+            problemName?: string;
+            problemGrade?: string;
+            /** Format: int32 */
+            problemPitch?: number;
+            /** Format: int32 */
+            problemNumPitches?: number;
+            /** Format: int64 */
+            milliseconds?: number;
+            areaName?: string;
+            sectorName?: string;
         };
         MediaSvgElement: {
             /** @enum {string} */
@@ -1183,14 +1197,6 @@ export type components = {
             id?: number;
             type?: string;
             subType?: string;
-        };
-        VideoChapter: {
-            /** Format: int32 */
-            problemId?: number;
-            problemName?: string;
-            problemGrade?: string;
-            /** Format: int64 */
-            milliseconds?: number;
         };
         Webcam: {
             id?: string;
@@ -1561,6 +1567,16 @@ export type components = {
             tickId?: number;
             comment?: string;
             date?: string;
+        };
+        ProblemSearchResult: {
+            /** Format: int32 */
+            id?: number;
+            areaName?: string;
+            sectorName?: string;
+            problemName?: string;
+            grade?: string;
+            /** Format: int32 */
+            numPitches?: number;
         };
         Profile: {
             identity?: components["schemas"]["ProfileIdentity"];
@@ -2079,14 +2095,6 @@ export type components = {
             grade?: string;
             repeats?: components["schemas"]["TickRepeat"][];
         };
-        MediaInfo: {
-            /** Format: int32 */
-            mediaId?: number;
-            description?: string;
-            /** Format: int32 */
-            pitch?: number;
-            trivia?: boolean;
-        };
     };
     responses: never;
     parameters: never;
@@ -2139,25 +2147,18 @@ export interface operations {
             };
         };
     };
-    putMedia: {
+    putMediaInfo: {
         parameters: {
-            query: {
-                /** @description Media id */
-                id: number;
-                /** @description Move left */
-                left: boolean;
-                /** @description To area id (will move media to area if toIdArea>0, toIdSector=0 and toIdProblem=0) */
-                toIdArea: number;
-                /** @description To sector id (will move media to sector if toSectorId>0, toIdArea=0 and toIdProblem=0) */
-                toIdSector: number;
-                /** @description To problem id (will move media to problem if toProblemId>0, toIdArea=0 and toSectorId=0) */
-                toIdProblem: number;
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody?: {
+            content: {
+                "*/*": components["schemas"]["Media"];
+            };
+        };
         responses: {
             /** @description Invalid request parameters. */
             400: {
@@ -2888,6 +2889,42 @@ export interface operations {
             };
             /** @description Problem not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getProblemsSearch: {
+        parameters: {
+            query: {
+                /** @description Search keyword */
+                value: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemSearchResult"][];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4263,49 +4300,6 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
-        responses: {
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    putMediaInfo: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "*/*": components["schemas"]["MediaInfo"];
-            };
-        };
         responses: {
             /** @description Invalid request parameters. */
             400: {

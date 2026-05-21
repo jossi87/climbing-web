@@ -678,6 +678,13 @@ export function useUserSearch(value: string) {
   });
 }
 
+export function useProblemSearch(value: string) {
+  return useData<Success<'getProblemsSearch'>>(`/problems/search?value=${value}`, {
+    queryKey: [`/problems/search`, { value }],
+    enabled: !!value,
+  });
+}
+
 export function usePermissions() {
   const { isAuthenticated } = useAuth0();
   const accessToken = useAccessToken();

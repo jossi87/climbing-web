@@ -12,9 +12,7 @@ import {
   mediaObjectPositionStyle,
   mediaPlaceholderStyle,
   moveMedia,
-  putMediaInfo,
   putMediaJpegRotate,
-  putMediaVideoThumbnail,
   setMediaAsAvatar,
 } from '../../../api';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -25,9 +23,7 @@ import SvgViewer from '../SvgViewer';
 import { VideoThumbnailPlayOverlay } from './VideoThumbnailPlayOverlay';
 import { VideoProcessingPlaceholder } from './VideoProcessingPlaceholder';
 import { Loading } from '../../ui/StatusWidgets';
-import MediaEditModal from './MediaEditModal';
 import MediaModal from './MediaModal';
-import VideoThumbnailPicker from './VideoThumbnailPicker';
 type MediaItem = components['schemas']['Media'];
 type ProblemSection = components['schemas']['ProblemSection'];
 type Props = Pick<ComponentProps<typeof MediaModal>, 'optProblemId'> & {
@@ -139,8 +135,6 @@ const Media = ({
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
   const [m, setM] = useState<MediaItem | null>(null);
-  const [editM, setEditM] = useState<MediaItem | null>(null);
-  const [thumbnailPickerM, setThumbnailPickerM] = useState<MediaItem | null>(null);
   const [autoPlayVideo, setAutoPlayVideo] = useState(false);
   const { isLoading, getAccessTokenSilently } = useAuth0();
   const [confirmation, setConfirmation] = useState<{ message: string; action: () => void } | null>(null);
@@ -161,7 +155,6 @@ const Media = ({
         ? location.pathname.replace(prevMediaId.toString(), String(mediaIdentityId(newM.identity)))
         : `${basePath}/${mediaIdentityId(newM.identity)}`;
       setM(newM);
-      setEditM(null);
       /** Push on first open so browser Back closes the modal; replace when swapping media so swipes do not stack history. */
       const isCarousel = !!prevMediaId;
       if (!isCarousel) {
@@ -203,14 +196,14 @@ const Media = ({
   }, [m, carouselMedia, openModal]);
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (editM || !m) return;
+      if (!m) return;
       if (e.key === 'Escape') closeModal();
       if (e.key === 'ArrowLeft') gotoPrev();
       if (e.key === 'ArrowRight') gotoNext();
     };
     document.addEventListener('keydown', handleKeyPress);
     return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [editM, m, closeModal, gotoNext, gotoPrev]);
+  }, [m, closeModal, gotoNext, gotoPrev]);
   const executeMediaAction = (action: MediaAction) => {
     setIsSaving(true);
     getAccessTokenSilently()
@@ -338,31 +331,6 @@ const Media = ({
           </div>,
           document.body,
         )}{' '}
-      {editM && (
-        <MediaEditModal
-          numPitches={pitches?.length || 0}
-          m={editM}
-          save={async (id, description, pitchNr, trivia) => {
-            const token = await getAccessTokenSilently();
-            await putMediaInfo(token, id, description, pitchNr, trivia);
-            setEditM(null);
-          }}
-          onCloseWithoutReload={() => setEditM(null)}
-        />
-      )}{' '}
-      {thumbnailPickerM && (
-        <VideoThumbnailPicker
-          m={thumbnailPickerM}
-          onClose={() => setThumbnailPickerM(null)}
-          onSave={async (mediaId, timestampSeconds) => {
-            const token = await getAccessTokenSilently();
-            await putMediaVideoThumbnail(token, mediaId, timestampSeconds);
-            setThumbnailPickerM(null);
-            // Close the media modal so the page re-fetches with the new thumbnail
-            closeModal();
-          }}
-        />
-      )}{' '}
       {m &&
         createPortal(
           <MediaModal
@@ -373,7 +341,6 @@ const Media = ({
             pitch={pitch ?? 0}
             pitches={pitches ?? []}
             autoPlayVideo={autoPlayVideo}
-            onEdit={() => setEditM(m)}
             onDelete={onDeleteMedia}
             onRotate={(deg) =>
               executeMediaAction((token) => putMediaJpegRotate(token, mediaIdentityId(m.identity), deg))
@@ -405,7 +372,6 @@ const Media = ({
                 action: () => executeMediaAction((token) => setMediaAsAvatar(token, mediaIdentityId(m.identity))),
               })
             }
-            onChangeThumbnail={() => setThumbnailPickerM(m)}
             orderableMedia={orderableMedia ?? []}
             carouselIndex={
               (carouselMedia?.findIndex((x) => mediaIdentityId(x.identity) === mediaIdentityId(m.identity)) ?? -1) + 1

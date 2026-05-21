@@ -18,7 +18,6 @@ import {
   RotateCw,
   RefreshCw,
   Edit,
-  Image,
   Trash2,
   ExternalLink,
   MapPin,
@@ -195,7 +194,6 @@ function sidebarSvgsMerged(svgs: components['schemas']['Svg'][]) {
 type Props = {
   isSaving: boolean;
   onClose: () => void;
-  onEdit: () => void;
   onDelete: () => void;
   onRotate: (deg: number) => void;
   onMoveImageLeft: () => void;
@@ -204,7 +202,6 @@ type Props = {
   onMoveImageToSector: () => void;
   onMoveImageToProblem: () => void;
   onSetMediaAsAvatar: () => void;
-  onChangeThumbnail: () => void;
   m: components['schemas']['Media'];
   pitch: number;
   pitches: components['schemas']['ProblemSection'][];
@@ -223,7 +220,6 @@ type Props = {
 const MediaModal = ({
   isSaving,
   onClose,
-  onEdit,
   onDelete,
   onRotate,
   onMoveImageLeft,
@@ -232,7 +228,6 @@ const MediaModal = ({
   onMoveImageToSector,
   onMoveImageToProblem,
   onSetMediaAsAvatar,
-  onChangeThumbnail,
   m,
   pitch,
   pitches,
@@ -429,8 +424,6 @@ const MediaModal = ({
     isImage &&
     (orderableMedia ?? []).some((om) => mediaIdentityId(om.identity) === mediaIdentityId(m.identity));
   const canMove = isAdmin && isImage;
-  /** Internal video (not YouTube/Vimeo embed) — admins or the uploader can pick a thumbnail timestamp. */
-  const canChangeThumbnail = !isImage && !m.embedUrl && (isAdmin || m.uploadedByMe);
   const hasMenuTopActions =
     canDrawTopo ||
     canDrawMedia ||
@@ -709,23 +702,11 @@ const MediaModal = ({
                       type='button'
                       onClick={() => {
                         stopVideo();
-                        onEdit();
+                        navigate(`/media/edit/${mediaIdentityId(m.identity)}`);
                       }}
                       className={mediaMenuItemClass}
                     >
-                      <Edit size={14} className={mediaMenuIconClass} strokeWidth={2} /> Edit Information
-                    </button>
-                  )}
-                  {canChangeThumbnail && (
-                    <button
-                      type='button'
-                      onClick={() => {
-                        stopVideo();
-                        onChangeThumbnail();
-                      }}
-                      className={mediaMenuItemClass}
-                    >
-                      <Image size={14} className={mediaMenuIconClass} strokeWidth={2} /> Change thumbnail
+                      <Edit size={14} className={mediaMenuIconClass} strokeWidth={2} /> Edit media
                     </button>
                   )}
                   {canDelete && (

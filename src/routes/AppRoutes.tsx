@@ -11,6 +11,7 @@ const Areas = lazy(() => import('../features/Areas/Areas'), 'areas');
 const Dangerous = lazy(() => import('../features/Dangerous/Dangerous'), 'dangerous');
 const Donations = lazy(() => import('../features/Donations/Donations'), 'donations');
 const Graph = lazy(() => import('../features/Graph/Graph'), 'graph');
+const MediaEdit = lazy(() => import('../features/MediaEdit/MediaEdit'), 'media-edit');
 const MediaSvgEdit = lazy(() => import('../features/MediaSvgEdit/MediaSvgEdit'), 'media-svg-edit');
 const Permissions = lazy(() => import('../features/Permissions/Permissions'), 'permissions');
 const PrivacyPolicy = lazy(() => import('../features/PrivacyPolicy/PrivacyPolicy'), 'privacy-policy');
@@ -61,6 +62,14 @@ function AppRoutes() {
             <Route path='/donate' element={<Donations />} />
             <Route path='/filter' element={<Problems filterOpen />} />
             <Route path='/graph' element={<Graph />} />
+            <Route
+              path='/media/edit/:mediaId'
+              element={
+                <AuthContainer level='admin'>
+                  <MediaEdit />
+                </AuthContainer>
+              }
+            />
             <Route
               path='/media/svg-edit/:mediaId'
               element={

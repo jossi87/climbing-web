@@ -14,7 +14,7 @@ type Props = {
   optProblemId?: number | null;
 };
 
-type VideoChapter = components['schemas']['VideoChapter'];
+type MediaProblem = components['schemas']['MediaProblem'];
 
 /**
  * Format milliseconds to a display string like "1:23" or "1:02:34".
@@ -36,7 +36,7 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
   const [currentTimeMs, setCurrentTimeMs] = useState(0);
   const [durationMs, setDurationMs] = useState(0);
   const [showChapters, setShowChapters] = useState(false);
-  const [hoveredChapter, setHoveredChapter] = useState<VideoChapter | null>(null);
+  const [hoveredChapter, setHoveredChapter] = useState<MediaProblem | null>(null);
   const [hoveredChapterIndex, setHoveredChapterIndex] = useState(-1);
   const [hoverX, setHoverX] = useState(0);
   const [isHoveringSeekbar, setIsHoveringSeekbar] = useState(false);
@@ -45,7 +45,7 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
   const chaptersContainerRef = useRef<HTMLDivElement>(null);
   const hasSetTimestampRef = useRef<number | null>(null);
 
-  const chapters: VideoChapter[] = media.chapters ?? [];
+  const chapters: MediaProblem[] = media.problems ?? [];
 
   // Only show chapter UI if there are multiple chapters, or a single chapter that doesn't start at 0
   const hasMeaningfulChapters = chapters.length > 1 || (chapters.length === 1 && (chapters[0].milliseconds ?? 0) > 0);

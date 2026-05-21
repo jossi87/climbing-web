@@ -429,11 +429,22 @@ export function putMediaInfo(
   description: string,
   pitch: number,
   trivia: boolean,
+  photographer?: string,
+  tagged?: { id: number; name: string }[],
+  problems?: { problemId: number; problemPitch?: number; milliseconds?: number }[],
 ): Promise<Success<'putMediaInfo'>> {
   const url = `/media/info`;
   return makeAuthenticatedRequest(accessToken, url, {
     method: 'PUT',
-    body: JSON.stringify({ mediaId, description, pitch, trivia }),
+    body: JSON.stringify({
+      mediaId,
+      description,
+      pitch,
+      trivia,
+      photographer,
+      tagged,
+      problems,
+    }),
     headers: {
       'Content-Type': 'application/json',
     },
