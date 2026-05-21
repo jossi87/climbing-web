@@ -31,10 +31,14 @@ function formatMs(ms: number): string {
 }
 
 const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optProblemId }) => {
-  const [isReady, setIsReady] = useState(false);
+  const [_isReady, setIsReady] = useState(false);
   const [currentTimeMs, setCurrentTimeMs] = useState(0);
   const [durationMs, setDurationMs] = useState(0);
   const [showChapters, setShowChapters] = useState(false);
+  const [hoveredChapter, setHoveredChapter] = useState<VideoChapter | null>(null);
+  const [hoveredChapterIndex, setHoveredChapterIndex] = useState(-1);
+  const [hoverX, setHoverX] = useState(0);
+  const [isHoveringSeekbar, setIsHoveringSeekbar] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const hasSetTimestampRef = useRef<number | null>(null);
 
@@ -45,6 +49,13 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
 
   const handleReady = () => {
     setIsReady(true);
+    // Auto-play once when ready, without using ReactPlayer's playing prop
+    // (which would break native pause button)
+    if (autoPlay && videoRef.current) {
+      videoRef.current.play().catch(() => {
+        // Browser may block autoplay, that's fine
+      });
+    }
   };
 
   const handleDurationChange = () => {
@@ -108,7 +119,7 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
   const currentChapter = currentChapterIndex >= 0 ? chapters[currentChapterIndex] : null;
 
   return (
-    <div className={cn('relative', className)} style={style}>
+    <div className={cn('group relative', className)} style={style}>
       <ReactPlayer
         key={mediaIdentityId(media.identity)}
         ref={videoRef}
@@ -117,7 +128,7 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
         controls
         width='100%'
         height='100%'
-        playing={autoPlay && isReady}
+        playing={undefined}
         playsInline
         onReady={handleReady}
         onDurationChange={handleDurationChange}
@@ -142,8 +153,8 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
         </button>
       )}
 
-      {/* Current chapter name indicator */}
-      {currentChapter && !showChapters && (
+      {/* Current chapter name indicator — only for meaningful chapters */}
+      {currentChapter && hasMeaningfulChapters && !showChapters && !isHoveringSeekbar && (
         <div className='pointer-events-none absolute top-3 left-24 z-10 max-w-[60%] truncate rounded-full bg-black/50 px-3 py-1.5 text-xs font-medium text-[#f1f5f9] shadow-lg'>
           {currentChapter.problemName ?? `Chapter ${currentChapterIndex + 1}`}
           {currentChapter.problemGrade ? ` (${currentChapter.problemGrade})` : ''}
@@ -206,26 +217,73 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
         </div>
       )}
 
-      {/* Chapter markers on the progress bar - hardcoded hex to work in both light and dark themes */}
-      {chapters.length > 0 && durationMs > 0 && (
-        <div className='pointer-events-none absolute right-0 bottom-0 left-0 z-10' style={{ height: '40px' }}>
+      {/* Chapter markers — small dots at the bottom edge of the video */}
+      {hasMeaningfulChapters && durationMs > 0 && (
+        <div
+          className='pointer-events-none absolute inset-x-0 bottom-0 z-10'
+          style={{ height: '60px' }}
+          onMouseLeave={() => {
+            setIsHoveringSeekbar(false);
+            setHoveredChapter(null);
+            setHoveredChapterIndex(-1);
+          }}
+        >
           {chapters.map((ch, i) => {
             const chMs = ch.milliseconds ?? 0;
             const pct = durationMs > 0 ? (chMs / durationMs) * 100 : 0;
             if (pct < 0 || pct > 100) return null;
+            const isHovered = i === hoveredChapterIndex;
             return (
-              <div
+              <button
                 key={`marker-${i}`}
-                className='absolute top-0 w-0.5'
+                type='button'
+                onMouseEnter={() => {
+                  setIsHoveringSeekbar(true);
+                  setHoveredChapter(ch);
+                  setHoveredChapterIndex(i);
+                  setHoverX(pct);
+                }}
+                onClick={() => seekToChapter(chMs)}
+                className='pointer-events-auto absolute -translate-x-1/2'
                 style={{
                   left: `${pct}%`,
-                  height: '100%',
-                  backgroundColor: 'rgba(255, 255, 255, 0.85)',
-                  boxShadow: '0 0 2px rgba(0,0,0,0.5)',
+                  bottom: '40px',
+                  width: '12px',
+                  height: '12px',
+                  borderRadius: '50%',
+                  backgroundColor: isHovered ? 'rgb(255 255 255)' : 'rgba(255, 255, 255, 0.6)',
+                  boxShadow: isHovered ? '0 0 6px rgba(255,255,255,0.6)' : '0 0 2px rgba(0,0,0,0.5)',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                  outline: 'none',
+                  WebkitTapHighlightColor: 'transparent',
                 }}
+                aria-label={`Seek to ${ch.problemName ?? `Chapter ${i + 1}`} at ${formatMs(chMs)}`}
               />
             );
           })}
+
+          {/* Hover tooltip */}
+          {hoveredChapter && (
+            <div
+              className='pointer-events-none absolute z-30 -translate-x-1/2'
+              style={{
+                left: `${hoverX}%`,
+                bottom: '60px',
+              }}
+            >
+              <div className='rounded-lg bg-[#0f172a] px-2.5 py-1.5 whitespace-nowrap shadow-2xl ring-1 ring-white/15'>
+                <p className='text-xs font-semibold text-[#f1f5f9]'>
+                  {hoveredChapter.problemName ?? `Chapter ${hoveredChapterIndex + 1}`}
+                  {hoveredChapter.problemGrade && (
+                    <span className='ml-1.5 font-normal text-[#94a3b8]'>{hoveredChapter.problemGrade}</span>
+                  )}
+                </p>
+                <p className='text-[11px] text-[#94a3b8] tabular-nums'>{formatMs(hoveredChapter.milliseconds ?? 0)}</p>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
