@@ -292,7 +292,7 @@ const Media = ({
                   Math.max(Number(x.width ?? 0) || 0, 300),
                 )}
                 sizes={tileSizes}
-                alt={x.mediaMetadata?.description ?? ''}
+                alt={x.description ?? ''}
                 className='absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105'
                 style={mediaObjectPositionStyle(x.identity)}
                 loading='lazy'

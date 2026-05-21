@@ -910,18 +910,18 @@ const MediaModal = ({
             <div className='pointer-events-none w-full max-w-full min-w-0 text-end'>
               {(() => {
                 const chunks: { key: string; node: ReactNode }[] = [];
-                if (showLocation && m.mediaMetadata?.location?.trim()) {
+                if (showLocation && m.location?.trim()) {
                   chunks.push({
                     key: 'loc',
                     node: (
                       <span className='inline-flex items-center gap-1'>
                         <MapPin size={11} className='text-brand shrink-0' aria-hidden />
-                        {m.mediaMetadata!.location!.trim()}
+                        {m.location!.trim()}
                       </span>
                     ),
                   });
                 }
-                const metaDesc = m.mediaMetadata?.description?.trim();
+                const metaDesc = m.description?.trim();
                 if (metaDesc)
                   chunks.push({ key: 'metaDesc', node: <span className='text-[#e2e8f0]'>{metaDesc}</span> });
                 const pitchDesc = activePitch?.description?.trim();
@@ -997,15 +997,15 @@ const MediaModal = ({
                   <p className='type-label mb-2 flex items-center gap-2'>
                     <MapPin size={12} /> Location
                   </p>
-                  <p className='type-body font-semibold'>{m.mediaMetadata?.location || 'Unknown'}</p>
+                  <p className='type-body font-semibold'>{m.location || 'Unknown'}</p>
                 </div>
                 <div>
                   <p className='type-label mb-2 flex items-center gap-2'>
                     <Calendar size={12} /> Dates
                   </p>
                   <div className='type-body space-y-1 font-semibold'>
-                    {m.mediaMetadata?.dateCreated && <p className='text-xs'>Uploaded: {m.mediaMetadata.dateCreated}</p>}
-                    {m.mediaMetadata?.dateTaken && <p className='text-xs'>Taken: {m.mediaMetadata.dateTaken}</p>}
+                    {m.dateCreated && <p className='text-xs'>Uploaded: {m.dateCreated}</p>}
+                    {m.dateTaken && <p className='text-xs'>Taken: {m.dateTaken}</p>}
                   </div>
                 </div>
               </div>
@@ -1016,11 +1016,11 @@ const MediaModal = ({
                   </p>
                   <div className='type-body space-y-1 font-semibold'>
                     <p className='text-xs'>
-                      {isImage ? 'Photographer' : 'Video by'}: {m.mediaMetadata?.capturer || 'Unknown'}
+                      {isImage ? 'Photographer' : 'Video by'}: {m.photographer?.name || 'Unknown'}
                     </p>
-                    {m.mediaMetadata?.tagged && (
+                    {m.tagged && m.tagged.length > 0 && (
                       <p className='text-xs italic'>
-                        In {isImage ? 'photo' : 'video'}: {m.mediaMetadata.tagged}
+                        In {isImage ? 'photo' : 'video'}: {m.tagged.map((u) => u.name).join(', ')}
                       </p>
                     )}
                   </div>
@@ -1035,10 +1035,10 @@ const MediaModal = ({
                 </div>
               </div>
             </div>
-            {m.mediaMetadata?.description && (
+            {m.description && (
               <div className='text-left'>
                 <p className='type-label mb-2'>Description</p>
-                <i className='type-body text-sm leading-relaxed opacity-80'>{m.mediaMetadata.description}</i>
+                <i className='type-body text-sm leading-relaxed opacity-80'>{m.description}</i>
               </div>
             )}
           </div>

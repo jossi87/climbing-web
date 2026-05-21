@@ -1061,11 +1061,16 @@ export type components = {
             /** Format: int32 */
             height?: number;
             isMovie?: boolean;
+            dateCreated?: string;
+            dateTaken?: string;
+            photographer?: components["schemas"]["User"];
+            tagged?: components["schemas"]["User"][];
+            description?: string;
+            location?: string;
             mediaSvgs?: components["schemas"]["MediaSvgElement"][];
             /** Format: int32 */
             svgProblemId?: number;
             svgs?: components["schemas"]["Svg"][];
-            mediaMetadata?: components["schemas"]["MediaMetadata"];
             embedUrl?: string;
             /** Format: int32 */
             thumbnailSeconds?: number;
@@ -1078,15 +1083,6 @@ export type components = {
             enableMoveToIdProblem?: number;
             url?: string;
             chapters?: components["schemas"]["VideoChapter"][];
-        };
-        MediaMetadata: {
-            dateCreated?: string;
-            dateTaken?: string;
-            capturer?: string;
-            tagged?: string;
-            description?: string;
-            location?: string;
-            alt?: string;
         };
         MediaSvgElement: {
             /** @enum {string} */
@@ -1962,8 +1958,8 @@ export type components = {
             value?: string;
             content?: Record<string, never>;
             fileName?: string;
-            simple?: boolean;
             formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
+            simple?: boolean;
             parameterizedHeaders?: {
                 empty?: boolean;
             } & {

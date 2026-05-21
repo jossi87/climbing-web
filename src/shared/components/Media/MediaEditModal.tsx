@@ -24,7 +24,7 @@ const modalBodyClass =
   'min-h-0 space-y-4 overflow-y-auto overscroll-contain px-4 py-3.5 text-left max-sm:flex-1 sm:max-h-[calc(min(94dvh,56rem)-9.5rem)] sm:flex-none sm:space-y-5 sm:px-6 sm:py-4';
 
 const MediaEditModal = ({ save, onCloseWithoutReload, m, numPitches }: Props) => {
-  const [description, setDescription] = useState(m.mediaMetadata?.description ?? '');
+  const [description, setDescription] = useState(m.description ?? '');
   const [pitch, setPitch] = useState<number>(m.pitch ?? 0);
   const [trivia, setTrivia] = useState<boolean>(!!m.trivia);
   const [saving, setSaving] = useState(false);
