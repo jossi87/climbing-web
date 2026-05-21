@@ -228,7 +228,7 @@ const Media = ({
   const onDeleteMedia = () => {
     if (!m) return;
     setConfirmation({
-      message: `Delete this ${m.idType === 1 ? 'image' : 'video'}?`,
+      message: `Delete this ${m.isMovie ? 'video' : 'image'}?`,
       action: () => executeMediaAction((token) => deleteMedia(token, mediaIdentityId(m.identity))),
     });
   };
@@ -275,7 +275,7 @@ const Media = ({
                 showText={false}
                 className='absolute inset-0 h-full w-full'
               />
-            ) : x.idType === 2 ? (
+            ) : x.isMovie ? (
               <MediaVideoTile
                 key={`${mediaIdentityId(x.identity)}-${mediaIdentityVersionStamp(x.identity)}`}
                 x={x}

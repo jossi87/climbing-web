@@ -1060,9 +1060,7 @@ export type components = {
             width?: number;
             /** Format: int32 */
             height?: number;
-            /** Format: int32 */
-            idType?: number;
-            t?: string;
+            isMovie?: boolean;
             mediaSvgs?: components["schemas"]["MediaSvgElement"][];
             /** Format: int32 */
             svgProblemId?: number;
@@ -1079,6 +1077,7 @@ export type components = {
             /** Format: int32 */
             enableMoveToIdProblem?: number;
             url?: string;
+            chapters?: components["schemas"]["VideoChapter"][];
         };
         MediaMetadata: {
             dateCreated?: string;
@@ -1188,6 +1187,14 @@ export type components = {
             id?: number;
             type?: string;
             subType?: string;
+        };
+        VideoChapter: {
+            /** Format: int32 */
+            problemId?: number;
+            problemName?: string;
+            problemGrade?: string;
+            /** Format: int64 */
+            milliseconds?: number;
         };
         Webcam: {
             id?: string;
@@ -1955,8 +1962,8 @@ export type components = {
             value?: string;
             content?: Record<string, never>;
             fileName?: string;
-            formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
             simple?: boolean;
+            formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
             parameterizedHeaders?: {
                 empty?: boolean;
             } & {

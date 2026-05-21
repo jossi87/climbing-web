@@ -349,7 +349,8 @@ const MediaModal = ({
     return () => cancelAnimationFrame(id);
   }, [canShowSidebar, showSidebar, activeSidebarIndex, modalMediaNumericId]);
 
-  const isImage = m?.idType === 1;
+  const isImage = !m?.isMovie;
+  const isVideo = !!m?.isMovie;
 
   /**
    * When the problem list sidebar is open, backdrop / empty-SVG clicks should dismiss it first.
@@ -585,7 +586,7 @@ const MediaModal = ({
               </button>
             )}
 
-            {(isImage || (m.idType === 2 && !m.embedUrl)) && !(svgs.length > 0 && pitch > 0) && (
+            {(isImage || (isVideo && !m.embedUrl)) && !(svgs.length > 0 && pitch > 0) && (
               <button
                 type='button'
                 onClick={() => setZoomMode(true)}
@@ -680,12 +681,9 @@ const MediaModal = ({
                       onClick={() =>
                         downloadFileWithProgress(
                           accessToken,
-                          getMediaFileUrl(
-                            mediaIdentityId(m.identity),
-                            mediaIdentityVersionStamp(m.identity),
-                            m.idType !== 1,
-                            { original: true },
-                          ),
+                          getMediaFileUrl(mediaIdentityId(m.identity), mediaIdentityVersionStamp(m.identity), isVideo, {
+                            original: true,
+                          }),
                         )
                       }
                       className={mediaMenuItemClass}
@@ -847,7 +845,7 @@ const MediaModal = ({
                 className='flex h-full min-h-0 w-full max-w-[100vw] items-center justify-center'
                 onClick={(e) => e.stopPropagation()}
               >
-                <VideoPlayer media={m} className='h-full max-h-screen w-full' />
+                <VideoPlayer media={m} optProblemId={optProblemId} className='h-full max-h-screen w-full' />
               </div>
             ) : (
               <div
@@ -901,8 +899,14 @@ const MediaModal = ({
            * Bottom caption / index pill: keep it visible above the video (z-170) but use pointer-events-none on
            * this whole subtree (including the pill). Otherwise a full-width pointer-events-auto row or default
            * hit targets on children steal clicks from the native video controls.
+           * For videos, move it up and make it more transparent so it doesn't hide native controls.
            */}
-          <div className='pointer-events-none absolute right-4 bottom-4 left-4 z-170 flex items-end justify-end sm:right-8 sm:bottom-8 sm:left-8'>
+          <div
+            className={cn(
+              'pointer-events-none absolute right-4 left-4 z-170 flex items-end justify-end sm:right-8 sm:left-8',
+              isVideo ? 'bottom-14 sm:bottom-16' : 'bottom-4 sm:bottom-8',
+            )}
+          >
             <div className='pointer-events-none w-full max-w-full min-w-0 text-end'>
               {(() => {
                 const chunks: { key: string; node: ReactNode }[] = [];
@@ -941,7 +945,12 @@ const MediaModal = ({
                   });
                 if (chunks.length === 0) return null;
                 return (
-                  <div className='ring-surface-border/40 pointer-events-none inline-block max-w-full rounded-2xl bg-slate-900 px-3 py-1.5 text-right text-[12px] leading-snug font-semibold tracking-normal text-pretty break-words text-[#f1f5f9] normal-case shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1 sm:px-3.5 sm:py-2 sm:text-[13px]'>
+                  <div
+                    className={cn(
+                      'ring-surface-border/40 pointer-events-none inline-block max-w-full rounded-2xl px-3 py-1.5 text-right text-[12px] leading-snug font-semibold tracking-normal text-pretty break-words text-[#f1f5f9] normal-case shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1 sm:px-3.5 sm:py-2 sm:text-[13px]',
+                      isVideo ? 'bg-slate-900/40' : 'bg-slate-900',
+                    )}
+                  >
                     {chunks.map(({ key, node }, i) => (
                       <Fragment key={key}>
                         {i > 0 ? <span className='text-[#64748b]'> · </span> : null}
@@ -1007,11 +1016,11 @@ const MediaModal = ({
                   </p>
                   <div className='type-body space-y-1 font-semibold'>
                     <p className='text-xs'>
-                      {m.idType === 1 ? 'Photographer' : 'Video by'}: {m.mediaMetadata?.capturer || 'Unknown'}
+                      {isImage ? 'Photographer' : 'Video by'}: {m.mediaMetadata?.capturer || 'Unknown'}
                     </p>
                     {m.mediaMetadata?.tagged && (
                       <p className='text-xs italic'>
-                        In {m.idType === 1 ? 'photo' : 'video'}: {m.mediaMetadata.tagged}
+                        In {isImage ? 'photo' : 'video'}: {m.mediaMetadata.tagged}
                       </p>
                     )}
                   </div>
