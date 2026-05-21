@@ -25,16 +25,17 @@ export function ThemeSync() {
       // Backend has a preference — override local state so the user gets a consistent
       // experience across all devices.
       setStored(backendTheme);
-    } else if (stored) {
+    } else if (stored && meta.isAuthenticated) {
       // Backend has no preference but the user has a local preference — save it to the
-      // backend so it persists across devices.
+      // backend so it persists across devices. Only do this for authenticated users,
+      // since the theme endpoint requires authentication.
       setThemePreference(stored).catch(() => {
         /* Silently ignore — localStorage fallback is sufficient */
       });
     }
 
     synced.current = true;
-  }, [meta.themePreference, stored, setStored, setThemePreference]);
+  }, [meta.themePreference, meta.isAuthenticated, stored, setStored, setThemePreference]);
 
   return null;
 }

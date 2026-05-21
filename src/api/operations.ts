@@ -49,7 +49,7 @@ export function moveMedia(
   toIdArea: number,
   toIdSector: number,
   toIdProblem: number,
-): Promise<Success<'putMedia'>> {
+): Promise<Success<'putMediaInfo'>> {
   const url = `/media?id=${id}&left=${left}&toIdArea=${toIdArea}&toIdSector=${toIdSector}&toIdProblem=${toIdProblem}`;
   return makeAuthenticatedRequest(accessToken, url, {
     method: 'PUT',
