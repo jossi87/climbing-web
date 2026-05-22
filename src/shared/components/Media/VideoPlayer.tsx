@@ -45,7 +45,9 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
   const chaptersContainerRef = useRef<HTMLDivElement>(null);
   const hasSetTimestampRef = useRef<number | null>(null);
 
-  const chapters: MediaProblem[] = media.problems ?? [];
+  const chapters: MediaProblem[] = (media.problems ?? [])
+    .slice()
+    .sort((a, b) => (a.milliseconds ?? 0) - (b.milliseconds ?? 0));
 
   // Only show chapter UI if there are multiple chapters, or a single chapter that doesn't start at 0
   const hasMeaningfulChapters = chapters.length > 1 || (chapters.length === 1 && (chapters[0].milliseconds ?? 0) > 0);
@@ -68,6 +70,12 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
   };
 
   const handleTimeUpdate = () => {
+    if (videoRef.current) {
+      setCurrentTimeMs(videoRef.current.currentTime * 1000);
+    }
+  };
+
+  const handleSeeked = () => {
     if (videoRef.current) {
       setCurrentTimeMs(videoRef.current.currentTime * 1000);
     }
@@ -147,6 +155,7 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
         onReady={handleReady}
         onDurationChange={handleDurationChange}
         onTimeUpdate={handleTimeUpdate}
+        onSeeked={handleSeeked}
         onStart={handleStart}
         onClick={(e: MouseEvent) => e.stopPropagation()}
       />
