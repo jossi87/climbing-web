@@ -1072,8 +1072,6 @@ export type components = {
             thumbnailSeconds?: number;
             inherited?: boolean;
             /** Format: int32 */
-            enableMoveToIdArea?: number;
-            /** Format: int32 */
             enableMoveToIdSector?: number;
             /** Format: int32 */
             enableMoveToIdProblem?: number;
@@ -1988,8 +1986,8 @@ export type components = {
             value?: string;
             content?: Record<string, never>;
             fileName?: string;
-            simple?: boolean;
             formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
+            simple?: boolean;
             parameterizedHeaders?: {
                 empty?: boolean;
             } & {
@@ -4396,8 +4394,6 @@ export interface operations {
                 id: number;
                 /** @description Move left */
                 left: boolean;
-                /** @description To area id (will move media to area if toIdArea>0, toIdSector=0 and toIdProblem=0) */
-                toIdArea: number;
                 /** @description To sector id (will move media to sector if toSectorId>0, toIdArea=0 and toIdProblem=0) */
                 toIdSector: number;
                 /** @description To problem id (will move media to problem if toProblemId>0, toIdArea=0 and toSectorId=0) */

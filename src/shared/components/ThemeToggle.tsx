@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from '../providers/useTheme';
 import { cn } from '../../lib/utils';
+import { useMeta } from './Meta/context';
 import { useSetThemePreference } from '../../api';
 
 /** Inline hover fill avoids glass-header / `backdrop-filter` compositing bugs and `::before` z-index pitfalls. */
@@ -16,14 +17,17 @@ export function ThemeToggle() {
   const { resolved, toggle } = useTheme();
   const isDark = resolved === 'dark';
   const [hover, setHover] = useState(false);
+  const { isAuthenticated } = useMeta();
   const { mutateAsync: setThemePreference } = useSetThemePreference();
 
   const handleToggle = () => {
     const next = isDark ? 'light' : 'dark';
     toggle();
-    setThemePreference(next).catch(() => {
-      /* Silently ignore — localStorage fallback is sufficient */
-    });
+    if (isAuthenticated) {
+      setThemePreference(next).catch(() => {
+        /* Silently ignore — localStorage fallback is sufficient */
+      });
+    }
   };
 
   return (

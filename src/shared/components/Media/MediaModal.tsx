@@ -428,7 +428,6 @@ const MediaModal = ({
     canDrawTopo ||
     canDrawMedia ||
     canOrder ||
-    (canMove && (m.enableMoveToIdArea ?? 0) > 0) ||
     (canMove && (m.enableMoveToIdSector ?? 0) > 0) ||
     (canMove && (m.enableMoveToIdProblem ?? 0) > 0) ||
     canSetMediaAsAvatar;
@@ -642,11 +641,6 @@ const MediaModal = ({
                   {canOrder && (
                     <button type='button' onClick={onMoveImageRight} className={mediaMenuItemClass}>
                       <ArrowRight size={14} className={mediaMenuIconClass} strokeWidth={2} /> Move image right
-                    </button>
-                  )}
-                  {canMove && (m.enableMoveToIdArea ?? 0) > 0 && (
-                    <button type='button' onClick={onMoveImageToArea} className={mediaMenuItemClass}>
-                      <Move size={14} className={mediaMenuIconClass} strokeWidth={2} /> Move image to area
                     </button>
                   )}
                   {canMove && (m.enableMoveToIdSector ?? 0) > 0 && (

@@ -34,6 +34,8 @@ type ProblemSearchResult = components['schemas']['ProblemSearchResult'];
 
 type ProblemState = MediaProblem;
 
+type MediaConnectionType = 'area' | 'sector' | 'problem' | 'guestbook';
+
 const fieldLabelClass = cn(designContract.typography.label, 'text-slate-300');
 
 /** Convert seconds → "M:SS" string. */
@@ -78,6 +80,8 @@ const MediaEdit = () => {
   const [photographer, setPhotographer] = useState<string | undefined>('');
   const [tagged, setTagged] = useState<User[]>([]);
   const [problems, setProblems] = useState<ProblemState[]>([]);
+  const [areaTrivia, setAreaTrivia] = useState<Record<number, boolean>>({});
+  const [sectorTrivia, setSectorTrivia] = useState<Record<number, boolean>>({});
   const [saving, setSaving] = useState(false);
 
   // Thumbnail picker state
@@ -107,6 +111,8 @@ const MediaEdit = () => {
     setPhotographer(m.photographer?.name ?? '');
     setTagged(m.tagged ?? []);
     setProblems(m.problems ?? []);
+    setAreaTrivia(Object.fromEntries((m.areas ?? []).map((a) => [a.areaId ?? 0, a.trivia ?? false])));
+    setSectorTrivia(Object.fromEntries((m.sectors ?? []).map((s) => [s.sectorId ?? 0, s.trivia ?? false])));
     setThumbnailSeconds(m.thumbnailSeconds ?? 0);
     // Initialize problem search inputs with formatted names (including location)
     const initialInputs: Record<number, string> = {};
@@ -144,19 +150,29 @@ const MediaEdit = () => {
     }
   }, [m?.embedUrl]);
 
+  const connectionType: MediaConnectionType = (() => {
+    if (m?.guestbookId) return 'guestbook';
+    if ((m?.areas ?? []).length > 0) return 'area';
+    if ((m?.sectors ?? []).length > 0) return 'sector';
+    return 'problem';
+  })();
+
   const handleSave = async () => {
     if (saving || !m) return;
     setSaving(true);
     try {
       const token = await getAccessTokenSilently();
       const id = mediaIdentityId(m.identity);
-      await putMedia(token, {
+      const body: components['schemas']['Media'] = {
         ...m,
         identity: { ...m.identity, id },
         description,
         photographer: photographer ? { id: 0, name: photographer } : undefined,
         tagged: tagged.map((u) => ({ id: u.id ?? 0, name: u.name ?? '' })),
-        problems: problems.map((p) => ({
+        thumbnailSeconds: Math.floor(thumbnailSeconds),
+      };
+      if (connectionType === 'problem') {
+        body.problems = problems.map((p) => ({
           problemId: p.problemId ?? 0,
           problemName: p.problemName ?? '',
           problemGrade: p.problemGrade ?? '',
@@ -166,9 +182,19 @@ const MediaEdit = () => {
           areaName: p.areaName ?? '',
           sectorName: p.sectorName ?? '',
           trivia: p.trivia ?? false,
-        })),
-        thumbnailSeconds: Math.floor(thumbnailSeconds),
-      });
+        }));
+      } else if (connectionType === 'area') {
+        body.areas = (m.areas ?? []).map((a) => ({
+          ...a,
+          trivia: areaTrivia[a.areaId ?? 0] ?? false,
+        }));
+      } else if (connectionType === 'sector') {
+        body.sectors = (m.sectors ?? []).map((s) => ({
+          ...s,
+          trivia: sectorTrivia[s.sectorId ?? 0] ?? false,
+        }));
+      }
+      await putMedia(token, body);
       navigate(-1);
     } catch (error) {
       console.warn(error);
@@ -221,7 +247,8 @@ const MediaEdit = () => {
     (p, i) =>
       (p.milliseconds ?? 0) > 0 && problems.findIndex((c) => (c.milliseconds ?? 0) === (p.milliseconds ?? 0)) !== i,
   );
-  const canSave = !!photographer && !hasEmptyProblem && !hasDuplicateTime;
+  const hasNoProblems = connectionType === 'problem' && problems.length === 0;
+  const canSave = !!photographer && !hasEmptyProblem && !hasDuplicateTime && !hasNoProblems;
 
   const [focusedProblemIndex, setFocusedProblemIndex] = useState<number | null>(null);
 
@@ -492,43 +519,136 @@ const MediaEdit = () => {
                 />
               </div>
 
-              {/* Problems (shown for both images and videos) */}
-              <div className='space-y-3'>
-                <div className='flex items-center justify-between'>
+              {/* Connection info — read-only for area / sector / guestbook, editable for problems */}
+              {connectionType === 'guestbook' && (
+                <div className='space-y-1.5'>
+                  <label className={cn('ml-1', fieldLabelClass)}>
+                    <span className='inline-flex items-center gap-1.5'>
+                      <MessageSquare size={14} className='text-slate-400' />
+                      Connected to
+                    </span>
+                  </label>
+                  <div className='bg-surface-raised border-surface-border flex items-center gap-2 rounded-xl border p-3'>
+                    <span className='text-sm text-slate-300'>Guestbook</span>
+                  </div>
+                </div>
+              )}
+
+              {connectionType === 'area' && (
+                <div className='space-y-3'>
                   <label className={cn('ml-1', fieldLabelClass)}>
                     <span className='inline-flex items-center gap-1.5'>
                       <ListVideo size={14} className='text-slate-400' />
-                      Problems
+                      Connected to areas
                     </span>
                   </label>
-                  <button
-                    type='button'
-                    onClick={addProblem}
-                    className='bg-surface-raised hover:bg-surface-raised-hover inline-flex items-center gap-1 rounded-lg border border-white/12 px-2.5 py-1 text-xs font-medium text-slate-300 transition-colors hover:border-white/22'
-                  >
-                    <Plus size={12} />
-                    Add problem
-                  </button>
+                  <div className='space-y-2'>
+                    {(m.areas ?? []).map((a, i) => (
+                      <div
+                        key={a.areaId ?? i}
+                        className='bg-surface-raised border-surface-border flex items-center gap-2 rounded-xl border p-3'
+                      >
+                        <span className='min-w-0 flex-1 text-sm text-slate-300'>
+                          {a.areaName ?? `Area #${a.areaId}`}
+                        </span>
+                        <label className='flex shrink-0 items-center gap-1.5 text-xs text-slate-400'>
+                          <input
+                            type='checkbox'
+                            checked={areaTrivia[a.areaId ?? 0] ?? false}
+                            onChange={(e) => setAreaTrivia((prev) => ({ ...prev, [a.areaId ?? 0]: e.target.checked }))}
+                            className='text-brand focus:ring-brand/50 h-4 w-4 rounded border-white/20 bg-slate-700 focus:ring-2'
+                          />
+                          Trivia
+                        </label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                {problems.length === 0 && <p className='type-small ml-1 text-slate-500'>No problems defined.</p>}
-                <div className='space-y-2'>
-                  {problems.map((p, i) => (
-                    <ProblemRow
-                      key={i}
-                      problem={p}
-                      maxSeconds={isVideo ? videoDuration : 0}
-                      showTimeInput={isVideo}
-                      searchInput={problemSearchInputs[i] ?? p.problemName ?? ''}
-                      onSearchInputChange={(val) => setProblemSearchInputs((prev) => ({ ...prev, [i]: val }))}
-                      onSelectProblem={(problem) => selectProblem(i, problem)}
-                      onTimeChange={(val) => updateProblemTime(i, val)}
-                      onPitchChange={(pitch) => updateProblemPitch(i, pitch)}
-                      onRemove={() => removeProblem(i)}
-                      autoFocus={focusedProblemIndex === i}
-                    />
-                  ))}
+              )}
+
+              {connectionType === 'sector' && (
+                <div className='space-y-3'>
+                  <label className={cn('ml-1', fieldLabelClass)}>
+                    <span className='inline-flex items-center gap-1.5'>
+                      <ListVideo size={14} className='text-slate-400' />
+                      Connected to sectors
+                    </span>
+                  </label>
+                  <div className='space-y-2'>
+                    {(m.sectors ?? []).map((s, i) => (
+                      <div
+                        key={s.sectorId ?? i}
+                        className='bg-surface-raised border-surface-border flex items-center gap-2 rounded-xl border p-3'
+                      >
+                        <span className='min-w-0 flex-1 text-sm text-slate-300'>
+                          {s.sectorName ?? `Sector #${s.sectorId}`}
+                          {s.areaName ? <span className='ml-1.5 text-slate-500'>({s.areaName})</span> : null}
+                        </span>
+                        <label className='flex shrink-0 items-center gap-1.5 text-xs text-slate-400'>
+                          <input
+                            type='checkbox'
+                            checked={sectorTrivia[s.sectorId ?? 0] ?? false}
+                            onChange={(e) =>
+                              setSectorTrivia((prev) => ({ ...prev, [s.sectorId ?? 0]: e.target.checked }))
+                            }
+                            className='text-brand focus:ring-brand/50 h-4 w-4 rounded border-white/20 bg-slate-700 focus:ring-2'
+                          />
+                          Trivia
+                        </label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {connectionType === 'problem' && (
+                <div className='space-y-3'>
+                  <div className='flex items-center justify-between'>
+                    <label className={cn('ml-1', fieldLabelClass)}>
+                      <span className='inline-flex items-center gap-1.5'>
+                        <ListVideo size={14} className='text-slate-400' />
+                        Problems
+                        <span className='text-[11px] font-medium text-rose-400'>*</span>
+                      </span>
+                    </label>
+                    <button
+                      type='button'
+                      onClick={addProblem}
+                      className='bg-surface-raised hover:bg-surface-raised-hover inline-flex items-center gap-1 rounded-lg border border-white/12 px-2.5 py-1 text-xs font-medium text-slate-300 transition-colors hover:border-white/22'
+                    >
+                      <Plus size={12} />
+                      Add problem
+                    </button>
+                  </div>
+                  {problems.length === 0 && (
+                    <p className='type-small ml-1 text-slate-500'>At least one problem is required.</p>
+                  )}
+                  <div className='space-y-2'>
+                    {problems.map((p, i) => (
+                      <ProblemRow
+                        key={i}
+                        problem={p}
+                        maxSeconds={isVideo ? videoDuration : 0}
+                        showTimeInput={isVideo}
+                        searchInput={problemSearchInputs[i] ?? p.problemName ?? ''}
+                        onSearchInputChange={(val) => setProblemSearchInputs((prev) => ({ ...prev, [i]: val }))}
+                        onSelectProblem={(problem) => selectProblem(i, problem)}
+                        onTimeChange={(val) => updateProblemTime(i, val)}
+                        onPitchChange={(pitch) => updateProblemPitch(i, pitch)}
+                        onTriviaChange={(trivia) =>
+                          setProblems((prev) => {
+                            const next = [...prev];
+                            next[i] = { ...next[i], trivia };
+                            return next;
+                          })
+                        }
+                        onRemove={() => removeProblem(i)}
+                        autoFocus={focusedProblemIndex === i}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </Card>
@@ -564,7 +684,7 @@ const MediaEdit = () => {
   );
 };
 
-/** A single problem row with problem search + optional time input + optional pitch selector. */
+/** A single problem row with problem search + optional time input + optional pitch selector + trivia toggle. */
 const ProblemRow = ({
   problem,
   maxSeconds,
@@ -574,6 +694,7 @@ const ProblemRow = ({
   onSelectProblem,
   onTimeChange,
   onPitchChange,
+  onTriviaChange,
   onRemove,
   autoFocus,
 }: {
@@ -585,6 +706,7 @@ const ProblemRow = ({
   onSelectProblem: (p: ProblemSearchResult) => void;
   onTimeChange: (val: string) => void;
   onPitchChange: (pitch: number | undefined) => void;
+  onTriviaChange: (trivia: boolean) => void;
   onRemove: () => void;
   autoFocus?: boolean;
 }) => {
@@ -753,6 +875,17 @@ const ProblemRow = ({
           <ProblemTimeInput milliseconds={problem.milliseconds ?? 0} maxSeconds={maxSeconds} onChange={onTimeChange} />
         </div>
       )}
+
+      {/* Trivia toggle */}
+      <label className='flex shrink-0 items-center gap-1.5 text-xs text-slate-400'>
+        <input
+          type='checkbox'
+          checked={problem.trivia ?? false}
+          onChange={(e) => onTriviaChange(e.target.checked)}
+          className='text-brand focus:ring-brand/50 h-4 w-4 rounded border-white/20 bg-slate-700 focus:ring-2'
+        />
+        Trivia
+      </label>
 
       <button
         type='button'
