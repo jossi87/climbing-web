@@ -232,6 +232,7 @@ const Media = ({
       found &&
       (!m ||
         mediaIdentityId(m.identity) !== mediaIdentityId(found.identity) ||
+        mediaIdentityVersionStamp(m.identity) !== mediaIdentityVersionStamp(found.identity) ||
         m.mediaSvgs !== found.mediaSvgs ||
         m.description !== found.description ||
         m.photographer !== found.photographer)

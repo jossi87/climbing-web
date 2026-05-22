@@ -19,7 +19,7 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import type { components } from '../../@types/buldreinfo/swagger';
-import { useMediaSvg, putMedia, useProblemSearch, invalidateAllProblemQueries } from '../../api';
+import { useMediaSvg, putMedia, useProblemSearch } from '../../api';
 import { getMediaFileUrl, mediaIdentityId, mediaIdentityVersionStamp } from '../../api/utils';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { Card } from '../../shared/ui';
@@ -199,16 +199,19 @@ const MediaEdit = () => {
       await putMedia(token, body);
       // Refetch (not just invalidate) so the updated versionStamp is in cache before navigating back.
       // This ensures the previous page renders the new thumbnail instead of a stale cached one.
-      await queryClient.refetchQueries({
-        predicate: (q) => {
-          const key = q.queryKey;
-          if (!Array.isArray(key) || key[0] !== '/media') return false;
-          const meta = key[1];
-          if (meta == null || typeof meta !== 'object') return false;
-          return 'idMedia' in meta && (meta as { idMedia: number }).idMedia === mediaIdNum;
-        },
-      });
-      await invalidateAllProblemQueries(queryClient);
+      await Promise.all([
+        queryClient.refetchQueries({
+          predicate: (q) => {
+            const key = q.queryKey;
+            if (!Array.isArray(key) || key[0] !== '/media') return false;
+            const meta = key[1];
+            if (meta == null || typeof meta !== 'object') return false;
+            return 'idMedia' in meta && (meta as { idMedia: number }).idMedia === mediaIdNum;
+          },
+        }),
+        // Refetch all problem queries so the media data (with updated versionStamp) is fresh
+        queryClient.refetchQueries({ queryKey: ['/problem'] }),
+      ]);
       navigate(-1);
     } catch (error) {
       console.warn(error);
