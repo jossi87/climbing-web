@@ -214,23 +214,6 @@ const MediaEdit = () => {
     }
   };
 
-  const handleThumbnailSave = async () => {
-    if (!m) return;
-    try {
-      const token = await getAccessTokenSilently();
-      const id = mediaIdentityId(m.identity);
-      await putMedia(token, {
-        ...m,
-        identity: { ...m.identity, id },
-        thumbnailSeconds: Math.floor(thumbnailSeconds),
-      });
-      setShowThumbnailPicker(false);
-    } catch (error) {
-      console.warn(error);
-      alert(error instanceof Error ? error.message : String(error));
-    }
-  };
-
   const handleTimeUpdate = useCallback(() => {
     if (!videoRef.current) return;
     setThumbnailSeconds(videoRef.current.currentTime);
@@ -420,7 +403,7 @@ const MediaEdit = () => {
                       <Video size={16} className='mt-0.5 shrink-0 text-sky-400' />
                       <p className='text-[13px] leading-snug text-slate-300'>
                         <strong className='text-slate-100'>Seek</strong> in the video below to find the frame you want
-                        as the thumbnail, then click <strong className='text-slate-100'>Set thumbnail</strong>.
+                        as the thumbnail, then click <strong className='text-slate-100'>Save</strong> below to apply.
                       </p>
                     </div>
                     <video
@@ -444,19 +427,6 @@ const MediaEdit = () => {
                         </div>
                       </div>
                     )}
-                    <div className='flex justify-end'>
-                      <button
-                        type='button'
-                        onClick={() => void handleThumbnailSave()}
-                        className={cn(
-                          designContract.controls.savePrimaryModal,
-                          'disabled:bg-surface-hover rounded-lg shadow-sm disabled:opacity-50',
-                        )}
-                      >
-                        <Image size={14} />
-                        Set thumbnail
-                      </button>
-                    </div>
                   </div>
                 )}
               </div>
