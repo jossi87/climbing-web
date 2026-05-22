@@ -891,16 +891,37 @@ const MediaModal = ({
             <div className='pointer-events-none w-full max-w-full min-w-0 text-end'>
               {(() => {
                 const chunks: { key: string; node: ReactNode }[] = [];
-                if (showLocation && m.location?.trim()) {
-                  chunks.push({
-                    key: 'loc',
-                    node: (
-                      <span className='inline-flex items-center gap-1'>
-                        <MapPin size={11} className='text-brand shrink-0' aria-hidden />
-                        {m.location!.trim()}
-                      </span>
-                    ),
-                  });
+                if (showLocation) {
+                  const locationParts: string[] = [];
+                  if (m.areas?.length) {
+                    locationParts.push(...m.areas.map((a) => a.areaName ?? '').filter(Boolean));
+                  }
+                  if (m.sectors?.length) {
+                    locationParts.push(...m.sectors.map((s) => s.sectorName ?? '').filter(Boolean));
+                  }
+                  if (m.problems?.length) {
+                    locationParts.push(...m.problems.map((p) => p.problemName ?? '').filter(Boolean));
+                  }
+                  const locationStr = locationParts.join(' · ');
+                  if (locationStr) {
+                    chunks.push({
+                      key: 'loc',
+                      node: (
+                        <span className='inline-flex items-center gap-1'>
+                          <MapPin size={11} className='text-brand shrink-0' aria-hidden />
+                          {locationStr}
+                        </span>
+                      ),
+                    });
+                  }
+                  // Show grade from the first problem that has one
+                  const grade = m.problems?.find((p) => p.problemGrade?.trim())?.problemGrade?.trim();
+                  if (grade) {
+                    chunks.push({
+                      key: 'grade',
+                      node: <span className='text-brand normal-case'>{grade}</span>,
+                    });
+                  }
                 }
                 const metaDesc = m.description?.trim();
                 if (metaDesc)
@@ -913,8 +934,7 @@ const MediaModal = ({
                     key: 'grade',
                     node: <span className='text-brand normal-case'>{activePitch.grade}</span>,
                   });
-                if ((m.pitch ?? 0) > 0)
-                  chunks.push({ key: 'pitch', node: <span className='text-[#e2e8f0]'>Pitch {m.pitch}</span> });
+                // pitch is now per-problem in the problems array, not on the media itself
                 if (carouselSize > 1)
                   chunks.push({
                     key: 'idx',
@@ -978,7 +998,15 @@ const MediaModal = ({
                   <p className='type-label mb-2 flex items-center gap-2'>
                     <MapPin size={12} /> Location
                   </p>
-                  <p className='type-body font-semibold'>{m.location || 'Unknown'}</p>
+                  <p className='type-body font-semibold'>
+                    {(() => {
+                      const parts: string[] = [];
+                      if (m.areas?.length) parts.push(...m.areas.map((a) => a.areaName ?? '').filter(Boolean));
+                      if (m.sectors?.length) parts.push(...m.sectors.map((s) => s.sectorName ?? '').filter(Boolean));
+                      if (m.problems?.length) parts.push(...m.problems.map((p) => p.problemName ?? '').filter(Boolean));
+                      return parts.length ? parts.join(' · ') : 'Unknown';
+                    })()}
+                  </p>
                 </div>
                 <div>
                   <p className='type-label mb-2 flex items-center gap-2'>

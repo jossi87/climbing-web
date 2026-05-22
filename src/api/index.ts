@@ -13,9 +13,8 @@ export {
   postSector,
   postTicks,
   postUserRegion,
-  putMediaInfo,
+  putMedia,
   putMediaJpegRotate,
-  putMediaVideoThumbnail,
 } from './operations';
 
 export {

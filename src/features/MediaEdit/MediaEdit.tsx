@@ -18,11 +18,10 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import type { components } from '../../@types/buldreinfo/swagger';
-import { useMediaSvg, putMediaInfo, putMediaVideoThumbnail, useProblemSearch } from '../../api';
+import { useMediaSvg, putMedia, useProblemSearch } from '../../api';
 import { getMediaFileUrl, mediaIdentityId, mediaIdentityVersionStamp } from '../../api/utils';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { Card } from '../../shared/ui';
-import { FormSwitch } from '../../shared/ui/FormSwitch';
 import { UserSelector, UsersSelector } from '../../shared/ui/UserSelector';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
@@ -76,8 +75,6 @@ const MediaEdit = () => {
   const m: Media | undefined = data;
 
   const [description, setDescription] = useState('');
-  const [trivia, setTrivia] = useState(false);
-  const [pitch, setPitch] = useState<number>(0);
   const [photographer, setPhotographer] = useState<string | undefined>('');
   const [tagged, setTagged] = useState<User[]>([]);
   const [problems, setProblems] = useState<ProblemState[]>([]);
@@ -107,8 +104,6 @@ const MediaEdit = () => {
     if (!m || initializedRef.current) return;
     initializedRef.current = true;
     setDescription(m.description ?? '');
-    setTrivia(!!m.trivia);
-    setPitch(m.pitch ?? 0);
     setPhotographer(m.photographer?.name ?? '');
     setTagged(m.tagged ?? []);
     setProblems(m.problems ?? []);
@@ -155,20 +150,25 @@ const MediaEdit = () => {
     try {
       const token = await getAccessTokenSilently();
       const id = mediaIdentityId(m.identity);
-      await putMediaInfo(
-        token,
-        id,
+      await putMedia(token, {
+        ...m,
+        identity: { ...m.identity, id },
         description,
-        pitch,
-        trivia,
-        photographer,
-        tagged.map((u) => ({ id: u.id ?? 0, name: u.name ?? '' })),
-        problems.map((p) => ({
+        photographer: photographer ? { id: 0, name: photographer } : undefined,
+        tagged: tagged.map((u) => ({ id: u.id ?? 0, name: u.name ?? '' })),
+        problems: problems.map((p) => ({
           problemId: p.problemId ?? 0,
-          problemPitch: p.problemPitch,
-          milliseconds: p.milliseconds,
+          problemName: p.problemName ?? '',
+          problemGrade: p.problemGrade ?? '',
+          problemPitch: p.problemPitch ?? 0,
+          problemNumPitches: p.problemNumPitches ?? 0,
+          milliseconds: p.milliseconds ?? 0,
+          areaName: p.areaName ?? '',
+          sectorName: p.sectorName ?? '',
+          trivia: p.trivia ?? false,
         })),
-      );
+        thumbnailSeconds: Math.floor(thumbnailSeconds),
+      });
       navigate(-1);
     } catch (error) {
       console.warn(error);
@@ -183,7 +183,11 @@ const MediaEdit = () => {
     try {
       const token = await getAccessTokenSilently();
       const id = mediaIdentityId(m.identity);
-      await putMediaVideoThumbnail(token, id, Math.floor(thumbnailSeconds));
+      await putMedia(token, {
+        ...m,
+        identity: { ...m.identity, id },
+        thumbnailSeconds: Math.floor(thumbnailSeconds),
+      });
       setShowThumbnailPicker(false);
     } catch (error) {
       console.warn(error);
@@ -443,24 +447,6 @@ const MediaEdit = () => {
                     onChange={(e) => setDescription(e.target.value)}
                   />
                 </div>
-              </div>
-
-              {/* Trivia */}
-              <div className='bg-surface-raised border-surface-border flex items-center justify-between gap-3 rounded-xl border p-4'>
-                <div className='min-w-0 space-y-0.5'>
-                  <label className={cn(fieldLabelClass, 'ml-0 font-semibold text-slate-200')}>Trivia media</label>
-                  <p className='type-small text-slate-400'>Mark as general trivia for the page</p>
-                </div>
-                <FormSwitch
-                  checked={trivia}
-                  onChange={() => {
-                    const newTrivia = !trivia;
-                    setTrivia(newTrivia);
-                    if (newTrivia) setPitch(0);
-                  }}
-                  variant='brand'
-                  aria-label='Trivia media'
-                />
               </div>
 
               {/* Photographer (required) */}

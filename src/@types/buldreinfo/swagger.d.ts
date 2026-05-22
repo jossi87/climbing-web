@@ -14,7 +14,7 @@ export type paths = {
         /** Get Media by id */
         get: operations["getMedia"];
         /** Update media */
-        put: operations["putMediaInfo"];
+        put: operations["putMedia"];
         post?: never;
         /** Move media to trash */
         delete: operations["deleteMedia"];
@@ -862,7 +862,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/v2/media/video/thumbnail": {
+    "/v2/media/location": {
         parameters: {
             query?: never;
             header?: never;
@@ -870,8 +870,8 @@ export type paths = {
             cookie?: never;
         };
         get?: never;
-        /** Update video thumbnail position */
-        put: operations["putMediaVideoThumbnail"];
+        /** Update media location */
+        put: operations["putMediaLocation"];
         post?: never;
         delete?: never;
         options?: never;
@@ -1054,9 +1054,6 @@ export type components = {
             identity?: components["schemas"]["MediaIdentity"];
             uploadedByMe?: boolean;
             /** Format: int32 */
-            pitch?: number;
-            trivia?: boolean;
-            /** Format: int32 */
             width?: number;
             /** Format: int32 */
             height?: number;
@@ -1066,7 +1063,6 @@ export type components = {
             photographer?: components["schemas"]["User"];
             tagged?: components["schemas"]["User"][];
             description?: string;
-            location?: string;
             mediaSvgs?: components["schemas"]["MediaSvgElement"][];
             /** Format: int32 */
             svgProblemId?: number;
@@ -1082,7 +1078,17 @@ export type components = {
             /** Format: int32 */
             enableMoveToIdProblem?: number;
             url?: string;
+            areas?: components["schemas"]["MediaArea"][];
+            sectors?: components["schemas"]["MediaSector"][];
             problems?: components["schemas"]["MediaProblem"][];
+            /** Format: int32 */
+            guestbookId?: number;
+        };
+        MediaArea: {
+            /** Format: int32 */
+            areaId?: number;
+            areaName?: string;
+            trivia?: boolean;
         };
         MediaProblem: {
             /** Format: int32 */
@@ -1097,6 +1103,14 @@ export type components = {
             milliseconds?: number;
             areaName?: string;
             sectorName?: string;
+            trivia?: boolean;
+        };
+        MediaSector: {
+            /** Format: int32 */
+            sectorId?: number;
+            areaName?: string;
+            sectorName?: string;
+            trivia?: boolean;
         };
         MediaSvgElement: {
             /** @enum {string} */
@@ -1974,8 +1988,8 @@ export type components = {
             value?: string;
             content?: Record<string, never>;
             fileName?: string;
-            formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
             simple?: boolean;
+            formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
             parameterizedHeaders?: {
                 empty?: boolean;
             } & {
@@ -2147,7 +2161,7 @@ export interface operations {
             };
         };
     };
-    putMediaInfo: {
+    putMedia: {
         parameters: {
             query?: never;
             header?: never;
@@ -4375,11 +4389,19 @@ export interface operations {
             };
         };
     };
-    putMediaVideoThumbnail: {
+    putMediaLocation: {
         parameters: {
-            query?: {
-                mediaId?: number;
-                thumbnailSeconds?: number;
+            query: {
+                /** @description Media id */
+                id: number;
+                /** @description Move left */
+                left: boolean;
+                /** @description To area id (will move media to area if toIdArea>0, toIdSector=0 and toIdProblem=0) */
+                toIdArea: number;
+                /** @description To sector id (will move media to sector if toSectorId>0, toIdArea=0 and toIdProblem=0) */
+                toIdSector: number;
+                /** @description To problem id (will move media to problem if toProblemId>0, toIdArea=0 and toSectorId=0) */
+                toIdProblem: number;
             };
             header?: never;
             path?: never;

@@ -49,8 +49,8 @@ export function moveMedia(
   toIdArea: number,
   toIdSector: number,
   toIdProblem: number,
-): Promise<Success<'putMediaInfo'>> {
-  const url = `/media?id=${id}&left=${left}&toIdArea=${toIdArea}&toIdSector=${toIdSector}&toIdProblem=${toIdProblem}`;
+): Promise<Response> {
+  const url = `/media/location?id=${id}&left=${left}&toIdArea=${toIdArea}&toIdSector=${toIdSector}&toIdProblem=${toIdProblem}`;
   return makeAuthenticatedRequest(accessToken, url, {
     method: 'PUT',
     ...invalidateQueriesAfter,
@@ -423,28 +423,11 @@ export function postUserRegion(
   }).then((response) => ensureOkResponse(response, url));
 }
 
-export function putMediaInfo(
-  accessToken: string | null,
-  mediaId: number,
-  description: string,
-  pitch: number,
-  trivia: boolean,
-  photographer?: string,
-  tagged?: { id: number; name: string }[],
-  problems?: { problemId: number; problemPitch?: number; milliseconds?: number }[],
-): Promise<Success<'putMediaInfo'>> {
-  const url = `/media/info`;
+export function putMedia(accessToken: string | null, media: components['schemas']['Media']): Promise<Response> {
+  const url = `/media`;
   return makeAuthenticatedRequest(accessToken, url, {
     method: 'PUT',
-    body: JSON.stringify({
-      mediaId,
-      description,
-      pitch,
-      trivia,
-      photographer,
-      tagged,
-      problems,
-    }),
+    body: JSON.stringify(media),
     headers: {
       'Content-Type': 'application/json',
     },
@@ -454,18 +437,6 @@ export function putMediaInfo(
 
 export function putMediaJpegRotate(accessToken: string | null, idMedia: number, degrees: number): Promise<unknown> {
   const url = `/media/jpeg/rotate?idMedia=${idMedia}&degrees=${degrees}`;
-  return makeAuthenticatedRequest(accessToken, url, {
-    method: 'PUT',
-    ...invalidateQueriesAfter,
-  }).then((response) => ensureOkResponse(response, url));
-}
-
-export function putMediaVideoThumbnail(
-  accessToken: string | null,
-  mediaId: number,
-  thumbnailSeconds: number,
-): Promise<unknown> {
-  const url = `/media/video/thumbnail?mediaId=${mediaId}&thumbnailSeconds=${thumbnailSeconds}`;
   return makeAuthenticatedRequest(accessToken, url, {
     method: 'PUT',
     ...invalidateQueriesAfter,
