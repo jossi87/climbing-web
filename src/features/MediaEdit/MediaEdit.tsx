@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuth0 } from '@auth0/auth0-react';
 import {
   Save,
@@ -18,7 +19,13 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import type { components } from '../../@types/buldreinfo/swagger';
-import { useMediaSvg, putMedia, useProblemSearch } from '../../api';
+import {
+  useMediaSvg,
+  putMedia,
+  useProblemSearch,
+  invalidateMediaQueries,
+  invalidateAllProblemQueries,
+} from '../../api';
 import { getMediaFileUrl, mediaIdentityId, mediaIdentityVersionStamp } from '../../api/utils';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { Card } from '../../shared/ui';
@@ -69,6 +76,7 @@ function formatProblemOption(p: ProblemSearchResult): string {
 
 const MediaEdit = () => {
   const { getAccessTokenSilently } = useAuth0();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { mediaId } = useParams();
   const mediaIdNum = Number(mediaId ?? 0);
@@ -77,7 +85,7 @@ const MediaEdit = () => {
   const m: Media | undefined = data;
 
   const [description, setDescription] = useState('');
-  const [photographer, setPhotographer] = useState<string | undefined>('');
+  const [photographer, setPhotographer] = useState<User | undefined>(undefined);
   const [tagged, setTagged] = useState<User[]>([]);
   const [problems, setProblems] = useState<ProblemState[]>([]);
   const [areaTrivia, setAreaTrivia] = useState<Record<number, boolean>>({});
@@ -108,7 +116,7 @@ const MediaEdit = () => {
     if (!m || initializedRef.current) return;
     initializedRef.current = true;
     setDescription(m.description ?? '');
-    setPhotographer(m.photographer?.name ?? '');
+    setPhotographer(m.photographer ? { id: m.photographer.id, name: m.photographer.name } : undefined);
     setTagged(m.tagged ?? []);
     setProblems(m.problems ?? []);
     setAreaTrivia(Object.fromEntries((m.areas ?? []).map((a) => [a.areaId ?? 0, a.trivia ?? false])));
@@ -167,7 +175,7 @@ const MediaEdit = () => {
         ...m,
         identity: { ...m.identity, id },
         description,
-        photographer: photographer ? { id: 0, name: photographer } : undefined,
+        photographer: photographer ? { id: photographer.id ?? 0, name: photographer.name ?? '' } : undefined,
         tagged: tagged.map((u) => ({ id: u.id ?? 0, name: u.name ?? '' })),
         thumbnailSeconds: Math.floor(thumbnailSeconds),
       };
@@ -195,6 +203,8 @@ const MediaEdit = () => {
         }));
       }
       await putMedia(token, body);
+      await invalidateMediaQueries(queryClient, mediaIdNum);
+      await invalidateAllProblemQueries(queryClient);
       navigate(-1);
     } catch (error) {
       console.warn(error);
@@ -487,8 +497,17 @@ const MediaEdit = () => {
                 </label>
                 <UserSelector
                   placeholder='Search or type name...'
-                  value={photographer}
-                  onUserUpdated={(user) => setPhotographer(user?.name ?? '')}
+                  value={photographer?.name ?? ''}
+                  onUserUpdated={(user) =>
+                    setPhotographer(
+                      user
+                        ? {
+                            id: typeof user.value === 'number' ? user.value : user.id,
+                            name: user.label ?? user.name ?? '',
+                          }
+                        : undefined,
+                    )
+                  }
                   matchInputLeadStyle
                 />
                 {!photographer && (

@@ -230,7 +230,11 @@ const Media = ({
     const found = media.find((x) => mediaIdentityId(x.identity) === mediaId);
     if (
       found &&
-      (!m || mediaIdentityId(m.identity) !== mediaIdentityId(found.identity) || m.mediaSvgs !== found.mediaSvgs)
+      (!m ||
+        mediaIdentityId(m.identity) !== mediaIdentityId(found.identity) ||
+        m.mediaSvgs !== found.mediaSvgs ||
+        m.description !== found.description ||
+        m.photographer !== found.photographer)
     ) {
       setM(found);
     }
