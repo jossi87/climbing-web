@@ -351,11 +351,6 @@ const Media = ({
             onMoveImageRight={() =>
               executeMediaAction((token) => moveMedia(token, mediaIdentityId(m.identity), false, 0, 0, 0))
             }
-            onMoveImageToArea={() =>
-              executeMediaAction((token) =>
-                moveMedia(token, mediaIdentityId(m.identity), false, m.enableMoveToIdArea ?? 0, 0, 0),
-              )
-            }
             onMoveImageToSector={() =>
               executeMediaAction((token) =>
                 moveMedia(token, mediaIdentityId(m.identity), false, 0, m.enableMoveToIdSector ?? 0, 0),

@@ -101,7 +101,7 @@ const MediaSvgEdit = () => {
     points.forEach((p, i) => {
       if (i === 0) d += 'M ';
       else if (isQuadraticPoint(p)) d += `Q ${p.q.x} ${p.q.y} `;
-      else if (isCubicPoint(p)) d += `C ${p.c[0].x} ${p.c[0].y} ${p.c[1].x} ${p.c[1].y} `;
+      else if (isCubicPoint(p) && p.c[0] && p.c[1]) d += `C ${p.c[0].x} ${p.c[0].y} ${p.c[1].x} ${p.c[1].y} `;
       else if (isArc(p)) d += `A ${p.a.rx} ${p.a.ry} ${p.a.rot} ${p.a.laf} ${p.a.sf} `;
       else d += 'L ';
       d += `${p.x} ${p.y} `;
@@ -349,7 +349,7 @@ const MediaSvgEdit = () => {
 
   return (
     <div className='w-full min-w-0 select-none' onMouseUp={cancelDragging} onMouseLeave={cancelDragging}>
-      <title>{`Media topo · #${mediaIdNum} | ${meta.title}`}</title>
+      <title>{`Draw on image · #${mediaIdNum} | ${meta.title}`}</title>
       <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm'>
         <div className='divide-y divide-white/6'>
           <div className='p-3 sm:p-5'>
@@ -531,7 +531,12 @@ const MediaSvgEdit = () => {
                       <span className={cn(designContract.typography.label, 'shrink-0 text-slate-500')}>Segment</span>
                       <select
                         className={cn(fieldClass, 'min-w-0')}
-                        value={isCubicPoint(mediaSvgs[activeElementIndex].points![activePoint]) ? 'C' : 'L'}
+                        value={
+                          mediaSvgs[activeElementIndex].points?.[activePoint] &&
+                          isCubicPoint(mediaSvgs[activeElementIndex].points[activePoint])
+                            ? 'C'
+                            : 'L'
+                        }
                         onChange={(e) => setPointType(e.target.value)}
                       >
                         <option value='L'>Line</option>

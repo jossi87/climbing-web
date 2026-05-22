@@ -198,7 +198,6 @@ type Props = {
   onRotate: (deg: number) => void;
   onMoveImageLeft: () => void;
   onMoveImageRight: () => void;
-  onMoveImageToArea: () => void;
   onMoveImageToSector: () => void;
   onMoveImageToProblem: () => void;
   onSetMediaAsAvatar: () => void;
@@ -224,7 +223,6 @@ const MediaModal = ({
   onRotate,
   onMoveImageLeft,
   onMoveImageRight,
-  onMoveImageToArea,
   onMoveImageToSector,
   onMoveImageToProblem,
   onSetMediaAsAvatar,
