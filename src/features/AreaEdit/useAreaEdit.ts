@@ -141,26 +141,8 @@ export const useAreaEdit = ({ areaId }: { areaId: number }) => {
 
   const saveMutation = usePostData<State, Redirect>(`/areas`, {
     mutationKey: [`/areas`, { id: areaId }],
-    createBody(area) {
-      const formData = new FormData();
-
-      formData.append(
-        'json',
-        JSON.stringify({
-          ...area,
-          lockedAdmin: !!area.lockedAdmin,
-          lockedSuperadmin: !!area.lockedSuperadmin,
-          accessInfo: area.accessInfo || '',
-          accessClosed: area.accessClosed || '',
-          externalLinks: area.externalLinks?.filter((l) => l.title && l.url),
-        }),
-      );
-
-      return formData;
-    },
     select: (res) => res.json(),
     fetchOptions: {
-      headers: { Accept: 'application/json' },
       consistencyAction: 'nop',
       invalidateActivityFeed: true,
     },

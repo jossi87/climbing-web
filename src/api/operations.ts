@@ -71,10 +71,9 @@ export function postComment(
   del: boolean,
 ): Promise<number> {
   const url = `/comments`;
-  const formData = new FormData();
-  formData.append(
-    'json',
-    JSON.stringify({
+  return makeAuthenticatedRequest(accessToken, url, {
+    method: 'POST',
+    body: JSON.stringify({
       id,
       idProblem,
       comment,
@@ -82,12 +81,8 @@ export function postComment(
       resolved,
       delete: del,
     }),
-  );
-
-  return makeAuthenticatedRequest(accessToken, url, {
-    method: 'POST',
-    body: formData,
     headers: {
+      'Content-Type': 'application/json',
       Accept: 'application/json',
     },
     invalidateActivityFeed: true,
@@ -148,7 +143,6 @@ export function postProblem(
   descent: string,
 ): Promise<Success<'postProblems'>> {
   const url = `/problems`;
-  const formData = new FormData();
   const newMedia = media.map((m) => {
     return {
       name: m.file && uploadFilenameForApi(m.file),
@@ -163,9 +157,9 @@ export function postProblem(
       thumbnailSeconds: m.thumbnailSeconds,
     };
   });
-  formData.append(
-    'json',
-    JSON.stringify({
+  return makeAuthenticatedRequest(accessToken, url, {
+    method: 'POST',
+    body: JSON.stringify({
       sectorId,
       id,
       broken,
@@ -191,12 +185,8 @@ export function postProblem(
       lengthMeter,
       descent,
     }),
-  );
-  media.forEach((m) => m.file && formData.append(uploadFilenameForApi(m.file), m.file));
-  return makeAuthenticatedRequest(accessToken, url, {
-    method: 'POST',
-    body: formData,
     headers: {
+      'Content-Type': 'application/json',
       Accept: 'application/json',
     },
     /** Avoid refetching every cached query — that floods the network/console after save. */
@@ -265,7 +255,6 @@ export function postSector(
   problemOrder: components['schemas']['SectorProblemOrder'][] | undefined,
 ): Promise<Success<'postSectors'>> {
   const url = `/sectors`;
-  const formData = new FormData();
   const newMedia = media.map((m) => {
     return {
       name: m.file && uploadFilenameForApi(m.file),
@@ -279,9 +268,9 @@ export function postSector(
       thumbnailSeconds: m.thumbnailSeconds,
     };
   });
-  formData.append(
-    'json',
-    JSON.stringify({
+  return makeAuthenticatedRequest(accessToken, url, {
+    method: 'POST',
+    body: JSON.stringify({
       areaId,
       id,
       trash,
@@ -302,12 +291,8 @@ export function postSector(
       newMedia,
       problemOrder,
     }),
-  );
-  media.forEach((m) => m.file && formData.append(uploadFilenameForApi(m.file), m.file));
-  return makeAuthenticatedRequest(accessToken, url, {
-    method: 'POST',
-    body: formData,
     headers: {
+      'Content-Type': 'application/json',
       Accept: 'application/json',
     },
     consistencyAction: 'nop',
@@ -371,7 +356,7 @@ export function postMedia(
   const formData = new FormData();
   formData.append('json', JSON.stringify(media));
   if (file) {
-    formData.append(uploadFilenameForApi(file), file);
+    formData.append('file', file);
   }
   return makeAuthenticatedRequest(accessToken, url, {
     method: 'POST',
