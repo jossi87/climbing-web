@@ -123,14 +123,16 @@ export function usePostData<TVariables, TData = Response>(
     const url = createUrl(variables);
     const createBody = options.createBody ?? JSON.stringify;
 
+    const body = fetchOptions?.body ?? createBody(variables);
+    const isFormData = body instanceof FormData;
     const res = await makeAuthenticatedRequest(accessToken, url, {
-      method: 'POST',
-      body: createBody(variables),
+      ...fetchOptions,
+      method: fetchOptions?.method ?? 'POST',
+      body,
       headers: {
-        'Content-Type': 'application/json',
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
         ...fetchOptions?.headers,
       },
-      ...fetchOptions,
     });
 
     return select(res, variables);
