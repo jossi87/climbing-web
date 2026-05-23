@@ -3,10 +3,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useArea, usePostData } from '../../api';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { neverGuard } from '../../utils/neverGuard';
-import { uploadFilenameForApi } from '../../utils/uploadFilenameForApi';
 import type { UseMutateAsyncFunction } from '@tanstack/react-query';
 
-type NewMedia = components['schemas']['NewMedia'] & { file?: File };
 type ExternalLink = components['schemas']['ExternalLink'];
 type Redirect = components['schemas']['Redirect'];
 
@@ -30,9 +28,7 @@ type State = Required<
     | 'trash'
     | 'externalLinks'
   >
-> & {
-  newMedia: NewMedia[];
-};
+>;
 
 type Update =
   | { action: 'set-data'; data: components['schemas']['Area'] }
@@ -59,7 +55,6 @@ type Update =
   | { action: 'set-coord'; key: 'latitude' | 'longitude'; value: string | number }
   | { action: 'set-lat-lng'; lat: number; lng: number }
   | { action: 'set-sort'; sectorId: number; sorting: number }
-  | { action: 'set-media'; newMedia: NewMedia[] }
   | { action: 'set-external-links'; externalLinks: ExternalLink[] };
 
 const getCoordValue = (value: string | number): number => {
@@ -84,14 +79,13 @@ const DEFAULT_STATE: State = {
   sectorOrder: [],
   sectors: [],
   trash: false,
-  newMedia: [],
   externalLinks: [],
 };
 
 const reducer = (state: State, update: Update): State => {
   switch (update.action) {
     case 'set-data':
-      return { ...DEFAULT_STATE, ...update.data, newMedia: [] };
+      return { ...DEFAULT_STATE, ...update.data };
     case 'set-string':
       return { ...state, [update.key]: update.value };
     case 'set-visibility':
@@ -127,8 +121,6 @@ const reducer = (state: State, update: Update): State => {
       };
     case 'set-boolean':
       return { ...state, [update.key]: update.value };
-    case 'set-media':
-      return { ...state, newMedia: update.newMedia };
     case 'set-external-links':
       return { ...state, externalLinks: update.externalLinks };
     default:
@@ -151,17 +143,6 @@ export const useAreaEdit = ({ areaId }: { areaId: number }) => {
     mutationKey: [`/areas`, { id: areaId }],
     createBody(area) {
       const formData = new FormData();
-      const sanitizedMedia = area.newMedia.map((m) => ({
-        name: m.file && uploadFilenameForApi(m.file),
-        photographer: m.photographer,
-        inPhoto: m.inPhoto,
-        description: m.description,
-        trivia: m.trivia,
-        embedVideoUrl: m.embedVideoUrl,
-        embedThumbnailUrl: m.embedThumbnailUrl,
-        embedMilliseconds: m.embedMilliseconds,
-        thumbnailSeconds: m.thumbnailSeconds,
-      }));
 
       formData.append(
         'json',
@@ -172,15 +153,9 @@ export const useAreaEdit = ({ areaId }: { areaId: number }) => {
           accessInfo: area.accessInfo || '',
           accessClosed: area.accessClosed || '',
           externalLinks: area.externalLinks?.filter((l) => l.title && l.url),
-          newMedia: sanitizedMedia,
         }),
       );
 
-      area.newMedia.forEach((m) => {
-        if (m.file) {
-          formData.append(uploadFilenameForApi(m.file), m.file);
-        }
-      });
       return formData;
     },
     select: (res) => res.json(),
@@ -243,7 +218,6 @@ export const useAreaEdit = ({ areaId }: { areaId: number }) => {
         dispatch({ action: 'set-boolean', key, value: !!d.checked }),
       [],
     ),
-    setNewMedia: useCallback((newMedia: NewMedia[]) => dispatch({ action: 'set-media', newMedia }), []),
     setExternalLinks: useCallback(
       (externalLinks: ExternalLink[]) => dispatch({ action: 'set-external-links', externalLinks }),
       [],

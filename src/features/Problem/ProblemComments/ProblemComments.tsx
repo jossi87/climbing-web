@@ -50,7 +50,7 @@ export const ProblemComments = ({
     const pid = data?.id;
     if (!pid) return;
     if (confirm('Are you sure you want to flag this comment?')) {
-      postComment(accessToken, id, pid, message, true, false, false, [])
+      postComment(accessToken, id, pid, message, true, false, false)
         .then(() => {
           void invalidateProblemQueries(queryClient, pid);
         })
@@ -67,7 +67,7 @@ export const ProblemComments = ({
     if (!pid) return;
 
     if (confirm('Are you sure you want to delete this comment?')) {
-      postComment(accessToken, id, pid, null, false, false, true, [])
+      postComment(accessToken, id, pid, null, false, false, true)
         .then(() => {
           void invalidateProblemQueries(queryClient, pid);
         })

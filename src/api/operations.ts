@@ -57,14 +57,6 @@ export function moveMedia(
   }).then((response) => ensureOkResponse(response, url));
 }
 
-export function setMediaAsAvatar(accessToken: string | null, id: number): Promise<Success<'putMediaAvatar'>> {
-  const url = `/media/avatar?id=${id}`;
-  return makeAuthenticatedRequest(accessToken, url, {
-    method: 'PUT',
-    ...invalidateQueriesAfter,
-  }).then((response) => ensureOkResponse(response, url));
-}
-
 export function downloadUsersTicks(accessToken: string | null) {
   return downloadFileWithProgress(accessToken, getUrl(`/users/ticks`));
 }
@@ -77,24 +69,9 @@ export function postComment(
   danger: boolean,
   resolved: boolean,
   del: boolean,
-  media: UploadMedia[],
-): Promise<Response> {
+): Promise<number> {
   const url = `/comments`;
   const formData = new FormData();
-  const newMedia = media.map((m) => {
-    return {
-      name: m.file && uploadFilenameForApi(m.file),
-      photographer: m.photographer,
-      inPhoto: m.inPhoto,
-      pitch: m.pitch,
-      trivia: m.trivia,
-      description: m.description,
-      embedVideoUrl: m.embedVideoUrl,
-      embedThumbnailUrl: m.embedThumbnailUrl,
-      embedMilliseconds: m.embedMilliseconds,
-      thumbnailSeconds: m.thumbnailSeconds,
-    };
-  });
   formData.append(
     'json',
     JSON.stringify({
@@ -104,10 +81,8 @@ export function postComment(
       danger,
       resolved,
       delete: del,
-      newMedia,
     }),
   );
-  media.forEach((m) => m.file && formData.append(uploadFilenameForApi(m.file), m.file));
 
   return makeAuthenticatedRequest(accessToken, url, {
     method: 'POST',
@@ -116,7 +91,9 @@ export function postComment(
       Accept: 'application/json',
     },
     invalidateActivityFeed: true,
-  }).then((response) => ensureOkResponse(response, url));
+  })
+    .then((response) => ensureOkResponse(response, url))
+    .then((response) => response.json() as Promise<number>);
 }
 
 export function postPermissions(
@@ -227,44 +204,6 @@ export function postProblem(
     invalidateActivityFeed: true,
   })
     .then((response) => ensureOkJson(response, url, {} as Success<'postProblems'>))
-    .catch((error) => {
-      console.warn(error);
-      throw error;
-    });
-}
-
-export function postProblemMedia(
-  accessToken: string | null,
-  id: number,
-  media: UploadMedia[],
-): Promise<Success<'postProblemsMedia'>> {
-  const url = `/problems/media`;
-  const formData = new FormData();
-  const newMedia = media.map((m) => {
-    return {
-      name: m.file && uploadFilenameForApi(m.file),
-      photographer: m.photographer,
-      inPhoto: m.inPhoto,
-      pitch: m.pitch,
-      trivia: m.trivia,
-      description: m.description,
-      embedVideoUrl: m.embedVideoUrl,
-      embedThumbnailUrl: m.embedThumbnailUrl,
-      embedMilliseconds: m.embedMilliseconds,
-      thumbnailSeconds: m.thumbnailSeconds,
-    };
-  });
-  formData.append('json', JSON.stringify({ id, newMedia }));
-  media.forEach((m) => m.file && formData.append(uploadFilenameForApi(m.file), m.file));
-  return makeAuthenticatedRequest(accessToken, url, {
-    method: 'POST',
-    body: formData,
-    headers: {
-      Accept: 'application/json',
-    },
-    ...invalidateQueriesAfter,
-  })
-    .then((response) => ensureOkJson(response, url, {} as Success<'postProblemsMedia'>))
     .catch((error) => {
       console.warn(error);
       throw error;
@@ -421,6 +360,27 @@ export function postUserRegion(
   return makeAuthenticatedRequest(accessToken, url, {
     method: 'POST',
   }).then((response) => ensureOkResponse(response, url));
+}
+
+export function postMedia(
+  accessToken: string | null,
+  media: components['schemas']['Media'],
+  file?: File | null,
+): Promise<components['schemas']['Media']> {
+  const url = `/media`;
+  const formData = new FormData();
+  formData.append('json', JSON.stringify(media));
+  if (file) {
+    formData.append(uploadFilenameForApi(file), file);
+  }
+  return makeAuthenticatedRequest(accessToken, url, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      Accept: 'application/json',
+    },
+    ...invalidateQueriesAfter,
+  }).then((response) => ensureOkJson(response, url, {} as components['schemas']['Media']));
 }
 
 export function putMedia(accessToken: string | null, media: components['schemas']['Media']): Promise<Response> {

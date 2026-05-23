@@ -11,13 +11,13 @@ const Areas = lazy(() => import('../features/Areas/Areas'), 'areas');
 const Dangerous = lazy(() => import('../features/Dangerous/Dangerous'), 'dangerous');
 const Donations = lazy(() => import('../features/Donations/Donations'), 'donations');
 const Graph = lazy(() => import('../features/Graph/Graph'), 'graph');
+const MediaAdd = lazy(() => import('../features/MediaAdd/MediaAdd'), 'media-add');
 const MediaEdit = lazy(() => import('../features/MediaEdit/MediaEdit'), 'media-edit');
 const MediaSvgEdit = lazy(() => import('../features/MediaSvgEdit/MediaSvgEdit'), 'media-svg-edit');
 const Permissions = lazy(() => import('../features/Permissions/Permissions'), 'permissions');
 const PrivacyPolicy = lazy(() => import('../features/PrivacyPolicy/PrivacyPolicy'), 'privacy-policy');
 const Problem = lazy(() => import('../features/Problem'), 'problem');
 const ProblemEdit = lazy(() => import('../features/ProblemEdit/ProblemEdit'), 'problem-edit');
-const ProblemEditMedia = lazy(() => import('../features/ProblemEditMedia/ProblemEditMedia'), 'problem-edit-media');
 const Problems = lazy(() => import('../features/Problems'), 'problems');
 const Profile = lazy(() => import('../features/Profile/Profile'), 'profile');
 const Settings = lazy(() => import('../features/Settings/Settings'), 'settings');
@@ -63,6 +63,14 @@ function AppRoutes() {
             <Route path='/filter' element={<Problems filterOpen />} />
             <Route path='/graph' element={<Graph />} />
             <Route
+              path='/media/add'
+              element={
+                <AuthContainer level='logged-in'>
+                  <MediaEdit />
+                </AuthContainer>
+              }
+            />
+            <Route
               path='/media/edit/:mediaId'
               element={
                 <AuthContainer level='admin'>
@@ -92,7 +100,7 @@ function AppRoutes() {
               path='/problem/edit/media/:problemId'
               element={
                 <AuthContainer level='logged-in'>
-                  <ProblemEditMedia />
+                  <MediaAdd />
                 </AuthContainer>
               }
             />

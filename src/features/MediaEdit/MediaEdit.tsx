@@ -1,72 +1,59 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
-import { createPortal } from 'react-dom';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth0 } from '@auth0/auth0-react';
-import {
-  Save,
-  Loader2,
-  MessageSquare,
-  Image,
-  Video,
-  User as UserIcon,
-  Users,
-  ListVideo,
-  Clock,
-  Plus,
-  Trash2,
-  Search,
-  ChevronDown,
-} from 'lucide-react';
+import { Save, Loader2, Image, X } from 'lucide-react';
 import type { components } from '../../@types/buldreinfo/swagger';
-import { useMediaSvg, putMedia, useProblemSearch } from '../../api';
+import { useMediaSvg, putMedia, postMedia } from '../../api';
 import { getMediaFileUrl, mediaIdentityId, mediaIdentityVersionStamp } from '../../api/utils';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { Card } from '../../shared/ui';
-import { UserSelector, UsersSelector } from '../../shared/ui/UserSelector';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 import { useMeta } from '../../shared/components/Meta/context';
+import { secondsToTimeStr } from '../../shared/components/MediaEdit/problemUtils';
+import type { ProblemState } from '../../shared/components/MediaEdit/ProblemRow';
+import { MediaMetadataCard } from '../../shared/components/MediaEdit/MediaMetadataCard';
+import type {
+  MediaConnectionType,
+  MediaMetadata,
+  MediaMetadataCallbacks,
+} from '../../shared/components/MediaEdit/MediaMetadataCard';
+import { MediaDropzoneEmbed } from '../../shared/components/MediaEdit/MediaDropzoneEmbed';
+import type { DropzoneFile } from '../../shared/components/MediaEdit/MediaDropzoneEmbed';
 
 type Media = components['schemas']['Media'];
 type User = components['schemas']['User'];
-type MediaProblem = components['schemas']['MediaProblem'];
-type ProblemSearchResult = components['schemas']['ProblemSearchResult'];
 
-type ProblemState = MediaProblem;
+/** A file being added — holds the file data and its own metadata. */
+type UploadItem = {
+  file?: File;
+  preview?: string;
+  embedVideoUrl?: string;
+  embedThumbnailUrl?: string;
+  description: string;
+  photographer: User | undefined;
+  tagged: User[];
+  problems: ProblemState[];
+  /** Trivia state for connected areas (add mode) */
+  areaTrivia: boolean;
+  /** Trivia state for connected sectors (add mode) */
+  sectorTrivia: boolean;
+  /** Thumbnail picker state (for videos) */
+  thumbnailSeconds: number;
+  thumbnailDuration: number;
+};
 
-type MediaConnectionType = 'area' | 'sector' | 'problem' | 'guestbook';
-
-const fieldLabelClass = cn(designContract.typography.label, 'text-slate-300');
-
-/** Convert seconds → "M:SS" string. */
-function secondsToTimeStr(totalSeconds: number): string {
-  const m = Math.floor(totalSeconds / 60);
-  const s = Math.floor(totalSeconds % 60);
-  return `${m}:${s.toString().padStart(2, '0')}`;
-}
-
-/** Parse "M:SS" or "MM:SS" string → total seconds. Returns 0 on invalid input. */
-function timeStrToSeconds(str: string): number {
-  const trimmed = str.trim();
-  if (!trimmed) return 0;
-  const parts = trimmed.split(':');
-  if (parts.length === 2) {
-    const m = parseInt(parts[0], 10);
-    const s = parseInt(parts[1], 10);
-    if (!isNaN(m) && !isNaN(s) && m >= 0 && s >= 0 && s < 60) {
-      return m * 60 + s;
-    }
-  }
-  return 0;
-}
-
-/** Format a problem search result for display. */
-function formatProblemOption(p: ProblemSearchResult): string {
-  const name = [p.problemName, p.grade].filter(Boolean).join(' · ');
-  const location = [p.areaName, p.sectorName].filter(Boolean).join(' · ');
-  return location ? `${name} (${location})` : name;
-}
+const makeEmptyItem = (): UploadItem => ({
+  description: '',
+  photographer: undefined,
+  tagged: [],
+  problems: [],
+  areaTrivia: false,
+  sectorTrivia: false,
+  thumbnailSeconds: 0,
+  thumbnailDuration: 0,
+});
 
 const MediaEdit = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -74,10 +61,23 @@ const MediaEdit = () => {
   const navigate = useNavigate();
   const { mediaId } = useParams();
   const mediaIdNum = Number(mediaId ?? 0);
+  const [searchParams] = useSearchParams();
+  const meta = useMeta();
 
+  // ── Add-mode query params ──────────────────────────────────────────
+  const addType = (searchParams.get('type') ?? 'problem') as MediaConnectionType;
+  const addEntityId = Number(searchParams.get('id') ?? 0);
+  const addEntityName = searchParams.get('name') ?? '';
+  const addAreaName = searchParams.get('areaName') ?? '';
+  const addSectorName = searchParams.get('sectorName') ?? '';
+
+  const isAddMode = !mediaId || mediaId === 'add';
+
+  // ── Edit mode: load existing media ──────────────────────────────────
   const { media: data, isLoading } = useMediaSvg(mediaIdNum) as ReturnType<typeof useMediaSvg>;
   const m: Media | undefined = data;
 
+  // ── Edit mode state ────────────────────────────────────────────────
   const [description, setDescription] = useState('');
   const [photographer, setPhotographer] = useState<User | undefined>(undefined);
   const [tagged, setTagged] = useState<User[]>([]);
@@ -86,25 +86,15 @@ const MediaEdit = () => {
   const [sectorTrivia, setSectorTrivia] = useState<Record<number, boolean>>({});
   const [saving, setSaving] = useState(false);
 
-  // Thumbnail picker state
+  // Add-mode state
+  const [uploadItems, setUploadItems] = useState<UploadItem[]>([]);
+
+  // Edit-mode: thumbnail picker
   const videoRef = useRef<HTMLVideoElement>(null);
   const [thumbnailSeconds, setThumbnailSeconds] = useState<number>(0);
   const [thumbnailDuration, setThumbnailDuration] = useState(0);
-  const [showThumbnailPicker, setShowThumbnailPicker] = useState(false);
 
-  // Problem search
-  const [problemSearchInputs, setProblemSearchInputs] = useState<Record<number, string>>({});
-  const durationVideoRef = useRef<HTMLVideoElement>(null);
-  const [videoDuration, setVideoDuration] = useState(0);
-
-  const handleDurationLoaded = useCallback(() => {
-    const video = durationVideoRef.current;
-    if (video && video.duration && video.duration !== Infinity) {
-      setVideoDuration(video.duration);
-    }
-  }, []);
-
-  // Sync state when data loads (only once on initial load)
+  // ── Initialize edit mode from loaded data ──────────────────────────
   const initializedRef = useRef(false);
   useEffect(() => {
     if (!m || initializedRef.current) return;
@@ -116,19 +106,8 @@ const MediaEdit = () => {
     setAreaTrivia(Object.fromEntries((m.areas ?? []).map((a) => [a.areaId ?? 0, a.trivia ?? false])));
     setSectorTrivia(Object.fromEntries((m.sectors ?? []).map((s) => [s.sectorId ?? 0, s.trivia ?? false])));
     setThumbnailSeconds(m.thumbnailSeconds ?? 0);
-    // Initialize problem search inputs with formatted names (including location)
-    const initialInputs: Record<number, string> = {};
-    (m.problems ?? []).forEach((p, i) => {
-      if (p.problemName) {
-        const name = [p.problemName, p.problemGrade].filter(Boolean).join(' · ');
-        const location = [p.areaName, p.sectorName].filter(Boolean).join(' · ');
-        initialInputs[i] = location ? `${name} (${location})` : name;
-      }
-    });
-    setProblemSearchInputs(initialInputs);
   }, [m]);
 
-  const meta = useMeta();
   const isVideo = !!m?.isMovie;
   const hasEmbed = !!m?.embedUrl;
 
@@ -152,67 +131,150 @@ const MediaEdit = () => {
     }
   }, [m?.embedUrl]);
 
-  const connectionType: MediaConnectionType = (() => {
-    if (m?.guestbookId) return 'guestbook';
-    if ((m?.areas ?? []).length > 0) return 'area';
-    if ((m?.sectors ?? []).length > 0) return 'sector';
-    return 'problem';
-  })();
+  const connectionType: MediaConnectionType = isAddMode
+    ? addType
+    : (() => {
+        if (m?.guestbookId) return 'guestbook';
+        if ((m?.areas ?? []).length > 0) return 'area';
+        if ((m?.sectors ?? []).length > 0) return 'sector';
+        return 'problem';
+      })();
 
+  // ── Build edit-mode metadata for the shared card ────────────────────
+  const editMetadata: MediaMetadata = {
+    description,
+    photographer,
+    tagged,
+    problems,
+    areas:
+      connectionType === 'area' && m
+        ? (m.areas ?? []).map((a) => ({
+            areaId: a.areaId ?? 0,
+            areaName: a.areaName ?? '',
+            trivia: areaTrivia[a.areaId ?? 0] ?? false,
+          }))
+        : undefined,
+    sectors:
+      connectionType === 'sector' && m
+        ? (m.sectors ?? []).map((s) => ({
+            sectorId: s.sectorId ?? 0,
+            sectorName: s.sectorName ?? '',
+            areaName: s.areaName ?? '',
+            trivia: sectorTrivia[s.sectorId ?? 0] ?? false,
+          }))
+        : undefined,
+    guestbook: connectionType === 'guestbook' && m ? { guestbookId: m.guestbookId ?? 0 } : undefined,
+  };
+
+  const editCallbacks: MediaMetadataCallbacks = {
+    onDescriptionChange: setDescription,
+    onPhotographerChange: (u) => setPhotographer(u),
+    onTaggedChange: setTagged,
+    onProblemsChange: setProblems,
+    onAreaTriviaChange: (areaId, trivia) => setAreaTrivia((prev) => ({ ...prev, [areaId]: trivia })),
+    onSectorTriviaChange: (sectorId, trivia) => setSectorTrivia((prev) => ({ ...prev, [sectorId]: trivia })),
+  };
+
+  // ── Save ────────────────────────────────────────────────────────────
   const handleSave = async () => {
-    if (saving || !m) return;
+    if (saving) return;
     setSaving(true);
     try {
       const token = await getAccessTokenSilently();
-      const id = mediaIdentityId(m.identity);
-      const body: components['schemas']['Media'] = {
-        ...m,
-        identity: { ...m.identity, id },
-        description,
-        photographer: photographer ? { id: photographer.id ?? 0, name: photographer.name ?? '' } : undefined,
-        tagged: tagged.map((u) => ({ id: u.id ?? 0, name: u.name ?? '' })),
-        thumbnailSeconds: Math.floor(thumbnailSeconds),
-      };
-      if (connectionType === 'problem') {
-        body.problems = problems.map((p) => ({
-          problemId: p.problemId ?? 0,
-          problemName: p.problemName ?? '',
-          problemGrade: p.problemGrade ?? '',
-          problemPitch: p.problemPitch ?? 0,
-          problemNumPitches: p.problemNumPitches ?? 0,
-          milliseconds: p.milliseconds ?? 0,
-          areaName: p.areaName ?? '',
-          sectorName: p.sectorName ?? '',
-          trivia: p.trivia ?? false,
-        }));
-      } else if (connectionType === 'area') {
-        body.areas = (m.areas ?? []).map((a) => ({
-          ...a,
-          trivia: areaTrivia[a.areaId ?? 0] ?? false,
-        }));
-      } else if (connectionType === 'sector') {
-        body.sectors = (m.sectors ?? []).map((s) => ({
-          ...s,
-          trivia: sectorTrivia[s.sectorId ?? 0] ?? false,
-        }));
+
+      if (isAddMode) {
+        for (const item of uploadItems) {
+          const body: components['schemas']['Media'] = {
+            description: item.description,
+            photographer: item.photographer
+              ? { id: item.photographer.id ?? 0, name: item.photographer.name ?? '' }
+              : undefined,
+            tagged: item.tagged.map((u) => ({ id: u.id ?? 0, name: u.name ?? '' })),
+            embedUrl: item.embedVideoUrl,
+          };
+          if (connectionType === 'problem') {
+            body.problems = item.problems.map((p) => ({
+              problemId: p.problemId ?? 0,
+              problemName: p.problemName ?? '',
+              problemGrade: p.problemGrade ?? '',
+              problemPitch: p.problemPitch ?? 0,
+              problemNumPitches: p.problemNumPitches ?? 0,
+              milliseconds: p.milliseconds ?? 0,
+              areaName: p.areaName ?? '',
+              sectorName: p.sectorName ?? '',
+              trivia: p.trivia ?? false,
+            }));
+          } else if (connectionType === 'area') {
+            body.areas = [{ areaId: addEntityId, areaName: addEntityName, trivia: item.areaTrivia }];
+          } else if (connectionType === 'sector') {
+            body.sectors = [{ sectorId: addEntityId, sectorName: addEntityName, trivia: item.sectorTrivia }];
+          }
+          await postMedia(token, body, item.file);
+        }
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ['/media'] }),
+          queryClient.invalidateQueries({ queryKey: ['/problem'] }),
+          queryClient.invalidateQueries({ queryKey: ['/areas'] }),
+          queryClient.invalidateQueries({ queryKey: ['/sectors'] }),
+        ]);
+        if (connectionType === 'problem' && addEntityId) {
+          navigate(`/problem/${addEntityId}`);
+        } else if (connectionType === 'sector' && addEntityId) {
+          navigate(`/sector/${addEntityId}`);
+        } else if (connectionType === 'area' && addEntityId) {
+          navigate(`/area/${addEntityId}`);
+        } else {
+          navigate(-1);
+        }
+      } else {
+        if (!m) return;
+        const id = mediaIdentityId(m.identity);
+        const body: components['schemas']['Media'] = {
+          ...m,
+          identity: { ...m.identity, id },
+          description,
+          photographer: photographer ? { id: photographer.id ?? 0, name: photographer.name ?? '' } : undefined,
+          tagged: tagged.map((u) => ({ id: u.id ?? 0, name: u.name ?? '' })),
+          thumbnailSeconds: Math.floor(thumbnailSeconds),
+        };
+        if (connectionType === 'problem') {
+          body.problems = problems.map((p) => ({
+            problemId: p.problemId ?? 0,
+            problemName: p.problemName ?? '',
+            problemGrade: p.problemGrade ?? '',
+            problemPitch: p.problemPitch ?? 0,
+            problemNumPitches: p.problemNumPitches ?? 0,
+            milliseconds: p.milliseconds ?? 0,
+            areaName: p.areaName ?? '',
+            sectorName: p.sectorName ?? '',
+            trivia: p.trivia ?? false,
+          }));
+        } else if (connectionType === 'area') {
+          body.areas = (m.areas ?? []).map((a) => ({
+            ...a,
+            trivia: areaTrivia[a.areaId ?? 0] ?? false,
+          }));
+        } else if (connectionType === 'sector') {
+          body.sectors = (m.sectors ?? []).map((s) => ({
+            ...s,
+            trivia: sectorTrivia[s.sectorId ?? 0] ?? false,
+          }));
+        }
+        await putMedia(token, body);
+        await Promise.all([
+          queryClient.refetchQueries({
+            predicate: (q) => {
+              const key = q.queryKey;
+              if (!Array.isArray(key) || key[0] !== '/media') return false;
+              const meta = key[1];
+              if (meta == null || typeof meta !== 'object') return false;
+              return 'idMedia' in meta && (meta as { idMedia: number }).idMedia === mediaIdNum;
+            },
+          }),
+          queryClient.refetchQueries({ queryKey: ['/problem'] }),
+        ]);
+        navigate(-1);
       }
-      await putMedia(token, body);
-      // Refetch (not just invalidate) so the updated versionStamp is in cache before navigating back.
-      // This ensures the previous page renders the new thumbnail instead of a stale cached one.
-      await Promise.all([
-        queryClient.refetchQueries({
-          predicate: (q) => {
-            const key = q.queryKey;
-            if (!Array.isArray(key) || key[0] !== '/media') return false;
-            const meta = key[1];
-            if (meta == null || typeof meta !== 'object') return false;
-            return 'idMedia' in meta && (meta as { idMedia: number }).idMedia === mediaIdNum;
-          },
-        }),
-        // Refetch all problem queries so the media data (with updated versionStamp) is fresh
-        queryClient.refetchQueries({ queryKey: ['/problem'] }),
-      ]);
-      navigate(-1);
     } catch (error) {
       console.warn(error);
       alert(error instanceof Error ? error.message : String(error));
@@ -221,11 +283,7 @@ const MediaEdit = () => {
     }
   };
 
-  const handleTimeUpdate = useCallback(() => {
-    if (!videoRef.current) return;
-    setThumbnailSeconds(videoRef.current.currentTime);
-  }, []);
-
+  // ── Edit-mode: thumbnail picker handlers ────────────────────────────
   const handleLoadedMetadata = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -242,6 +300,7 @@ const MediaEdit = () => {
     setThumbnailSeconds(targetTime);
   }, [m?.thumbnailSeconds]);
 
+  // ── Validation (edit mode) ──────────────────────────────────────────
   const hasEmptyProblem = problems.some((p) => !p.problemId || !p.problemName);
   const hasDuplicateTime = problems.some(
     (p, i) =>
@@ -250,65 +309,123 @@ const MediaEdit = () => {
   const hasNoProblems = connectionType === 'problem' && problems.length === 0;
   const canSave = !!photographer && !hasEmptyProblem && !hasDuplicateTime && !hasNoProblems;
 
-  const [focusedProblemIndex, setFocusedProblemIndex] = useState<number | null>(null);
-
-  const addProblem = () => {
-    setProblems((prev) => {
-      const newIndex = prev.length;
-      // Focus the new row after render
-      setTimeout(() => setFocusedProblemIndex(newIndex), 0);
-      return [...prev, { problemId: 0, problemName: '', problemGrade: '', milliseconds: 0 }];
+  // ── Validation (add mode) ────────────────────────────────────────────
+  const canSaveAdd =
+    uploadItems.length > 0 &&
+    uploadItems.every((item) => {
+      const hasPhotographer = !!item.photographer;
+      if (connectionType === 'problem') {
+        return hasPhotographer && item.problems.length > 0 && item.problems.every((p) => p.problemId && p.problemName);
+      }
+      return hasPhotographer;
     });
-  };
 
-  const updateProblemTime = (index: number, timeStr: string) => {
-    const ms = timeStrToSeconds(timeStr) * 1000;
-    setProblems((prev) => {
-      const next = [...prev];
-      next[index] = { ...next[index], milliseconds: ms };
+  // ── Add-mode: dropzone + embed ──────────────────────────────────────
+  const handleFilesAdded = useCallback(
+    (files: DropzoneFile[]) => {
+      const newItems = files.map((f) => {
+        const item = makeEmptyItem();
+        item.file = f.file;
+        item.preview = f.preview;
+        // Pre-fill photographer
+        if (meta?.authenticatedName) {
+          item.photographer = { id: 0, name: meta.authenticatedName };
+        }
+        // Pre-fill problem if adding to a problem
+        if (addType === 'problem' && addEntityId > 0 && addEntityName) {
+          item.problems = [
+            {
+              problemId: addEntityId,
+              problemName: addEntityName,
+              problemGrade: searchParams.get('grade') ?? '',
+              areaName: addAreaName,
+              sectorName: addSectorName,
+              milliseconds: 0,
+            },
+          ];
+        }
+        return item;
+      });
+      setUploadItems((existing) => [...existing, ...newItems]);
+    },
+    [addType, addEntityId, addEntityName, addAreaName, addSectorName, searchParams, meta?.authenticatedName],
+  );
+
+  const handleEmbedAdded = useCallback(
+    (info: { embedVideoUrl: string | undefined; embedThumbnailUrl: string | undefined }) => {
+      const item = makeEmptyItem();
+      item.embedVideoUrl = info.embedVideoUrl;
+      item.embedThumbnailUrl = info.embedThumbnailUrl;
+      // Pre-fill photographer
+      if (meta?.authenticatedName) {
+        item.photographer = { id: 0, name: meta.authenticatedName };
+      }
+      // Pre-fill problem if adding to a problem
+      if (addType === 'problem' && addEntityId > 0 && addEntityName) {
+        item.problems = [
+          {
+            problemId: addEntityId,
+            problemName: addEntityName,
+            problemGrade: searchParams.get('grade') ?? '',
+            areaName: addAreaName,
+            sectorName: addSectorName,
+            milliseconds: 0,
+          },
+        ];
+      }
+      setUploadItems((old) => [...old, item]);
+    },
+    [addType, addEntityId, addEntityName, addAreaName, addSectorName, searchParams, meta?.authenticatedName],
+  );
+
+  // ── Helpers to update a single upload item ──────────────────────────
+  const updateItem = (index: number, patch: Partial<UploadItem>) => {
+    setUploadItems((old) => {
+      const next = [...old];
+      next[index] = { ...next[index], ...patch };
       return next;
     });
   };
 
-  const selectProblem = (index: number, problem: ProblemSearchResult) => {
-    setProblems((prev) => {
-      const next = [...prev];
-      next[index] = {
-        ...next[index],
-        problemId: problem.id ?? 0,
-        problemName: problem.problemName ?? '',
-        problemGrade: problem.grade ?? '',
-        problemNumPitches: problem.numPitches ?? 0,
-        // Reset pitch when changing problem
-        problemPitch: undefined,
-      };
-      return next;
-    });
-    setProblemSearchInputs((prev) => ({ ...prev, [index]: formatProblemOption(problem) }));
-  };
-
-  const updateProblemPitch = (index: number, pitch: number | undefined) => {
-    setProblems((prev) => {
-      const next = [...prev];
-      next[index] = { ...next[index], problemPitch: pitch };
-      return next;
+  const removeItem = (index: number) => {
+    setUploadItems((old) => {
+      const item = old[index];
+      if (item.preview) URL.revokeObjectURL(item.preview);
+      return old.filter((_, i) => i !== index);
     });
   };
 
-  const removeProblem = (index: number) => {
-    setProblems((prev) => prev.filter((_, i) => i !== index));
-    setProblemSearchInputs((prev) => {
-      const next = { ...prev };
-      delete next[index];
-      return next;
-    });
-  };
+  // ── Build per-item metadata for the shared card ─────────────────────
+  const buildItemMetadata = (item: UploadItem): MediaMetadata => ({
+    description: item.description,
+    photographer: item.photographer,
+    tagged: item.tagged,
+    problems: item.problems,
+    areas:
+      connectionType === 'area'
+        ? [{ areaId: addEntityId, areaName: addEntityName, trivia: item.areaTrivia }]
+        : undefined,
+    sectors:
+      connectionType === 'sector'
+        ? [{ sectorId: addEntityId, sectorName: addEntityName, areaName: addAreaName, trivia: item.sectorTrivia }]
+        : undefined,
+  });
 
-  if (isLoading) {
+  const buildItemCallbacks = (idx: number): MediaMetadataCallbacks => ({
+    onDescriptionChange: (val) => updateItem(idx, { description: val }),
+    onPhotographerChange: (u) => updateItem(idx, { photographer: u }),
+    onTaggedChange: (users) => updateItem(idx, { tagged: users }),
+    onProblemsChange: (problems) => updateItem(idx, { problems }),
+    onAreaTriviaChange: (_areaId, trivia) => updateItem(idx, { areaTrivia: trivia }),
+    onSectorTriviaChange: (_sectorId, trivia) => updateItem(idx, { sectorTrivia: trivia }),
+  });
+
+  // ── Loading / error states ──────────────────────────────────────────
+  if (!isAddMode && isLoading) {
     return <Loading />;
   }
 
-  if (!m) {
+  if (!isAddMode && !m) {
     return (
       <div className='w-full min-w-0 space-y-4 p-4'>
         <p className='text-slate-400'>Media not found.</p>
@@ -316,363 +433,187 @@ const MediaEdit = () => {
     );
   }
 
-  const mediaIdVal = mediaIdentityId(m.identity);
+  const mediaIdVal = !isAddMode && m ? mediaIdentityId(m.identity) : 0;
 
-  const title = meta?.title
-    ? `Edit ${isVideo ? 'video' : 'image'} #${mediaIdVal} | ${meta.title}`
-    : `Edit ${isVideo ? 'video' : 'image'} #${mediaIdVal}`;
+  const title = isAddMode
+    ? `Add media${meta?.title ? ` | ${meta.title}` : ''}`
+    : `Edit ${isVideo ? 'video' : 'image'} #${mediaIdVal}${meta?.title ? ` | ${meta.title}` : ''}`;
 
+  // ── Render ──────────────────────────────────────────────────────────
   return (
     <>
       <title>{title}</title>
       <div className='w-full min-w-0 space-y-4'>
-        <Card flush className='min-w-0 border-0'>
-          <div className='p-4 sm:p-5'>
-            <div className='border-b border-white/8 pb-3 sm:pb-4'>
-              <h1 className={cn(designContract.typography.subtitle, 'text-slate-100')}>
-                Edit {isVideo ? 'video' : 'image'}
-              </h1>
-              <p className={cn(designContract.typography.meta, 'mt-0.5 text-slate-500 sm:mt-1')}>Media #{mediaIdVal}</p>
-            </div>
+        {/* Title */}
+        <h1 className={cn(designContract.typography.subtitle, 'text-slate-100')}>
+          {isAddMode ? 'Add media' : `Edit ${isVideo ? 'video' : 'image'}`}
+        </h1>
 
-            {/* Media preview */}
-            <div className='mt-4 overflow-hidden rounded-xl bg-black/60'>
-              {isVideo && !hasEmbed ? (
-                <video
-                  src={getMediaFileUrl(mediaIdVal, mediaIdentityVersionStamp(m.identity), true)}
-                  className='block max-h-[40vh] w-full'
-                  controls
-                  preload='metadata'
-                />
-              ) : isVideo && hasEmbed && embedSrc ? (
-                <div className='aspect-video w-full'>
-                  <iframe src={embedSrc} className='h-full w-full border-0' allowFullScreen title='Video Content' />
-                </div>
-              ) : (
-                <img
-                  src={getMediaFileUrl(mediaIdVal, mediaIdentityVersionStamp(m.identity), false, {
-                    targetWidth: 800,
-                  })}
-                  alt=''
-                  className='block max-h-[40vh] w-full object-contain'
-                />
-              )}
-            </div>
+        {/* ── Add mode: dropzone + embed card ──────────────────────────── */}
+        {isAddMode && (
+          <Card>
+            <MediaDropzoneEmbed onFilesAdded={handleFilesAdded} onEmbedAdded={handleEmbedAdded} />
+          </Card>
+        )}
 
-            {/* Hidden video element to detect duration for problem time validation */}
-            {isVideo && !hasEmbed && (
-              <video
-                ref={durationVideoRef}
-                src={getMediaFileUrl(mediaIdVal, mediaIdentityVersionStamp(m.identity), true)}
-                preload='metadata'
-                onLoadedMetadata={handleDurationLoaded}
-                className='hidden'
-                aria-hidden
+        {/* ── Add mode: one card per upload item ──────────────────────── */}
+        {isAddMode &&
+          uploadItems.map((item, idx) => {
+            const isVideoItem = item.file?.type?.startsWith('video/') || !!item.embedVideoUrl;
+            const showConnectedFullWidth = isVideoItem && connectionType === 'problem';
+            return (
+              <UploadItemCard
+                key={idx}
+                item={item}
+                idx={idx}
+                connectionType={connectionType}
+                metadata={buildItemMetadata(item)}
+                callbacks={buildItemCallbacks(idx)}
+                onRemove={removeItem}
+                onUpdate={updateItem}
+                showConnectedFullWidth={showConnectedFullWidth}
               />
-            )}
+            );
+          })}
 
-            {/* Thumbnail (video only) — shown right after preview */}
-            {isVideo && !hasEmbed && (
-              <div className='mt-6 space-y-3'>
-                <div className='flex items-center justify-between'>
-                  <label className={cn('ml-1', fieldLabelClass)}>
-                    <span className='inline-flex items-center gap-1.5'>
-                      <Image size={14} className='text-slate-400' />
-                      Thumbnail
-                    </span>
-                  </label>
-                  <div className='flex items-center gap-2'>
-                    {!showThumbnailPicker && (
-                      <span className='light:bg-slate-200 light:text-slate-600 flex h-7 items-center gap-1 rounded-lg bg-slate-800 px-2 font-mono text-[12px] font-semibold text-slate-300 tabular-nums shadow-inner'>
-                        <Image size={11} className='text-slate-400' />
-                        {secondsToTimeStr(thumbnailSeconds)}
-                      </span>
-                    )}
-                    <button
-                      type='button'
-                      onClick={() => setShowThumbnailPicker(!showThumbnailPicker)}
-                      className={cn(
-                        'inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-xs font-medium transition-colors',
-                        showThumbnailPicker
-                          ? 'border-brand-border bg-surface-raised-hover text-slate-200'
-                          : 'bg-surface-raised hover:bg-surface-raised-hover border-white/12 text-slate-300 hover:border-white/22',
-                      )}
-                    >
-                      <Image size={12} />
-                      {showThumbnailPicker ? 'Close picker' : 'Change thumbnail'}
-                    </button>
-                  </div>
+        {/* ── Edit mode: media preview + metadata ──────────────────────── */}
+        {!isAddMode && (
+          <Card>
+            {m && (
+              <>
+                {/* Header with media ID */}
+                <div className='mb-3 flex items-center justify-between'>
+                  <span className='text-[13px] font-medium text-slate-400'>Media #{mediaIdVal}</span>
                 </div>
 
-                {showThumbnailPicker && (
-                  <div className='bg-surface-nav border-surface-border space-y-3 rounded-xl border p-3'>
-                    <div className='flex items-start gap-2.5 rounded-lg border border-sky-500/25 bg-sky-500/8 px-3.5 py-2.5'>
-                      <Video size={16} className='mt-0.5 shrink-0 text-sky-400' />
-                      <p className='text-[13px] leading-snug text-slate-300'>
-                        <strong className='text-slate-100'>Seek</strong> in the video below to find the frame you want
-                        as the thumbnail, then click <strong className='text-slate-100'>Save</strong> below to apply.
-                      </p>
-                    </div>
-                    <video
-                      ref={videoRef}
-                      src={getMediaFileUrl(mediaIdVal, mediaIdentityVersionStamp(m.identity), true)}
-                      className='block max-h-[40vh] w-full rounded-lg'
-                      controls
-                      preload='metadata'
-                      onTimeUpdate={handleTimeUpdate}
-                      onLoadedMetadata={handleLoadedMetadata}
+                {/* Grid: left = basic metadata + connected (if not video+problem), right = preview */}
+                <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
+                  {/* Left: Description, Photographer, In shot, Thumbnail picker, Connected (if not video+problem) */}
+                  <div>
+                    <MediaMetadataCard
+                      variant='basic'
+                      metadata={editMetadata}
+                      callbacks={editCallbacks}
+                      connectionType={connectionType}
                     />
-                    {thumbnailDuration > 0 && (
-                      <div className='bg-surface-raised flex items-center justify-between gap-3 rounded-lg border border-white/8 px-4 py-3'>
-                        <span className={cn(fieldLabelClass)}>Selected frame</span>
+
+                    {/* Thumbnail picker for videos (always visible, below People in shot) */}
+                    {isVideo && (
+                      <div className='mt-3 space-y-1.5'>
                         <div className='flex items-center gap-2'>
-                          <div className='light:bg-slate-200 light:text-slate-600 flex h-7 items-center gap-1.5 rounded-lg bg-slate-800 px-2.5 font-mono text-[13px] font-semibold text-slate-300 tabular-nums shadow-inner'>
-                            <Image size={13} className='text-slate-400' />
-                            {secondsToTimeStr(thumbnailSeconds)}
-                          </div>
-                          <span className='text-[12px] text-slate-500'>/ {secondsToTimeStr(thumbnailDuration)}</span>
+                          <Image size={14} className='text-slate-500' />
+                          <span className='text-xs font-medium text-slate-400'>Thumbnail frame</span>
+                          <span className='ml-auto text-xs text-slate-500'>
+                            {secondsToTimeStr(thumbnailSeconds)} / {secondsToTimeStr(thumbnailDuration)}
+                          </span>
                         </div>
+                        <input
+                          type='range'
+                          min={0}
+                          max={Math.floor(thumbnailDuration) || 1}
+                          step={1}
+                          value={Math.floor(thumbnailSeconds)}
+                          onChange={(e) => {
+                            const t = Number(e.target.value);
+                            setThumbnailSeconds(t);
+                            if (videoRef.current) {
+                              videoRef.current.currentTime = t;
+                            }
+                          }}
+                          className='w-full'
+                        />
+                      </div>
+                    )}
+
+                    {/* Connected stuff in left column (unless video + problem with timestamps) */}
+                    {!(isVideo && connectionType === 'problem') && (
+                      <div className='mt-4'>
+                        <MediaMetadataCard
+                          variant='connected'
+                          metadata={editMetadata}
+                          callbacks={editCallbacks}
+                          connectionType={connectionType}
+                          maxSeconds={thumbnailDuration}
+                          showTimeInput={isVideo}
+                          hasEmptyProblem={hasEmptyProblem}
+                          hasDuplicateTime={hasDuplicateTime}
+                          hasNoProblems={hasNoProblems}
+                        />
                       </div>
                     )}
                   </div>
-                )}
-              </div>
-            )}
-
-            {/* Edit fields */}
-            <div className='mt-6 space-y-6'>
-              {/* Description */}
-              <div className='space-y-1.5'>
-                <label htmlFor='media-edit-description' className={cn('ml-1', fieldLabelClass)}>
-                  Description
-                </label>
-                <div className='relative'>
-                  <MessageSquare
-                    className='pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-400'
-                    size={16}
-                    aria-hidden
-                  />
-                  <input
-                    id='media-edit-description'
-                    type='text'
-                    placeholder='Description'
-                    className='bg-surface-nav border-surface-border type-body focus:border-brand-border/60 w-full rounded-xl border py-3 pr-4 pl-10 transition-colors placeholder:opacity-50 focus:outline-none'
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              {/* Photographer (required) */}
-              <div className='space-y-1.5'>
-                <label className={cn('ml-1', fieldLabelClass)}>
-                  <span className='inline-flex items-center gap-1.5'>
-                    <UserIcon size={14} className='text-slate-400' />
-                    {isVideo ? 'Video by' : 'Photographer'}
-                    <span className='text-[11px] font-medium text-rose-400'>*</span>
-                  </span>
-                </label>
-                <UserSelector
-                  placeholder='Search or type name...'
-                  value={photographer?.name ?? ''}
-                  onUserUpdated={(user) =>
-                    setPhotographer(
-                      user
-                        ? {
-                            id: typeof user.value === 'number' ? user.value : user.id,
-                            name: user.label ?? user.name ?? '',
-                          }
-                        : undefined,
-                    )
-                  }
-                  matchInputLeadStyle
-                />
-                {!photographer && (
-                  <p className='ml-1 text-[12px] text-rose-400'>{isVideo ? 'Video by' : 'Photographer'} is required</p>
-                )}
-              </div>
-
-              {/* Tagged users */}
-              <div className='space-y-1.5'>
-                <label className={cn('ml-1', fieldLabelClass)}>
-                  <span className='inline-flex items-center gap-1.5'>
-                    <Users size={14} className='text-slate-400' />
-                    Tagged
-                  </span>
-                </label>
-                <UsersSelector
-                  placeholder='Search or type names...'
-                  users={tagged.map((u) => ({ ...u, value: u.id ?? 0, label: u.name ?? '' }))}
-                  onUsersUpdated={(users) =>
-                    setTagged(
-                      users.map((u) => ({
-                        id: typeof u.value === 'number' ? u.value : 0,
-                        name: u.label ?? u.name ?? '',
-                      })),
-                    )
-                  }
-                  matchInputLeadStyle
-                />
-              </div>
-
-              {/* Connection info — read-only for area / sector / guestbook, editable for problems */}
-              {connectionType === 'guestbook' && (
-                <div className='space-y-1.5'>
-                  <label className={cn('ml-1', fieldLabelClass)}>
-                    <span className='inline-flex items-center gap-1.5'>
-                      <MessageSquare size={14} className='text-slate-400' />
-                      Connected to
-                    </span>
-                  </label>
-                  <div className='bg-surface-raised border-surface-border flex items-center gap-2 rounded-xl border p-3'>
-                    <span className='text-sm text-slate-300'>Guestbook</span>
-                  </div>
-                </div>
-              )}
-
-              {connectionType === 'area' && (
-                <div className='space-y-3'>
-                  <label className={cn('ml-1', fieldLabelClass)}>
-                    <span className='inline-flex items-center gap-1.5'>
-                      <ListVideo size={14} className='text-slate-400' />
-                      Connected to areas
-                    </span>
-                  </label>
-                  <div className='space-y-2'>
-                    {(m.areas ?? []).map((a, i) => (
-                      <div
-                        key={a.areaId ?? i}
-                        className='bg-surface-raised border-surface-border flex items-center gap-2 rounded-xl border p-3'
-                      >
-                        <span className='min-w-0 flex-1 text-sm text-slate-300'>
-                          {a.areaName ?? `Area #${a.areaId}`}
-                        </span>
-                        <label className='flex shrink-0 items-center gap-1.5 text-xs text-slate-400'>
-                          <input
-                            type='checkbox'
-                            checked={areaTrivia[a.areaId ?? 0] ?? false}
-                            onChange={(e) => setAreaTrivia((prev) => ({ ...prev, [a.areaId ?? 0]: e.target.checked }))}
-                            className='text-brand focus:ring-brand/50 h-4 w-4 rounded border-white/20 bg-slate-700 focus:ring-2'
-                          />
-                          Trivia
-                        </label>
+                  {/* Right: Preview */}
+                  <div>
+                    {hasEmbed ? (
+                      <div className='aspect-video w-full overflow-hidden rounded-xl bg-black'>
+                        <iframe
+                          src={embedSrc}
+                          className='h-full w-full'
+                          allow='autoplay; fullscreen; picture-in-picture'
+                          allowFullScreen
+                          title='Embedded video'
+                        />
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {connectionType === 'sector' && (
-                <div className='space-y-3'>
-                  <label className={cn('ml-1', fieldLabelClass)}>
-                    <span className='inline-flex items-center gap-1.5'>
-                      <ListVideo size={14} className='text-slate-400' />
-                      Connected to sectors
-                    </span>
-                  </label>
-                  <div className='space-y-2'>
-                    {(m.sectors ?? []).map((s, i) => (
-                      <div
-                        key={s.sectorId ?? i}
-                        className='bg-surface-raised border-surface-border flex items-center gap-2 rounded-xl border p-3'
-                      >
-                        <span className='min-w-0 flex-1 text-sm text-slate-300'>
-                          {s.sectorName ?? `Sector #${s.sectorId}`}
-                          {s.areaName ? <span className='ml-1.5 text-slate-500'>({s.areaName})</span> : null}
-                        </span>
-                        <label className='flex shrink-0 items-center gap-1.5 text-xs text-slate-400'>
-                          <input
-                            type='checkbox'
-                            checked={sectorTrivia[s.sectorId ?? 0] ?? false}
-                            onChange={(e) =>
-                              setSectorTrivia((prev) => ({ ...prev, [s.sectorId ?? 0]: e.target.checked }))
-                            }
-                            className='text-brand focus:ring-brand/50 h-4 w-4 rounded border-white/20 bg-slate-700 focus:ring-2'
-                          />
-                          Trivia
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {connectionType === 'problem' && (
-                <div className='space-y-3'>
-                  <div className='flex items-center justify-between'>
-                    <label className={cn('ml-1', fieldLabelClass)}>
-                      <span className='inline-flex items-center gap-1.5'>
-                        <ListVideo size={14} className='text-slate-400' />
-                        Problems
-                        <span className='text-[11px] font-medium text-rose-400'>*</span>
-                      </span>
-                    </label>
-                    <button
-                      type='button'
-                      onClick={addProblem}
-                      className='bg-surface-raised hover:bg-surface-raised-hover inline-flex items-center gap-1 rounded-lg border border-white/12 px-2.5 py-1 text-xs font-medium text-slate-300 transition-colors hover:border-white/22'
-                    >
-                      <Plus size={12} />
-                      Add problem
-                    </button>
-                  </div>
-                  {problems.length === 0 && (
-                    <p className='type-small ml-1 text-slate-500'>At least one problem is required.</p>
-                  )}
-                  <div className='space-y-2'>
-                    {problems.map((p, i) => (
-                      <ProblemRow
-                        key={i}
-                        problem={p}
-                        maxSeconds={isVideo ? videoDuration : 0}
-                        showTimeInput={isVideo}
-                        searchInput={problemSearchInputs[i] ?? p.problemName ?? ''}
-                        onSearchInputChange={(val) => setProblemSearchInputs((prev) => ({ ...prev, [i]: val }))}
-                        onSelectProblem={(problem) => selectProblem(i, problem)}
-                        onTimeChange={(val) => updateProblemTime(i, val)}
-                        onPitchChange={(pitch) => updateProblemPitch(i, pitch)}
-                        onTriviaChange={(trivia) =>
-                          setProblems((prev) => {
-                            const next = [...prev];
-                            next[i] = { ...next[i], trivia };
-                            return next;
-                          })
-                        }
-                        onRemove={() => removeProblem(i)}
-                        autoFocus={focusedProblemIndex === i}
+                    ) : isVideo ? (
+                      <video
+                        ref={videoRef}
+                        src={getMediaFileUrl(
+                          mediaIdentityId(m.identity),
+                          mediaIdentityVersionStamp(m.identity),
+                          !!m.isMovie,
+                        )}
+                        className='w-full rounded-xl'
+                        controls
+                        onLoadedMetadata={handleLoadedMetadata}
                       />
-                    ))}
+                    ) : (
+                      <img
+                        src={getMediaFileUrl(
+                          mediaIdentityId(m.identity),
+                          mediaIdentityVersionStamp(m.identity),
+                          !!m.isMovie,
+                        )}
+                        alt={m.description ?? ''}
+                        className='w-full rounded-xl'
+                      />
+                    )}
                   </div>
                 </div>
-              )}
-            </div>
-          </div>
-        </Card>
 
-        {/* Action buttons */}
-        <div className='flex flex-wrap items-center justify-end gap-3'>
-          <button
-            type='button'
-            onClick={() => navigate(-1)}
-            className={cn(
-              designContract.surfaces.inlineChipInteractive,
-              'px-4 py-2 text-[13px] font-semibold sm:text-[14px]',
+                {/* Full-width row: connected problems with timestamps (only for video + problem) */}
+                {isVideo && connectionType === 'problem' && (
+                  <div className='mt-4'>
+                    <MediaMetadataCard
+                      variant='connected'
+                      metadata={editMetadata}
+                      callbacks={editCallbacks}
+                      connectionType={connectionType}
+                      maxSeconds={thumbnailDuration}
+                      showTimeInput={true}
+                      hasEmptyProblem={hasEmptyProblem}
+                      hasDuplicateTime={hasDuplicateTime}
+                      hasNoProblems={hasNoProblems}
+                    />
+                  </div>
+                )}
+              </>
             )}
-          >
+          </Card>
+        )}
+
+        {/* ── Cancel / Save buttons (outside all cards) ──────────────────── */}
+        <div className='flex items-center justify-end gap-3'>
+          <button type='button' onClick={() => navigate(-1)} className='form-footer-cancel'>
             Cancel
           </button>
           <button
             type='button'
-            onClick={() => void handleSave()}
-            disabled={saving || !canSave}
-            className={cn(
-              designContract.controls.savePrimary,
-              'px-6 py-2.5 text-[13px] font-semibold sm:text-[14px]',
-              !canSave && 'cursor-not-allowed opacity-50',
-            )}
+            onClick={handleSave}
+            disabled={saving || (isAddMode && !canSaveAdd) || (!isAddMode && !canSave)}
+            className='type-label flex items-center gap-2 rounded-lg bg-emerald-400 px-8 py-2.5 text-slate-950 shadow-lg shadow-emerald-900/30 transition-all hover:bg-emerald-300 disabled:opacity-50'
           >
-            {saving ? <Loader2 className='animate-spin' size={16} /> : <Save size={16} strokeWidth={2.25} />}
-            Save
+            {saving ? <Loader2 className='animate-spin' size={16} /> : <Save size={16} />}
+            {saving ? 'Saving…' : 'Save'}
           </button>
         </div>
       </div>
@@ -680,295 +621,149 @@ const MediaEdit = () => {
   );
 };
 
-/** A single problem row with problem search + optional time input + optional pitch selector + trivia toggle. */
-const ProblemRow = ({
-  problem,
-  maxSeconds,
-  showTimeInput,
-  searchInput,
-  onSearchInputChange,
-  onSelectProblem,
-  onTimeChange,
-  onPitchChange,
-  onTriviaChange,
-  onRemove,
-  autoFocus,
-}: {
-  problem: ProblemState;
-  maxSeconds: number;
-  showTimeInput: boolean;
-  searchInput: string;
-  onSearchInputChange: (val: string) => void;
-  onSelectProblem: (p: ProblemSearchResult) => void;
-  onTimeChange: (val: string) => void;
-  onPitchChange: (pitch: number | undefined) => void;
-  onTriviaChange: (trivia: boolean) => void;
-  onRemove: () => void;
-  autoFocus?: boolean;
-}) => {
-  const isReadOnly = !!problem.problemId && !!problem.problemName;
-  const { data: searchResults = [], isFetching } = useProblemSearch(isReadOnly ? '' : searchInput);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
-
-  // Close dropdown on outside click (including portal)
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      const target = e.target as Node;
-      const insideContainer = containerRef.current?.contains(target);
-      const insideDropdown = dropdownRef.current?.contains(target);
-      if (!insideContainer && !insideDropdown) {
-        setShowDropdown(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, []);
-
-  // Recalculate position when dropdown opens and on scroll/resize
-  useEffect(() => {
-    if (!showDropdown || !containerRef.current) return;
-
-    const updatePosition = () => {
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      setDropdownStyle({
-        position: 'fixed',
-        top: rect.bottom + 4,
-        left: rect.left,
-        width: rect.width,
-        maxHeight: '12rem',
-        zIndex: 9999,
-      });
-    };
-
-    updatePosition();
-    window.addEventListener('scroll', updatePosition, true);
-    window.addEventListener('resize', updatePosition);
-    return () => {
-      window.removeEventListener('scroll', updatePosition, true);
-      window.removeEventListener('resize', updatePosition);
-    };
-  }, [showDropdown]);
-
-  // Auto-focus when this row is newly added
-  useEffect(() => {
-    if (autoFocus && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [autoFocus]);
-
-  const filtered = searchResults.filter((p) => p.id && p.problemName);
-
-  const handleRemove = () => {
-    if (window.confirm('Remove this problem from the list?')) {
-      onRemove();
-    }
-  };
-
-  return (
-    <div className='bg-surface-raised border-surface-border flex items-center gap-2 rounded-xl border p-2.5'>
-      {/* Problem search */}
-      <div ref={containerRef} className='relative min-w-0 flex-1'>
-        <div className='relative'>
-          <Search
-            className='pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-slate-500'
-            size={14}
-            aria-hidden
-          />
-          <input
-            ref={inputRef}
-            type='text'
-            placeholder='Search problem...'
-            readOnly={!!problem.problemId && !!problem.problemName}
-            className={cn(
-              'bg-surface-nav type-body w-full min-w-0 rounded-lg border py-1.5 pr-2 pl-7 text-sm transition-colors placeholder:opacity-50 focus:outline-none',
-              !!problem.problemId && !!problem.problemName
-                ? 'border-surface-border focus:border-brand-border/60 cursor-default'
-                : 'border-rose-500/50 focus:border-rose-400/70',
-            )}
-            value={searchInput}
-            onChange={(e) => {
-              onSearchInputChange(e.target.value);
-              setShowDropdown(true);
-            }}
-            onFocus={() => setShowDropdown(true)}
-          />
-        </div>
-        {showDropdown &&
-          searchInput.length > 0 &&
-          createPortal(
-            <div
-              ref={dropdownRef}
-              style={dropdownStyle}
-              className='border-surface-border bg-surface-card overflow-y-auto rounded-lg border shadow-2xl'
-            >
-              {isFetching && (
-                <div className='flex items-center gap-2 px-3 py-2.5 text-[13px] text-slate-500'>
-                  <Loader2 size={13} className='animate-spin' />
-                  Searching...
-                </div>
-              )}
-              {!isFetching && filtered.length === 0 && (
-                <div className='px-3 py-2.5 text-[13px] text-slate-500'>No problems found.</div>
-              )}
-              {filtered.map((p) => (
-                <button
-                  key={p.id}
-                  type='button'
-                  className='hover:bg-surface-raised-hover light:text-slate-600 flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] text-slate-300 transition-colors'
-                  onClick={() => {
-                    onSelectProblem(p);
-                    setShowDropdown(false);
-                    inputRef.current?.blur();
-                  }}
-                >
-                  <span className='min-w-0 flex-1 truncate'>{formatProblemOption(p)}</span>
-                </button>
-              ))}
-            </div>,
-            document.body,
-          )}
-      </div>
-
-      {/* Pitch selector (only for multi-pitch problems) */}
-      {(problem.problemNumPitches ?? 0) > 1 && (
-        <div className='relative shrink-0'>
-          <select
-            value={problem.problemPitch ?? 0}
-            onChange={(e) => {
-              const val = Number(e.target.value);
-              onPitchChange(val === 0 ? undefined : val);
-            }}
-            className={cn(
-              'bg-surface-nav border-surface-border type-body appearance-none rounded-lg border py-1.5 pr-6 pl-2.5 text-sm transition-colors focus:outline-none',
-              problem.problemPitch != null
-                ? 'border-surface-border focus:border-brand-border/60'
-                : 'border-rose-500/50 focus:border-rose-400/70',
-            )}
-          >
-            <option value={0}>No pitch</option>
-            {Array.from({ length: problem.problemNumPitches ?? 0 }, (_, i) => i + 1).map((p) => (
-              <option key={p} value={p}>
-                Pitch {p}
-              </option>
-            ))}
-          </select>
-          <ChevronDown
-            size={12}
-            className='pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 text-slate-500'
-          />
-        </div>
-      )}
-
-      {/* Time input (video only) */}
-      {showTimeInput && (
-        <div className='flex shrink-0 items-center gap-1.5'>
-          <Clock size={14} className='shrink-0 text-slate-500' />
-          <ProblemTimeInput milliseconds={problem.milliseconds ?? 0} maxSeconds={maxSeconds} onChange={onTimeChange} />
-        </div>
-      )}
-
-      {/* Trivia toggle */}
-      <label className='flex shrink-0 items-center gap-1.5 text-xs text-slate-400'>
-        <input
-          type='checkbox'
-          checked={problem.trivia ?? false}
-          onChange={(e) => onTriviaChange(e.target.checked)}
-          className='text-brand focus:ring-brand/50 h-4 w-4 rounded border-white/20 bg-slate-700 focus:ring-2'
-        />
-        Trivia
-      </label>
-
-      <button
-        type='button'
-        onClick={handleRemove}
-        className='shrink-0 rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-red-500/10 hover:text-red-400'
-        aria-label='Remove problem'
-      >
-        <Trash2 size={14} />
-      </button>
-    </div>
-  );
+// ── UploadItemCard: a single upload item with its own video ref and thumbnail state ──
+type UploadItemCardProps = {
+  item: UploadItem;
+  idx: number;
+  connectionType: MediaConnectionType;
+  metadata: MediaMetadata;
+  callbacks: MediaMetadataCallbacks;
+  onRemove: (idx: number) => void;
+  onUpdate: (idx: number, patch: Partial<UploadItem>) => void;
+  showConnectedFullWidth?: boolean;
 };
 
-/** A controlled M:SS time input that doesn't fight the user's typing. */
-const ProblemTimeInput = ({
-  milliseconds,
-  maxSeconds,
-  onChange,
-}: {
-  milliseconds: number;
-  maxSeconds: number;
-  onChange: (val: string) => void;
-}) => {
-  const [focused, setFocused] = useState(false);
-  const [draft, setDraft] = useState('');
+const UploadItemCard = ({
+  item,
+  idx,
+  connectionType,
+  metadata,
+  callbacks,
+  onRemove,
+  onUpdate,
+  showConnectedFullWidth,
+}: UploadItemCardProps) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
 
-  const seconds = milliseconds / 1000;
-  const exceedsMax = maxSeconds > 0 && seconds > maxSeconds;
+  const handleVideoLoaded = useCallback(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    const dur = v.duration || 0;
+    onUpdate(idx, { thumbnailDuration: dur });
+    const target = Math.max(0, dur - 10);
+    v.currentTime = target;
+    onUpdate(idx, { thumbnailSeconds: target });
+  }, [idx, onUpdate]);
 
-  // When not focused, derive display from milliseconds
-  const displayValue = focused ? draft : secondsToTimeStr(seconds);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value;
-    // Allow only digits and colon
-    const cleaned = raw.replace(/[^0-9:]/g, '');
-    // Prevent more than one colon
-    if ((cleaned.match(/:/g) || []).length > 1) return;
-    // Prevent more than 5 characters (MM:SS)
-    if (cleaned.length > 5) return;
-    setDraft(cleaned);
-  };
-
-  const handleBlur = () => {
-    setFocused(false);
-    // Validate: clamp to max duration
-    const parsed = timeStrToSeconds(draft);
-    if (maxSeconds > 0 && parsed > maxSeconds) {
-      onChange(secondsToTimeStr(maxSeconds));
-    } else {
-      onChange(draft);
-    }
-  };
-
-  const handleFocus = () => {
-    setFocused(true);
-    setDraft(secondsToTimeStr(seconds));
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      (e.target as HTMLInputElement).blur();
-    }
-  };
+  const isVideoItem = item.file?.type?.startsWith('video/') || !!item.embedVideoUrl;
 
   return (
-    <div className='relative'>
-      <input
-        type='text'
-        inputMode='numeric'
-        placeholder='M:SS'
-        className={cn(
-          'bg-surface-nav border-surface-border type-body focus:border-brand-border/60 w-28 rounded-lg border px-3 py-2 font-mono text-sm transition-colors placeholder:opacity-50 focus:outline-none',
-          exceedsMax && 'border-amber-500/60 text-amber-300',
-        )}
-        value={displayValue}
-        onChange={handleChange}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        onKeyDown={handleKeyDown}
-      />
-      {exceedsMax && (
-        <span className='absolute -bottom-4 left-0 text-[11px] whitespace-nowrap text-amber-400'>
-          Max {secondsToTimeStr(maxSeconds)}
+    <Card>
+      {/* Header with filename and remove button */}
+      <div className='mb-3 flex items-center justify-between'>
+        <span className='text-[13px] font-medium text-slate-400'>
+          {item.file?.name ?? (item.embedVideoUrl ? 'Embedded video' : `Item #${idx + 1}`)}
         </span>
+        <button
+          type='button'
+          onClick={() => onRemove(idx)}
+          className='hover:bg-surface-raised-hover rounded-lg p-1 text-slate-500 transition-colors hover:text-red-400'
+          aria-label='Remove'
+        >
+          <X size={16} />
+        </button>
+      </div>
+
+      {/* Grid: left = basic metadata + connected (if not full-width), right = preview */}
+      <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
+        {/* Left: Description, Photographer, In shot, Thumbnail picker, Connected (if not full-width) */}
+        <div>
+          <MediaMetadataCard
+            variant='basic'
+            metadata={metadata}
+            callbacks={callbacks}
+            connectionType={connectionType}
+          />
+
+          {/* Thumbnail picker for videos (always visible, below People in shot) */}
+          {isVideoItem && (
+            <div className='mt-3 space-y-1.5'>
+              <div className='flex items-center gap-2'>
+                <Image size={14} className='text-slate-500' />
+                <span className='text-xs font-medium text-slate-400'>Thumbnail frame</span>
+                <span className='ml-auto text-xs text-slate-500'>
+                  {secondsToTimeStr(item.thumbnailSeconds)} / {secondsToTimeStr(item.thumbnailDuration)}
+                </span>
+              </div>
+              <input
+                type='range'
+                min={0}
+                max={Math.floor(item.thumbnailDuration) || 1}
+                step={1}
+                value={Math.floor(item.thumbnailSeconds)}
+                onChange={(e) => {
+                  const t = Number(e.target.value);
+                  onUpdate(idx, { thumbnailSeconds: t });
+                  if (videoRef.current) {
+                    videoRef.current.currentTime = t;
+                  }
+                }}
+                className='w-full'
+              />
+            </div>
+          )}
+
+          {/* Connected stuff in left column (unless it needs full width for timestamps) */}
+          {!showConnectedFullWidth && (
+            <div className='mt-4'>
+              <MediaMetadataCard
+                variant='connected'
+                metadata={metadata}
+                callbacks={callbacks}
+                connectionType={connectionType}
+              />
+            </div>
+          )}
+        </div>
+        {/* Right: Preview */}
+        <div>
+          {item.file?.type?.startsWith('video/') && item.preview ? (
+            <video
+              ref={videoRef}
+              src={item.preview}
+              className='w-full rounded-xl object-contain'
+              controls
+              preload='metadata'
+              onLoadedMetadata={handleVideoLoaded}
+            />
+          ) : item.preview || item.embedThumbnailUrl ? (
+            <img src={item.preview ?? item.embedThumbnailUrl} className='w-full rounded-xl object-contain' alt='' />
+          ) : item.embedVideoUrl ? (
+            <div className='aspect-video w-full overflow-hidden rounded-xl bg-black'>
+              <iframe
+                src={item.embedVideoUrl}
+                className='h-full w-full'
+                allow='autoplay; fullscreen; picture-in-picture'
+                allowFullScreen
+                title='Embedded video'
+              />
+            </div>
+          ) : null}
+        </div>
+      </div>
+
+      {/* Full-width row: connected stuff (only for video + problem, where timestamps need space) */}
+      {showConnectedFullWidth && (
+        <div className='mt-4'>
+          <MediaMetadataCard
+            variant='connected'
+            metadata={metadata}
+            callbacks={callbacks}
+            connectionType={connectionType}
+          />
+        </div>
       )}
-    </div>
+    </Card>
   );
 };
 

@@ -250,6 +250,18 @@ export const designContract = {
     /** Add (+) — create entity; sky accent so it reads separately from gold **edit** actions. */
     pageHeaderIconButtonAdd:
       'border-sky-400/45 bg-sky-500/20 text-sky-300 hover:bg-sky-500/30 hover:text-sky-200 light:border-2 light:border-sky-700 light:bg-sky-100 light:text-sky-950 light:shadow-sm light:hover:border-sky-800 light:hover:bg-sky-200 light:hover:text-sky-950',
+    /** Add media (image icon) — violet accent, distinct from sky **add** and amber **edit**. */
+    pageHeaderIconButtonMedia:
+      'border-violet-400/45 bg-violet-500/20 text-violet-300 hover:bg-violet-500/30 hover:text-violet-200 light:border-2 light:border-violet-700 light:bg-violet-100 light:text-violet-950 light:shadow-sm light:hover:border-violet-800 light:hover:bg-violet-200 light:hover:text-violet-950',
+    /** Comment (chat bubble) — pink accent, distinct from sky **add**, violet **media**, and amber **edit**. */
+    pageHeaderIconButtonComment:
+      'border-pink-400/45 bg-pink-500/20 text-pink-300 hover:bg-pink-500/30 hover:text-pink-200 light:border-2 light:border-pink-700 light:bg-pink-100 light:text-pink-950 light:shadow-sm light:hover:border-pink-800 light:hover:bg-pink-200 light:hover:text-pink-950',
+    /** Show hidden media (eye-off/eye) — muted warm orange/copper, distinct from all other button colors. */
+    pageHeaderIconButtonHiddenMedia:
+      'border-orange-400/30 bg-orange-500/12 text-orange-300/80 hover:bg-orange-500/22 hover:text-orange-200 light:border-2 light:border-orange-600 light:bg-orange-100 light:text-orange-800 light:shadow-sm light:hover:border-orange-700 light:hover:bg-orange-200 light:hover:text-orange-900',
+    /** Show hidden media (eye) — active state when media is being shown. */
+    pageHeaderIconButtonHiddenMediaActive:
+      'border-orange-400/45 bg-orange-500/20 text-orange-200 hover:bg-orange-500/30 hover:text-orange-100 light:border-2 light:border-orange-700 light:bg-orange-200 light:text-orange-900 light:shadow-sm light:hover:border-orange-800 light:hover:bg-orange-300 light:hover:text-orange-950',
     /** Edit (pencil) — amber vs sky add; `light:*` matches `html[data-theme]` (see `index.css`). */
     pageHeaderIconButtonEdit:
       'border-amber-300/45 bg-amber-400/18 text-amber-100 hover:bg-amber-400/28 light:border-2 light:border-amber-700 light:bg-amber-100 light:text-amber-950 light:shadow-sm light:hover:border-amber-800 light:hover:bg-amber-200 light:hover:text-amber-950',

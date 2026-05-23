@@ -1,5 +1,4 @@
 import { useCallback, type FormEvent, type ChangeEvent } from 'react';
-import MediaUpload from '../../shared/components/MediaUpload/MediaUpload';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
 import { useMeta } from '../../shared/components/Meta/context';
 import { Loading } from '../../shared/ui/StatusWidgets';
@@ -10,7 +9,7 @@ import { spaPathFromRedirectResponse } from '../../api';
 import { useAreaEdit } from './useAreaEdit';
 import { hours } from '../../utils/hours';
 import ExternalLink from '../../shared/ui/ExternalLinks';
-import { Info, AlertTriangle, Hash, Edit, MapPin, Layers, Save, Loader2, Plus } from 'lucide-react';
+import { Info, AlertTriangle, Hash, Edit, MapPin, Save, Loader2, Plus } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { Card, FormSwitch, MarkdownFieldLabel, SectionHeader } from '../../shared/ui';
 import { sanitizeCoordInput, useCoordinateText } from '../../shared/hooks/useCoordinateText';
@@ -35,7 +34,6 @@ export const AreaEdit = () => {
     setBoolean,
     setCoord,
     setLatLng,
-    setNewMedia,
     setSectorSort,
     setString,
     setVisibility,
@@ -328,14 +326,6 @@ export const AreaEdit = () => {
                 }}
               />
             </div>
-          </div>
-        </Card>
-
-        {/* ── Media ── */}
-        <Card>
-          <SectionHeader title='Media' icon={Layers} />
-          <div className='p-3 sm:p-5'>
-            <MediaUpload onMediaChanged={setNewMedia} isMultiPitch={false} />
           </div>
         </Card>
 

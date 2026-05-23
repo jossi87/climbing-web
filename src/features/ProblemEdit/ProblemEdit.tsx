@@ -11,7 +11,6 @@ import { parseCoordInput, sanitizeCoordInput, useCoordinateText } from '../../sh
 import { UsersSelector } from '../../shared/ui/UserSelector';
 import RockSelector from '../../shared/components/RockSelector/RockSelector';
 import ProblemSection from '../../shared/components/ProblemSection/ProblemSection';
-import MediaUpload from '../../shared/components/MediaUpload/MediaUpload';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
 import { useMeta } from '../../shared/components/Meta/context';
 import {
@@ -31,18 +30,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { captureSentryException, captureSentryMessage } from '../../utils/sentry';
 import ExternalLink from '../../shared/ui/ExternalLinks';
-import {
-  Calendar,
-  Save,
-  ChevronDown,
-  AlertTriangle,
-  Edit,
-  Loader2,
-  MapPinOff,
-  MapPin,
-  Layers,
-  Plus,
-} from 'lucide-react';
+import { Calendar, Save, ChevronDown, AlertTriangle, Edit, Loader2, MapPinOff, MapPin, Plus } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 import { twInk } from '../../design/twInk';
@@ -111,7 +99,6 @@ export const ProblemEditLoader = () => {
       aspect: '',
       lengthMeter: undefined,
       descent: '',
-      newMedia: [],
     } satisfies Problem);
 
   return <ProblemEdit key={prob.id} problem={prob} sector={sector} />;
@@ -196,7 +183,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
           data.t?.id ? meta.types.find((t) => t.id === data.t?.id) || meta.types[0] : meta.types[0],
           data.coordinates ?? ({} as components['schemas']['Coordinates']),
           data.sections,
-          data.newMedia ?? [],
+          [],
           data.faAid,
           data.trivia ?? '',
           data.externalLinks ?? [],
@@ -815,17 +802,6 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                 onChange={setCoordField('longitude')}
               />
             </div>
-          </div>
-        </Card>
-
-        {/* ── Media ── */}
-        <Card>
-          <SectionHeader title='Media' icon={Layers} />
-          <div className='p-3 sm:p-5'>
-            <MediaUpload
-              onMediaChanged={(media) => setData((p) => ({ ...p, newMedia: media }))}
-              isMultiPitch={!!(data.sections && data.sections.length > 1)}
-            />
           </div>
         </Card>
 

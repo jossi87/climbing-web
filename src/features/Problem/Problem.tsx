@@ -49,13 +49,14 @@ import {
   Check,
   MessageSquare,
   Eye,
+  EyeOff,
   LayoutDashboard,
   Edit,
-  Plus,
   Map as MapIcon,
   Download,
   ChevronRight,
   AlertTriangle,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
@@ -536,17 +537,6 @@ function ProblemLoaded({
                 >
                   <Check className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
                 </button>
-                <button
-                  type='button'
-                  title='Comment'
-                  onClick={() => setShowCommentModal({ id: -1, danger: false, resolved: false })}
-                  className={cn(
-                    designContract.controls.pageHeaderIconButton,
-                    'bg-surface-raised hover:bg-surface-raised-hover border-white/12 text-slate-300 hover:border-white/18',
-                  )}
-                >
-                  <MessageSquare className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.25} />
-                </button>
                 {(meta.isAdmin || meta.isSuperAdmin) && (
                   <button
                     type='button'
@@ -555,12 +545,41 @@ function ProblemLoaded({
                     className={cn(
                       designContract.controls.pageHeaderIconButton,
                       showHiddenMedia
-                        ? 'border-brand-border bg-brand/20 text-brand hover:bg-brand/30'
-                        : 'bg-surface-raised hover:bg-surface-raised-hover border-white/12 text-slate-300 hover:border-white/18',
+                        ? designContract.controls.pageHeaderIconButtonHiddenMediaActive
+                        : designContract.controls.pageHeaderIconButtonHiddenMedia,
                     )}
                   >
-                    <Eye className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.25} />
+                    {showHiddenMedia ? (
+                      <Eye className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.25} />
+                    ) : (
+                      <EyeOff className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.25} />
+                    )}
                   </button>
+                )}
+                <button
+                  type='button'
+                  title='Comment'
+                  onClick={() => setShowCommentModal({ id: -1, danger: false, resolved: false })}
+                  className={cn(
+                    designContract.controls.pageHeaderIconButton,
+                    designContract.controls.pageHeaderIconButtonComment,
+                  )}
+                >
+                  <MessageSquare className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.25} />
+                </button>
+                {meta.isAuthenticated && (
+                  <Link
+                    to={`/media/add?type=problem&id=${data.id}&name=${encodeURIComponent(data.name ?? '')}&sectorId=${data.sectorId}&sectorName=${encodeURIComponent(data.sectorName ?? '')}&areaId=${data.areaId}&areaName=${encodeURIComponent(data.areaName ?? '')}`}
+                    title='Add media'
+                    aria-label='Add media'
+                    data-ph-action='add-media'
+                    className={cn(
+                      designContract.controls.pageHeaderIconButton,
+                      designContract.controls.pageHeaderIconButtonMedia,
+                    )}
+                  >
+                    <ImageIcon className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
+                  </Link>
                 )}
                 {(meta.isAdmin || meta.isSuperAdmin) && (
                   <Link
@@ -574,20 +593,6 @@ function ProblemLoaded({
                     )}
                   >
                     <Edit className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
-                  </Link>
-                )}
-                {!meta.isAdmin && !meta.isSuperAdmin && (
-                  <Link
-                    to={`/problem/edit/media/${data.id}`}
-                    title='Add media'
-                    aria-label='Add media'
-                    data-ph-action='add'
-                    className={cn(
-                      designContract.controls.pageHeaderIconButton,
-                      designContract.controls.pageHeaderIconButtonAdd,
-                    )}
-                  >
-                    <Plus className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
                   </Link>
                 )}
               </>

@@ -1,15 +1,29 @@
-import { useState, useEffect, type MouseEvent } from 'react';
+import { useState, useEffect, useCallback, type MouseEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { invalidateProblemQueries, postComment, useAccessToken } from '../../../api';
-import MediaUpload, { type UploadedMedia } from '../MediaUpload/MediaUpload';
+import { invalidateProblemQueries, postComment, postMedia, useAccessToken } from '../../../api';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { X, Check, AlertTriangle, ShieldCheck, ShieldAlert, MessageSquare } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
+import { useMeta } from '../Meta/context';
+import { MediaDropzoneEmbed } from '../MediaEdit/MediaDropzoneEmbed';
+import type { DropzoneFile } from '../MediaEdit/MediaDropzoneEmbed';
+import { MediaMetadataCard } from '../MediaEdit/MediaMetadataCard';
+import type { MediaMetadata, MediaMetadataCallbacks } from '../MediaEdit/MediaMetadataCard';
 
 /** Match tick modal — field rails readable on `surface-card`. */
 const fieldLabelClass = cn(designContract.typography.label, 'text-slate-300');
+
+type CommentMediaItem = {
+  file?: File;
+  preview?: string;
+  embedVideoUrl?: string;
+  embedThumbnailUrl?: string;
+  description: string;
+  photographer: string | undefined;
+  tagged: components['schemas']['User'][];
+};
 
 const CommentModal = ({
   comment,
@@ -26,10 +40,11 @@ const CommentModal = ({
 }) => {
   const queryClient = useQueryClient();
   const accessToken = useAccessToken();
+  const meta = useMeta();
   const [message, setMessage] = useState(comment?.message ?? '');
   const [danger, setDanger] = useState(comment?.danger);
   const [resolved, setResolved] = useState(comment?.resolved);
-  const [media, setMedia] = useState<UploadedMedia[]>([]);
+  const [mediaItems, setMediaItems] = useState<CommentMediaItem[]>([]);
   const [saving, setSaving] = useState(false);
 
   const isEditing = comment != null && comment.id != null && comment.id !== -1;
@@ -43,19 +58,41 @@ const CommentModal = ({
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [onClose, saving]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (id == null || idProblem == null) return;
     setSaving(true);
-    postComment(accessToken, id, idProblem, message, danger ?? false, resolved ?? false, false, media)
-      .then(() => {
-        void invalidateProblemQueries(queryClient, idProblem);
-        onClose();
-      })
-      .catch((error) => {
-        console.warn(error);
-        alert(error.toString());
-      })
-      .finally(() => setSaving(false));
+    try {
+      // 1. POST comment (without media) → get idGuestbook
+      const idGuestbook = await postComment(
+        accessToken,
+        id,
+        idProblem,
+        message,
+        danger ?? false,
+        resolved ?? false,
+        false,
+      );
+
+      // 2. POST each media item using postMedia with guestbookId
+      for (const item of mediaItems) {
+        const body: components['schemas']['Media'] = {
+          description: item.description,
+          photographer: item.photographer ? { id: 0, name: item.photographer } : undefined,
+          tagged: item.tagged.map((u) => ({ id: u.id ?? 0, name: u.name ?? '' })),
+          embedUrl: item.embedVideoUrl,
+          guestbookId: idGuestbook,
+        };
+        await postMedia(accessToken, body, item.file);
+      }
+
+      void invalidateProblemQueries(queryClient, idProblem);
+      onClose();
+    } catch (error) {
+      console.warn(error);
+      alert(error instanceof Error ? error.message : String(error));
+    } finally {
+      setSaving(false);
+    }
   };
 
   const modalPanelClass =
@@ -67,6 +104,69 @@ const CommentModal = ({
     if (saving) return;
     if (e.target === e.currentTarget) onClose();
   };
+
+  // ── Media handlers ──────────────────────────────────────────────────
+  const handleFilesAdded = useCallback(
+    (files: DropzoneFile[]) => {
+      const newItems = files.map((f) => ({
+        file: f.file,
+        preview: f.preview,
+        description: '',
+        photographer: meta?.authenticatedName,
+        tagged: [] as components['schemas']['User'][],
+      }));
+      setMediaItems((prev) => [...prev, ...newItems]);
+    },
+    [meta?.authenticatedName],
+  );
+
+  const handleEmbedAdded = useCallback(
+    (info: { embedVideoUrl: string | undefined; embedThumbnailUrl: string | undefined }) => {
+      setMediaItems((prev) => [
+        ...prev,
+        {
+          embedVideoUrl: info.embedVideoUrl,
+          embedThumbnailUrl: info.embedThumbnailUrl,
+          description: '',
+          photographer: meta?.authenticatedName,
+          tagged: [],
+        },
+      ]);
+    },
+    [meta?.authenticatedName],
+  );
+
+  const updateItem = (index: number, patch: Partial<CommentMediaItem>) => {
+    setMediaItems((old) => {
+      const next = [...old];
+      next[index] = { ...next[index], ...patch };
+      return next;
+    });
+  };
+
+  const removeItem = (index: number) => {
+    setMediaItems((old) => {
+      const item = old[index];
+      if (item.preview) URL.revokeObjectURL(item.preview);
+      return old.filter((_, i) => i !== index);
+    });
+  };
+
+  const buildMetadata = (item: CommentMediaItem): MediaMetadata => ({
+    description: item.description,
+    photographer: item.photographer ? { id: 0, name: item.photographer } : undefined,
+    tagged: item.tagged,
+    problems: [],
+  });
+
+  const buildCallbacks = (idx: number): MediaMetadataCallbacks => ({
+    onDescriptionChange: (val) => updateItem(idx, { description: val }),
+    onPhotographerChange: (u) => updateItem(idx, { photographer: u?.name }),
+    onTaggedChange: (users) => updateItem(idx, { tagged: users }),
+    onProblemsChange: () => {},
+    onAreaTriviaChange: () => {},
+    onSectorTriviaChange: () => {},
+  });
 
   /** Portaled to `document.body` — avoids stacking under the sticky header (see `App.tsx` `main` + `Header`). */
   return createPortal(
@@ -118,10 +218,72 @@ const CommentModal = ({
             </div>
           </div>
 
+          {/* Media: dropzone + embed (reused from MediaEdit) */}
           <div className='space-y-1.5'>
             <label className={cn('ml-1', fieldLabelClass)}>Media</label>
-            <MediaUpload onMediaChanged={(nm) => setMedia(nm)} isMultiPitch={false} variant='modal' />
+            <MediaDropzoneEmbed onFilesAdded={handleFilesAdded} onEmbedAdded={handleEmbedAdded} />
           </div>
+
+          {/* Per-item cards — same layout as add media page */}
+          {mediaItems.map((item, idx) => (
+            <div
+              key={idx}
+              className='bg-surface-card border-surface-border animate-in fade-in zoom-in-95 overflow-hidden rounded-xl border shadow-md duration-300 sm:rounded-2xl sm:shadow-xl'
+            >
+              {/* Header with filename and remove button */}
+              <div className='flex items-center justify-between px-4 pt-3 sm:px-5 sm:pt-4'>
+                <span className='text-[13px] font-medium text-slate-400'>
+                  {item.file?.name ?? (item.embedVideoUrl ? 'Embedded video' : `Item #${idx + 1}`)}
+                </span>
+                <button
+                  type='button'
+                  onClick={() => removeItem(idx)}
+                  className='hover:bg-surface-raised-hover rounded-lg p-1 text-slate-500 transition-colors hover:text-red-400'
+                  aria-label='Remove'
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              {/* Grid: left = metadata, right = preview */}
+              <div className='grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 sm:p-5'>
+                <div>
+                  <MediaMetadataCard
+                    variant='basic'
+                    metadata={buildMetadata(item)}
+                    callbacks={buildCallbacks(idx)}
+                    connectionType='guestbook'
+                  />
+                </div>
+                <div>
+                  {item.file?.type?.startsWith('video/') && item.preview ? (
+                    <video
+                      src={item.preview}
+                      className='w-full rounded-xl object-contain'
+                      controls
+                      preload='metadata'
+                    />
+                  ) : item.preview || item.embedThumbnailUrl ? (
+                    <img
+                      src={item.preview ?? item.embedThumbnailUrl}
+                      className='w-full rounded-xl object-contain'
+                      alt=''
+                    />
+                  ) : item.embedVideoUrl ? (
+                    <div className='aspect-video w-full overflow-hidden rounded-xl bg-black'>
+                      <iframe
+                        src={item.embedVideoUrl}
+                        className='h-full w-full'
+                        allow='autoplay; fullscreen; picture-in-picture'
+                        allowFullScreen
+                        title='Embedded video'
+                      />
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+          ))}
 
           {showHse && (
             <div className='space-y-1.5'>

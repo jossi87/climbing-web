@@ -704,32 +704,48 @@ const Sector = () => {
             </>
           }
           actions={
-            meta.isAdmin ? (
+            meta.isAuthenticated ? (
               <>
+                {meta.isAdmin && (
+                  <Link
+                    to={`/problem/edit/${data.id}/0`}
+                    title='Add problem'
+                    aria-label='Add problem'
+                    data-ph-action='add'
+                    className={cn(
+                      designContract.controls.pageHeaderIconButton,
+                      designContract.controls.pageHeaderIconButtonAdd,
+                    )}
+                  >
+                    <Plus className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
+                  </Link>
+                )}
                 <Link
-                  to={`/problem/edit/${data.id}/0`}
-                  title='Add problem'
-                  aria-label='Add problem'
-                  data-ph-action='add'
+                  to={`/media/add?type=sector&id=${data.id}&name=${encodeURIComponent(data.name ?? '')}&areaId=${data.areaId}&areaName=${encodeURIComponent(data.areaName ?? '')}`}
+                  title='Add media'
+                  aria-label='Add media'
+                  data-ph-action='add-media'
                   className={cn(
                     designContract.controls.pageHeaderIconButton,
-                    designContract.controls.pageHeaderIconButtonAdd,
+                    designContract.controls.pageHeaderIconButtonMedia,
                   )}
                 >
-                  <Plus className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
+                  <ImageIcon className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
                 </Link>
-                <Link
-                  to={`/sector/edit/${data.areaId}/${data.id}`}
-                  title='Edit sector'
-                  aria-label='Edit sector'
-                  data-ph-action='edit'
-                  className={cn(
-                    designContract.controls.pageHeaderIconButton,
-                    designContract.controls.pageHeaderIconButtonEdit,
-                  )}
-                >
-                  <Edit className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
-                </Link>
+                {meta.isAdmin && (
+                  <Link
+                    to={`/sector/edit/${data.areaId}/${data.id}`}
+                    title='Edit sector'
+                    aria-label='Edit sector'
+                    data-ph-action='edit'
+                    className={cn(
+                      designContract.controls.pageHeaderIconButton,
+                      designContract.controls.pageHeaderIconButtonEdit,
+                    )}
+                  >
+                    <Edit className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
+                  </Link>
+                )}
               </>
             ) : null
           }

@@ -1,6 +1,5 @@
 import { useState, useCallback, type ComponentProps, type UIEvent, type FormEvent, type ChangeEvent } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import MediaUpload from '../../shared/components/MediaUpload/MediaUpload';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { useMeta } from '../../shared/components/Meta';
 import { postSector, spaPathFromRedirectResponse, useAccessToken, useArea, useElevation, useSector } from '../../api';
@@ -16,7 +15,7 @@ import { PolylineMarkers } from './PolylineMarkers';
 import { captureSentryException } from '../../utils/sentry';
 import { hours } from '../../utils/hours';
 import ExternalLink from '../../shared/ui/ExternalLinks';
-import { Info, Edit, MapPin, AlertTriangle, Layers, Hash, RotateCcw, Save, Loader2, Plus, Copy } from 'lucide-react';
+import { Info, Edit, MapPin, AlertTriangle, Hash, RotateCcw, Save, Loader2, Plus, Copy } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 import { Card, FormSwitch, MarkdownFieldLabel, NotFoundCard, SectionHeader } from '../../shared/ui';
@@ -71,7 +70,6 @@ export const SectorEditLoader = () => {
       accessInfo: '',
       accessClosed: '',
       parking: undefined,
-      newMedia: [],
       problemOrder: [],
     } satisfies Sector);
 
@@ -177,10 +175,6 @@ export const SectorEdit = ({ sector, area }: Props) => {
     setData((prevState) => ({ ...prevState, externalLinks }));
   }, []);
 
-  const onNewMediaChanged = useCallback((newMedia: Sector['newMedia']) => {
-    setData((prevState) => ({ ...prevState, newMedia }));
-  }, []);
-
   const save = (event: UIEvent | FormEvent) => {
     event.preventDefault();
     const trash = !!data.trash;
@@ -205,7 +199,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
         data.approach ?? {},
         data.descent ?? {},
         data.externalLinks ?? [],
-        data.newMedia ?? [],
+        [],
         data.problemOrder,
       )
         .then(async (res) => {
@@ -756,14 +750,6 @@ export const SectorEdit = ({ sector, area }: Props) => {
                 )}
               </div>
             )}
-          </div>
-        </Card>
-
-        {/* ── Media ── */}
-        <Card>
-          <SectionHeader title='Media' icon={Layers} />
-          <div className='p-3 sm:p-5'>
-            <MediaUpload onMediaChanged={onNewMediaChanged} isMultiPitch={false} />
           </div>
         </Card>
 

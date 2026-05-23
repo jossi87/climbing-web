@@ -721,32 +721,48 @@ const Area = () => {
             </nav>
           }
           actions={
-            meta.isAdmin ? (
+            meta.isAuthenticated ? (
               <>
+                {meta.isAdmin && (
+                  <Link
+                    to={`/sector/edit/${data.id}/0`}
+                    title='Add sector'
+                    aria-label='Add sector'
+                    data-ph-action='add'
+                    className={cn(
+                      designContract.controls.pageHeaderIconButton,
+                      designContract.controls.pageHeaderIconButtonAdd,
+                    )}
+                  >
+                    <Plus className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
+                  </Link>
+                )}
                 <Link
-                  to={`/sector/edit/${data.id}/0`}
-                  title='Add sector'
-                  aria-label='Add sector'
-                  data-ph-action='add'
+                  to={`/media/add?type=area&id=${data.id}&name=${encodeURIComponent(data.name ?? '')}`}
+                  title='Add media'
+                  aria-label='Add media'
+                  data-ph-action='add-media'
                   className={cn(
                     designContract.controls.pageHeaderIconButton,
-                    designContract.controls.pageHeaderIconButtonAdd,
+                    designContract.controls.pageHeaderIconButtonMedia,
                   )}
                 >
-                  <Plus className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
+                  <ImageIcon className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
                 </Link>
-                <Link
-                  to={`/area/edit/${data.id}`}
-                  title='Edit area'
-                  aria-label='Edit area'
-                  data-ph-action='edit'
-                  className={cn(
-                    designContract.controls.pageHeaderIconButton,
-                    designContract.controls.pageHeaderIconButtonEdit,
-                  )}
-                >
-                  <Edit className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
-                </Link>
+                {meta.isAdmin && (
+                  <Link
+                    to={`/area/edit/${data.id}`}
+                    title='Edit area'
+                    aria-label='Edit area'
+                    data-ph-action='edit'
+                    className={cn(
+                      designContract.controls.pageHeaderIconButton,
+                      designContract.controls.pageHeaderIconButtonEdit,
+                    )}
+                  >
+                    <Edit className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
+                  </Link>
+                )}
               </>
             ) : null
           }

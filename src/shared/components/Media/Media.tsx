@@ -13,7 +13,6 @@ import {
   mediaPlaceholderStyle,
   moveMedia,
   putMediaJpegRotate,
-  setMediaAsAvatar,
 } from '../../../api';
 import { useAuth0 } from '@auth0/auth0-react';
 import type { components } from '../../../@types/buldreinfo/swagger';
@@ -365,12 +364,6 @@ const Media = ({
               executeMediaAction((token) =>
                 moveMedia(token, mediaIdentityId(m.identity), false, 0, 0, m.enableMoveToIdProblem ?? 0),
               )
-            }
-            onSetMediaAsAvatar={() =>
-              setConfirmation({
-                message: 'Change your avatar to this image?',
-                action: () => executeMediaAction((token) => setMediaAsAvatar(token, mediaIdentityId(m.identity))),
-              })
             }
             orderableMedia={orderableMedia ?? []}
             carouselIndex={

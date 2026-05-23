@@ -15,7 +15,8 @@ export type paths = {
         get: operations["getMedia"];
         /** Update media */
         put: operations["putMedia"];
-        post?: never;
+        /** Add single media item */
+        post: operations["postMedia"];
         /** Move media to trash */
         delete: operations["deleteMedia"];
         options?: never;
@@ -67,7 +68,7 @@ export type paths = {
         /** Get areas */
         get: operations["getAreas"];
         put?: never;
-        /** Update area (area must be provided as json on field "json" in multiPart) */
+        /** Update area */
         post: operations["postAreas"];
         delete?: never;
         options?: never;
@@ -392,7 +393,7 @@ export type paths = {
         /** Get sector by id */
         get: operations["getSectors"];
         put?: never;
-        /** Update sector (sector must be provided as json on field "json" in multiPart) */
+        /** Update sector */
         post: operations["postSectors"];
         delete?: never;
         options?: never;
@@ -684,7 +685,7 @@ export type paths = {
         };
         get?: never;
         put?: never;
-        /** Update comment (comment must be provided as json on field "json" in multiPart) */
+        /** Update comment */
         post: operations["postComments"];
         delete?: never;
         options?: never;
@@ -718,25 +719,8 @@ export type paths = {
         };
         get?: never;
         put?: never;
-        /** Update problem (problem must be provided as json on field "json" in multiPart) */
+        /** Update problem */
         post: operations["postProblems"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/problems/media": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Add media on problem (problem must be provided as json on field "json" in multiPart) */
-        post: operations["postProblemsMedia"];
         delete?: never;
         options?: never;
         head?: never;
@@ -769,7 +753,7 @@ export type paths = {
         };
         get?: never;
         put?: never;
-        /** Update profile identity (profile must be provided as json on field "json" in multiPart, "avatar" is optional) */
+        /** Update profile identity */
         post: operations["postProfileIdentity"];
         delete?: never;
         options?: never;
@@ -822,23 +806,6 @@ export type paths = {
         put?: never;
         /** Update visible regions */
         post: operations["postUserRegions"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v2/media/avatar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Set media as avatar */
-        put: operations["putMediaAvatar"];
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -978,7 +945,6 @@ export type components = {
             sectorOrder?: components["schemas"]["AreaSectorOrder"][];
             media?: components["schemas"]["Media"][];
             triviaMedia?: components["schemas"]["Media"][];
-            newMedia?: components["schemas"]["NewMedia"][];
             externalLinks?: components["schemas"]["ExternalLink"][];
             pageViews?: string;
         };
@@ -1081,6 +1047,8 @@ export type components = {
             problems?: components["schemas"]["MediaProblem"][];
             /** Format: int32 */
             guestbookId?: number;
+            /** Format: int32 */
+            userAvatarId?: number;
         };
         MediaArea: {
             /** Format: int32 */
@@ -1120,21 +1088,6 @@ export type components = {
             rappelX?: number;
             /** Format: int32 */
             rappelY?: number;
-        };
-        NewMedia: {
-            name?: string;
-            photographer?: string;
-            inPhoto?: components["schemas"]["User"][];
-            /** Format: int32 */
-            pitch?: number;
-            trivia?: boolean;
-            description?: string;
-            embedVideoUrl?: string;
-            embedThumbnailUrl?: string;
-            /** Format: int64 */
-            embedMilliseconds?: number;
-            /** Format: int32 */
-            thumbnailSeconds?: number;
         };
         SectorProblem: {
             /** Format: int32 */
@@ -1514,7 +1467,6 @@ export type components = {
             ticks?: components["schemas"]["ProblemTick"][];
             todos?: components["schemas"]["ProblemTodo"][];
             comments?: components["schemas"]["ProblemComment"][];
-            newMedia?: components["schemas"]["NewMedia"][];
             t?: components["schemas"]["Type"];
             sections?: components["schemas"]["ProblemSection"][];
             todo?: boolean;
@@ -1748,7 +1700,6 @@ export type components = {
             sectors?: components["schemas"]["SectorJump"][];
             problems?: components["schemas"]["SectorProblem"][];
             problemOrder?: components["schemas"]["SectorProblemOrder"][];
-            newMedia?: components["schemas"]["NewMedia"][];
             externalLinks?: components["schemas"]["ExternalLink"][];
             pageViews?: string;
         };
@@ -1936,6 +1887,16 @@ export type components = {
             idSector?: number;
             redirectUrl?: string;
             destination?: string;
+        };
+        Comment: {
+            /** Format: int32 */
+            id?: number;
+            /** Format: int32 */
+            idProblem?: number;
+            comment?: string;
+            danger?: boolean;
+            resolved?: boolean;
+            delete?: boolean;
         };
         BodyPart: {
             contentDisposition?: components["schemas"]["ContentDisposition"];
@@ -2202,6 +2163,57 @@ export interface operations {
             };
         };
     };
+    postMedia: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "*/*": components["schemas"]["FormDataMultiPart"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Media"];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     deleteMedia: {
         parameters: {
             query: {
@@ -2372,7 +2384,7 @@ export interface operations {
         };
         requestBody?: {
             content: {
-                "multipart/form-data": components["schemas"]["FormDataMultiPart"];
+                "*/*": components["schemas"]["Area"];
             };
         };
         responses: {
@@ -3196,7 +3208,7 @@ export interface operations {
         };
         requestBody?: {
             content: {
-                "multipart/form-data": components["schemas"]["FormDataMultiPart"];
+                "*/*": components["schemas"]["Sector"];
             };
         };
         responses: {
@@ -3927,7 +3939,7 @@ export interface operations {
         };
         requestBody?: {
             content: {
-                "multipart/form-data": components["schemas"]["FormDataMultiPart"];
+                "*/*": components["schemas"]["Comment"];
             };
         };
         responses: {
@@ -4013,7 +4025,7 @@ export interface operations {
         };
         requestBody?: {
             content: {
-                "multipart/form-data": components["schemas"]["FormDataMultiPart"];
+                "*/*": components["schemas"]["Problem"];
             };
         };
         responses: {
@@ -4023,57 +4035,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Redirect"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    postProblemsMedia: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "multipart/form-data": components["schemas"]["FormDataMultiPart"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Problem"];
                 };
             };
             /** @description Invalid request parameters. */
@@ -4165,7 +4126,7 @@ export interface operations {
         };
         requestBody?: {
             content: {
-                "multipart/form-data": components["schemas"]["FormDataMultiPart"];
+                "*/*": components["schemas"]["ProfileIdentity"];
             };
         };
         responses: {
@@ -4287,48 +4248,6 @@ export interface operations {
             };
             /** @description Authentication required. */
             401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    putMediaAvatar: {
-        parameters: {
-            query: {
-                /** @description Media id */
-                id: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
                 headers: {
                     [name: string]: unknown;
                 };

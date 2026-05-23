@@ -298,9 +298,10 @@ export function useArea(id: number) {
   });
 }
 
-export function useMediaSvg(idMedia: number) {
+export function useMediaSvg(idMedia: number, enabled?: boolean) {
   const { data, ...dataResult } = useData<Success<'getMedia'>>(`/media?idMedia=${idMedia}`, {
     queryKey: [`/media`, { idMedia }],
+    enabled: enabled ?? idMedia > 0,
   });
 
   const mutation = usePostData(`/media/svg`);
@@ -360,10 +361,9 @@ export function useProfile(userId: number) {
     firstname: string;
     lastname: string;
     emailVisibleToAll: boolean;
-    avatarFile: File | undefined;
     themePreference?: string;
   }>(`/profile/identity`, {
-    createBody({ firstname, lastname, emailVisibleToAll, avatarFile, themePreference }) {
+    createBody({ firstname, lastname, emailVisibleToAll, themePreference }) {
       const formData = new FormData();
       formData.append(
         'json',
@@ -375,9 +375,6 @@ export function useProfile(userId: number) {
           themePreference,
         }),
       );
-      if (avatarFile) {
-        formData.append('avatar', avatarFile);
-      }
       return formData;
     },
     fetchOptions: {

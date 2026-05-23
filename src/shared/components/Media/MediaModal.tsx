@@ -200,7 +200,6 @@ type Props = {
   onMoveImageRight: () => void;
   onMoveImageToSector: () => void;
   onMoveImageToProblem: () => void;
-  onSetMediaAsAvatar: () => void;
   m: components['schemas']['Media'];
   pitch: number;
   pitches: components['schemas']['ProblemSection'][];
@@ -225,7 +224,6 @@ const MediaModal = ({
   onMoveImageRight,
   onMoveImageToSector,
   onMoveImageToProblem,
-  onSetMediaAsAvatar,
   m,
   pitch,
   pitches,
@@ -240,7 +238,7 @@ const MediaModal = ({
   autoPlayVideo,
   optProblemId,
 }: Props) => {
-  const { isAuthenticated, isAdmin, isBouldering, grades } = useMeta();
+  const { isAdmin, isBouldering, grades } = useMeta();
   const accessToken = useAccessToken();
   const navigate = useNavigate();
 
@@ -410,7 +408,6 @@ const MediaModal = ({
 
   const activePitch = (!!pitch && (pitches ?? []).find((p) => p.nr === pitch)) || null;
 
-  const canSetMediaAsAvatar = isAuthenticated && isImage;
   const canEdit = isAdmin;
   const canDelete = isAdmin || m.uploadedByMe;
   const canRotate =
@@ -427,8 +424,7 @@ const MediaModal = ({
     canDrawMedia ||
     canOrder ||
     (canMove && (m.enableMoveToIdSector ?? 0) > 0) ||
-    (canMove && (m.enableMoveToIdProblem ?? 0) > 0) ||
-    canSetMediaAsAvatar;
+    (canMove && (m.enableMoveToIdProblem ?? 0) > 0);
   const hasMenuBottomActions = !m.embedUrl || canRotate || canEdit || canDelete;
 
   const attachCarouselSwipeHandlers = isMobile && carouselSize > 1 && visualViewportScale <= 1.05;
@@ -652,12 +648,6 @@ const MediaModal = ({
                       {isBouldering ? 'problem' : 'route'}
                     </button>
                   )}
-                  {canSetMediaAsAvatar && (
-                    <button type='button' onClick={onSetMediaAsAvatar} className={mediaMenuItemClass}>
-                      <UserIcon size={14} className={mediaMenuIconClass} strokeWidth={2} /> Set as avatar
-                    </button>
-                  )}
-
                   {hasMenuTopActions && hasMenuBottomActions && <div className='bg-surface-border/50 my-2 h-px' />}
 
                   {!m.embedUrl && (

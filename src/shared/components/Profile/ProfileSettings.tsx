@@ -1,6 +1,8 @@
 import { useState, type FC } from 'react';
 import { useMeta } from '../Meta/context';
-import { useProfile } from '../../../api';
+import { useProfile, postMedia } from '../../../api';
+import type { components } from '../../../@types/buldreinfo/swagger';
+import { useAuth0 } from '@auth0/auth0-react';
 import { type DropzoneOptions, useDropzone } from 'react-dropzone';
 import { Save, X, Upload, Loader2, Globe, Settings as SettingsIcon, Lock } from 'lucide-react';
 import { cn } from '../../../lib/utils';
@@ -53,6 +55,7 @@ const ProfileSettings = () => {
   const identity = data.identity;
 
   const ProfileForm: FC<{ identity: typeof identity }> = ({ identity: d }) => {
+    const { getAccessTokenSilently } = useAuth0();
     const [firstname, setFirstname] = useState(d?.firstname ?? '');
     const [lastname, setLastname] = useState(d?.lastname ?? '');
     const [emailVisibleToAll, setEmailVisibleToAll] = useState(!!d?.emailVisibleToAll);
@@ -164,8 +167,11 @@ const ProfileSettings = () => {
                     firstname,
                     lastname,
                     emailVisibleToAll,
-                    avatarFile: avatar?.file,
                   });
+                  if (avatar?.file) {
+                    const token = await getAccessTokenSilently();
+                    await postMedia(token, { userAvatarId: userId } as components['schemas']['Media'], avatar.file);
+                  }
                 } finally {
                   setIsSaving(false);
                 }
