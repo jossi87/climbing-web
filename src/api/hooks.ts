@@ -366,18 +366,13 @@ export function useProfile(userId: number) {
     themePreference?: string;
   }>(`/profile/identity`, {
     createBody({ firstname, lastname, emailVisibleToAll, themePreference }) {
-      const formData = new FormData();
-      formData.append(
-        'json',
-        JSON.stringify({
-          id: userId,
-          firstname,
-          lastname,
-          emailVisibleToAll,
-          themePreference,
-        }),
-      );
-      return formData;
+      return JSON.stringify({
+        id: userId,
+        firstname,
+        lastname,
+        emailVisibleToAll,
+        themePreference,
+      });
     },
     fetchOptions: {
       headers: {
