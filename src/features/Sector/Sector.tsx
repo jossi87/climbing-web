@@ -65,7 +65,7 @@ import {
   problemListTradGearIconClass,
   problemListTradGearWrapClass,
 } from '../../shared/components/Profile/problemListRowChrome';
-import { compactFaDisplayLine, normalizeFaPeopleSeparators } from '../../utils/firstAscentDisplay';
+import { formatFaDisplay, compactFaDisplay } from '../../utils/firstAscentDisplay';
 import {
   problemListRowRootClass,
   tickCommentSmall,
@@ -100,11 +100,9 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
         })()
       : null;
 
-  const faNames = normalizeFaPeopleSeparators((problem.fa ?? '').trim());
-  const faYear = problem.faDate && problem.faDate.length >= 4 ? problem.faDate.slice(0, 4) : '';
   const faLine = compact
-    ? compactFaDisplayLine((problem.fa ?? '').trim(), problem.faDate)
-    : [faNames, faYear].filter(Boolean).join(' ');
+    ? compactFaDisplay(problem.faUser, problem.faYear, problem.ffaUser, problem.ffaYear)
+    : formatFaDisplay(problem.faUser, problem.faYear, problem.ffaUser, problem.ffaYear);
 
   const tickCount = problem.numTicks ?? 0;
   const commentTrimmed = (problem.comment ?? '').trim();
@@ -233,9 +231,7 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
 
   const detailsTitle = useMemo(() => {
     const parts: string[] = [];
-    const faNames = normalizeFaPeopleSeparators((problem.fa ?? '').trim());
-    const faYear = problem.faDate && problem.faDate.length >= 4 ? problem.faDate.slice(0, 4) : '';
-    const faLine = [faNames, faYear].filter(Boolean).join(' ');
+    const faLine = formatFaDisplay(problem.faUser, problem.faYear, problem.ffaUser, problem.ffaYear);
     if (faLine) parts.push(faLine);
     if (!isBouldering && problem.lengthMeter) {
       parts.push(`${problem.lengthMeter}m`);
@@ -253,8 +249,10 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
     compact,
     isBouldering,
     isClimbing,
-    problem.fa,
-    problem.faDate,
+    problem.faUser,
+    problem.faYear,
+    problem.ffaUser,
+    problem.ffaYear,
     problem.lengthMeter,
     problem.numPitches,
     problem.numTicks,
@@ -649,8 +647,8 @@ const Sector = () => {
       subType: p.t?.subType ?? '',
       broken: !!p.broken,
       num: 0,
-      fa: !!p.fa,
-      faDate: p.faDate ?? null,
+      fa: !!(p.faUser || p.ffaUser),
+      faDate: p.faYear ? String(p.faYear) : null,
       areaName: '',
       sectorName: '',
     })) ?? [];

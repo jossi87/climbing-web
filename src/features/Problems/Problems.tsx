@@ -14,6 +14,7 @@ import {
   formatPassiveGearMarkerLine,
   formatRouteTypeLabel,
 } from '../../utils/routeTradGear';
+import { formatFaDisplay } from '../../utils/firstAscentDisplay';
 
 type Props = { filterOpen?: boolean };
 
@@ -164,7 +165,13 @@ export const Problems = ({ filterOpen }: Props) => {
                             metaParts.push(`${elev.p}${Math.round(elev.v)}m a.s.l.`);
                           }
                           const metaString = metaParts.length ? `(${metaParts.join(', ')})` : '';
-                          const text = [problem.fa, problem.faYear, metaString].filter(Boolean).join(' ').trim();
+                          const faText = formatFaDisplay(
+                            problem.faUser,
+                            problem.faYear,
+                            problem.ffaUser,
+                            problem.ffaYear,
+                          );
+                          const text = [faText, metaString].filter(Boolean).join(' ').trim();
                           return {
                             id: problem.id ?? 0,
                             broken: problem.broken ?? '',

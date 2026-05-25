@@ -27,7 +27,7 @@ import type { components } from '../../@types/buldreinfo/swagger';
 import { ActionMenuChip, Card, NotFoundCard, PageCardBreadcrumbRow } from '../../shared/ui';
 import { TradGearMarker } from '../../shared/ui/TradGearMarker';
 import { climbingRouteUsesPassiveGear, formatRouteTypeLabel } from '../../utils/routeTradGear';
-import { compactFaDisplayLine, normalizeFaPeopleSeparators } from '../../utils/firstAscentDisplay';
+import { formatFaDisplay, compactFaDisplay } from '../../utils/firstAscentDisplay';
 import {
   ChevronRight,
   Plus,
@@ -177,11 +177,9 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
         })()
       : null;
 
-  const faNames = normalizeFaPeopleSeparators((problem.fa ?? '').trim());
-  const faYear = problem.faDate && problem.faDate.length >= 4 ? problem.faDate.slice(0, 4) : '';
   const faLine = compact
-    ? compactFaDisplayLine((problem.fa ?? '').trim(), problem.faDate)
-    : [faNames, faYear].filter(Boolean).join(' ');
+    ? compactFaDisplay(problem.faUser, problem.faYear, problem.ffaUser, problem.ffaYear)
+    : formatFaDisplay(problem.faUser, problem.faYear, problem.ffaUser, problem.ffaYear);
 
   const tickCount = problem.numTicks ?? 0;
   const commentTrimmed = (problem.comment ?? '').trim();
@@ -334,11 +332,9 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
 
   const listRowTitle = useMemo(() => {
     const parts: string[] = [];
-    const faNamesTitle = normalizeFaPeopleSeparators((problem.fa ?? '').trim());
-    const faYearTitle = problem.faDate && problem.faDate.length >= 4 ? problem.faDate.slice(0, 4) : '';
     const faLineTitle = compact
-      ? compactFaDisplayLine((problem.fa ?? '').trim(), problem.faDate)
-      : [faNamesTitle, faYearTitle].filter(Boolean).join(' ');
+      ? compactFaDisplay(problem.faUser, problem.faYear, problem.ffaUser, problem.ffaYear)
+      : formatFaDisplay(problem.faUser, problem.faYear, problem.ffaUser, problem.ffaYear);
     if (faLineTitle) parts.push(faLineTitle);
     if (isClimbing && (problem.numPitches ?? 1) > 1) {
       parts.push(`${problem.numPitches} pitches`);
@@ -352,8 +348,10 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
     commentTrimmed,
     compact,
     isClimbing,
-    problem.fa,
-    problem.faDate,
+    problem.faUser,
+    problem.faYear,
+    problem.ffaUser,
+    problem.ffaYear,
     problem.numPitches,
     problem.numTicks,
     problem.rock,
@@ -636,8 +634,8 @@ const Area = () => {
           subType: p.t?.subType ?? '',
           broken: !!p.broken,
           num: p.nr ?? 0,
-          fa: !!p.fa,
-          faDate: p.faDate ?? null,
+          fa: !!(p.faUser || p.ffaUser),
+          faDate: p.faYear ? String(p.faYear) : null,
         }));
       })
       .sort((a, b) => b.gradeWeight - a.gradeWeight);

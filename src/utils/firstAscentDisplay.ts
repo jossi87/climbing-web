@@ -107,3 +107,86 @@ export function compactFaDisplayLine(faRaw: string, faDate?: string | null): str
   if (!fa) return compactFaYear(faDate);
   return `${compactFaPeopleNames(fa)}${compactFaYear(faDate)}`;
 }
+
+/**
+ * Build a display string from the new structured FA/FFA fields.
+ *
+ * Rules:
+ * - If both faUser and ffaUser are present: "FA: faUser faYear, FFA: ffaUser ffaYear"
+ * - If only faUser (no ffaUser): "faUser faYear" (no "FA:" prefix)
+ * - If only ffaUser (no faUser): "ffaUser ffaYear" (no "FFA:" prefix)
+ * - Omit year if it's 0.
+ */
+export function formatFaDisplay(
+  faUser?: string | null,
+  faYear?: number | null,
+  ffaUser?: string | null,
+  ffaYear?: number | null,
+): string {
+  const faUserTrimmed = (faUser ?? '').trim();
+  const ffaUserTrimmed = (ffaUser ?? '').trim();
+  const hasFa = !!faUserTrimmed;
+  const hasFfa = !!ffaUserTrimmed;
+
+  if (hasFa && hasFfa) {
+    const parts: string[] = [];
+    const faYearStr = faYear && faYear > 0 ? ` ${faYear}` : '';
+    parts.push(`FA: ${faUserTrimmed}${faYearStr}`);
+    const ffaYearStr = ffaYear && ffaYear > 0 ? ` ${ffaYear}` : '';
+    parts.push(`FFA: ${ffaUserTrimmed}${ffaYearStr}`);
+    return parts.join(', ');
+  }
+
+  if (hasFa) {
+    const yearStr = faYear && faYear > 0 ? ` ${faYear}` : '';
+    return `${faUserTrimmed}${yearStr}`;
+  }
+
+  if (hasFfa) {
+    const yearStr = ffaYear && ffaYear > 0 ? ` ${ffaYear}` : '';
+    return `${ffaUserTrimmed}${yearStr}`;
+  }
+
+  return '';
+}
+
+/**
+ * Compact version of formatFaDisplay for compact problem list mode.
+ * Uses initials and 2-digit year.
+ */
+export function compactFaDisplay(
+  faUser?: string | null,
+  faYear?: number | null,
+  ffaUser?: string | null,
+  ffaYear?: number | null,
+): string {
+  const faUserTrimmed = (faUser ?? '').trim();
+  const ffaUserTrimmed = (ffaUser ?? '').trim();
+  const hasFa = !!faUserTrimmed;
+  const hasFfa = !!ffaUserTrimmed;
+
+  if (hasFa && hasFfa) {
+    const parts: string[] = [];
+    const faIni = compactFaPeopleNames(faUserTrimmed);
+    const faYearStr = faYear && faYear > 0 ? `-${String(faYear).slice(2)}` : '';
+    parts.push(`FA: ${faIni}${faYearStr}`);
+    const ffaIni = compactFaPeopleNames(ffaUserTrimmed);
+    const ffaYearStr = ffaYear && ffaYear > 0 ? `-${String(ffaYear).slice(2)}` : '';
+    parts.push(`FFA: ${ffaIni}${ffaYearStr}`);
+    return parts.join(', ');
+  }
+
+  if (hasFa) {
+    const ini = compactFaPeopleNames(faUserTrimmed);
+    const yearStr = faYear && faYear > 0 ? `-${String(faYear).slice(2)}` : '';
+    return `${ini}${yearStr}`;
+  }
+
+  if (hasFfa) {
+    const ini = compactFaPeopleNames(ffaUserTrimmed);
+    const yearStr = ffaYear && ffaYear > 0 ? `-${String(ffaYear).slice(2)}` : '';
+    return `${ini}${yearStr}`;
+  }
+
+  return '';
+}

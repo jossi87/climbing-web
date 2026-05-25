@@ -1103,8 +1103,12 @@ export type components = {
             /** Format: int32 */
             gradeWeight?: number;
             grade?: string;
-            fa?: string;
-            faDate?: string;
+            faUser?: string;
+            /** Format: int32 */
+            faYear?: number;
+            ffaUser?: string;
+            /** Format: int32 */
+            ffaYear?: number;
             /** Format: int32 */
             lengthMeter?: number;
             /** Format: int32 */
@@ -1788,9 +1792,12 @@ export type components = {
             startingAltitude?: number;
             coordinates?: components["schemas"]["Coordinates"];
             grade?: string;
-            fa?: string;
+            faUser?: string;
             /** Format: int32 */
             faYear?: number;
+            ffaUser?: string;
+            /** Format: int32 */
+            ffaYear?: number;
             /** Format: int32 */
             numTicks?: number;
             /** Format: double */
@@ -1999,8 +2006,8 @@ export type components = {
             parameters?: {
                 [key: string]: string;
             };
-            wildcardType?: boolean;
             wildcardSubtype?: boolean;
+            wildcardType?: boolean;
         };
         MessageBodyWorkers: Record<string, never>;
         MultiPart: {
@@ -2172,7 +2179,7 @@ export interface operations {
         };
         requestBody?: {
             content: {
-                "*/*": components["schemas"]["FormDataMultiPart"];
+                "multipart/form-data": components["schemas"]["FormDataMultiPart"];
             };
         };
         responses: {
