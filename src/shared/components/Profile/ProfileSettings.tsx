@@ -170,7 +170,14 @@ const ProfileSettings = () => {
                   });
                   if (avatar?.file) {
                     const token = await getAccessTokenSilently();
-                    await postMedia(token, { userAvatarId: userId } as components['schemas']['Media'], avatar.file);
+                    await postMedia(
+                      token,
+                      {
+                        userAvatarId: userId,
+                        photographer: { id: 0, name: 'Unknown' },
+                      } as components['schemas']['Media'],
+                      avatar.file,
+                    );
                   }
                 } finally {
                   setIsSaving(false);
