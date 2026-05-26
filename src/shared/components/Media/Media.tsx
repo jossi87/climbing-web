@@ -159,9 +159,13 @@ const Media = ({
       if (!isCarousel) {
         mediaModalPushedRef.current = true;
       }
-      navigate(url, { replace: isCarousel });
+      /** Replace when pitch changes so browser Back goes to the base problem URL, not the previous pitch. */
+      const prevPitch = pitch;
+      const newPitch = newM.problems?.find((p) => p.problemId === optProblemId)?.problemPitch ?? 0;
+      const pitchChanged = !!prevPitch && !!newPitch && prevPitch !== newPitch;
+      navigate(url, { replace: isCarousel || pitchChanged });
     },
-    [m, location.pathname, navigate],
+    [m, location.pathname, navigate, pitch, optProblemId],
   );
   const closeModal = useCallback(() => {
     const lastSlashIndex = location.pathname.lastIndexOf('/');
