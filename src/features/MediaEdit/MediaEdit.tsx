@@ -28,6 +28,8 @@ import type {
 } from '../../shared/components/MediaEdit/MediaMetadataCard';
 import { MediaDropzoneEmbed } from '../../shared/components/MediaEdit/MediaDropzoneEmbed';
 import type { DropzoneFile } from '../../shared/components/MediaEdit/MediaDropzoneEmbed';
+import { UploadProgressDialog } from '../../shared/components/MediaEdit/UploadProgressDialog';
+import type { UploadTask } from '../../shared/components/MediaEdit/UploadProgressDialog';
 
 type Media = components['schemas']['Media'];
 type User = components['schemas']['User'];
@@ -182,15 +184,37 @@ const MediaEdit = () => {
     onSectorTriviaChange: (sectorId, trivia) => setSectorTrivia((prev) => ({ ...prev, [sectorId]: trivia })),
   };
 
+  // ── Upload progress state ──────────────────────────────────────────
+  const [uploadTasks, setUploadTasks] = useState<UploadTask[]>([]);
+
   // ── Save ────────────────────────────────────────────────────────────
   const handleSave = async () => {
     if (saving) return;
     setSaving(true);
+
+    // Build task list for progress dialog
+    const items = isAddMode ? uploadItems : m ? [null] : [];
+    const tasks: UploadTask[] = items.map((item, i) => {
+      const label =
+        item && item.file ? item.file.name : item && item.embedVideoUrl ? 'Embedded video' : `Media #${i + 1}`;
+      return { label, state: 'pending' as const };
+    });
+    setUploadTasks(tasks);
+
+    const updateTask = (index: number, patch: Partial<UploadTask>) => {
+      setUploadTasks((prev) => {
+        const next = [...prev];
+        next[index] = { ...next[index], ...patch };
+        return next;
+      });
+    };
+
     try {
       const token = await getAccessTokenSilently();
 
       if (isAddMode) {
-        for (const item of uploadItems) {
+        for (let i = 0; i < uploadItems.length; i++) {
+          const item = uploadItems[i];
           const body: components['schemas']['Media'] = {
             description: item.description,
             photographer: item.photographer
@@ -221,20 +245,30 @@ const MediaEdit = () => {
             if (isVideo) {
               // Include thumbnailSeconds for video uploads
               body.thumbnailSeconds = Math.floor(item.thumbnailSeconds);
+              updateTask(i, { state: 'uploading', progress: 0 });
               // Video: initiate → upload to presigned URL → complete
               const { id, presignedUrl } = await postMediaVideoInitiate(token, body, item.file.size, item.file.type);
               if (!presignedUrl) {
                 throw new Error('No presigned URL returned from server');
               }
-              await uploadToPresignedUrl(presignedUrl, item.file);
+              updateTask(i, { state: 'uploading', progress: 0 });
+              await uploadToPresignedUrl(presignedUrl, item.file, (pct) => {
+                updateTask(i, { progress: pct });
+              });
+              updateTask(i, { state: 'processing', progress: 100 });
               await postMediaVideoComplete(token, id!);
+              updateTask(i, { state: 'done' });
             } else {
               // Image: direct multipart upload
+              updateTask(i, { state: 'uploading' });
               await postMediaImage(token, body, item.file);
+              updateTask(i, { state: 'done' });
             }
           } else {
-            // Embed-only (no file) — use postMediaImage with just the JSON
+            // Embed-only (no file)
+            updateTask(i, { state: 'uploading' });
             await postMediaImage(token, body, new File([], 'embed'));
+            updateTask(i, { state: 'done' });
           }
         }
         await Promise.all([
@@ -286,7 +320,9 @@ const MediaEdit = () => {
             trivia: sectorTrivia[s.sectorId ?? 0] ?? false,
           }));
         }
+        updateTask(0, { state: 'uploading' });
         await putMedia(token, body);
+        updateTask(0, { state: 'done' });
         await Promise.all([
           queryClient.refetchQueries({
             predicate: (q) => {
@@ -303,7 +339,18 @@ const MediaEdit = () => {
       }
     } catch (error) {
       console.warn(error);
-      alert(error instanceof Error ? error.message : String(error));
+      const msg = error instanceof Error ? error.message : String(error);
+      // Mark any pending/uploading tasks as errored
+      setUploadTasks((prev) =>
+        prev.map((t) =>
+          t.state === 'pending' || t.state === 'uploading' || t.state === 'processing'
+            ? { ...t, state: 'error' as const, error: msg }
+            : t,
+        ),
+      );
+      // Keep dialog visible for a moment so user can see the error
+      await new Promise((r) => setTimeout(r, 3000));
+      setUploadTasks([]);
     } finally {
       setSaving(false);
     }
@@ -643,6 +690,9 @@ const MediaEdit = () => {
           </button>
         </div>
       </div>
+
+      {/* Upload progress dialog */}
+      {uploadTasks.length > 0 && <UploadProgressDialog tasks={uploadTasks} />}
     </>
   );
 };
