@@ -3,18 +3,18 @@
  *
  * **Why a preset?**
  * The frontpage panels (`FrontpagePanels`) link "See more" → `/activity?show=fa` (etc.) so the destination page lands
- * with **only that category enabled**. The user can then flip filters back on as normal — the selection lives in
- * component state for the rest of that session and resets to the defaults the next time they open `/activity`
- * directly (no `localStorage` persistence; see `Activity.tsx`).
+ * with **only that category enabled**. The user can then flip filters back on as normal — the selection is persisted
+ * in the URL `?show=` param so it survives page refreshes (see `Activity.tsx`).
  *
  * **Wire format**
  * - Single category: `?show=fa` — turns on `fa`, turns off the other three.
  * - Multiple categories: `?show=fa,media` — comma-separated; whatever is listed is on, everything else off.
- * - Unknown tokens are ignored. If no known categories are present the preset is a no-op (the URL is still cleaned up).
+ * - Unknown tokens are ignored. If no known categories are present the preset is a no-op.
  *
  * **Lifecycle**
- * The feed applies the preset once on mount, then strips `show` from the URL with `replace` so back-button history
- * isn't polluted. The result becomes the in-memory filter state until the user navigates away.
+ * The feed applies the preset once on mount. After that, every filter toggle updates the URL via `replace` so the
+ * current selection is always bookmarkable / refresh-safe. When all four filters are on (the default), the `?show=`
+ * param is removed from the URL to keep it clean.
  */
 export const ACTIVITY_SHOW_PARAM = 'show';
 

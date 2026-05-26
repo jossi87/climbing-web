@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, type ElementType } from 'react';
+import { useState, useRef, useEffect, useCallback, type ElementType } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import Linkify from 'linkify-react';
 import {
@@ -44,12 +44,14 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
   const selectedGradeRef = useRef<HTMLButtonElement>(null);
 
   /**
-   * Filters are **session-local** (no `localStorage`) — every fresh visit to `/activity` (or `/area`/`/sector`) starts
-   * with all chips on and grade `n/a`, unless the URL carries a `?show=` preset (see {@link parseActivityShowParam}).
+   * Filters are persisted in the URL `?show=` param so they survive page refreshes.
    *
-   * The preset is read **once** via a lazy `useState` initializer so it lands before the first `useActivity` request
-   * and there's no skeleton flash. The URL is cleaned up immediately afterwards by the effect below, so chip toggles
-   * after arrival "win" without the param fighting back.
+   * On mount the preset is read **once** via a lazy `useState` initializer so it lands before the first
+   * `useActivity` request and there's no skeleton flash. After that, every filter toggle updates the URL
+   * via `syncFilterUrl` so the current selection is always bookmarkable / refresh-safe.
+   *
+   * When all four filters are on (the default), the `?show=` param is removed from the URL to keep it clean.
+   * When scoped to an Area / Sector tab (`isScoped`), the URL is never touched — the parent page owns the URL.
    */
   const [searchParams, setSearchParams] = useSearchParams();
   const [initialPreset] = useState(() => parseActivityShowParam(searchParams.get(ACTIVITY_SHOW_PARAM)));
@@ -62,13 +64,57 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
   const [activityTypeComments, setActivityTypeComments] = useState(initialPreset?.comments ?? true);
   const normalizedLowerGradeText = lowerGradeText === 'ALL' ? 'All' : lowerGradeText;
 
-  /** Strip `?show=` from the URL once the preset has been read into state — keeps history clean and avoids re-applying on `searchParams` churn. */
-  useEffect(() => {
-    if (!searchParams.has(ACTIVITY_SHOW_PARAM)) return;
+  /**
+   * **Page-level vs. embedded** — when the feed is rendered standalone at `/activity` (no scope), it gets a full
+   * {@link SectionHeader} matching `/graph`, `/about`, `/webcams` (same `History` icon as the footer's `Activity`
+   * `NavCard` — single design language across the app). When scoped to an Area / Sector tab
+   * (`idArea > 0 || idSector > 0`), the parent page already owns the title chrome (breadcrumb + page header), so
+   * the SectionHeader is suppressed and only the filter pills row renders.
+   */
+  const isScoped = idArea > 0 || idSector > 0;
+
+  /**
+   * Sync the current filter state to the URL `?show=` param so it survives page refreshes.
+   * Only applies to the standalone `/activity` page (not scoped/embedded).
+   */
+  const syncFilterUrl = useCallback(() => {
+    if (isScoped) return;
+
+    const activeFilters: string[] = [];
+    if (activityTypeFa) activeFilters.push('fa');
+    if (activityTypeTicks) activeFilters.push('ticks');
+    if (activityTypeMedia) activeFilters.push('media');
+    if (activityTypeComments) activeFilters.push('comments');
+
     const next = new URLSearchParams(searchParams);
-    next.delete(ACTIVITY_SHOW_PARAM);
+
+    if (activeFilters.length === 0 || activeFilters.length === 4) {
+      // All on or all off — remove the param to keep the URL clean (all-on is the default)
+      next.delete(ACTIVITY_SHOW_PARAM);
+    } else {
+      next.set(ACTIVITY_SHOW_PARAM, activeFilters.join(','));
+    }
+
     setSearchParams(next, { replace: true });
-  }, [searchParams, setSearchParams]);
+  }, [
+    isScoped,
+    activityTypeFa,
+    activityTypeTicks,
+    activityTypeMedia,
+    activityTypeComments,
+    searchParams,
+    setSearchParams,
+  ]);
+
+  /** Sync URL whenever filter state changes (skip the initial mount — the preset already handled it). */
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    syncFilterUrl();
+  }, [syncFilterUrl]);
 
   const meta = useMeta();
   const {
@@ -116,15 +162,6 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
   const activityList = activity ?? [];
   const showActivityEmpty = !isPending && !isError && activityList.length === 0;
   const showActivityError = isError && activityList.length === 0;
-
-  /**
-   * **Page-level vs. embedded** — when the feed is rendered standalone at `/activity` (no scope), it gets a full
-   * {@link SectionHeader} matching `/graph`, `/about`, `/webcams` (same `History` icon as the footer's `Activity`
-   * `NavCard` — single design language across the app). When scoped to an Area / Sector tab
-   * (`idArea > 0 || idSector > 0`), the parent page already owns the title chrome (breadcrumb + page header), so
-   * the SectionHeader is suppressed and only the filter pills row renders.
-   */
-  const isScoped = idArea > 0 || idSector > 0;
 
   /**
    * **Chip row alignment** is conditional on whether the SectionHeader is present:
@@ -312,7 +349,7 @@ function ActivityErrorState({ onRetry }: { onRetry: () => void }) {
       className={cn(designContract.typography.meta, 'px-4 py-10 text-center text-pretty md:px-5 md:py-12')}
       role='alert'
     >
-      <p className='light:text-slate-600 text-slate-400'>Couldn’t load activity.</p>
+      <p className='light:text-slate-600 text-slate-400'>Couldn't load activity.</p>
       <button
         type='button'
         onClick={onRetry}
