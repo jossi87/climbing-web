@@ -160,7 +160,7 @@ export const MediaMetadataCard = ({
               value={metadata.photographer?.name}
               onUserUpdated={(u) =>
                 callbacks.onPhotographerChange(
-                  u ? { id: Number(u.value ?? 0), name: u.label ?? u.name ?? '' } : undefined,
+                  u ? { id: typeof u.value === 'number' ? u.value : -1, name: u.label ?? u.name ?? '' } : undefined,
                 )
               }
             />

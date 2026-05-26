@@ -536,7 +536,7 @@ const MediaAdd = () => {
                     setPhotographer(
                       user
                         ? {
-                            id: typeof user.value === 'number' ? user.value : user.id,
+                            id: typeof user.value === 'number' ? user.value : -1,
                             name: user.label ?? user.name ?? '',
                           }
                         : undefined,
