@@ -254,9 +254,7 @@ const ProblemRow = ({
             }}
             className={cn(
               'bg-surface-nav border-surface-border type-body appearance-none rounded-lg border py-1.5 pr-6 pl-2.5 text-sm transition-colors focus:outline-none',
-              problem.problemPitch != null
-                ? 'border-surface-border focus:border-brand-border/60'
-                : 'border-rose-500/50 focus:border-rose-400/70',
+              'border-surface-border focus:border-brand-border/60',
             )}
           >
             <option value={0}>No pitch</option>

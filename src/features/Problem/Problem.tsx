@@ -569,7 +569,7 @@ function ProblemLoaded({
                 </button>
                 {meta.isAuthenticated && (
                   <Link
-                    to={`/media/add?type=problem&id=${data.id}&name=${encodeURIComponent(data.name ?? '')}&sectorId=${data.sectorId}&sectorName=${encodeURIComponent(data.sectorName ?? '')}&areaId=${data.areaId}&areaName=${encodeURIComponent(data.areaName ?? '')}`}
+                    to={`/media/add?type=problem&id=${data.id}&name=${encodeURIComponent(data.name ?? '')}&sectorId=${data.sectorId}&sectorName=${encodeURIComponent(data.sectorName ?? '')}&areaId=${data.areaId}&areaName=${encodeURIComponent(data.areaName ?? '')}&numPitches=${data.sections?.length ?? 0}`}
                     title='Add media'
                     aria-label='Add media'
                     data-ph-action='add-media'

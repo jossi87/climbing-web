@@ -79,6 +79,7 @@ const MediaEdit = () => {
   const addEntityName = searchParams.get('name') ?? '';
   const addAreaName = searchParams.get('areaName') ?? '';
   const addSectorName = searchParams.get('sectorName') ?? '';
+  const addNumPitches = Number(searchParams.get('numPitches') ?? 0);
 
   const isAddMode = !mediaId || mediaId === 'add';
 
@@ -412,6 +413,7 @@ const MediaEdit = () => {
               areaName: addAreaName,
               sectorName: addSectorName,
               milliseconds: 0,
+              problemNumPitches: addNumPitches,
             },
           ];
         }
@@ -419,7 +421,16 @@ const MediaEdit = () => {
       });
       setUploadItems((existing) => [...existing, ...newItems]);
     },
-    [addType, addEntityId, addEntityName, addAreaName, addSectorName, searchParams, meta?.authenticatedName],
+    [
+      addType,
+      addEntityId,
+      addEntityName,
+      addAreaName,
+      addSectorName,
+      addNumPitches,
+      searchParams,
+      meta?.authenticatedName,
+    ],
   );
 
   const handleEmbedAdded = useCallback(
@@ -441,12 +452,22 @@ const MediaEdit = () => {
             areaName: addAreaName,
             sectorName: addSectorName,
             milliseconds: 0,
+            problemNumPitches: addNumPitches,
           },
         ];
       }
       setUploadItems((old) => [...old, item]);
     },
-    [addType, addEntityId, addEntityName, addAreaName, addSectorName, searchParams, meta?.authenticatedName],
+    [
+      addType,
+      addEntityId,
+      addEntityName,
+      addAreaName,
+      addSectorName,
+      addNumPitches,
+      searchParams,
+      meta?.authenticatedName,
+    ],
   );
 
   // ── Helpers to update a single upload item ──────────────────────────
