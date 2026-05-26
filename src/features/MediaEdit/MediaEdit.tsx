@@ -747,6 +747,8 @@ const UploadItemCard = ({
                 metadata={metadata}
                 callbacks={callbacks}
                 connectionType={connectionType}
+                maxSeconds={item.thumbnailDuration}
+                showTimeInput={isVideoItem}
               />
             </div>
           )}
@@ -786,6 +788,8 @@ const UploadItemCard = ({
             metadata={metadata}
             callbacks={callbacks}
             connectionType={connectionType}
+            maxSeconds={item.thumbnailDuration}
+            showTimeInput={true}
           />
         </div>
       )}
