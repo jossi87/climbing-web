@@ -192,14 +192,14 @@ const MediaEdit = () => {
     if (saving) return;
     setSaving(true);
 
-    // Build task list for progress dialog
-    const items = isAddMode ? uploadItems : m ? [null] : [];
-    const tasks: UploadTask[] = items.map((item, i) => {
-      const label =
-        item && item.file ? item.file.name : item && item.embedVideoUrl ? 'Embedded video' : `Media #${i + 1}`;
-      return { label, state: 'pending' as const };
-    });
-    setUploadTasks(tasks);
+    // Build task list for progress dialog (add mode only, when there are actual uploads)
+    if (isAddMode) {
+      const tasks: UploadTask[] = uploadItems.map((item, i) => {
+        const label = item.file ? item.file.name : item.embedVideoUrl ? 'Embedded video' : `Media #${i + 1}`;
+        return { label, state: 'pending' as const };
+      });
+      setUploadTasks(tasks);
+    }
 
     const updateTask = (index: number, patch: Partial<UploadTask>) => {
       setUploadTasks((prev) => {
@@ -320,9 +320,7 @@ const MediaEdit = () => {
             trivia: sectorTrivia[s.sectorId ?? 0] ?? false,
           }));
         }
-        updateTask(0, { state: 'uploading' });
         await putMedia(token, body);
-        updateTask(0, { state: 'done' });
         await Promise.all([
           queryClient.refetchQueries({
             predicate: (q) => {
