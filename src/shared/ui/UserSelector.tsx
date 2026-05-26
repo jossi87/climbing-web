@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState, useCallback } from 'react';
 import CreatableSelect from 'react-select/creatable';
 import type { GroupBase, SelectInstance, StylesConfig } from 'react-select';
 import { useUserSearch } from '../../api';
@@ -25,6 +25,8 @@ type SingleUserProps = {
   onUserUpdated: (user: UserOption | null) => void;
   /** Match MediaUpload caption input look (same border/background/text rhythm). */
   matchInputLeadStyle?: boolean;
+  /** Show placeholder in red when value is empty (required field). */
+  required?: boolean;
 };
 
 /**
@@ -42,6 +44,14 @@ const menuFontMatchField = '0.8125rem';
  * free.
  */
 const darkSelectStyles = themedSelectStyles<UserOption, boolean>();
+
+/**
+ * Hide the dropdown caret but keep the clear indicator (×) so single-user selectors
+ * can still be cleared.
+ */
+const hideDropdownIndicator: NonNullable<
+  StylesConfig<UserOption, boolean, GroupBase<UserOption>>['dropdownIndicator']
+> = (base) => ({ ...base, display: 'none' });
 
 /** Tighter control + border-only focus (avoid stacked ring + placeholder clash when focused). */
 function buildSelectStyles(
@@ -68,10 +78,7 @@ function buildSelectStyles(
         paddingLeft: '0.375rem',
         paddingRight: '0.25rem',
       }),
-      indicatorsContainer: (base) => ({
-        ...base,
-        height: '2.25rem',
-      }),
+      dropdownIndicator: hideDropdownIndicator,
       input: (base, state) => ({
         ...darkSelectStyles.input!(base, state),
         margin: 0,
@@ -86,17 +93,26 @@ function buildSelectStyles(
         ...darkSelectStyles.option!(base, state),
         fontSize: menuFontMatchField,
       }),
-      noOptionsMessage: (base, props) => ({
-        ...darkSelectStyles.noOptionsMessage!(base, props),
-        fontSize: menuFontMatchField,
-      }),
+      noOptionsMessage: () =>
+        null as unknown as ReturnType<
+          NonNullable<StylesConfig<UserOption, boolean, GroupBase<UserOption>>['noOptionsMessage']>
+        >,
       loadingMessage: (base, props) => ({
         ...darkSelectStyles.loadingMessage!(base, props),
         fontSize: menuFontMatchField,
       }),
     };
   }
-  if (!compact) return darkSelectStyles;
+  if (!compact) {
+    return {
+      ...darkSelectStyles,
+      dropdownIndicator: hideDropdownIndicator,
+      noOptionsMessage: () =>
+        null as unknown as ReturnType<
+          NonNullable<StylesConfig<UserOption, boolean, GroupBase<UserOption>>['noOptionsMessage']>
+        >,
+    };
+  }
   return {
     ...darkSelectStyles,
     control: (base, state) => {
@@ -120,10 +136,7 @@ function buildSelectStyles(
       paddingLeft: '0.375rem',
       paddingRight: '0.25rem',
     }),
-    indicatorsContainer: (base) => ({
-      ...base,
-      height: '2.25rem',
-    }),
+    dropdownIndicator: hideDropdownIndicator,
     input: (base, state) => ({
       ...darkSelectStyles.input!(base, state),
       margin: 0,
@@ -151,10 +164,10 @@ function buildSelectStyles(
       ...darkSelectStyles.option!(base, state),
       fontSize: menuFontMatchField,
     }),
-    noOptionsMessage: (base, props) => ({
-      ...darkSelectStyles.noOptionsMessage!(base, props),
-      fontSize: menuFontMatchField,
-    }),
+    noOptionsMessage: () =>
+      null as unknown as ReturnType<
+        NonNullable<StylesConfig<UserOption, boolean, GroupBase<UserOption>>['noOptionsMessage']>
+      >,
     loadingMessage: (base, props) => ({
       ...darkSelectStyles.loadingMessage!(base, props),
       fontSize: menuFontMatchField,
@@ -174,11 +187,13 @@ export const UserSelector = ({
   onUserUpdated,
   compact,
   matchInputLeadStyle = false,
+  required = false,
 }: SingleUserProps & { compact?: boolean }) => {
   const [searchInput, setSearchInput] = useState('');
   const { data: options = [] } = useUserSearch(searchInput);
   const styles = useMemo(() => buildSelectStyles(!!compact, matchInputLeadStyle), [compact, matchInputLeadStyle]);
   const selectRef = useRef<SelectInstance<UserOption, false>>(null);
+  const selectingRef = useRef(false);
 
   const selectedOption =
     photographerName != null && photographerName !== '' ? { label: photographerName, value: photographerName } : null;
@@ -190,6 +205,40 @@ export const UserSelector = ({
     setTimeout(run, 0);
   };
 
+  const handleCreateOption = useCallback(
+    (inputValue: string) => {
+      selectingRef.current = true;
+      const newOption: UserOption = {
+        value: inputValue,
+        label: inputValue,
+      };
+      onUserUpdated(newOption);
+    },
+    [onUserUpdated],
+  );
+
+  const handleBlur = useCallback(() => {
+    // If a selection or creation just happened, don't also create from blur
+    if (selectingRef.current) {
+      selectingRef.current = false;
+      return;
+    }
+    const trimmed = searchInput.trim();
+    if (trimmed.length > 0) {
+      const match = options.find((u) => u.name && trimmed.toLowerCase() === u.name.toLowerCase());
+      if (!match) {
+        const newOption: UserOption = {
+          value: trimmed,
+          label: trimmed,
+        };
+        onUserUpdated(newOption);
+      }
+    }
+  }, [searchInput, options, onUserUpdated]);
+
+  const menuIsOpen = searchInput.trim().length > 0;
+  const isEmpty = !photographerName || photographerName === '';
+
   return (
     <div className='min-w-0 flex-1' style={{ position: 'relative', width: '100%' }}>
       <div style={{ width: '100%' }}>
@@ -200,7 +249,9 @@ export const UserSelector = ({
           styles={styles}
           isClearable
           blurInputOnSelect
+          menuIsOpen={menuIsOpen}
           value={selectedOption}
+          className={required && isEmpty ? 'user-select--required' : ''}
           onInputChange={(newValue) => setSearchInput(newValue)}
           options={options
             .filter((user) => user.id && user.name)
@@ -210,11 +261,21 @@ export const UserSelector = ({
               label: user.name ?? '',
             }))}
           isValidNewOption={(inputValue) => {
-            const userExist = !!options.find((u) => u.name && inputValue.toLowerCase() === u.name.toLowerCase());
+            const trimmed = inputValue.trim();
+            if (trimmed.length === 0) return false;
+            const userExist = !!options.find((u) => u.name && trimmed.toLowerCase() === u.name.toLowerCase());
             return !userExist;
           }}
+          formatCreateLabel={(inputValue) => {
+            const trimmed = inputValue.trim();
+            if (trimmed.length === 0) return null;
+            return <>Create &ldquo;{trimmed}&rdquo;</>;
+          }}
           placeholder={placeholder}
+          onCreateOption={handleCreateOption}
+          onBlur={handleBlur}
           onChange={(newValue) => {
+            selectingRef.current = true;
             blurIfCleared(newValue as UserOption | null);
             onUserUpdated(newValue as UserOption | null);
           }}
@@ -235,6 +296,7 @@ export const UsersSelector = ({
   const { data: options = [] } = useUserSearch(searchInput);
   const styles = useMemo(() => buildSelectStyles(!!compact, matchInputLeadStyle), [compact, matchInputLeadStyle]);
   const selectRef = useRef<SelectInstance<UserOption, true>>(null);
+  const selectingRef = useRef(false);
 
   const blurIfAllCleared = (next: readonly UserOption[] | null) => {
     if (next && next.length > 0) return;
@@ -242,6 +304,29 @@ export const UsersSelector = ({
     queueMicrotask(run);
     setTimeout(run, 0);
   };
+
+  const nextNewId = useRef(0);
+
+  const makeNewOption = useCallback((name: string): UserOption => {
+    nextNewId.current -= 1;
+    return { value: nextNewId.current, label: name };
+  }, []);
+
+  const handleBlur = useCallback(() => {
+    if (selectingRef.current) {
+      selectingRef.current = false;
+      return;
+    }
+    const trimmed = searchInput.trim();
+    if (trimmed.length > 0) {
+      const match = options.find((u) => u.name && trimmed.toLowerCase() === u.name.toLowerCase());
+      if (!match) {
+        onUsersUpdated([...(users ?? []), makeNewOption(trimmed)]);
+      }
+    }
+  }, [searchInput, options, users, onUsersUpdated, makeNewOption]);
+
+  const menuIsOpen = searchInput.trim().length > 0;
 
   return (
     <div className='min-w-0 flex-1' style={{ position: 'relative', width: '100%' }}>
@@ -254,6 +339,7 @@ export const UsersSelector = ({
           isMulti
           isClearable
           blurInputOnSelect
+          menuIsOpen={menuIsOpen}
           onInputChange={(newValue) => setSearchInput(newValue)}
           options={options
             .filter((user) => user.id && user.name)
@@ -263,18 +349,36 @@ export const UsersSelector = ({
               label: user.name ?? '',
             }))}
           isValidNewOption={(inputValue) => {
-            const userExist = !!options.find((u) => u.name && inputValue.toLowerCase() === u.name.toLowerCase());
+            const trimmed = inputValue.trim();
+            if (trimmed.length === 0) return false;
+            const userExist = !!options.find((u) => u.name && trimmed.toLowerCase() === u.name.toLowerCase());
             return !userExist;
           }}
+          formatCreateLabel={(inputValue) => {
+            const trimmed = inputValue.trim();
+            if (trimmed.length === 0) return null;
+            return <>Create &ldquo;{trimmed}&rdquo;</>;
+          }}
           placeholder={placeholder}
+          getOptionValue={(option) => option.label ?? ''}
           value={users?.map((user) => ({
             ...user,
-            value: user.id ?? 0,
+            value: user.value ?? user.id ?? 0,
             label: user.name ?? '',
           }))}
+          onBlur={handleBlur}
           onChange={(newValue) => {
+            selectingRef.current = true;
             blurIfAllCleared(newValue as readonly UserOption[] | null);
-            onUsersUpdated(newValue as UserOption[]);
+            const arr = newValue as UserOption[];
+            // Check if any option is new (has __isNew__) and assign a unique negative id
+            const mapped = arr.map((u) => {
+              if ((u as Record<string, unknown>).__isNew__ === true) {
+                return makeNewOption(u.label ?? '');
+              }
+              return u;
+            });
+            onUsersUpdated(mapped);
           }}
         />
       </div>

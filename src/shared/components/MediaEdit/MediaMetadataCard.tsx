@@ -156,6 +156,7 @@ export const MediaMetadataCard = ({
             <UserSelector
               compact
               matchInputLeadStyle
+              required
               placeholder='Photographer (required)'
               value={metadata.photographer?.name}
               onUserUpdated={(u) =>

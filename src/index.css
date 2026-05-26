@@ -432,6 +432,11 @@ html[data-theme='light']
     background: transparent !important;
   }
 
+  /* Required user-select: red placeholder when empty */
+  .user-select--required .user-select__placeholder {
+    color: #f87171 !important;
+  }
+
   /* Edit Problem fields: keep a single focus border (no extra browser ring/inner shadow). */
   .problem-edit-field:focus,
   .problem-edit-field:focus-visible {

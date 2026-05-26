@@ -207,6 +207,7 @@ const ProblemRow = ({
           />
         </div>
         {showDropdown &&
+          !isReadOnly &&
           searchInput.length > 0 &&
           createPortal(
             <div
