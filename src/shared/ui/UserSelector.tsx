@@ -312,20 +312,6 @@ export const UsersSelector = ({
     return { value: nextNewId.current, label: name };
   }, []);
 
-  const handleBlur = useCallback(() => {
-    if (selectingRef.current) {
-      selectingRef.current = false;
-      return;
-    }
-    const trimmed = searchInput.trim();
-    if (trimmed.length > 0) {
-      const match = options.find((u) => u.name && trimmed.toLowerCase() === u.name.toLowerCase());
-      if (!match) {
-        onUsersUpdated([...(users ?? []), makeNewOption(trimmed)]);
-      }
-    }
-  }, [searchInput, options, users, onUsersUpdated, makeNewOption]);
-
   const menuIsOpen = searchInput.trim().length > 0;
 
   return (
@@ -366,7 +352,6 @@ export const UsersSelector = ({
             value: user.value ?? user.id ?? 0,
             label: user.name ?? '',
           }))}
-          onBlur={handleBlur}
           onChange={(newValue) => {
             selectingRef.current = true;
             blurIfAllCleared(newValue as readonly UserOption[] | null);
