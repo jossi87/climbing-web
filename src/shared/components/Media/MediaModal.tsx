@@ -395,6 +395,20 @@ const MediaModal = ({
     }
   }, [m.embedUrl]);
 
+  /** Pitch derived from the media's connected problems (e.g. problemPitch from the problem matching optProblemId). */
+  const mediaPitch = useMemo(() => {
+    if (optProblemId != null) {
+      const match = (m.problems ?? []).find((p) => p.problemId === optProblemId && (p.problemPitch ?? 0) > 0);
+      if (match) return match.problemPitch!;
+    }
+    // Fallback: any connected problem with a pitch
+    const anyPitch = (m.problems ?? []).find((p) => (p.problemPitch ?? 0) > 0);
+    if (anyPitch) return anyPitch.problemPitch!;
+    return pitch;
+  }, [m.problems, optProblemId, pitch]);
+
+  const activePitch = (!!mediaPitch && (pitches ?? []).find((p) => p.nr === mediaPitch)) || null;
+
   if (isSaving) {
     return (
       <div className='fixed inset-0 z-250 flex h-[100dvh] min-h-[100dvh] w-full max-w-[100vw] items-center justify-center bg-black/90 backdrop-blur-xl'>
@@ -405,8 +419,6 @@ const MediaModal = ({
       </div>
     );
   }
-
-  const activePitch = (!!pitch && (pitches ?? []).find((p) => p.nr === pitch)) || null;
 
   const canEdit = isAdmin;
   const canDelete = isAdmin || m.uploadedByMe;
@@ -905,18 +917,19 @@ const MediaModal = ({
                     });
                   }
                 }
-                const metaDesc = m.description?.trim();
-                if (metaDesc)
-                  chunks.push({ key: 'metaDesc', node: <span className='text-[#e2e8f0]'>{metaDesc}</span> });
-                const pitchDesc = activePitch?.description?.trim();
-                if (pitchDesc)
-                  chunks.push({ key: 'pitchDesc', node: <span className='text-[#e2e8f0]'>{pitchDesc}</span> });
+                if (mediaPitch > 0)
+                  chunks.push({
+                    key: 'pitch',
+                    node: <span className='text-[#cbd5e1] tabular-nums'>Pitch {mediaPitch}</span>,
+                  });
                 if (activePitch?.grade)
                   chunks.push({
                     key: 'grade',
                     node: <span className='text-brand normal-case'>{activePitch.grade}</span>,
                   });
-                // pitch is now per-problem in the problems array, not on the media itself
+                const metaDesc = m.description?.trim();
+                if (metaDesc)
+                  chunks.push({ key: 'metaDesc', node: <span className='text-[#e2e8f0]'>{metaDesc}</span> });
                 if (carouselSize > 1)
                   chunks.push({
                     key: 'idx',
