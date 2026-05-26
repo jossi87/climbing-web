@@ -1,6 +1,6 @@
 import { useState, type FC } from 'react';
 import { useMeta } from '../Meta/context';
-import { useProfile, postMedia } from '../../../api';
+import { useProfile, postMediaImage } from '../../../api';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { useAuth0 } from '@auth0/auth0-react';
 import { type DropzoneOptions, useDropzone } from 'react-dropzone';
@@ -170,7 +170,7 @@ const ProfileSettings = () => {
                   });
                   if (avatar?.file) {
                     const token = await getAccessTokenSilently();
-                    await postMedia(
+                    await postMediaImage(
                       token,
                       {
                         userAvatarId: userId,

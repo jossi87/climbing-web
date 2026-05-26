@@ -4,18 +4,23 @@ import { Upload, Loader2, AlertCircle, X } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import VideoEmbedder from './VideoEmbedder';
 
-const MAX_FILE_SIZE_MB = 600;
-const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+const MAX_IMAGE_SIZE_MB = 100;
+const MAX_VIDEO_SIZE_MB = 800;
+const MAX_VIDEO_SIZE_BYTES = MAX_VIDEO_SIZE_MB * 1024 * 1024;
 
 const formatFileSizeMb = (bytes: number) => {
   const mb = bytes / (1024 * 1024);
   return mb >= 10 ? `${mb.toFixed(0)} MB` : `${mb.toFixed(1)} MB`;
 };
 
+const maxSizeLabelForFile = (file: File): string => {
+  return file.type.startsWith('video/') ? `${MAX_VIDEO_SIZE_MB} MB` : `${MAX_IMAGE_SIZE_MB} MB`;
+};
+
 const describeRejection = (rejection: FileRejection): string => {
   const tooLarge = rejection.errors.find((e) => e.code === ErrorCode.FileTooLarge);
   if (tooLarge) {
-    return `Too large (${formatFileSizeMb(rejection.file.size)}, limit ${MAX_FILE_SIZE_MB} MB)`;
+    return `Too large (${formatFileSizeMb(rejection.file.size)}, limit ${maxSizeLabelForFile(rejection.file)})`;
   }
   if (rejection.errors.some((e) => e.code === ErrorCode.FileInvalidType)) {
     return 'Unsupported file type';
@@ -86,7 +91,7 @@ export const MediaDropzoneEmbed = ({ onFilesAdded, onEmbedAdded, children }: Pro
       'video/webm': [],
       'video/quicktime': [],
     },
-    maxSize: MAX_FILE_SIZE_BYTES,
+    maxSize: MAX_VIDEO_SIZE_BYTES,
     noClick: isConverting,
     noKeyboard: isConverting,
   });
@@ -122,7 +127,7 @@ export const MediaDropzoneEmbed = ({ onFilesAdded, onEmbedAdded, children }: Pro
                   {isDragActive ? 'Drop here' : 'Tap or drop to upload'}
                 </p>
                 <p className='text-[10px] leading-tight text-slate-500'>
-                  JPG, PNG, HEIC, MP4… · up to {MAX_FILE_SIZE_MB} MB
+                  JPG, PNG, HEIC, MP4… · up to {MAX_VIDEO_SIZE_MB} MB
                 </p>
               </div>
             </>

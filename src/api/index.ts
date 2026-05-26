@@ -11,7 +11,10 @@ export {
   postSector,
   postTicks,
   postUserRegion,
-  postMedia,
+  postMediaImage,
+  postMediaVideoInitiate,
+  postMediaVideoComplete,
+  uploadToPresignedUrl,
   putMedia,
   putMediaJpegRotate,
 } from './operations';

@@ -17,6 +17,8 @@ type UploadMedia = {
 import { uploadFilenameForApi } from '../utils/uploadFilenameForApi';
 import { downloadFileWithProgress, getUrl, makeAuthenticatedRequest } from './utils';
 
+export type { UploadMedia };
+
 /** Media writes change problem/area/sector payloads; opt into global invalidation (default mutation event is `nop`). */
 const invalidateQueriesAfter = { consistencyAction: 'invalidate' as const };
 
@@ -347,17 +349,19 @@ export function postUserRegion(
   }).then((response) => ensureOkResponse(response, url));
 }
 
-export function postMedia(
+/**
+ * Upload an image to POST /media/image (multipart form-data).
+ * Max file size: 100 MB (enforced by backend).
+ */
+export function postMediaImage(
   accessToken: string | null,
   media: components['schemas']['Media'],
-  file?: File | null,
+  file: File,
 ): Promise<components['schemas']['Media']> {
-  const url = `/media`;
+  const url = `/media/image`;
   const formData = new FormData();
   formData.append('json', JSON.stringify(media));
-  if (file) {
-    formData.append('file', file);
-  }
+  formData.append('file', file);
   return makeAuthenticatedRequest(accessToken, url, {
     method: 'POST',
     body: formData,
@@ -366,6 +370,79 @@ export function postMedia(
     },
     ...invalidateQueriesAfter,
   }).then((response) => ensureOkJson(response, url, {} as components['schemas']['Media']));
+}
+
+/**
+ * Initiate a video upload — returns a presigned S3 URL and a media id.
+ * Max file size: 800 MB (enforced by backend).
+ */
+export function postMediaVideoInitiate(
+  accessToken: string | null,
+  media: components['schemas']['Media'],
+  fileSize: number,
+  contentType: string,
+): Promise<components['schemas']['VideoInitResponse']> {
+  const url = `/media/video/initiate`;
+  const body: components['schemas']['VideoInitPayload'] = {
+    media,
+    fileSize,
+    contentType,
+  };
+  return makeAuthenticatedRequest(accessToken, url, {
+    method: 'POST',
+    body: JSON.stringify(body),
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+  }).then((response) => ensureOkJson(response, url, {} as components['schemas']['VideoInitResponse']));
+}
+
+/**
+ * Signal that a direct video upload to the presigned URL is complete.
+ * Triggers async background processing on the server.
+ */
+export function postMediaVideoComplete(accessToken: string | null, id: number): Promise<Response> {
+  const url = `/media/video/${id}/complete`;
+  return makeAuthenticatedRequest(accessToken, url, {
+    method: 'POST',
+    ...invalidateQueriesAfter,
+  }).then((response) => ensureOkResponse(response, url));
+}
+
+/**
+ * Upload a file to a presigned S3 URL with the required x-amz-acl: public-read header.
+ */
+export async function uploadToPresignedUrl(
+  presignedUrl: string,
+  file: File,
+  onProgress?: (percent: number) => void,
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('PUT', presignedUrl, true);
+    xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
+    xhr.setRequestHeader('x-amz-acl', 'public-read');
+
+    if (onProgress && xhr.upload) {
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable && event.total > 0) {
+          onProgress(Math.round((event.loaded / event.total) * 100));
+        }
+      };
+    }
+
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve();
+      } else {
+        reject(new Error(`Upload failed with status ${xhr.status}: ${xhr.statusText}`));
+      }
+    };
+
+    xhr.onerror = () => reject(new Error('Network error during upload to storage'));
+    xhr.send(file);
+  });
 }
 
 export function putMedia(accessToken: string | null, media: components['schemas']['Media']): Promise<Response> {

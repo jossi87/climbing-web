@@ -1,7 +1,15 @@
 import { useState, useEffect, useCallback, type MouseEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { invalidateProblemQueries, postComment, postMedia, useAccessToken } from '../../../api';
+import {
+  invalidateProblemQueries,
+  postComment,
+  postMediaImage,
+  postMediaVideoInitiate,
+  postMediaVideoComplete,
+  uploadToPresignedUrl,
+  useAccessToken,
+} from '../../../api';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { X, Check, AlertTriangle, ShieldCheck, ShieldAlert, MessageSquare } from 'lucide-react';
 import { cn } from '../../../lib/utils';
@@ -82,7 +90,29 @@ const CommentModal = ({
           embedUrl: item.embedVideoUrl,
           guestbookId: idGuestbook,
         };
-        await postMedia(accessToken, body, item.file);
+        if (item.file) {
+          const isVideo = item.file.type.startsWith('video/');
+          if (isVideo) {
+            // Video: initiate → upload to presigned URL → complete
+            const { id, presignedUrl } = await postMediaVideoInitiate(
+              accessToken,
+              body,
+              item.file.size,
+              item.file.type,
+            );
+            if (!presignedUrl) {
+              throw new Error('No presigned URL returned from server');
+            }
+            await uploadToPresignedUrl(presignedUrl, item.file);
+            await postMediaVideoComplete(accessToken, id!);
+          } else {
+            // Image: direct multipart upload
+            await postMediaImage(accessToken, body, item.file);
+          }
+        } else {
+          // Embed-only (no file)
+          await postMediaImage(accessToken, body, new File([], 'embed'));
+        }
       }
 
       void invalidateProblemQueries(queryClient, idProblem);

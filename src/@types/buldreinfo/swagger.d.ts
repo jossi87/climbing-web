@@ -15,8 +15,7 @@ export type paths = {
         get: operations["getMedia"];
         /** Update media */
         put: operations["putMedia"];
-        /** Add single media item */
-        post: operations["postMedia"];
+        post?: never;
         /** Move media to trash */
         delete: operations["deleteMedia"];
         options?: never;
@@ -693,6 +692,23 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/v2/media/image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add single image media item */
+        post: operations["postMediaImage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/media/svg": {
         parameters: {
             query?: never;
@@ -704,6 +720,40 @@ export type paths = {
         put?: never;
         /** Update Media SVG */
         post: operations["postMediaSvg"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/media/video/{id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Signal direct video upload completion and trigger async background processing */
+        post: operations["postMediaVideoComplete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/media/video/initiate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Initiate video upload to get a presigned storage URL */
+        post: operations["postMediaVideoInitiate"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2006,8 +2056,8 @@ export type components = {
             parameters?: {
                 [key: string]: string;
             };
-            wildcardSubtype?: boolean;
             wildcardType?: boolean;
+            wildcardSubtype?: boolean;
         };
         MessageBodyWorkers: Record<string, never>;
         MultiPart: {
@@ -2046,6 +2096,17 @@ export type components = {
             };
         };
         Providers: Record<string, never>;
+        VideoInitResponse: {
+            /** Format: int32 */
+            id?: number;
+            presignedUrl?: string;
+        };
+        VideoInitPayload: {
+            media?: components["schemas"]["Media"];
+            /** Format: int64 */
+            fileSize?: number;
+            contentType?: string;
+        };
         Search: {
             title?: string;
             subTitle?: string;
@@ -2140,57 +2201,6 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    postMedia: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "multipart/form-data": components["schemas"]["FormDataMultiPart"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Media"];
-                };
-            };
             /** @description Invalid request parameters. */
             400: {
                 headers: {
@@ -3980,6 +3990,57 @@ export interface operations {
             };
         };
     };
+    postMediaImage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": components["schemas"]["FormDataMultiPart"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Media"];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     postMediaSvg: {
         parameters: {
             query?: never;
@@ -3993,6 +4054,98 @@ export interface operations {
             };
         };
         responses: {
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    postMediaVideoComplete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    postMediaVideoInitiate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["VideoInitPayload"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VideoInitResponse"];
+                };
+            };
             /** @description Invalid request parameters. */
             400: {
                 headers: {

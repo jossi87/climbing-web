@@ -4,7 +4,14 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Save, Loader2, Image, X } from 'lucide-react';
 import type { components } from '../../@types/buldreinfo/swagger';
-import { useMediaSvg, putMedia, postMedia } from '../../api';
+import {
+  useMediaSvg,
+  putMedia,
+  postMediaImage,
+  postMediaVideoInitiate,
+  postMediaVideoComplete,
+  uploadToPresignedUrl,
+} from '../../api';
 import { getMediaFileUrl, mediaIdentityId, mediaIdentityVersionStamp } from '../../api/utils';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { Card } from '../../shared/ui';
@@ -209,7 +216,26 @@ const MediaEdit = () => {
           } else if (connectionType === 'sector') {
             body.sectors = [{ sectorId: addEntityId, sectorName: addEntityName, trivia: item.sectorTrivia }];
           }
-          await postMedia(token, body, item.file);
+          if (item.file) {
+            const isVideo = item.file.type.startsWith('video/');
+            if (isVideo) {
+              // Include thumbnailSeconds for video uploads
+              body.thumbnailSeconds = Math.floor(item.thumbnailSeconds);
+              // Video: initiate → upload to presigned URL → complete
+              const { id, presignedUrl } = await postMediaVideoInitiate(token, body, item.file.size, item.file.type);
+              if (!presignedUrl) {
+                throw new Error('No presigned URL returned from server');
+              }
+              await uploadToPresignedUrl(presignedUrl, item.file);
+              await postMediaVideoComplete(token, id!);
+            } else {
+              // Image: direct multipart upload
+              await postMediaImage(token, body, item.file);
+            }
+          } else {
+            // Embed-only (no file) — use postMediaImage with just the JSON
+            await postMediaImage(token, body, new File([], 'embed'));
+          }
         }
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ['/media'] }),
