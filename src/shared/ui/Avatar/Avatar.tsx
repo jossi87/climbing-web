@@ -139,13 +139,14 @@ export function ClickableAvatar(props: AvatarProps) {
 
   useEffect(() => {
     if (!open) return;
+    const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') closeModal();
     };
     window.addEventListener('keydown', handleEsc);
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = prev;
       window.removeEventListener('keydown', handleEsc);
     };
   }, [open, closeModal]);
