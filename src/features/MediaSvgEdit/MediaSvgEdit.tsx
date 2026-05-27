@@ -1,5 +1,11 @@
 import { useState, useEffect, useRef, type MouseEvent, type JSX } from 'react';
-import { getMediaFileUrl, invalidateAllProblemQueries, invalidateMediaQueries, useMediaSvg } from '../../api';
+import {
+  getMediaFileUrl,
+  invalidateAllProblemQueries,
+  invalidateMediaQueries,
+  invalidateSectorQueries,
+  useMediaSvg,
+} from '../../api';
 import { Rappel } from '../../utils/svg-utils';
 import {
   parseReadOnlySvgs,
@@ -77,6 +83,26 @@ const MediaSvgEdit = () => {
     void newSave(data).then(async () => {
       await invalidateMediaQueries(queryClient, mediaIdNum);
       await invalidateAllProblemQueries(queryClient);
+      // Invalidate sector queries for sectors this media belongs to
+      if (data!.sectors) {
+        await Promise.all(data!.sectors.map((s) => invalidateSectorQueries(queryClient, s.sectorId!)));
+      }
+      // Invalidate area queries for areas this media belongs to
+      if (data!.areas) {
+        await Promise.all(
+          data!.areas.map((a) =>
+            queryClient.invalidateQueries({
+              predicate: (q) => {
+                const key = q.queryKey;
+                if (!Array.isArray(key) || key[0] !== '/areas') return false;
+                const meta = key[1];
+                if (meta == null || typeof meta !== 'object') return false;
+                return 'id' in meta && (meta as { id: number }).id === a.areaId;
+              },
+            }),
+          ),
+        );
+      }
       navigate(-1);
     });
   }
