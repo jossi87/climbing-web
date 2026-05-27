@@ -589,8 +589,8 @@ const MediaEdit = () => {
                       connectionType={connectionType}
                     />
 
-                    {/* Thumbnail picker for videos (always visible, below People in shot) */}
-                    {isVideo && (
+                    {/* Thumbnail picker for videos (hidden for embedded videos) */}
+                    {isVideo && !hasEmbed && (
                       <div className='mt-3 space-y-1.5'>
                         <div className='flex items-center gap-2'>
                           <Image size={14} className='text-slate-500' />
@@ -780,8 +780,8 @@ const UploadItemCard = ({
             connectionType={connectionType}
           />
 
-          {/* Thumbnail picker for videos (always visible, below People in shot) */}
-          {isVideoItem && (
+          {/* Thumbnail picker for videos (hidden for embedded videos) */}
+          {isVideoItem && !item.embedVideoUrl && (
             <div className='mt-3 space-y-1.5'>
               <div className='flex items-center gap-2'>
                 <Image size={14} className='text-slate-500' />
