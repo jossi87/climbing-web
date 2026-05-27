@@ -303,6 +303,11 @@ const Media = ({
           ) : (
             <div className='absolute inset-0 animate-pulse' style={mediaPlaceholderStyle(x.identity)} />
           )}{' '}
+          {x.is360 && (
+            <div className='pointer-events-none absolute top-1.5 left-1.5 z-10 rounded-md bg-black/60 px-1.5 py-0.5 text-[10px] leading-tight font-bold text-slate-100 shadow-sm sm:top-2 sm:left-2 sm:px-2 sm:py-0.5 sm:text-[11px]'>
+              360°
+            </div>
+          )}
         </div>{' '}
       </div>
     );

@@ -127,7 +127,7 @@ export const MediaDropzoneEmbed = ({ onFilesAdded, onEmbedAdded, children }: Pro
                   {isDragActive ? 'Drop here' : 'Tap or drop to upload'}
                 </p>
                 <p className='text-[10px] leading-tight text-slate-500'>
-                  JPG, PNG, HEIC, MP4… · up to {MAX_VIDEO_SIZE_MB} MB
+                  JPG (360° supported), PNG, HEIC, MP4… · up to {MAX_VIDEO_SIZE_MB} MB
                 </p>
               </div>
             </>

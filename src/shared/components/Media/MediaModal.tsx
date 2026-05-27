@@ -43,6 +43,7 @@ import SvgViewer from '../SvgViewer';
 import VideoPlayer from './VideoPlayer';
 import { VideoPlayOverlayDisc } from './VideoThumbnailPlayOverlay';
 import { ZoomableImage } from './ZoomableImage';
+import { PannellumViewer } from './PannellumViewer';
 import { Descent, Rappel } from '../../../utils/svg-utils';
 import { useMeta } from '../Meta';
 import type { components } from '../../../@types/buldreinfo/swagger';
@@ -424,12 +425,13 @@ const MediaModal = ({
     );
   }
 
+  const is360 = !!m.is360;
   const canEdit = isAdmin;
   const canDelete = isAdmin || m.uploadedByMe;
   const canRotate =
-    (isAdmin || m.uploadedByMe) && isImage && (m.svgs ?? []).length === 0 && (m.mediaSvgs ?? []).length === 0;
-  const canDrawTopo = isAdmin && isImage && !!optProblemId;
-  const canDrawMedia = isAdmin && isImage && !isBouldering;
+    !is360 && (isAdmin || m.uploadedByMe) && isImage && (m.svgs ?? []).length === 0 && (m.mediaSvgs ?? []).length === 0;
+  const canDrawTopo = !is360 && isAdmin && isImage && !!optProblemId;
+  const canDrawMedia = !is360 && isAdmin && isImage && !isBouldering;
   const canOrder =
     isAdmin &&
     isImage &&
@@ -770,6 +772,8 @@ const MediaModal = ({
                     className='h-full w-full object-contain'
                   />
                 </div>
+              ) : is360 ? (
+                <PannellumViewer m={m} />
               ) : (
                 <img
                   data-modal-media-root

@@ -935,6 +935,7 @@ export type components = {
         ActivityMedia: {
             identity?: components["schemas"]["MediaIdentity"];
             movie?: boolean;
+            is360?: boolean;
             embedUrl?: string;
         };
         ActivityThumbnail: {
@@ -1074,6 +1075,7 @@ export type components = {
             /** Format: int32 */
             height?: number;
             isMovie?: boolean;
+            is360?: boolean;
             dateCreated?: string;
             dateTaken?: string;
             photographer?: components["schemas"]["User"];
@@ -1307,6 +1309,7 @@ export type components = {
         FrontpageNewestMedia: {
             identity?: components["schemas"]["MediaIdentity"];
             isMovie?: boolean;
+            is360?: boolean;
             /** Format: int32 */
             problemId?: number;
             problemLockedAdmin?: boolean;
