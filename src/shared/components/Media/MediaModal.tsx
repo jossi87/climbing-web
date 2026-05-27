@@ -300,17 +300,17 @@ const MediaModal = ({
 
   const handlers = useSwipeable({
     onSwiping: (e) => {
-      if (carouselSize <= 1 || !isMobile || visualViewportScale > 1.05) return;
+      if (carouselSize <= 1 || !isMobile || visualViewportScale > 1.05 || is360) return;
       setIsSwiping(true);
       wasSwiping.current = true;
       setOffsetX(e.deltaX);
     },
     onSwipedLeft: () => {
-      if (carouselSize > 1 && isMobile && isSwiping) gotoNext();
+      if (carouselSize > 1 && isMobile && isSwiping && !is360) gotoNext();
       resetSwipe();
     },
     onSwipedRight: () => {
-      if (carouselSize > 1 && isMobile && isSwiping) gotoPrev();
+      if (carouselSize > 1 && isMobile && isSwiping && !is360) gotoPrev();
       resetSwipe();
     },
     onTouchEndOrOnMouseUp: () => resetSwipe(),
