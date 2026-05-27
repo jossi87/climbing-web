@@ -51,15 +51,22 @@ function ActivityMediaThumb({ m, problemId }: { m: ActivityMedia; problemId?: nu
           </>
         )
       ) : (
-        <div
-          role='img'
-          aria-label='Activity media'
-          className='animate-in fade-in fill-mode-both absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-500 ease-out group-hover/thumb:scale-110'
-          style={{
-            backgroundImage: `url(${JSON.stringify(thumbUrl)})`,
-            ...mediaBackgroundPositionStyle(m.identity),
-          }}
-        />
+        <>
+          <div
+            role='img'
+            aria-label='Activity media'
+            className='animate-in fade-in fill-mode-both absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-500 ease-out group-hover/thumb:scale-110'
+            style={{
+              backgroundImage: `url(${JSON.stringify(thumbUrl)})`,
+              ...mediaBackgroundPositionStyle(m.identity),
+            }}
+          />
+          {m.is360 && (
+            <div className='pointer-events-none absolute top-0.5 left-0.5 z-10 rounded-sm bg-black/60 px-1 py-[1px] text-[8px] leading-tight font-bold text-slate-100 shadow-sm sm:top-1 sm:left-1 sm:rounded-md sm:px-1.5 sm:py-0.5 sm:text-[9px]'>
+              360°
+            </div>
+          )}
+        </>
       )}
     </Link>
   );

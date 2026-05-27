@@ -612,6 +612,11 @@ function NewestMediaPanel({ items }: { items: NewestMedia[] }) {
               >
                 <MediaThumbFill m={m} />
                 {isMovie ? <VideoThumbnailPlayOverlay size='compact' /> : null}
+                {m.is360 && (
+                  <div className='pointer-events-none absolute top-1 left-1 z-10 rounded-md bg-black/60 px-1 py-0.5 text-[9px] leading-tight font-bold text-slate-100 shadow-sm sm:top-1.5 sm:left-1.5 sm:px-1.5 sm:text-[10px]'>
+                    360°
+                  </div>
+                )}
                 {/*
                   Lighter gradient (`h-1/2` / `from-black/70`) — with only a single line of text we don't need the
                   taller two-thirds scrim that the area+sector layout used to require. Keeps more of the photo visible.
