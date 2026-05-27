@@ -29,7 +29,7 @@ interface PannellumConfig {
   [key: string]: unknown;
 }
 
-interface PannellumViewer {
+interface PannellumViewerInstance {
   destroy: () => void;
   getPitch: () => number;
   getYaw: () => number;
@@ -47,10 +47,10 @@ interface PannellumViewer {
   resumeMovement: () => void;
 }
 
-interface PannellumStatic {
-  viewer: (container: HTMLElement | string, config: PannellumConfig) => PannellumViewer;
+interface PannellumNamespace {
+  viewer: (container: HTMLElement | string, config: PannellumConfig) => PannellumViewerInstance;
 }
 
 interface Window {
-  libpannellum: PannellumStatic;
+  pannellum: PannellumNamespace;
 }

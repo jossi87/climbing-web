@@ -10,7 +10,7 @@ type Props = {
 
 export const PannellumViewer = ({ m }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const viewerRef = useRef<ReturnType<PannellumStatic['viewer']> | null>(null);
+  const viewerRef = useRef<PannellumViewerInstance | null>(null);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -20,7 +20,7 @@ export const PannellumViewer = ({ m }: Props) => {
     const stamp = mediaIdentityVersionStamp(m.identity);
     const imageUrl = getMediaFileUrl(mid, stamp, false, { original: true });
 
-    viewerRef.current = window.libpannellum.viewer(container, {
+    viewerRef.current = window.pannellum.viewer(container, {
       type: 'equirectangular',
       panorama: imageUrl,
       autoLoad: true,
