@@ -98,7 +98,7 @@ const sectionHeaderRowClass = 'flex h-10 items-center justify-between gap-3 px-4
 const sectionTitleClass =
   'inline-flex items-center gap-2 text-[12px] font-semibold tracking-[0.14em] text-slate-300 uppercase sm:text-[13px]';
 const seeAllLinkClass =
-  'inline-flex shrink-0 items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-semibold tracking-wide text-slate-400 uppercase transition-colors hover:bg-white/[0.06] hover:text-slate-100 focus-visible:ring-brand-border/70 focus-visible:ring-2 focus-visible:outline-none sm:text-[12px]';
+  'inline-flex shrink-0 items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-semibold tracking-wide text-slate-400 uppercase transition-colors hover:bg-white/[0.06] hover:text-brand focus-visible:ring-brand-border/70 focus-visible:ring-2 focus-visible:outline-none sm:text-[12px]';
 const dividerClass = 'border-surface-border/40 border-t';
 const emptyRowClass = 'px-4 py-6 text-center text-[12px] text-slate-500 sm:px-5 sm:text-[13px]';
 
@@ -613,7 +613,7 @@ function NewestMediaPanel({ items }: { items: NewestMedia[] }) {
                 <MediaThumbFill m={m} />
                 {isMovie ? <VideoThumbnailPlayOverlay size='compact' /> : null}
                 {m.is360 && (
-                  <div className='pointer-events-none absolute top-1 left-1 z-10 rounded-md bg-black/60 px-1 py-0.5 text-[9px] leading-tight font-bold text-slate-100 shadow-sm sm:top-1.5 sm:left-1.5 sm:px-1.5 sm:text-[10px]'>
+                  <div className='pointer-events-none absolute top-1 left-1 z-10 rounded-md bg-black/60 px-1 py-0.5 text-[9px] leading-tight font-bold text-[#fff] shadow-sm sm:top-1.5 sm:left-1.5 sm:px-1.5 sm:text-[10px]'>
                     360°
                   </div>
                 )}

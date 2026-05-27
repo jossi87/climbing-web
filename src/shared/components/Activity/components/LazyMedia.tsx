@@ -62,7 +62,7 @@ function ActivityMediaThumb({ m, problemId }: { m: ActivityMedia; problemId?: nu
             }}
           />
           {m.is360 && (
-            <div className='pointer-events-none absolute top-0.5 left-0.5 z-10 rounded-sm bg-black/60 px-1 py-[1px] text-[8px] leading-tight font-bold text-slate-100 shadow-sm sm:top-1 sm:left-1 sm:rounded-md sm:px-1.5 sm:py-0.5 sm:text-[9px]'>
+            <div className='pointer-events-none absolute top-0.5 left-0.5 z-10 rounded-sm bg-black/60 px-1 py-[1px] text-[8px] leading-tight font-bold text-[#fff] shadow-sm sm:top-1 sm:left-1 sm:rounded-md sm:px-1.5 sm:py-0.5 sm:text-[9px]'>
               360°
             </div>
           )}
