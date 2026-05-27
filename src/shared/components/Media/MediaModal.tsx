@@ -23,8 +23,10 @@ import {
   MapPin,
   Calendar,
   User as UserIcon,
+  Users as UsersIcon,
   Maximize2,
   ZoomIn,
+  Link as LinkIcon,
 } from 'lucide-react';
 
 import { useLocalStorage } from '../../../utils/use-local-storage';
@@ -875,6 +877,11 @@ const MediaModal = ({
            * this whole subtree (including the pill). Otherwise a full-width pointer-events-auto row or default
            * hit targets on children steal clicks from the native video controls.
            * For videos, move it up and make it more transparent so it doesn't hide native controls.
+           *
+           * Simplified logic:
+           * - showLocation=true: show ProblemName · Grade (AreaName) or fallback SectorName (AreaName)
+           * - showLocation=false: show Pitch N · Pitch description · Grade
+           * - Always: media description + carousel index
            */}
           <div
             className={cn(
@@ -885,71 +892,92 @@ const MediaModal = ({
             <div className='pointer-events-none w-full max-w-full min-w-0 text-end'>
               {(() => {
                 const chunks: { key: string; node: ReactNode }[] = [];
+
                 if (showLocation) {
-                  const locationParts: string[] = [];
-                  if (m.areas?.length) {
-                    locationParts.push(...m.areas.map((a) => a.areaName ?? '').filter(Boolean));
-                  }
-                  if (m.sectors?.length) {
-                    locationParts.push(...m.sectors.map((s) => s.sectorName ?? '').filter(Boolean));
-                  }
-                  if (m.problems?.length) {
-                    locationParts.push(...m.problems.map((p) => p.problemName ?? '').filter(Boolean));
-                  }
-                  const locationStr = locationParts.join(' · ');
-                  if (locationStr) {
+                  // Prioritize: ProblemName · Grade (AreaName)
+                  // Fallback: SectorName (AreaName)
+                  const firstProblem = m.problems?.[0];
+                  const firstSector = m.sectors?.[0];
+                  const firstArea = m.areas?.[0];
+                  const areaName = firstArea?.areaName ?? firstSector?.areaName ?? '';
+                  const problemName = firstProblem?.problemName?.trim();
+                  const sectorName = firstSector?.sectorName?.trim();
+                  const grade = firstProblem?.problemGrade?.trim();
+                  const gradeDisplay = grade && grade !== '.' ? grade : null;
+
+                  if (problemName) {
+                    let text = problemName;
+                    if (gradeDisplay) text += ` · ${gradeDisplay}`;
+                    if (areaName) text += ` (${areaName})`;
                     chunks.push({
                       key: 'loc',
                       node: (
                         <span className='inline-flex items-center gap-1'>
                           <MapPin size={11} className='text-brand shrink-0' aria-hidden />
-                          {locationStr}
+                          {text}
+                        </span>
+                      ),
+                    });
+                  } else if (sectorName) {
+                    let text = sectorName;
+                    if (areaName) text += ` (${areaName})`;
+                    chunks.push({
+                      key: 'loc',
+                      node: (
+                        <span className='inline-flex items-center gap-1'>
+                          <MapPin size={11} className='text-brand shrink-0' aria-hidden />
+                          {text}
                         </span>
                       ),
                     });
                   }
-                  // Show grade from the first problem that has one
-                  const grade = m.problems?.find((p) => p.problemGrade?.trim())?.problemGrade?.trim();
-                  if (grade) {
+                } else {
+                  // Show pitch info when showLocation=false
+                  // Order: Pitch N · Pitch description · Grade
+                  if (mediaPitch > 0)
+                    chunks.push({
+                      key: 'pitch',
+                      node: <span className='text-[#94a3b8] tabular-nums'>Pitch {mediaPitch}</span>,
+                    });
+                  if (activePitch?.description?.trim())
+                    chunks.push({
+                      key: 'pitchDesc',
+                      node: <span className='text-[#cbd5e1]'>{activePitch.description.trim()}</span>,
+                    });
+                  if (activePitch?.grade)
                     chunks.push({
                       key: 'grade',
-                      node: <span className='text-brand normal-case'>{grade}</span>,
+                      node: <span className='text-brand normal-case'>{activePitch.grade}</span>,
                     });
-                  }
                 }
-                if (mediaPitch > 0)
-                  chunks.push({
-                    key: 'pitch',
-                    node: <span className='text-[#cbd5e1] tabular-nums'>Pitch {mediaPitch}</span>,
-                  });
-                if (activePitch?.grade)
-                  chunks.push({
-                    key: 'grade',
-                    node: <span className='text-brand normal-case'>{activePitch.grade}</span>,
-                  });
+
+                // Always show media description if present
                 const metaDesc = m.description?.trim();
                 if (metaDesc)
-                  chunks.push({ key: 'metaDesc', node: <span className='text-[#e2e8f0]'>{metaDesc}</span> });
+                  chunks.push({ key: 'metaDesc', node: <span className='text-[#cbd5e1] italic'>{metaDesc}</span> });
+
+                // Always show carousel index if multiple items
                 if (carouselSize > 1)
                   chunks.push({
                     key: 'idx',
                     node: (
-                      <span className='text-[#cbd5e1] tabular-nums'>
+                      <span className='text-[#94a3b8] tabular-nums'>
                         {carouselIndex} / {carouselSize}
                       </span>
                     ),
                   });
+
                 if (chunks.length === 0) return null;
                 return (
                   <div
                     className={cn(
-                      'ring-surface-border/40 pointer-events-none inline-block max-w-full rounded-2xl px-3 py-1.5 text-right text-[12px] leading-snug font-semibold tracking-normal text-pretty break-words text-[#f1f5f9] normal-case shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1 sm:px-3.5 sm:py-2 sm:text-[13px]',
+                      'ring-surface-border/40 pointer-events-none inline-block max-w-full rounded-2xl px-3 py-1.5 text-right text-[12px] leading-snug font-medium tracking-normal text-pretty break-words text-[#e2e8f0] normal-case shadow-[0_4px_24px_rgba(0,0,0,0.45)] ring-1 sm:px-3.5 sm:py-2 sm:text-[13px]',
                       isVideo ? 'bg-slate-900/40' : 'bg-slate-900',
                     )}
                   >
                     {chunks.map(({ key, node }, i) => (
                       <Fragment key={key}>
-                        {i > 0 ? <span className='text-[#64748b]'> · </span> : null}
+                        {i > 0 ? <span className='text-[#475569]'> · </span> : null}
                         {node}
                       </Fragment>
                     ))}
@@ -967,7 +995,7 @@ const MediaModal = ({
           onClick={() => setShowInfo(false)}
         >
           <div
-            className='bg-surface-card border-surface-border w-full max-w-2xl space-y-8 rounded-3xl border p-8 shadow-2xl'
+            className='bg-surface-card border-surface-border custom-scrollbar max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl border p-8 shadow-2xl'
             onClick={(e) => e.stopPropagation()}
           >
             <div className='border-surface-border flex items-center justify-between border-b pb-6'>
@@ -991,58 +1019,95 @@ const MediaModal = ({
               <div className='space-y-6'>
                 <div>
                   <p className='type-label mb-2 flex items-center gap-2'>
-                    <MapPin size={12} /> Location
+                    <UserIcon size={12} /> Photographer
                   </p>
-                  <p className='type-body font-semibold'>
-                    {(() => {
-                      const parts: string[] = [];
-                      if (m.areas?.length) parts.push(...m.areas.map((a) => a.areaName ?? '').filter(Boolean));
-                      if (m.sectors?.length) parts.push(...m.sectors.map((s) => s.sectorName ?? '').filter(Boolean));
-                      if (m.problems?.length) parts.push(...m.problems.map((p) => p.problemName ?? '').filter(Boolean));
-                      return parts.length ? parts.join(' · ') : 'Unknown';
-                    })()}
-                  </p>
+                  <p className='type-body text-xs font-semibold'>{m.photographer?.name || 'Unknown'}</p>
                 </div>
-                <div>
-                  <p className='type-label mb-2 flex items-center gap-2'>
-                    <Calendar size={12} /> Dates
-                  </p>
-                  <div className='type-body space-y-1 font-semibold'>
-                    {m.dateCreated && <p className='text-xs'>Uploaded: {m.dateCreated}</p>}
-                    {m.dateTaken && <p className='text-xs'>Taken: {m.dateTaken}</p>}
+                {m.tagged && m.tagged.length > 0 && (
+                  <div>
+                    <p className='type-label mb-2 flex items-center gap-2'>
+                      <UsersIcon size={12} /> In shot
+                    </p>
+                    <p className='type-body text-xs font-semibold'>{m.tagged.map((u) => u.name).join(', ')}</p>
                   </div>
-                </div>
+                )}
               </div>
               <div className='space-y-6'>
-                <div>
-                  <p className='type-label mb-2 flex items-center gap-2'>
-                    <UserIcon size={12} /> People
-                  </p>
-                  <div className='type-body space-y-1 font-semibold'>
-                    <p className='text-xs'>
-                      {isImage ? 'Photographer' : 'Video by'}: {m.photographer?.name || 'Unknown'}
+                {(m.dateCreated || m.dateTaken) && (
+                  <div>
+                    <p className='type-label mb-2 flex items-center gap-2'>
+                      <Calendar size={12} /> Dates
                     </p>
-                    {m.tagged && m.tagged.length > 0 && (
-                      <p className='text-xs italic'>
-                        In {isImage ? 'photo' : 'video'}: {m.tagged.map((u) => u.name).join(', ')}
-                      </p>
-                    )}
+                    <div className='type-body space-y-1 font-semibold'>
+                      {m.dateCreated && <p className='text-xs'>Uploaded: {m.dateCreated}</p>}
+                      {m.dateTaken && <p className='text-xs'>Taken: {m.dateTaken}</p>}
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <p className='type-label mb-2 flex items-center gap-2'>
-                    <Maximize2 size={12} /> Technical
-                  </p>
-                  <p className='type-body text-xs font-semibold'>
-                    {m.width} x {m.height} pixels
-                  </p>
-                </div>
+                )}
+                {m.width && m.height ? (
+                  <div>
+                    <p className='type-label mb-2 flex items-center gap-2'>
+                      <Maximize2 size={12} /> Technical
+                    </p>
+                    <p className='type-body text-xs font-semibold'>
+                      {m.width} x {m.height} px
+                    </p>
+                  </div>
+                ) : null}
               </div>
             </div>
-            {m.description && (
-              <div className='text-left'>
-                <p className='type-label mb-2'>Description</p>
-                <i className='type-body text-sm leading-relaxed opacity-80'>{m.description}</i>
+
+            {/* Connected to: areas, sectors, problems, guestbook, user avatar */}
+            {(m.areas?.length || m.sectors?.length || m.problems?.length || m.guestbookId || m.userAvatarId) && (
+              <div className='border-surface-border/50 border-t pt-6'>
+                <p className='type-label mb-3 flex items-center gap-2'>
+                  <LinkIcon size={12} /> Connected to
+                </p>
+                <div className='space-y-1.5'>
+                  {m.areas?.map((a) => (
+                    <p key={a.areaId} className='type-body text-xs font-semibold'>
+                      {a.areaName}
+                    </p>
+                  ))}
+                  {m.sectors?.map((s) => (
+                    <p key={s.sectorId} className='type-body text-xs font-semibold'>
+                      {s.sectorName}
+                      {s.areaName ? ` (${s.areaName})` : ''}
+                    </p>
+                  ))}
+                  {m.problems?.map((p) => {
+                    const grade = p.problemGrade?.trim();
+                    const hasGrade = grade && grade !== '.' && !/^0+$/.test(grade);
+                    const hasPitch = (p.problemPitch ?? 0) > 0;
+                    const hasNumPitches = (p.problemNumPitches ?? 0) > 0;
+                    const area = p.areaName?.trim();
+                    const sector = p.sectorName?.trim();
+                    const location = [area, sector].filter(Boolean).join(' · ');
+                    return (
+                      <p key={p.problemId} className='type-body text-xs font-semibold'>
+                        {p.problemName}
+                        {hasGrade ? ` · ${grade}` : ''}
+                        {hasPitch && hasNumPitches
+                          ? ` · Pitch ${p.problemPitch} / ${p.problemNumPitches}`
+                          : hasPitch
+                            ? ` · Pitch ${p.problemPitch}`
+                            : ''}
+                        {location ? ` (${location})` : ''}
+                      </p>
+                    );
+                  })}
+                  {!!m.guestbookId && <p className='type-body text-xs font-semibold'>Guestbook entry</p>}
+                  {!!m.userAvatarId && <p className='type-body text-xs font-semibold'>User avatar</p>}
+                </div>
+              </div>
+            )}
+
+            {m.description?.trim() && (
+              <div className='border-surface-border/50 border-t pt-6'>
+                <p className='type-label mb-2 flex items-center gap-2'>
+                  <Info size={12} /> Description
+                </p>
+                <p className='type-body text-xs leading-relaxed font-semibold'>{m.description.trim()}</p>
               </div>
             )}
           </div>
