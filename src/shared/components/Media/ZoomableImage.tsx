@@ -60,8 +60,9 @@ export const ZoomableImage = ({ m, onExitZoom }: Props) => {
   const srcSet = getMediaFileUrlSrcSet(midId, stamp, Math.max(m.width ?? 0, targetWidth));
 
   // ── SVG topo processing (mirrors SvgViewer logic) ─────────────────────
-  const svgs = useMemo(() => (m.svgs ?? m.mediaSvgs ?? []) as components['schemas']['Svg'][], [m.svgs, m.mediaSvgs]);
-  const hasSvgs = svgs.length > 0;
+  const svgs = useMemo(() => (m.svgs ?? []) as components['schemas']['Svg'][], [m.svgs]);
+  const hasMediaSvgs = (m.mediaSvgs?.length ?? 0) > 0;
+  const hasSvgs = svgs.length > 0 || hasMediaSvgs;
 
   const processed = useMemo(() => {
     if (!hasSvgs) return null;
@@ -92,7 +93,6 @@ export const ZoomableImage = ({ m, onExitZoom }: Props) => {
               <Descent
                 key={`${keyPrefix}-descent`}
                 path={scalePath(svg.path ?? '', regionForScaleAll)}
-                whiteNotBlack={true}
                 scale={scale}
                 thumb={false}
               />

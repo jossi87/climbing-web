@@ -99,7 +99,6 @@ export const SvgViewer = ({
             <Descent
               key={`${keyPrefix}-descent`}
               path={scalePath(svg.path ?? '', regionForScaleAll)}
-              whiteNotBlack={true}
               scale={scale}
               thumb={thumb}
             />

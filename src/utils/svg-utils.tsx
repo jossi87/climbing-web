@@ -3,12 +3,11 @@ import { svgPathProperties } from 'svg-path-properties';
 
 type DescentProps = {
   path: SVGProps<SVGPathElement>['d'];
-  whiteNotBlack: boolean;
   scale: number;
   thumb: boolean;
 };
 
-export function Descent({ path, whiteNotBlack, scale, thumb }: DescentProps) {
+export function Descent({ path, scale, thumb }: DescentProps) {
   if (!path || typeof path !== 'string' || path.trim().length === 0) {
     return null;
   }
@@ -35,20 +34,26 @@ export function Descent({ path, whiteNotBlack, scale, thumb }: DescentProps) {
     return (
       <g opacity={0.9} key={path}>
         <path id={'descent' + descentKey} style={{ fill: 'none' }} strokeWidth={0} d={path} />
+        {/* Border layer: thin black outline (like Rappel's backgroundColor pass) */}
         <text
           fontSize={fontSize}
           fontWeight='bolder'
           style={{
-            fill: whiteNotBlack ? 'black' : 'white',
+            fill: 'black',
+            stroke: 'black',
+            strokeWidth: fontSize * 0.18,
+            strokeLinejoin: 'round',
+            paintOrder: 'stroke',
             dominantBaseline: 'central',
           }}
         >
           {texts}
         </text>
+        {/* Fill layer: white arrow on top (like Rappel's color pass) */}
         <text
           fontSize={fontSize}
           style={{
-            fill: whiteNotBlack ? 'white' : 'black',
+            fill: 'white',
             dominantBaseline: 'central',
           }}
         >

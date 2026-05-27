@@ -316,7 +316,9 @@ const MediaModal = ({
     delta: 50,
   });
 
-  const svgs = useMemo(() => (m.svgs ?? m.mediaSvgs ?? []) as components['schemas']['Svg'][], [m.svgs, m.mediaSvgs]);
+  const svgs = useMemo(() => (m.svgs ?? []) as components['schemas']['Svg'][], [m.svgs]);
+  const hasMediaSvgs = (m.mediaSvgs?.length ?? 0) > 0;
+  const hasAnySvgs = svgs.length > 0 || hasMediaSvgs;
 
   const canShowSidebar =
     svgs
@@ -574,7 +576,7 @@ const MediaModal = ({
               <Info size={17} strokeWidth={2} />
             </button>
 
-            {svgs.length > 0 && (
+            {hasAnySvgs && (
               <button
                 type='button'
                 onClick={() => setShowHelp(true)}
@@ -586,7 +588,7 @@ const MediaModal = ({
               </button>
             )}
 
-            {(isImage || (isVideo && !m.embedUrl)) && !(svgs.length > 0 && pitch > 0) && (
+            {(isImage || (isVideo && !m.embedUrl)) && !(hasAnySvgs && pitch > 0) && (
               <button
                 type='button'
                 onClick={() => setZoomMode(true)}
@@ -750,7 +752,7 @@ const MediaModal = ({
             onClick={handleBackdropClick}
           >
             {isImage ? (
-              svgs.length > 0 ? (
+              hasAnySvgs ? (
                 <div
                   className='touch-pan-pinch h-full w-full'
                   data-modal-media-root
@@ -1234,7 +1236,7 @@ const MediaModal = ({
                     <ul className='space-y-6'>
                       <li className='flex items-center gap-4'>
                         <svg width='60' height='20' className='bg-surface-nav rounded'>
-                          <Descent scale={0.6} path={'M 0 10 C 30 10 30 10 60 10'} whiteNotBlack={true} thumb={false} />
+                          <Descent scale={0.6} path={'M 0 10 C 30 10 30 10 60 10'} thumb={false} />
                         </svg>
                         <span className='text-xs font-bold text-slate-300'>Descent Line</span>
                       </li>

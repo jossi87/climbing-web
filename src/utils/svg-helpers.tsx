@@ -202,7 +202,7 @@ export function parseReadOnlySvgs(readOnlySvgs: SvgType[], w: number, h: number,
     const { t } = svg;
     switch (t) {
       case 'PATH': {
-        return [...acc, <Descent key={svg.path} path={svg.path} whiteNotBlack={true} scale={scale} thumb={false} />];
+        return [...acc, <Descent key={svg.path} path={svg.path} scale={scale} thumb={false} />];
       }
       case 'RAPPEL_BOLTED':
       case 'RAPPEL_NOT_BOLTED': {
