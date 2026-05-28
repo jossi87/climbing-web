@@ -1026,8 +1026,6 @@ export type components = {
             /** Format: int32 */
             progress?: number;
             gradeCounts?: components["schemas"]["GradeCount"][];
-            /** Format: int32 */
-            numProblems?: number;
         };
         AreaSectorOrder: {
             /** Format: int32 */
