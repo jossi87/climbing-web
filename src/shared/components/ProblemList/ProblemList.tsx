@@ -522,11 +522,7 @@ export const ProblemList = ({
   const showListControls = allRows.length >= MIN_ROWS_FOR_LIST_CONTROLS;
 
   const hasActiveFilters =
-    gradeLow !== undefined ||
-    gradeHigh !== undefined ||
-    Object.values(types).some((v) => !v) ||
-    hideTicked ||
-    onlyFa;
+    gradeLow !== undefined || gradeHigh !== undefined || Object.values(types).some((v) => !v) || hideTicked || onlyFa;
 
   if (!allRows?.length) {
     return null;
@@ -635,16 +631,15 @@ export const ProblemList = ({
               )}
             >
               {hasActiveFilters && !showFilter && (
-                <span
-                  className='absolute -top-1 -right-1 h-2 w-2 rounded-full bg-brand'
-                  aria-hidden='true'
-                />
+                <span className='bg-brand absolute -top-1 -right-1 h-2 w-2 rounded-full' aria-hidden='true' />
               )}
               <Filter
                 size={12}
                 className={cn(
                   'shrink-0',
-                  showFilter || hasActiveFilters ? cn('text-brand', twInk.lightTextSlate900) : problemListToolbarChipInk,
+                  showFilter || hasActiveFilters
+                    ? cn('text-brand', twInk.lightTextSlate900)
+                    : problemListToolbarChipInk,
                 )}
                 strokeWidth={2}
               />
@@ -652,7 +647,9 @@ export const ProblemList = ({
                 className={cn(
                   designContract.typography.uiCompact,
                   'whitespace-nowrap',
-                  showFilter || hasActiveFilters ? cn('text-brand', twInk.lightTextSlate900) : problemListToolbarChipInk,
+                  showFilter || hasActiveFilters
+                    ? cn('text-brand', twInk.lightTextSlate900)
+                    : problemListToolbarChipInk,
                 )}
               >
                 Filter

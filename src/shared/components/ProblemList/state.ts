@@ -202,18 +202,10 @@ export const useProblemListState = ({
   const [storedOrderBy, setStoredOrderBy] = useLocalStorage(orderStorageKey, defaultOrder);
 
   const filterStorageKey =
-    filterPreferenceBucket != null
-      ? `problemList/filterPreference/${filterPreferenceBucket}`
-      : `problemList/${key}`;
+    filterPreferenceBucket != null ? `problemList/filterPreference/${filterPreferenceBucket}` : `problemList/${key}`;
   const [storedGradeLow, setStoredGradeLow] = useLocalStorage<string | null>(`${filterStorageKey}/gradeLow`, null);
-  const [storedGradeHigh, setStoredGradeHigh] = useLocalStorage<string | null>(
-    `${filterStorageKey}/gradeHigh`,
-    null,
-  );
-  const [storedTypes, setStoredTypes] = useLocalStorage<Record<string, boolean>>(
-    `${filterStorageKey}/types`,
-    {},
-  );
+  const [storedGradeHigh, setStoredGradeHigh] = useLocalStorage<string | null>(`${filterStorageKey}/gradeHigh`, null);
+  const [storedTypes, setStoredTypes] = useLocalStorage<Record<string, boolean>>(`${filterStorageKey}/types`, {});
 
   const { mapping, easyToHard, idToGrade } = useGrades();
   const typeNames = useMemo(() => [...new Set(rows.map(rowListTypeKey))].sort(), [rows]);
@@ -229,10 +221,13 @@ export const useProblemListState = ({
     groupBy: 'none',
     hideTicked: storedHideTicked,
     onlyFa: storedOnlyFa,
-    types: rows.reduce((acc, row) => {
-      const tKey = rowListTypeKey(row);
-      return { ...acc, [tKey]: storedTypes[tKey] ?? true };
-    }, {} as Record<string, boolean>),
+    types: rows.reduce(
+      (acc, row) => {
+        const tKey = rowListTypeKey(row);
+        return { ...acc, [tKey]: storedTypes[tKey] ?? true };
+      },
+      {} as Record<string, boolean>,
+    ),
   });
 
   useEffect(() => setStoredHideTicked(hideTicked), [hideTicked, setStoredHideTicked]);
