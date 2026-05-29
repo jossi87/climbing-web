@@ -201,8 +201,6 @@ export const useProblemListState = ({
 
   const [storedOrderBy, setStoredOrderBy] = useLocalStorage(orderStorageKey, defaultOrder);
 
-  // Grade / type filters: shared across pages when a bucket is given, otherwise isolated per page.
-  // Note: gradeLow/gradeHigh are stored as string|null because JSON.stringify(undefined) is lossy.
   const filterStorageKey =
     filterPreferenceBucket != null
       ? `problemList/filterPreference/${filterPreferenceBucket}`
@@ -220,10 +218,6 @@ export const useProblemListState = ({
   const { mapping, easyToHard, idToGrade } = useGrades();
   const typeNames = useMemo(() => [...new Set(rows.map(rowListTypeKey))].sort(), [rows]);
 
-  // Validate stored grade labels: if the grade system has changed since the value was stored
-  // (e.g. after a deploy or on a different locale), the label may be absent from `mapping`.
-  // An unknown label produces undefined index values, causing every row to fail the filter.
-  // Treat unknown labels as null (= no filter) rather than passing them through.
   const validGradeLow = storedGradeLow !== null && easyToHard.includes(storedGradeLow) ? storedGradeLow : null;
   const validGradeHigh = storedGradeHigh !== null && easyToHard.includes(storedGradeHigh) ? storedGradeHigh : null;
 
@@ -246,9 +240,6 @@ export const useProblemListState = ({
   useEffect(() => setStoredOrderBy(order), [order, setStoredOrderBy]);
   useEffect(() => setStoredGradeLow(gradeLow ?? null), [gradeLow, setStoredGradeLow]);
   useEffect(() => setStoredGradeHigh(gradeHigh ?? null), [gradeHigh, setStoredGradeHigh]);
-  // Merge into the existing stored object rather than replacing it wholesale.
-  // This preserves type preferences from other sectors (which may have different type sets)
-  // that would otherwise be clobbered on every mount.
   useEffect(() => setStoredTypes((prev) => ({ ...prev, ...types })), [types, setStoredTypes]);
   useEffect(() => dispatch({ action: 'init-types', typeNames }), [typeNames]);
 

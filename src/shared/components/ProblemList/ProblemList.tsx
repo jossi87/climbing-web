@@ -521,8 +521,6 @@ export const ProblemList = ({
     .map((label) => ({ key: `high-${label}`, text: label, shortText: label, value: label }));
   const showListControls = allRows.length >= MIN_ROWS_FOR_LIST_CONTROLS;
 
-  // True when any filter is narrowing the list — used to keep the button highlighted even
-  // when the filter panel is closed (e.g. on first load after persisted filters are restored).
   const hasActiveFilters =
     gradeLow !== undefined ||
     gradeHigh !== undefined ||
