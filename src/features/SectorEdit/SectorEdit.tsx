@@ -713,6 +713,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
                     else if (leafletMode === 'DESCENT') setData((prev) => ({ ...prev, descent: { coordinates } }));
                   }}
                   upload={leafletMode !== 'POLYGON'}
+                  slopeType={leafletMode === 'DESCENT' ? 'descent' : 'approach'}
                 />
 
                 {leafletMode === 'APPROACH' && neighboursWithApproach.length > 0 && (

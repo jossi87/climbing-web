@@ -13,11 +13,13 @@ type Props = {
   parking: components['schemas']['Coordinates'];
   onChange: (polyline: components['schemas']['Coordinates'][]) => void;
   upload?: boolean;
+  /** 'approach' = path from parking to sector (start near parking), 'descent' = path from sector to parking (start far from parking) */
+  slopeType?: 'approach' | 'descent';
 };
 
 type TabType = 'POINTS' | 'DATA' | 'UPLOAD';
 
-export const PolylineEditor = ({ coordinates, parking, onChange, upload }: Props) => {
+export const PolylineEditor = ({ coordinates, parking, onChange, upload, slopeType }: Props) => {
   const [activeTab, setActiveTab] = useState<TabType>('POINTS');
 
   const onDrop = useCallback(
@@ -59,7 +61,13 @@ export const PolylineEditor = ({ coordinates, parking, onChange, upload }: Props
             coords[coords.length - 1].latitude ?? 0,
             coords[coords.length - 1].longitude ?? 0,
           );
-          if (distLast < distFirst) coords.reverse();
+          if (slopeType === 'descent') {
+            // Descent: path goes from sector → parking, so first point should be far from parking, last point near parking
+            if (distFirst < distLast) coords.reverse();
+          } else {
+            // Approach (default): path goes from parking → sector, so first point should be near parking
+            if (distLast < distFirst) coords.reverse();
+          }
         }
         onChange(coords);
       };
