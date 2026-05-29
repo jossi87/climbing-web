@@ -35,14 +35,16 @@ function useStorage<T = unknown>(system: typeof window.localStorage, key: string
   const setValue = useCallback(
     (value: Parameters<typeof setStoredValue>[0]) => {
       try {
-        const valueToStore = value instanceof Function ? value(storedValue) : value;
-        setStoredValue(value);
-        system.setItem(key, JSON.stringify(valueToStore));
+        setStoredValue((prev) => {
+          const valueToStore = value instanceof Function ? value(prev) : value;
+          system.setItem(key, JSON.stringify(valueToStore));
+          return valueToStore;
+        });
       } catch (error) {
         console.warn('localStorage setValue error:', error);
       }
     },
-    [key, storedValue, system],
+    [key, system],
   );
 
   const writeValue = useCallback(

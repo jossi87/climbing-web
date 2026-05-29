@@ -19,6 +19,8 @@ type Props = {
   storageKey: string;
   /** Sector/area: remember sort in localStorage (shared by grade vs number listing style). User lists omit. */
   sortPreferenceBucket?: 'grade' | 'number' | 'area';
+  /** Sector/area: remember grade range + type filters in localStorage under a shared key. Use `'sector'` for sector/area lists. Omit for user profile lists. */
+  filterPreferenceBucket?: string;
   toolbarAction?: React.ReactNode;
   /** Renders above the toolbar (e.g. map) so group/sort/filter stay between map and list. */
   contentBeforeList?: React.ReactNode | ((filteredRows: Row[]) => React.ReactNode);
@@ -445,6 +447,7 @@ export const ProblemList = ({
   defaultOrder,
   storageKey,
   sortPreferenceBucket,
+  filterPreferenceBucket,
   toolbarAction,
   contentBeforeList,
   excludedSortOptions,
@@ -503,6 +506,7 @@ export const ProblemList = ({
     order: defaultOrder,
     key: storageKey,
     sortPreferenceBucket,
+    filterPreferenceBucket,
   });
 
   const orderByOptions = ORDER_BY_OPTIONS[mode].filter((opt) => !excludedSortOptions?.includes(opt.value));
@@ -516,6 +520,9 @@ export const ProblemList = ({
     .filter((label) => (mapping[label] ?? maxGradeIndex) > (mapping[currentLow] ?? 0))
     .map((label) => ({ key: `high-${label}`, text: label, shortText: label, value: label }));
   const showListControls = allRows.length >= MIN_ROWS_FOR_LIST_CONTROLS;
+
+  const hasActiveFilters =
+    gradeLow !== undefined || gradeHigh !== undefined || Object.values(types).some((v) => !v) || hideTicked || onlyFa;
 
   if (!allRows?.length) {
     return null;
@@ -614,20 +621,25 @@ export const ProblemList = ({
               onClick={() => setFilterShowing((v) => !v)}
               className={cn(
                 activityFilterChipBase,
-                showFilter
+                showFilter || hasActiveFilters
                   ? cn(
                       'border-brand-border bg-brand/22 text-brand shadow-sm',
                       'light:border-brand light:bg-brand/28 light:shadow-sm',
                     )
                   : activityFilterChipOn,
-                'shrink-0 justify-center transition-[background-color,border-color,color,box-shadow]',
+                'relative shrink-0 justify-center transition-[background-color,border-color,color,box-shadow]',
               )}
             >
+              {hasActiveFilters && !showFilter && (
+                <span className='bg-brand absolute -top-1 -right-1 h-2 w-2 rounded-full' aria-hidden='true' />
+              )}
               <Filter
                 size={12}
                 className={cn(
                   'shrink-0',
-                  showFilter ? cn('text-brand', twInk.lightTextSlate900) : problemListToolbarChipInk,
+                  showFilter || hasActiveFilters
+                    ? cn('text-brand', twInk.lightTextSlate900)
+                    : problemListToolbarChipInk,
                 )}
                 strokeWidth={2}
               />
@@ -635,7 +647,9 @@ export const ProblemList = ({
                 className={cn(
                   designContract.typography.uiCompact,
                   'whitespace-nowrap',
-                  showFilter ? cn('text-brand', twInk.lightTextSlate900) : problemListToolbarChipInk,
+                  showFilter || hasActiveFilters
+                    ? cn('text-brand', twInk.lightTextSlate900)
+                    : problemListToolbarChipInk,
                 )}
               >
                 Filter

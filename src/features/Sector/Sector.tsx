@@ -1043,6 +1043,7 @@ const Sector = () => {
             storageKey={`sector/${sectorId}`}
             mode='sector'
             sortPreferenceBucket={data.orderByGrade ? 'grade' : 'number'}
+            filterPreferenceBucket='sector'
             defaultOrder={data.orderByGrade ? 'grade-desc' : 'number'}
             rows={sectorProblemListRows}
             enableViewModeToggle

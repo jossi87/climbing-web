@@ -174,6 +174,7 @@ export const useProblemListState = ({
   order: defaultOrder,
   key,
   sortPreferenceBucket,
+  filterPreferenceBucket,
 }: {
   rows: Row[];
   order: State['order'];
@@ -183,6 +184,12 @@ export const useProblemListState = ({
    * plus area aggregate). Omit for user profile lists — then sort is keyed by `problemList/${key}/order`.
    */
   sortPreferenceBucket?: 'grade' | 'number' | 'area';
+  /**
+   * When provided, grade range and type filters are persisted in localStorage under a shared key so
+   * they carry over when navigating between pages in the same context (e.g. sector browsing).
+   * Use `'sector'` for sector and area lists. Omit for user profile lists (per-page key used instead).
+   */
+  filterPreferenceBucket?: string;
 }): State & { dispatch: Dispatch<Update> } => {
   const [storedHideTicked, setStoredHideTicked] = useSessionStorage(`problemList/${key}/hideTicked`, false);
   const [storedOnlyFa, setStoredOnlyFa] = useSessionStorage(`problemList/${key}/onlyFa`, false);
@@ -194,22 +201,41 @@ export const useProblemListState = ({
 
   const [storedOrderBy, setStoredOrderBy] = useLocalStorage(orderStorageKey, defaultOrder);
 
+  const filterStorageKey =
+    filterPreferenceBucket != null ? `problemList/filterPreference/${filterPreferenceBucket}` : `problemList/${key}`;
+  const [storedGradeLow, setStoredGradeLow] = useLocalStorage<string | null>(`${filterStorageKey}/gradeLow`, null);
+  const [storedGradeHigh, setStoredGradeHigh] = useLocalStorage<string | null>(`${filterStorageKey}/gradeHigh`, null);
+  const [storedTypes, setStoredTypes] = useLocalStorage<Record<string, boolean>>(`${filterStorageKey}/types`, {});
+
   const { mapping, easyToHard, idToGrade } = useGrades();
   const typeNames = useMemo(() => [...new Set(rows.map(rowListTypeKey))].sort(), [rows]);
+
+  const validGradeLow = storedGradeLow !== null && easyToHard.includes(storedGradeLow) ? storedGradeLow : null;
+  const validGradeHigh = storedGradeHigh !== null && easyToHard.includes(storedGradeHigh) ? storedGradeHigh : null;
+
   const [{ gradeLow, gradeHigh, hideTicked, onlyFa, order, groupBy, types }, dispatch] = useReducer(uiStateReducer, {
-    gradeHigh: undefined,
-    gradeLow: undefined,
+    gradeLow: validGradeLow ?? undefined,
+    gradeHigh: validGradeHigh ?? undefined,
     order: CLEANED_ORDER[storedOrderBy as OrderOption] ?? defaultOrder,
     /** Grouping is not persisted — default to none each visit. */
     groupBy: 'none',
     hideTicked: storedHideTicked,
     onlyFa: storedOnlyFa,
-    types: rows.reduce((acc, row) => ({ ...acc, [rowListTypeKey(row)]: true }), {} as Record<string, boolean>),
+    types: rows.reduce(
+      (acc, row) => {
+        const tKey = rowListTypeKey(row);
+        return { ...acc, [tKey]: storedTypes[tKey] ?? true };
+      },
+      {} as Record<string, boolean>,
+    ),
   });
 
   useEffect(() => setStoredHideTicked(hideTicked), [hideTicked, setStoredHideTicked]);
   useEffect(() => setStoredOnlyFa(onlyFa), [onlyFa, setStoredOnlyFa]);
   useEffect(() => setStoredOrderBy(order), [order, setStoredOrderBy]);
+  useEffect(() => setStoredGradeLow(gradeLow ?? null), [gradeLow, setStoredGradeLow]);
+  useEffect(() => setStoredGradeHigh(gradeHigh ?? null), [gradeHigh, setStoredGradeHigh]);
+  useEffect(() => setStoredTypes((prev) => ({ ...prev, ...types })), [types, setStoredTypes]);
   useEffect(() => dispatch({ action: 'init-types', typeNames }), [typeNames]);
 
   const [filtered, uniqueAreas, uniqueRocks, uniqueSectors, uniqueTypes] = useMemo(() => {

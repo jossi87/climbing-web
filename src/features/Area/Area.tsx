@@ -1092,6 +1092,7 @@ const Area = () => {
                 storageKey={`area/${areaId}`}
                 mode='sector'
                 sortPreferenceBucket='area'
+                filterPreferenceBucket='sector'
                 defaultOrder='grade-desc'
                 rows={problemRows}
                 enableViewModeToggle
