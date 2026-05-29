@@ -73,7 +73,7 @@ export const PolylineEditor = ({ coordinates, parking, onChange, upload, slopeTy
       };
       reader.readAsText(file);
     },
-    [onChange, parking],
+    [onChange, parking, slopeType],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
