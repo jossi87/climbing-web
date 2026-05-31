@@ -12,6 +12,38 @@ type Props = {
   stack?: boolean;
 };
 
+/**
+ * Extract a YouTube video ID from various URL formats using the URL API.
+ * Handles:
+ *   - https://youtu.be/VIDEO_ID
+ *   - https://www.youtube.com/watch?v=VIDEO_ID
+ *   - https://www.youtube.com/watch?feature=shared&v=VIDEO_ID
+ *   - https://www.youtube.com/embed/VIDEO_ID
+ *   - https://www.youtube.com/v/VIDEO_ID
+ *   - https://www.youtube.com/shorts/VIDEO_ID
+ *   - https://m.youtube.com/watch?v=VIDEO_ID
+ */
+function extractYoutubeId(url: string): string | null {
+  try {
+    const u = new URL(url);
+    const host = u.hostname.toLowerCase();
+    if (host === 'youtu.be') {
+      return u.pathname.slice(1).split('/')[0] || null;
+    }
+    if (host === 'www.youtube.com' || host === 'm.youtube.com' || host === 'youtube.com') {
+      // Path patterns: /embed/ID, /v/ID, /shorts/ID
+      const pathMatch = u.pathname.match(/^\/(?:embed|v|shorts)\/([a-zA-Z0-9_-]{11})/);
+      if (pathMatch) return pathMatch[1];
+      // Query param v=
+      const v = u.searchParams.get('v');
+      if (v && /^[a-zA-Z0-9_-]{11}$/.test(v)) return v;
+    }
+  } catch {
+    // Invalid URL
+  }
+  return null;
+}
+
 const VideoEmbedder = ({ addMedia, stack }: Props) => {
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,9 +58,8 @@ const VideoEmbedder = ({ addMedia, stack }: Props) => {
       const embedMilliseconds = 0;
 
       // YouTube
-      const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-      if (ytMatch) {
-        const videoId = ytMatch[1];
+      const videoId = extractYoutubeId(url);
+      if (videoId) {
         embedVideoUrl = `https://www.youtube.com/embed/${videoId}`;
         embedThumbnailUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
       }

@@ -10,6 +10,7 @@ import {
   postMediaImage,
   postMediaVideoInitiate,
   postMediaVideoComplete,
+  postMediaVideoEmbed,
   uploadToPresignedUrl,
 } from '../../api';
 import { getMediaFileUrl, mediaIdentityId, mediaIdentityVersionStamp } from '../../api/utils';
@@ -266,9 +267,9 @@ const MediaEdit = () => {
               updateTask(i, { state: 'done' });
             }
           } else {
-            // Embed-only (no file)
+            // Embed-only (no file) — use the dedicated /media/video/embed endpoint
             updateTask(i, { state: 'uploading' });
-            await postMediaImage(token, body, new File([], 'embed'));
+            await postMediaVideoEmbed(token, body);
             updateTask(i, { state: 'done' });
           }
         }
@@ -434,7 +435,11 @@ const MediaEdit = () => {
   );
 
   const handleEmbedAdded = useCallback(
-    (info: { embedVideoUrl: string | undefined; embedThumbnailUrl: string | undefined }) => {
+    (info: {
+      embedVideoUrl: string | undefined;
+      embedThumbnailUrl: string | undefined;
+      embedMilliseconds?: number;
+    }) => {
       const item = makeEmptyItem();
       item.embedVideoUrl = info.embedVideoUrl;
       item.embedThumbnailUrl = info.embedThumbnailUrl;

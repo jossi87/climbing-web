@@ -411,6 +411,26 @@ export function postMediaVideoComplete(accessToken: string | null, id: number): 
 }
 
 /**
+ * Add an embedded external video (YouTube/Vimeo).
+ * Sends a Media payload to POST /media/video/embed and returns the created Media.
+ */
+export function postMediaVideoEmbed(
+  accessToken: string | null,
+  media: components['schemas']['Media'],
+): Promise<components['schemas']['Media']> {
+  const url = `/media/video/embed`;
+  return makeAuthenticatedRequest(accessToken, url, {
+    method: 'POST',
+    body: JSON.stringify(media),
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    ...invalidateQueriesAfter,
+  }).then((response) => ensureOkJson(response, url, {} as components['schemas']['Media']));
+}
+
+/**
  * Upload a file to a presigned S3 URL with the required x-amz-acl: public-read header.
  */
 export async function uploadToPresignedUrl(

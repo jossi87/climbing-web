@@ -37,7 +37,11 @@ type Props = {
   /** Called when files are dropped/selected */
   onFilesAdded: (files: DropzoneFile[]) => void;
   /** Called when an embed video URL is added */
-  onEmbedAdded: (info: { embedVideoUrl: string | undefined; embedThumbnailUrl: string | undefined }) => void;
+  onEmbedAdded: (info: {
+    embedVideoUrl: string | undefined;
+    embedThumbnailUrl: string | undefined;
+    embedMilliseconds?: number;
+  }) => void;
   /** Optional extra content rendered below the dropzone/embed area */
   children?: ReactNode;
 };

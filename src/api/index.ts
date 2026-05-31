@@ -14,6 +14,7 @@ export {
   postMediaImage,
   postMediaVideoInitiate,
   postMediaVideoComplete,
+  postMediaVideoEmbed,
   uploadToPresignedUrl,
   putMedia,
   putMediaJpegRotate,
