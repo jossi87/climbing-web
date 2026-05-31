@@ -10,6 +10,7 @@ import {
   History as ActivityIcon,
   BarChart3,
   Camera,
+  ShieldOff,
   FileText,
   Coffee,
   Heart,
@@ -103,6 +104,7 @@ const Footer = () => {
               <NavCard to='/activity' icon={ActivityIcon} title='Activity' />
               {!isBouldering && <NavCard to='/dangerous' icon={AlertTriangle} title='Dangerous' />}
               <NavCard to='/graph' icon={BarChart3} title='Graph' />
+              <NavCard to='/restrictions' icon={ShieldOff} title='Restrictions' />
               <NavCard to='/webcams' icon={Camera} title='Webcams' />
             </div>
           </div>

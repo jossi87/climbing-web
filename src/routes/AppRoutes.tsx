@@ -9,6 +9,7 @@ const Area = lazy(() => import('../features/Area/Area'), 'area');
 const AreaEdit = lazy(() => import('../features/AreaEdit'), 'area-edit');
 const Areas = lazy(() => import('../features/Areas/Areas'), 'areas');
 const Dangerous = lazy(() => import('../features/Dangerous/Dangerous'), 'dangerous');
+const Restrictions = lazy(() => import('../features/Restrictions/Restrictions'), 'restrictions');
 const Donations = lazy(() => import('../features/Donations/Donations'), 'donations');
 const Graph = lazy(() => import('../features/Graph/Graph'), 'graph');
 const MediaAdd = lazy(() => import('../features/MediaAdd/MediaAdd'), 'media-add');
@@ -58,6 +59,7 @@ function AppRoutes() {
             />
             <Route path='/areas' element={<Areas />} />
             <Route path='/dangerous' element={<Dangerous />} />
+            <Route path='/restrictions' element={<Restrictions />} />
             <Route path='/donations' element={<Donations />} />
             <Route path='/donate' element={<Donations />} />
             <Route path='/filter' element={<Problems filterOpen />} />

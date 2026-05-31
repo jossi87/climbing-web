@@ -365,6 +365,23 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/v2/restrictions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get areas and sectors with restrictions */
+        get: operations["getRestrictions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/robots.txt": {
         parameters: {
             query?: never;
@@ -1715,6 +1732,31 @@ export type components = {
             lockedAdmin?: boolean;
             lockedSuperadmin?: boolean;
             problems?: components["schemas"]["ProfileTodoProblem"][];
+        };
+        RestrictionsArea: {
+            /** Format: int32 */
+            id?: number;
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
+            name?: string;
+            accessClosed?: string;
+            accessInfo?: string;
+            sectors?: components["schemas"]["RestrictionsSector"][];
+        };
+        RestrictionsRegion: {
+            /** Format: int32 */
+            id?: number;
+            name?: string;
+            areas?: components["schemas"]["RestrictionsArea"][];
+        };
+        RestrictionsSector: {
+            /** Format: int32 */
+            id?: number;
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
+            name?: string;
+            accessClosed?: string;
+            accessInfo?: string;
         };
         Sector: {
             redirectUrl?: string;
@@ -3134,6 +3176,39 @@ export interface operations {
             };
             /** @description User not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getRestrictions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RestrictionsRegion"][];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };
