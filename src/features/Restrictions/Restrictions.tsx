@@ -43,9 +43,11 @@ const Restrictions = () => {
           <div className='space-y-10'>
             {data.map((region) => (
               <section key={region.id} className='scroll-mt-24'>
-                <div className='border-surface-border mb-4 flex items-center gap-3 border-b-2 pb-2'>
-                  <h2 className={cn(designContract.typography.title, 'text-slate-100')}>{region.name}</h2>
-                </div>
+                {data.length > 1 && (
+                  <div className='border-surface-border mb-4 flex items-center gap-3 border-b-2 pb-2'>
+                    <h2 className={cn(designContract.typography.title, 'text-slate-100')}>{region.name}</h2>
+                  </div>
+                )}
 
                 <div className='space-y-4'>
                   {(region.areas ?? []).map((area) => (
