@@ -813,7 +813,7 @@ function ProblemLoaded({
                 iconClassName={designContract.ascentStatus.ticked}
               />
               <div className='pt-0.5 pb-3 sm:pb-3.5 md:pb-3'>
-                <ProblemTicks ticks={data.ticks || []} />
+                <ProblemTicks ticks={data.ticks || []} faUsers={data.fa} faAidUsers={data.faAid?.users} />
               </div>
             </Card>
           )}

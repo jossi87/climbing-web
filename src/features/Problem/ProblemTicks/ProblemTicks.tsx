@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
+
 import { Link } from 'react-router-dom';
 import { ClickableAvatar } from '../../../shared/ui/Avatar/Avatar';
 import { Stars } from '../../../shared/ui/Indicators';
@@ -10,14 +11,21 @@ import { NoPersonalGradeBadge } from '../../../shared/ui/NoPersonalGradeBadge';
 import {
   profileRowRootClass,
   tickCommentSmall,
+  tickFa,
   tickFlags,
   tickOwnUserLink,
   tickProblemLink,
   tickWhenGrade,
 } from '../../../shared/components/Profile/profileRowTypography';
 
+type User = components['schemas']['User'];
+
 type Props = {
   ticks: components['schemas']['ProblemTick'][];
+  /** First-ascent users (FA) — used to show "FA" badge on matching tick users. */
+  faUsers?: User[];
+  /** First-aid-ascent users (FA Aid) — used to show "FA" badge on matching tick users. */
+  faAidUsers?: User[];
 };
 
 function nonEmptyDate(d: string | undefined | null): d is string {
@@ -37,8 +45,20 @@ const quoteBlock = cn(
   'leading-snug text-pretty break-words text-slate-50 not-italic sm:leading-relaxed',
 );
 
-export const ProblemTicks = ({ ticks }: Props) => {
+export const ProblemTicks = ({ ticks, faUsers, faAidUsers }: Props) => {
   const safeTicks = ticks ?? [];
+
+  /** Set of user IDs that are either FA or FA Aid — used to show "FA" badge on matching tick users. */
+  const faUserIdSet = useMemo(() => {
+    const ids = new Set<number>();
+    for (const u of faUsers ?? []) {
+      if (u.id != null) ids.add(u.id);
+    }
+    for (const u of faAidUsers ?? []) {
+      if (u.id != null) ids.add(u.id);
+    }
+    return ids;
+  }, [faUsers, faAidUsers]);
 
   if (safeTicks.length === 0) return null;
 
@@ -47,6 +67,7 @@ export const ProblemTicks = ({ ticks }: Props) => {
       {safeTicks.map((t, index) => {
         const repeats = t.repeats ?? [];
         const isSelf = !!t.writable;
+        const isFaUser = t.idUser != null && faUserIdSet.has(t.idUser);
         const displayDate = joinDates([t.date, ...repeats.map((r) => r.date)]);
         let commentContent: ReactNode = null;
 
@@ -117,6 +138,12 @@ export const ProblemTicks = ({ ticks }: Props) => {
                       <span className={cn(tickWhenGrade, 'tabular-nums')}>{t.suggestedGrade}</span>
                     </>
                   )}
+                  {isFaUser ? (
+                    <>
+                      {' '}
+                      <span className={tickFa}>FA</span>
+                    </>
+                  ) : null}
                   {displayDate ? (
                     <span className={cn(tickFlags, 'ml-1.5 inline text-slate-400 tabular-nums')}>{displayDate}</span>
                   ) : null}
