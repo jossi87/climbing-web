@@ -32,16 +32,8 @@ export function tickProblemLinkWithStatus(opts: { ticked?: boolean; todo?: boole
     opts.broken && 'line-through opacity-60',
     opts.ticked && designContract.ascentStatus.ticked,
     opts.todo && !opts.ticked && designContract.ascentStatus.todo,
-    /* Light mode: ticked uses background instead of green text; todo keeps blue text */
-    opts.ticked && 'light:!text-slate-950',
-  );
-}
-
-/** Full-row light-mode background for ticked/todo status — applied to the outer row div. */
-export function problemListRowLightBg(opts: { ticked?: boolean; todo?: boolean }) {
-  return cn(
-    opts.ticked && 'light:bg-emerald-300/55',
-    /* Todo uses blue text only — no background fill */
+    opts.ticked && 'light:bg-status-ticked/12 light:rounded-sm light:-mx-0.5 light:px-0.5',
+    opts.todo && !opts.ticked && 'light:bg-status-todo/12 light:rounded-sm light:-mx-0.5 light:px-0.5',
   );
 }
 

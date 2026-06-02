@@ -6,6 +6,7 @@ import { useMeta } from '../components/Meta/context';
 import SearchBox from '../components/SearchBox/SearchBox';
 import { Avatar } from '../ui';
 import { cn } from '../../lib/utils';
+import { appShellLightBackdropStripClass } from '../../design/twInk';
 import { designContract } from '../../design/contract';
 import { downloadUsersTicks, useAccessToken } from '../../api';
 import { ThemeToggle } from '../components/ThemeToggle';
@@ -29,20 +30,13 @@ const Header = () => {
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [isDownloadingTicks, setIsDownloadingTicks] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
-  const [viewport, setViewport] = useState(() => ({
-    width: typeof window !== 'undefined' ? window.innerWidth : 1280,
-    height: typeof window !== 'undefined' ? window.innerHeight : 900,
-  }));
   const lastScrollYRef = useRef(0);
 
   /**
-   * Header sticks on phones / tablets and on tall desktops, falls back to `relative` on short desktops so the user
-   * can reclaim vertical space by scrolling. (Earlier this rule was kept in sync with the Frontpage aside's sticky
-   * media query — that aside is no longer sticky, so the rule stands on its own header-UX merits.)
+   * Header is always sticky so it can slide back into view on scroll up (mobile) or stay in place (desktop).
+   * On desktop (>= 1024px) `lg:translate-y-0` overrides the slide-away; on mobile it scrolls away and reappears.
    */
-  const isDesktop = viewport.width >= 1024;
-  const isTallEnough = viewport.height >= 900;
-  const shouldStickHeader = !isDesktop || isTallEnough;
+  const shouldStickHeader = true;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -61,23 +55,6 @@ const Header = () => {
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
-    const updateViewport = () =>
-      setViewport({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-
-    updateViewport();
-    window.addEventListener('resize', updateViewport);
-    window.addEventListener('orientationchange', updateViewport);
-
-    return () => {
-      window.removeEventListener('resize', updateViewport);
-      window.removeEventListener('orientationchange', updateViewport);
-    };
   }, []);
 
   useEffect(() => {
@@ -220,6 +197,11 @@ const Header = () => {
         !isVisible && '-translate-y-full lg:translate-y-0',
       )}
     >
+      {/*
+        Light theme: medium-gray band behind the glass so backdrop-filter has something to blur (not the pale page
+        canvas). The glass tint darkens it to near-black. Inside the nav so it slides away with the header on mobile.
+      */}
+      <div aria-hidden className={appShellLightBackdropStripClass} role='presentation' />
       {/*
         Two-layer glass: blur must sit in its own plane (transparent). A single high-α fill on top of backdrop-filter
         hides the frost — especially on light pages. Tint is a separate layer so we keep charcoal + visible blur.

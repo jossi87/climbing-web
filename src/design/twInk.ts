@@ -32,4 +32,4 @@ export const twInk = {
  * `.app-shell-header-glass-blur` in `index.css`.
  */
 export const appShellLightBackdropStripClass =
-  'pointer-events-none fixed top-0 right-0 left-0 z-[45] hidden h-13 bg-[rgb(19_21_26)] light:block';
+  'pointer-events-none absolute inset-0 z-0 hidden bg-[rgb(100_116_139)] light:block';

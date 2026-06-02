@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { X, Loader2 } from 'lucide-react';
+import { useScrollLock } from '../../utils/scroll-lock';
 import { getMediaFileUrl, getMediaFileUrlSrcSet, mediaIdentityId, mediaIdentityVersionStamp } from '../../../api';
 import { SvgRoute } from '../SvgViewer/SvgRoute';
 import { Descent, Rappel } from '../../../utils/svg-utils';
@@ -22,17 +23,8 @@ export const ZoomableImage = ({ m, onExitZoom }: Props) => {
   const [loaded, setLoaded] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Hide body/html scrollbar while zoom overlay is active
-  useEffect(() => {
-    const prevBody = document.body.style.overflow;
-    const prevHtml = document.documentElement.style.overflow;
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = prevBody;
-      document.documentElement.style.overflow = prevHtml;
-    };
-  }, []);
+  /** Hide body/html scrollbar while zoom overlay is active (ref-counted, safe with parent MediaModal) */
+  useScrollLock();
 
   // Scroll to center when content loads and is larger than viewport
   useEffect(() => {

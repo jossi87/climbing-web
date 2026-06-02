@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, type MouseEvent, useRef, useCallback, Fragment, type ReactNode } from 'react';
+import { useScrollLock } from '../../utils/scroll-lock';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
 import {
@@ -264,17 +265,8 @@ const MediaModal = ({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  /** Hide body/html scrollbar while modal is open */
-  useEffect(() => {
-    const prevBody = document.body.style.overflow;
-    const prevHtml = document.documentElement.style.overflow;
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = prevBody;
-      document.documentElement.style.overflow = prevHtml;
-    };
-  }, []);
+  /** Hide body/html scrollbar while modal is open (ref-counted, safe with nested ZoomableImage) */
+  useScrollLock();
 
   /** While pinch-zoomed, detach carousel swipe handlers so pan/zoom gestures stay native. */
   useEffect(() => {

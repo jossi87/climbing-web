@@ -1252,7 +1252,7 @@ html[data-theme='light'] .app-shell-header-glass-blur {
 }
 
 html[data-theme='light'] .app-shell-header-glass-tint {
-  background-color: rgba(19, 21, 26, 0.72);
+  background-color: rgba(19, 21, 26, 0.8);
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {

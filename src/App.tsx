@@ -1,5 +1,4 @@
 import AppRoutes from './routes/AppRoutes';
-import { appShellLightBackdropStripClass } from './design/twInk';
 import { MetaProvider } from './shared/components/Meta';
 import Header from './shared/layout/Header';
 import Footer from './shared/layout/Footer';
@@ -18,8 +17,6 @@ const App = () => {
         >
           Skip to main content
         </a>
-        {/* Light: graphite band under sticky header — `appShellLightBackdropStripClass` in `design/twInk.ts`. */}
-        <div aria-hidden className={appShellLightBackdropStripClass} role='presentation' />
         <Header />
         <main
           id='main-content'
