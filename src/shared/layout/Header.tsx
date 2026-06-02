@@ -6,7 +6,6 @@ import { useMeta } from '../components/Meta/context';
 import SearchBox from '../components/SearchBox/SearchBox';
 import { Avatar } from '../ui';
 import { cn } from '../../lib/utils';
-import { appShellLightBackdropStripClass } from '../../design/twInk';
 import { designContract } from '../../design/contract';
 import { downloadUsersTicks, useAccessToken } from '../../api';
 import { ThemeToggle } from '../components/ThemeToggle';
@@ -197,11 +196,6 @@ const Header = () => {
         !isVisible && '-translate-y-full lg:translate-y-0',
       )}
     >
-      {/*
-        Light theme: medium-gray band behind the glass so backdrop-filter has something to blur (not the pale page
-        canvas). The glass tint darkens it to near-black. Inside the nav so it slides away with the header on mobile.
-      */}
-      <div aria-hidden className={appShellLightBackdropStripClass} role='presentation' />
       {/*
         Two-layer glass: blur must sit in its own plane (transparent). A single high-α fill on top of backdrop-filter
         hides the frost — especially on light pages. Tint is a separate layer so we keep charcoal + visible blur.

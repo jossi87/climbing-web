@@ -5,6 +5,7 @@ import Footer from './shared/layout/Footer';
 import { ThemeSync } from './shared/components/ThemeSync';
 import { Suspense } from 'react';
 import { Loading } from './shared/ui/StatusWidgets';
+import { appShellLightBackdropStripClass } from './design/twInk';
 
 const App = () => {
   return (
@@ -18,6 +19,13 @@ const App = () => {
           Skip to main content
         </a>
         <Header />
+        {/*
+          Desktop (>= 1024px): solid dark band behind the page content so the header's backdrop-filter samples
+          charcoal, not the pale page canvas. Positioned at the top of the page, behind the main content (z-[45]),
+          above the page background. The header's backdrop-filter samples this strip when there's no page content
+          behind the nav, and samples the page content (cards, images) when the nav is over data.
+        */}
+        <div aria-hidden className={appShellLightBackdropStripClass} role='presentation' />
         <main
           id='main-content'
           className='max-w-container relative z-[46] mx-auto flex w-full min-w-0 grow flex-col px-4 pt-0 pb-10 sm:px-6 sm:pt-0 sm:pb-10 lg:px-8 lg:pt-4 lg:pb-6 xl:pt-5 xl:pb-8'
