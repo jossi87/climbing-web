@@ -71,6 +71,7 @@ import {
   problemListTradGearWrapClass,
 } from '../../shared/components/Profile/problemListRowChrome';
 import {
+  problemListRowLightBg,
   problemListRowRootClass,
   tickCommentSmall,
   tickListRowQuietMeta,
@@ -358,7 +359,13 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
   ]);
 
   return (
-    <div className={cn(problemListRowRootClass, 'min-w-0 py-0.5 sm:py-1')}>
+    <div
+      className={cn(
+        problemListRowRootClass,
+        'min-w-0 py-0.5 sm:py-1',
+        problemListRowLightBg({ ticked: !!problem.ticked, todo: !!problem.todo }),
+      )}
+    >
       <div className='grid min-w-0 grid-cols-[auto_1fr] items-baseline gap-x-1.5 sm:gap-x-2'>
         <div className='flex shrink-0 items-baseline justify-end gap-0.5'>
           {problem.danger ? (
