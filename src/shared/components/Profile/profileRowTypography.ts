@@ -32,6 +32,8 @@ export function tickProblemLinkWithStatus(opts: { ticked?: boolean; todo?: boole
     opts.broken && 'line-through opacity-60',
     opts.ticked && designContract.ascentStatus.ticked,
     opts.todo && !opts.ticked && designContract.ascentStatus.todo,
+    opts.ticked && 'light:bg-status-ticked/12 light:rounded-sm light:-mx-0.5 light:px-0.5',
+    opts.todo && !opts.ticked && 'light:bg-status-todo/12 light:rounded-sm light:-mx-0.5 light:px-0.5',
   );
 }
 
