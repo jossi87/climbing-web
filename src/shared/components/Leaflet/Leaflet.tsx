@@ -61,6 +61,13 @@ function MapEvent({
   return null;
 }
 
+type TrailDef = {
+  background?: boolean;
+  backgroundColor: string;
+  label?: string;
+  trail: components['schemas']['Trail'];
+};
+
 type Props = {
   autoZoom?: boolean;
   clusterMarkers?: boolean;
@@ -79,14 +86,7 @@ type Props = {
         label?: string;
       }[]
     | undefined;
-  slopes?:
-    | {
-        background?: boolean;
-        backgroundColor: string;
-        label?: string;
-        slope: components['schemas']['Slope'];
-      }[]
-    | null;
+  trails?: TrailDef[] | null;
   rocks?: string[];
   showSatelliteImage?: boolean;
   /** Bottom-right elevation labels toggle; hide on embedded TOC maps so it is not mistaken for page chrome. */
@@ -98,8 +98,8 @@ const UpdateBounds = ({
   autoZoom,
   markers,
   outlines,
-  slopes,
-}: Pick<Props, 'autoZoom' | 'markers' | 'outlines' | 'slopes'>) => {
+  trails,
+}: Pick<Props, 'autoZoom' | 'markers' | 'outlines' | 'trails'>) => {
   const map = useMap();
 
   if (!autoZoom) {
@@ -117,10 +117,10 @@ const UpdateBounds = ({
     ?.forEach(({ outline }) =>
       outline.forEach((c) => bounds.extend({ lat: (c.latitude ?? 0) as number, lng: (c.longitude ?? 0) as number })),
     );
-  slopes
-    ?.filter(({ slope }) => !!slope)
-    ?.forEach(({ slope }) => {
-      slope.coordinates?.forEach((c: components['schemas']['Coordinates']) => {
+  trails
+    ?.filter(({ trail }) => !!trail)
+    ?.forEach(({ trail }) => {
+      trail.path?.forEach((c: components['schemas']['Coordinates']) => {
         bounds.extend({ lat: (c.latitude ?? 0) as number, lng: (c.longitude ?? 0) as number });
       });
     });
@@ -145,7 +145,7 @@ const Leaflet = ({
   height,
   markers = null,
   outlines,
-  slopes = null,
+  trails = null,
   rocks = [],
   showSatelliteImage,
   showElevationControl = true,
@@ -242,7 +242,8 @@ const Leaflet = ({
       zoom={defaultZoom}
       center={defaultCenter}
     >
-      <UpdateBounds slopes={slopes} outlines={outlines} autoZoom={autoZoom} markers={markers} />
+      <UpdateBounds outlines={outlines} autoZoom={autoZoom} markers={markers} trails={trails} />
+
       <MapEvent onMouseClick={onMouseClick} onMouseMove={onMouseMove} />
       <FullscreenControl />
       <Locate />
@@ -347,7 +348,7 @@ const Leaflet = ({
           addEventHandlers={addEventHandlers}
           showElevation={showElevation}
         />
-        <Polylines opacity={opacity} slopes={slopes ?? []} />
+        <Polylines opacity={opacity} trails={trails ?? undefined} />
       </FeatureGroup>
       {typeof children === 'function' ? children({ showElevation }) : children}
     </MapContainer>

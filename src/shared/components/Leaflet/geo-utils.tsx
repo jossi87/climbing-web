@@ -1,6 +1,6 @@
 import type { components } from '../../../@types/buldreinfo/swagger';
 
-export function getDistanceWithUnit(slope: components['schemas']['Slope']) {
+export function getDistanceWithUnit(slope: components['schemas']['Slope'] | components['schemas']['Trail']) {
   if (!slope) {
     return null;
   }

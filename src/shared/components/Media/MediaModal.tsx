@@ -1055,45 +1055,61 @@ const MediaModal = ({
               </div>
             </div>
 
-            {/* Connected to: areas, sectors, problems, guestbook, user avatar */}
-            {(m.areas?.length || m.sectors?.length || m.problems?.length || m.guestbookId || m.userAvatarId) && (
+            {/* Connected to: areas, sectors, problems, trails, guestbook, user avatar */}
+            {(m.areas?.length ||
+              m.sectors?.length ||
+              m.problems?.length ||
+              m.trailIds?.length ||
+              m.guestbookId ||
+              m.userAvatarId) && (
               <div className='border-surface-border/50 border-t pt-6'>
                 <p className='type-label mb-3 flex items-center gap-2'>
                   <LinkIcon size={12} /> Connected to
                 </p>
                 <div className='space-y-1.5'>
-                  {m.areas?.map((a) => (
-                    <p key={a.areaId} className='type-body text-xs font-semibold'>
-                      {a.areaName}
-                    </p>
-                  ))}
-                  {m.sectors?.map((s) => (
-                    <p key={s.sectorId} className='type-body text-xs font-semibold'>
-                      {s.sectorName}
-                      {s.areaName ? ` (${s.areaName})` : ''}
-                    </p>
-                  ))}
-                  {m.problems?.map((p) => {
-                    const grade = p.problemGrade?.trim();
-                    const hasGrade = grade && grade !== '.' && !/^0+$/.test(grade);
-                    const hasPitch = (p.problemPitch ?? 0) > 0;
-                    const hasNumPitches = (p.problemNumPitches ?? 0) > 0;
-                    const area = p.areaName?.trim();
-                    const sector = p.sectorName?.trim();
-                    const location = [area, sector].filter(Boolean).join(' · ');
-                    return (
-                      <p key={p.problemId} className='type-body text-xs font-semibold'>
-                        {p.problemName}
-                        {hasGrade ? ` · ${grade}` : ''}
-                        {hasPitch && hasNumPitches
-                          ? ` · Pitch ${p.problemPitch} / ${p.problemNumPitches}`
-                          : hasPitch
-                            ? ` · Pitch ${p.problemPitch}`
-                            : ''}
-                        {location ? ` (${location})` : ''}
+                  {m.areas
+                    ?.filter((a) => a.areaName?.trim() && a.areaName.trim() !== '0')
+                    .map((a) => (
+                      <p key={a.areaId} className='type-body text-xs font-semibold'>
+                        {a.areaName}
                       </p>
-                    );
-                  })}
+                    ))}
+                  {m.sectors
+                    ?.filter((s) => s.sectorName?.trim() && s.sectorName.trim() !== '0')
+                    .map((s) => (
+                      <p key={s.sectorId} className='type-body text-xs font-semibold'>
+                        {s.sectorName}
+                        {s.areaName ? ` (${s.areaName})` : ''}
+                      </p>
+                    ))}
+                  {m.problems
+                    ?.filter((p) => p.problemName?.trim() && p.problemName.trim() !== '0')
+                    .map((p) => {
+                      const grade = p.problemGrade?.trim();
+                      const hasGrade = grade && grade !== '.' && !/^0+$/.test(grade);
+                      const hasPitch = (p.problemPitch ?? 0) > 0;
+                      const hasNumPitches = (p.problemNumPitches ?? 0) > 0;
+                      const area = p.areaName?.trim();
+                      const sector = p.sectorName?.trim();
+                      const location = [area, sector].filter(Boolean).join(' · ');
+                      return (
+                        <p key={p.problemId} className='type-body text-xs font-semibold'>
+                          {p.problemName}
+                          {hasGrade ? ` · ${grade}` : ''}
+                          {hasPitch && hasNumPitches
+                            ? ` · Pitch ${p.problemPitch} / ${p.problemNumPitches}`
+                            : hasPitch
+                              ? ` · Pitch ${p.problemPitch}`
+                              : ''}
+                          {location ? ` (${location})` : ''}
+                        </p>
+                      );
+                    })}
+                  {(m.trailIds ?? []).map((id) => (
+                    <p key={id} className='type-body text-xs font-semibold'>
+                      Trail #{id}
+                    </p>
+                  ))}
                   {!!m.guestbookId && <p className='type-body text-xs font-semibold'>Guestbook entry</p>}
                   {!!m.userAvatarId && <p className='type-body text-xs font-semibold'>User avatar</p>}
                 </div>

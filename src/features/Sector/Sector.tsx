@@ -1,14 +1,16 @@
 import { type ComponentProps, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { LucideIcon } from 'lucide-react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import ProblemList, { useProblemListCompact } from '../../shared/components/ProblemList';
 import ChartGradeDistribution from '../../shared/components/ChartGradeDistribution/ChartGradeDistribution';
-import { SlopeProfile } from '../../shared/components/SlopeProfile';
-import { SLOPE_APPROACH_COLOR, SLOPE_DESCENT_COLOR } from '../../shared/slopePolylineColors';
+import { TrailProfile } from '../../shared/components/TrailProfile';
+import MediaModal from '../../shared/components/Media/MediaModal';
+import { TRAIL_ASCENT_COLOR, TRAIL_DESCENT_COLOR } from '../../shared/slopePolylineColors';
+
 import Top from '../../shared/components/Top/Top';
 import Activity from '../../shared/components/Activity/Activity';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
-import { getDistanceWithUnit } from '../../shared/components/Leaflet/geo-utils';
 import Media from '../../shared/components/Media/Media';
 import Todo from '../../shared/components/Todo/Todo';
 import GetCenterFromDegrees from '../../utils/map-utils';
@@ -19,8 +21,7 @@ import { ConditionLabels } from '../../shared/components/Widgets/ConditionLabels
 import { ExternalLinkLabels } from '../../shared/components/Widgets/ExternalLinkLabels';
 import { NoDogsAllowed } from '../../shared/components/Widgets/NoDogsAllowed';
 import { useMeta } from '../../shared/components/Meta/context';
-import { useSector } from '../../api';
-import type { Slope } from '../../@types/buldreinfo';
+import { useSector, mediaIdentityId } from '../../api';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { ActionMenuChip, Card, NotFoundCard, PageCardBreadcrumbRow } from '../../shared/ui';
 import { TradGearMarker } from '../../shared/ui/TradGearMarker';
@@ -409,6 +410,10 @@ const Sector = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [sectorPickerOpen, setSectorPickerOpen] = useState(false);
+  const [trailMediaState, setTrailMediaState] = useState<{
+    trailMedia: components['schemas']['Media'][];
+    currentIndex: number;
+  } | null>(null);
   const sectorPickerRef = useRef<HTMLDivElement>(null);
   const sectorPickerActiveItemRef = useRef<HTMLLIElement | null>(null);
 
@@ -464,8 +469,8 @@ const Sector = () => {
     t.push({ id: 'overview', label: 'Overview', icon: LayoutDashboard });
     const addPolygon = meta.isClimbing || markers.length === 0;
     const hasOutlineOnMap = (data.outline ?? []).length > 0 && addPolygon;
-    const hasApproachOrDescent =
-      (data.approach?.coordinates ?? []).length > 0 || (data.descent?.coordinates ?? []).length > 0;
+    const hasApproachOrDescent = (data.trails ?? []).length > 0;
+
     if (markers.length > 0 || hasOutlineOnMap || hasApproachOrDescent) {
       t.push({ id: 'map', label: 'Map', icon: MapIcon });
     }
@@ -588,27 +593,17 @@ const Sector = () => {
       : meta.defaultCenter;
   const defaultZoom = data.parking ? 15 : meta.defaultZoom;
   let outlines: ComponentProps<typeof Leaflet>['outlines'] = undefined;
-  const slopes: ComponentProps<typeof Leaflet>['slopes'] = [];
+  const trails: ComponentProps<typeof Leaflet>['trails'] = (data.trails ?? []).map((t) => ({
+    trail: t,
+    backgroundColor: t.isDescent ? TRAIL_DESCENT_COLOR : TRAIL_ASCENT_COLOR,
+    label: t.title ?? undefined,
+  }));
 
   if ((data.outline ?? []).length && addPolygon) {
     outlines = [{ url: '/sector/' + data.id, label: data.name ?? '', outline: data.outline ?? [] }];
   }
-  if ((data.approach?.coordinates ?? []).length) {
-    slopes.push({
-      backgroundColor: SLOPE_APPROACH_COLOR,
-      slope: data.approach as Slope,
-      label: getDistanceWithUnit(data.approach as Slope) ?? undefined,
-    });
-  }
-  if ((data.descent?.coordinates ?? []).length) {
-    slopes.push({
-      backgroundColor: SLOPE_DESCENT_COLOR,
-      slope: data.descent as Slope,
-      label: getDistanceWithUnit(data.descent as Slope) ?? undefined,
-    });
-  }
-  const mapProfileHasApproach = (data.approach?.coordinates ?? []).length > 0;
-  const mapProfileHasDescent = (data.descent?.coordinates ?? []).length > 0;
+  const hasTrails = (data.trails ?? []).length > 0;
+
   const uniqueRocks = Array.from(
     new Set(
       data.problems
@@ -731,18 +726,20 @@ const Sector = () => {
                   <ImageIcon className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
                 </Link>
                 {meta.isAdmin && (
-                  <Link
-                    to={`/sector/edit/${data.areaId}/${data.id}`}
-                    title='Edit sector'
-                    aria-label='Edit sector'
-                    data-ph-action='edit'
-                    className={cn(
-                      designContract.controls.pageHeaderIconButton,
-                      designContract.controls.pageHeaderIconButtonEdit,
-                    )}
-                  >
-                    <Edit className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
-                  </Link>
+                  <>
+                    <Link
+                      to={`/sector/edit/${data.areaId}/${data.id}`}
+                      title='Edit sector'
+                      aria-label='Edit sector'
+                      data-ph-action='edit'
+                      className={cn(
+                        designContract.controls.pageHeaderIconButton,
+                        designContract.controls.pageHeaderIconButtonEdit,
+                      )}
+                    >
+                      <Edit className={designContract.controls.pageHeaderIconGlyph} strokeWidth={2.5} />
+                    </Link>
+                  </>
                 )}
               </>
             ) : null
@@ -957,7 +954,7 @@ const Sector = () => {
                     height='100%'
                     markers={markers}
                     outlines={outlines}
-                    slopes={slopes}
+                    trails={trails}
                     defaultCenter={defaultCenter}
                     defaultZoom={defaultZoom}
                     onMouseClick={undefined}
@@ -997,38 +994,68 @@ const Sector = () => {
         )}
       </Card>
 
-      {effectiveTab === 'map' && (mapProfileHasApproach || mapProfileHasDescent) && (
+      {effectiveTab === 'map' && hasTrails && (
         <div className={cn('mt-4 min-w-0 sm:mt-5', 'max-sm:-mx-4 max-sm:w-[calc(100%+2rem)] sm:mx-0 sm:w-full')}>
           <div className='grid min-w-0 grid-cols-1 items-stretch gap-3 sm:grid-cols-2 sm:gap-4'>
-            {mapProfileHasApproach && (
-              <div className='w-full min-w-0'>
-                <SlopeProfile
+            {(data.trails ?? []).map((t) => (
+              <div key={t.id ?? t.title} className='w-full min-w-0'>
+                <TrailProfile
                   compact
-                  variant='approach'
+                  isDescent={!!t.isDescent}
                   className='w-full min-w-0'
-                  title='Approach'
                   areaName={data.areaName ?? ''}
                   sectorName={data.name ?? ''}
-                  slope={data.approach as Slope}
+                  sectorId={data.id}
+                  trail={t}
+                  onMediaClick={(mediaId) => {
+                    const trailMedia = t.media ?? [];
+                    const idx = trailMedia.findIndex((m) => m.identity && mediaId === mediaIdentityId(m.identity));
+                    if (idx >= 0) setTrailMediaState({ trailMedia, currentIndex: idx });
+                  }}
                 />
               </div>
-            )}
-            {mapProfileHasDescent && (
-              <div className='w-full min-w-0'>
-                <SlopeProfile
-                  compact
-                  variant='descent'
-                  className='w-full min-w-0'
-                  title='Descent'
-                  areaName={data.areaName ?? ''}
-                  sectorName={data.name ?? ''}
-                  slope={data.descent as Slope}
-                />
-              </div>
-            )}
+            ))}
           </div>
         </div>
       )}
+
+      {trailMediaState &&
+        createPortal(
+          <MediaModal
+            isSaving={false}
+            onClose={() => setTrailMediaState(null)}
+            onDelete={() => {}}
+            onRotate={() => {}}
+            onMoveImageLeft={() => {}}
+            onMoveImageRight={() => {}}
+            onMoveImageToSector={() => {}}
+            onMoveImageToProblem={() => {}}
+            m={trailMediaState.trailMedia[trailMediaState.currentIndex]}
+            pitch={0}
+            pitches={[]}
+            orderableMedia={trailMediaState.trailMedia}
+            carouselIndex={trailMediaState.currentIndex + 1}
+            carouselSize={trailMediaState.trailMedia.length}
+            showLocation={false}
+            gotoPrev={() =>
+              setTrailMediaState((prev) =>
+                prev
+                  ? { ...prev, currentIndex: (prev.currentIndex - 1 + prev.trailMedia.length) % prev.trailMedia.length }
+                  : null,
+              )
+            }
+            gotoNext={() =>
+              setTrailMediaState((prev) =>
+                prev ? { ...prev, currentIndex: (prev.currentIndex + 1) % prev.trailMedia.length } : null,
+              )
+            }
+            playVideo={() => {}}
+            stopVideo={() => {}}
+            autoPlayVideo={false}
+            optProblemId={null}
+          />,
+          document.body,
+        )}
 
       {effectiveTab === 'overview' && (data.problems?.length ?? 0) > 0 && (
         <div className='min-w-0'>

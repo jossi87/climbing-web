@@ -10,10 +10,11 @@ import {
   type ElementType,
   type SetStateAction,
 } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
-import { getDistanceWithUnit } from '../../shared/components/Leaflet/geo-utils';
 import GetCenterFromDegrees from '../../utils/map-utils';
+
 import { googleMapsSearchUrl } from '../../utils/googleMaps';
 import Media from '../../shared/components/Media/Media';
 import { Loading } from '../../shared/ui/StatusWidgets';
@@ -22,13 +23,15 @@ import { ConditionLabels } from '../../shared/components/Widgets/ConditionLabels
 import { ExternalLinkLabels } from '../../shared/components/Widgets/ExternalLinkLabels';
 import { NoDogsAllowed } from '../../shared/components/Widgets/NoDogsAllowed';
 import { useMeta } from '../../shared/components/Meta/context';
-import { useProblem } from '../../api';
+import { useProblem, mediaIdentityId } from '../../api';
 import type { components } from '../../@types/buldreinfo/swagger';
-import type { Slope } from '../../@types/buldreinfo';
+
 import TickModal from '../../shared/components/TickModal/TickModal';
 import CommentModal from '../../shared/components/CommentModal/CommentModal';
-import { SlopeProfile } from '../../shared/components/SlopeProfile';
-import { SLOPE_APPROACH_COLOR, SLOPE_DESCENT_COLOR } from '../../shared/slopePolylineColors';
+import { TrailProfile } from '../../shared/components/TrailProfile';
+import MediaModal from '../../shared/components/Media/MediaModal';
+
+import { TRAIL_ASCENT_COLOR, TRAIL_DESCENT_COLOR } from '../../shared/slopePolylineColors';
 import Linkify from 'linkify-react';
 import { ProblemsOnRock } from './ProblemsOnRock';
 import { ProblemTicks } from './ProblemTicks';
@@ -185,6 +188,10 @@ function ProblemLoaded({
   const [optimisticTodo, setOptimisticTodo] = useOptimistic(data.todo, (_, newTodo: boolean) => newTodo);
   const [showTickModal, setShowTickModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState<components['schemas']['ProblemComment'] | null>(null);
+  const [trailMediaState, setTrailMediaState] = useState<{
+    trailMedia: components['schemas']['Media'][];
+    currentIndex: number;
+  } | null>(null);
 
   const handleToggleTodo = async () => {
     const newTodoValue = !optimisticTodo;
@@ -234,21 +241,11 @@ function ProblemLoaded({
     return [meta.defaultCenter.lat || 0, meta.defaultCenter.lng || 0];
   })();
 
-  const slopes: ComponentProps<typeof Leaflet>['slopes'] = [];
-  if (data.sectorApproach?.coordinates?.length) {
-    slopes.push({
-      slope: data.sectorApproach as Slope,
-      backgroundColor: SLOPE_APPROACH_COLOR,
-      label: getDistanceWithUnit(data.sectorApproach as Slope) ?? undefined,
-    });
-  }
-  if (data.sectorDescent?.coordinates?.length) {
-    slopes.push({
-      slope: data.sectorDescent as Slope,
-      backgroundColor: SLOPE_DESCENT_COLOR,
-      label: getDistanceWithUnit(data.sectorDescent as Slope) ?? undefined,
-    });
-  }
+  const trails: ComponentProps<typeof Leaflet>['trails'] = (data.trails ?? []).map((t) => ({
+    trail: t,
+    backgroundColor: t.isDescent ? TRAIL_DESCENT_COLOR : TRAIL_ASCENT_COLOR,
+    label: t.title ?? undefined,
+  }));
 
   const isTicked = data.ticks?.some((t) => t.writable);
   const userTick = data.ticks?.find((t) => t.writable);
@@ -261,10 +258,9 @@ function ProblemLoaded({
   /** Full “Rock” card with chip list — climbing only; boulder uses inline row in overview. */
   const hasMetaCard = hasRockBlock && meta.isClimbing;
 
-  const hasApproach = (data.sectorApproach?.coordinates?.length ?? 0) > 1;
-  const hasDescent = (data.sectorDescent?.coordinates?.length ?? 0) > 1;
+  const hasTrails = (data.trails?.length ?? 0) > 0;
   const hasSectorOutline = (data.sectorOutline?.length ?? 0) > 0;
-  const showMapTab = markers.length > 0 || hasApproach || hasDescent || (hasSectorOutline && !data.coordinates);
+  const showMapTab = markers.length > 0 || hasTrails || (hasSectorOutline && !data.coordinates);
 
   /** `/problem/:id`, `/problem/:id/overview`, and `/problem/:id/map` — same pattern as profile pages. */
   const activeTab = useMemo<'overview' | 'map'>(() => {
@@ -691,7 +687,7 @@ function ProblemLoaded({
                         ]
                       : undefined
                   }
-                  slopes={slopes}
+                  trails={trails}
                   defaultCenter={{ lat: conditionLat, lng: conditionLng }}
                   defaultZoom={16}
                   showSatelliteImage={meta.isBouldering}
@@ -706,38 +702,68 @@ function ProblemLoaded({
         )}
       </Card>
 
-      {showMapTab && activeTab === 'map' && (hasApproach || hasDescent) && (
+      {showMapTab && activeTab === 'map' && hasTrails && (
         <div className={cn('mt-4 min-w-0 sm:mt-5', 'max-sm:-mx-4 max-sm:w-[calc(100%+2rem)] sm:mx-0 sm:w-full')}>
           <div className='grid min-w-0 grid-cols-1 items-stretch gap-3 sm:grid-cols-2 sm:gap-4'>
-            {hasApproach && (
-              <div className='w-full min-w-0'>
-                <SlopeProfile
+            {(data.trails ?? []).map((t) => (
+              <div key={t.id ?? t.title} className='w-full min-w-0'>
+                <TrailProfile
                   compact
-                  variant='approach'
+                  isDescent={!!t.isDescent}
                   className='w-full min-w-0'
-                  title='Approach'
                   areaName={data.areaName ?? ''}
                   sectorName={data.sectorName ?? ''}
-                  slope={data.sectorApproach as Slope}
+                  sectorId={data.sectorId}
+                  trail={t}
+                  onMediaClick={(mediaId) => {
+                    const trailMedia = t.media ?? [];
+                    const idx = trailMedia.findIndex((m) => m.identity && mediaId === mediaIdentityId(m.identity));
+                    if (idx >= 0) setTrailMediaState({ trailMedia, currentIndex: idx });
+                  }}
                 />
               </div>
-            )}
-            {hasDescent && (
-              <div className='w-full min-w-0'>
-                <SlopeProfile
-                  compact
-                  variant='descent'
-                  className='w-full min-w-0'
-                  title='Descent'
-                  areaName={data.areaName ?? ''}
-                  sectorName={data.sectorName ?? ''}
-                  slope={data.sectorDescent as Slope}
-                />
-              </div>
-            )}
+            ))}
           </div>
         </div>
       )}
+
+      {trailMediaState &&
+        createPortal(
+          <MediaModal
+            isSaving={false}
+            onClose={() => setTrailMediaState(null)}
+            onDelete={() => {}}
+            onRotate={() => {}}
+            onMoveImageLeft={() => {}}
+            onMoveImageRight={() => {}}
+            onMoveImageToSector={() => {}}
+            onMoveImageToProblem={() => {}}
+            m={trailMediaState.trailMedia[trailMediaState.currentIndex]}
+            pitch={0}
+            pitches={[]}
+            orderableMedia={trailMediaState.trailMedia}
+            carouselIndex={trailMediaState.currentIndex + 1}
+            carouselSize={trailMediaState.trailMedia.length}
+            showLocation={false}
+            gotoPrev={() =>
+              setTrailMediaState((prev) =>
+                prev
+                  ? { ...prev, currentIndex: (prev.currentIndex - 1 + prev.trailMedia.length) % prev.trailMedia.length }
+                  : null,
+              )
+            }
+            gotoNext={() =>
+              setTrailMediaState((prev) =>
+                prev ? { ...prev, currentIndex: (prev.currentIndex + 1) % prev.trailMedia.length } : null,
+              )
+            }
+            playVideo={() => {}}
+            stopVideo={() => {}}
+            autoPlayVideo={false}
+            optProblemId={null}
+          />,
+          document.body,
+        )}
 
       {showOverviewContent && hasPitches && data.sections && (
         <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm'>

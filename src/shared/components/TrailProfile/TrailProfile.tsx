@@ -1,35 +1,41 @@
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { AreaChart, Area, Tooltip, XAxis, YAxis } from 'recharts';
-import { getDistanceWithUnit } from '../Leaflet/geo-utils';
-import { TRAIL_ASCENT_COLOR, TRAIL_DESCENT_COLOR } from '../../slopePolylineColors';
-import { Download, Clock, Database, ArrowUpRight, ArrowDownRight, Ruler } from 'lucide-react';
+import { Download, Clock, ArrowUpRight, ArrowDownRight, Ruler, MapPin, ImageIcon } from 'lucide-react';
 import { useState, useLayoutEffect, useRef, useId } from 'react';
+import { Link } from 'react-router-dom';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
+import { ExpandableMarkdown } from '../ExpandableMarkdown';
+import { useMeta } from '../Meta/context';
+import { getMediaFileUrl, mediaIdentityId, mediaIdentityVersionStamp } from '../../../api';
+
+type Trail = components['schemas']['Trail'];
 
 type Props = {
   areaName?: string | null;
   sectorName?: string | null;
-  trail: components['schemas']['Trail'];
+  sectorId?: number;
+  trail: Trail;
   /** Shallow chart + stats strip (problem / sector map tab); parent grid is full width below sm, half-width columns from sm. */
   compact?: boolean;
-  /** Shown inside the widget header (e.g. Approach / Descent). */
-  title?: string;
-  /** Matches Leaflet polyline hue: green approach, violet descent. */
-  variant?: 'approach' | 'descent';
+  /** Matches Leaflet polyline hue: green ascent, violet descent. */
+  isDescent?: boolean;
   className?: string;
+  /** Called when a media thumbnail is clicked. The parent should open the media modal. */
+  onMediaClick?: (mediaId: number) => void;
 };
 
 const createXmlString = (
   areaName: string,
   sectorName: string,
+  title: string,
   coordinates: components['schemas']['Coordinates'][],
 ): string => {
   let result = '<?xml version="1.0" encoding="UTF-8"?>\r\n';
   result +=
     '<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="BratteLinjer/Buldreinfo">\r\n';
   result += '<trk>\r\n';
-  result += `\t<name>${areaName} - ${sectorName}</name>\r\n`;
+  result += `\t<name>${areaName} - ${sectorName} - ${title}</name>\r\n`;
   result += '\t<type>Running</type>\r\n';
   result += '\t<trkseg>\r\n';
   result += coordinates.reduce((accum, curr) => {
@@ -42,30 +48,38 @@ const createXmlString = (
   return result;
 };
 
-const downloadGpxFile = (areaName: string, sectorName: string, coordinates: components['schemas']['Coordinates'][]) => {
-  const xml = createXmlString(areaName, sectorName, coordinates);
+const downloadGpxFile = (
+  areaName: string,
+  sectorName: string,
+  title: string,
+  coordinates: components['schemas']['Coordinates'][],
+) => {
+  const xml = createXmlString(areaName, sectorName, title, coordinates);
   const url = 'data:text/json;charset=utf-8,' + encodeURIComponent(xml);
   const link = document.createElement('a');
-  link.download = `${areaName}_${sectorName}`.replace(/[^a-z0-9]/gi, '_') + '_Slope.gpx';
+  link.download = `${areaName}_${sectorName}_${title}`.replace(/[^a-z0-9]/gi, '_') + '_Trail.gpx';
   link.href = url;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
 };
 
-export const SlopeProfile = ({
+export const TrailProfile = ({
   areaName = '',
   sectorName = '',
   trail,
   compact = false,
-  title,
-  variant,
+  isDescent = false,
   className,
+  onMediaClick,
 }: Props) => {
+  const meta = useMeta();
   const containerRef = useRef<HTMLDivElement>(null);
   const gradientId = useId().replace(/:/g, '');
   const [dims, setDims] = useState<{ width: number; height: number } | null>(null);
-  const sources = Array.from(new Set((trail.path ?? []).map((a) => a.elevationSource))).join(', ');
+  const sources = Array.from(new Set((trail.path ?? []).map((a) => a.elevationSource)))
+    .filter(Boolean)
+    .join(', ');
 
   useLayoutEffect(() => {
     if (!containerRef.current) return;
@@ -83,17 +97,20 @@ export const SlopeProfile = ({
 
   const icon = compact ? 10 : 12;
   const statText = compact ? 'text-[12px] leading-snug' : 'text-[13px] leading-snug';
-  const lineColor =
-    variant === 'approach' ? TRAIL_ASCENT_COLOR : variant === 'descent' ? TRAIL_DESCENT_COLOR : '#c9ac62';
+  const lineColor = isDescent ? '#a855f7' : '#84cc16';
   const chartStroke = lineColor;
   const chartFillTop = lineColor;
   const chartFillBot = lineColor;
+
+  const hasDescription = (trail.description ?? '').trim().length > 0;
+  const hasMarkers = (trail.markers ?? []).length > 0;
+  const hasMedia = (trail.media ?? []).length > 0;
 
   const statsInner = (
     <>
       <span className='inline-flex items-center gap-1 font-medium text-slate-100'>
         <Ruler size={icon} className='light:text-slate-600 shrink-0 text-slate-300' aria-hidden />
-        <span>{getDistanceWithUnit(trail)}</span>
+        <span>{trail.distance ?? 0}m</span>
       </span>
       <span className='inline-flex items-center gap-1 font-medium text-slate-100'>
         <ArrowUpRight size={icon} className='light:text-slate-600 shrink-0 text-slate-300' aria-hidden />
@@ -108,18 +125,17 @@ export const SlopeProfile = ({
         <span className='tabular-nums'>{trail.calculatedDurationInMinutes ?? 0} min</span>
       </span>
       {sources ? (
-        <>
-          <span className='inline-flex max-w-full min-w-0 items-center gap-1 font-medium text-slate-100'>
-            <Database size={icon} className='light:text-slate-600 shrink-0 text-slate-300' aria-hidden />
-            <span className='min-w-0 truncate' title={sources}>
-              {sources}
-            </span>
+        <span className='inline-flex max-w-full min-w-0 items-center gap-1 font-medium text-slate-100'>
+          <MapPin size={icon} className='light:text-slate-600 shrink-0 text-slate-300' aria-hidden />
+          <span className='min-w-0 truncate' title={sources}>
+            {sources}
           </span>
-        </>
+        </span>
       ) : null}
+
       <button
         type='button'
-        onClick={() => downloadGpxFile(areaName ?? '', sectorName ?? '', trail.path ?? [])}
+        onClick={() => downloadGpxFile(areaName ?? '', sectorName ?? '', trail.title ?? '', trail.path ?? [])}
         className={cn(
           'group inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-semibold transition-[background-color,border-color,color] focus-visible:ring-2 focus-visible:outline-none',
           'border-brand-border/55 bg-brand/12 text-brand hover:border-brand-border hover:bg-brand/22 hover:text-brand',
@@ -143,18 +159,97 @@ export const SlopeProfile = ({
         className,
       )}
     >
-      {title ? (
+      {trail.title ? (
         <div
           className={cn(
-            'bg-surface-raised border-surface-border/50 border-b py-1.5',
+            'bg-surface-raised border-surface-border/50 relative border-b py-1.5',
             compact ? 'px-2.5 sm:px-3.5' : 'px-3 sm:px-3.5',
           )}
         >
-          <span
-            className={cn(designContract.typography.micro, 'font-semibold tracking-[0.12em] text-slate-200 uppercase')}
-          >
-            {title}
-          </span>
+          <div className='flex items-start justify-between gap-2'>
+            <span
+              className={cn(designContract.typography.micro, 'font-semibold tracking-[0.12em] uppercase')}
+              style={{ color: lineColor }}
+            >
+              {trail.title}
+            </span>
+            {meta?.isAdmin && trail.id && (
+              <Link
+                to={`/media/add?type=trail&trailId=${trail.id}`}
+                title='Add media to trail'
+                aria-label='Add media to trail'
+                className='hover:bg-surface-raised-hover -mt-0.5 -mr-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-slate-400 transition-colors hover:text-slate-200'
+              >
+                <ImageIcon size={12} strokeWidth={2.5} />
+              </Link>
+            )}
+          </div>
+          {hasDescription && (
+            <div className='mt-1 text-[12px] text-slate-300'>
+              <ExpandableMarkdown content={trail.description ?? ''} contentClassName='max-w-none' />
+            </div>
+          )}
+          {hasMarkers && (
+            <div className='mt-2 flex flex-wrap gap-1.5'>
+              {(trail.markers ?? []).map((m, i) => {
+                const googleMapsUrl =
+                  m.coordinates?.latitude != null && m.coordinates?.longitude != null
+                    ? `https://www.google.com/maps?q=${m.coordinates.latitude},${m.coordinates.longitude}`
+                    : null;
+                const markerColor = isDescent ? '#a855f7' : '#84cc16';
+                const inner = (
+                  <>
+                    <MapPin size={11} className='shrink-0' aria-hidden style={{ color: markerColor }} />
+                    <span className='text-[12px] font-medium'>{m.label}</span>
+                  </>
+                );
+                return googleMapsUrl ? (
+                  <a
+                    key={i}
+                    href={googleMapsUrl}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='type-on-accent hover:type-on-accent inline-flex items-center gap-1.5 rounded-lg border border-white/12 bg-white/6 px-2 py-1 transition-colors hover:border-white/22 hover:bg-white/12'
+                    title='Open in Google Maps'
+                  >
+                    {inner}
+                  </a>
+                ) : (
+                  <div key={i} className='inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-slate-400'>
+                    {inner}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          {hasMedia && (
+            <div className='mt-2 flex flex-wrap gap-1.5'>
+              {(trail.media ?? []).map((m, i) => {
+                const thumbUrl = m.identity
+                  ? getMediaFileUrl(mediaIdentityId(m.identity), mediaIdentityVersionStamp(m.identity), false, {
+                      minDimension: 120,
+                    })
+                  : m.url;
+                const mediaId = m.identity ? mediaIdentityId(m.identity) : 0;
+                return (
+                  <button
+                    key={i}
+                    type='button'
+                    onClick={() => onMediaClick?.(mediaId)}
+                    className='group relative h-14 w-20 overflow-hidden rounded-lg border border-white/10 bg-black/30 transition-colors hover:border-white/30'
+                    title={m.description || 'View media'}
+                  >
+                    <img
+                      src={thumbUrl}
+                      alt={m.description || ''}
+                      className='h-full w-full object-cover transition-transform duration-200 group-hover:scale-105'
+                      loading='lazy'
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       ) : null}
 
@@ -162,7 +257,6 @@ export const SlopeProfile = ({
         ref={containerRef}
         className={cn(
           'from-surface-card via-surface-raised to-surface-card relative w-full overflow-hidden bg-gradient-to-b',
-          /** Compact: short strip — mobile follows full width below; from sm each card sits in one grid column (~half main). */
           compact ? 'aspect-[12/2.5] sm:aspect-[20/2.5]' : 'aspect-[5/2] min-h-[4.75rem] p-0.5 sm:min-h-[5.25rem]',
         )}
       >
@@ -170,7 +264,7 @@ export const SlopeProfile = ({
           <AreaChart
             width={dims.width}
             height={dims.height}
-            data={trail.path ?? []}
+            data={trail.path?.map((p, i) => ({ ...p, _index: i })) ?? []}
             margin={{ top: 4, right: 0, left: 0, bottom: 4 }}
           >
             <defs>
@@ -187,9 +281,10 @@ export const SlopeProfile = ({
               fill={`url(#slopeFill-${gradientId})`}
               isAnimationActive={false}
               dot={false}
+              connectNulls
             />
             <XAxis
-              dataKey='distance'
+              dataKey='_index'
               hide
               type='number'
               scale='linear'
@@ -203,7 +298,7 @@ export const SlopeProfile = ({
                 return (
                   <div className='bg-surface-card ring-surface-border/50 rounded-lg px-2.5 py-1.5 shadow-lg ring-1'>
                     <div className='flex gap-3 font-mono text-[11px] text-slate-300'>
-                      <span>D: {parseInt(String(label ?? '0'))}m</span>
+                      <span>#{parseInt(String(label ?? '0')) + 1}</span>
                       <span>E: {parseInt(String(payload[0].value ?? '0'))}m</span>
                     </div>
                   </div>

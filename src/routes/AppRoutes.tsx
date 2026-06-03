@@ -12,7 +12,6 @@ const Dangerous = lazy(() => import('../features/Dangerous/Dangerous'), 'dangero
 const Restrictions = lazy(() => import('../features/Restrictions/Restrictions'), 'restrictions');
 const Donations = lazy(() => import('../features/Donations/Donations'), 'donations');
 const Graph = lazy(() => import('../features/Graph/Graph'), 'graph');
-const MediaAdd = lazy(() => import('../features/MediaAdd/MediaAdd'), 'media-add');
 const MediaEdit = lazy(() => import('../features/MediaEdit/MediaEdit'), 'media-edit');
 const MediaSvgEdit = lazy(() => import('../features/MediaSvgEdit/MediaSvgEdit'), 'media-svg-edit');
 const Permissions = lazy(() => import('../features/Permissions/Permissions'), 'permissions');
@@ -98,14 +97,6 @@ function AppRoutes() {
             />
             <Route path='/privacy-policy' element={<PrivacyPolicy />} />
             <Route path='/problem/:problemId/:segment?/:pitch?' element={<Problem />} />
-            <Route
-              path='/problem/edit/media/:problemId'
-              element={
-                <AuthContainer level='logged-in'>
-                  <MediaAdd />
-                </AuthContainer>
-              }
-            />
             <Route
               path='/problem/edit/:sectorId/:problemId'
               element={

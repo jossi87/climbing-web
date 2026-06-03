@@ -250,8 +250,7 @@ export function postSector(
   parking: components['schemas']['Coordinates'],
   outline: components['schemas']['Coordinates'][],
   wallDirectionManual: components['schemas']['CompassDirection'],
-  approach: components['schemas']['Slope'],
-  descent: components['schemas']['Slope'],
+  trails: components['schemas']['Trail'][],
   externalLinks: components['schemas']['ExternalLink'][],
   media: UploadMedia[],
   problemOrder: components['schemas']['SectorProblemOrder'][] | undefined,
@@ -287,8 +286,7 @@ export function postSector(
       parking,
       outline,
       wallDirectionManual,
-      approach,
-      descent,
+      trails,
       externalLinks,
       newMedia,
       problemOrder,
@@ -335,6 +333,18 @@ export function postTicks(
       'Content-Type': 'application/json',
     },
     invalidateActivityFeed: true,
+  }).then((response) => ensureOkResponse(response, url));
+}
+
+export function postTrail(accessToken: string | null, trail: components['schemas']['Trail']): Promise<Response> {
+  const url = `/trails`;
+  return makeAuthenticatedRequest(accessToken, url, {
+    method: 'POST',
+    body: JSON.stringify(trail),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    ...invalidateQueriesAfter,
   }).then((response) => ensureOkResponse(response, url));
 }
 

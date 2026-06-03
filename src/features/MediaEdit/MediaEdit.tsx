@@ -81,6 +81,7 @@ const MediaEdit = () => {
   const addAreaName = searchParams.get('areaName') ?? '';
   const addSectorName = searchParams.get('sectorName') ?? '';
   const addNumPitches = Number(searchParams.get('numPitches') ?? 0);
+  const addTrailId = Number(searchParams.get('trailId') ?? 0);
 
   const isAddMode = !mediaId || mediaId === 'add';
 
@@ -241,6 +242,8 @@ const MediaEdit = () => {
             body.areas = [{ areaId: addEntityId, areaName: addEntityName, trivia: item.areaTrivia }];
           } else if (connectionType === 'sector') {
             body.sectors = [{ sectorId: addEntityId, sectorName: addEntityName, trivia: item.sectorTrivia }];
+          } else if (connectionType === 'trail' && addTrailId > 0) {
+            body.trailIds = [addTrailId];
           }
           if (item.file) {
             const isVideo = item.file.type.startsWith('video/');
@@ -285,6 +288,8 @@ const MediaEdit = () => {
           navigate(`/sector/${addEntityId}`);
         } else if (connectionType === 'area' && addEntityId) {
           navigate(`/area/${addEntityId}`);
+        } else if (connectionType === 'trail' && addTrailId) {
+          navigate(-1);
         } else {
           navigate(-1);
         }
@@ -506,6 +511,7 @@ const MediaEdit = () => {
       connectionType === 'sector'
         ? [{ sectorId: addEntityId, sectorName: addEntityName, areaName: addAreaName, trivia: item.sectorTrivia }]
         : undefined,
+    trails: connectionType === 'trail' && addTrailId > 0 ? [{ trailId: addTrailId }] : undefined,
   });
 
   const buildItemCallbacks = (idx: number): MediaMetadataCallbacks => ({

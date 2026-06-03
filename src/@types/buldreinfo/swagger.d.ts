@@ -879,6 +879,23 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/v2/trails": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upsert trail */
+        post: operations["postTrails"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/user/regions": {
         parameters: {
             query?: never;
@@ -1055,6 +1072,7 @@ export type components = {
             wallDirectionManual?: components["schemas"]["CompassDirection"];
             approach?: components["schemas"]["Slope"];
             descent?: components["schemas"]["Slope"];
+            trails?: components["schemas"]["Trail"][];
             randomMedia?: components["schemas"]["MediaIdentity"];
             problems?: components["schemas"]["SectorProblem"][];
             /** Format: int32 */
@@ -1129,6 +1147,7 @@ export type components = {
             areas?: components["schemas"]["MediaArea"][];
             sectors?: components["schemas"]["MediaSector"][];
             problems?: components["schemas"]["MediaProblem"][];
+            trailIds?: number[];
             /** Format: int32 */
             guestbookId?: number;
             /** Format: int32 */
@@ -1244,6 +1263,36 @@ export type components = {
             ticked?: boolean;
             todo?: boolean;
             dangerous?: boolean;
+        };
+        Trail: {
+            /** Format: int32 */
+            id?: number;
+            isDescent?: boolean;
+            delete?: boolean;
+            title?: string;
+            description?: string;
+            path?: components["schemas"]["Coordinates"][];
+            markers?: components["schemas"]["TrailMarker"][];
+            media?: components["schemas"]["Media"][];
+            sectors?: components["schemas"]["TrailSector"][];
+            /** Format: double */
+            calculatedDurationInMinutes?: number;
+            /** Format: int64 */
+            distance?: number;
+            /** Format: int64 */
+            elevationGain?: number;
+            /** Format: int64 */
+            elevationLoss?: number;
+        };
+        TrailMarker: {
+            coordinates?: components["schemas"]["Coordinates"];
+            label?: string;
+        };
+        TrailSector: {
+            /** Format: int32 */
+            sectorId?: number;
+            areaName?: string;
+            sectorName?: string;
         };
         Type: {
             /** Format: int32 */
@@ -1527,6 +1576,7 @@ export type components = {
             sectorWallDirectionManual?: components["schemas"]["CompassDirection"];
             sectorApproach?: components["schemas"]["Slope"];
             sectorDescent?: components["schemas"]["Slope"];
+            trails?: components["schemas"]["Trail"][];
             neighbours?: components["schemas"]["Neighbour"][];
             /** Format: int32 */
             id?: number;
@@ -1809,6 +1859,7 @@ export type components = {
             wallDirectionManual?: components["schemas"]["CompassDirection"];
             approach?: components["schemas"]["Slope"];
             descent?: components["schemas"]["Slope"];
+            trails?: components["schemas"]["Trail"][];
             media?: components["schemas"]["Media"][];
             triviaMedia?: components["schemas"]["Media"][];
             sectors?: components["schemas"]["SectorJump"][];
@@ -2116,8 +2167,8 @@ export type components = {
             parameters?: {
                 [key: string]: string;
             };
-            wildcardSubtype?: boolean;
             wildcardType?: boolean;
+            wildcardSubtype?: boolean;
         };
         MessageBodyWorkers: Record<string, never>;
         MultiPart: {
@@ -4515,6 +4566,49 @@ export interface operations {
             };
             /** @description Invalid request parameters. */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    postTrails: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "*/*": components["schemas"]["Trail"];
+            };
+        };
+        responses: {
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Insufficient permissions. */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -13,7 +13,7 @@ type User = components['schemas']['User'];
 
 const fieldLabelClass = cn(designContract.typography.label, 'text-slate-300');
 
-export type MediaConnectionType = 'area' | 'sector' | 'problem' | 'guestbook';
+export type MediaConnectionType = 'area' | 'sector' | 'problem' | 'guestbook' | 'trail';
 
 export type MediaMetadata = {
   description: string;
@@ -26,6 +26,8 @@ export type MediaMetadata = {
   sectors?: { sectorId: number; sectorName: string; areaName?: string; trivia: boolean }[];
   /** Read-only guestbook info */
   guestbook?: { guestbookId: number; guestbookName?: string };
+  /** Read-only trail info */
+  trails?: { trailId: number; trailName?: string }[];
 };
 
 export type MediaMetadataCallbacks = {
@@ -291,6 +293,20 @@ export const MediaMetadataCard = ({
               <div className='bg-surface-raised border-surface-border rounded-xl border p-3 text-sm text-slate-400'>
                 {metadata.guestbook.guestbookName ?? `Comment #${metadata.guestbook.guestbookId}`}
               </div>
+            </div>
+          )}
+
+          {/* Connected trails (read-only) */}
+          {connectionType === 'trail' && metadata.trails && metadata.trails.length > 0 && (
+            <div className='mt-4 space-y-2'>
+              <span className={cn(fieldLabelClass, 'ml-1')}>Trails</span>
+              {metadata.trails.map((t) => (
+                <div key={t.trailId} className='bg-surface-raised border-surface-border rounded-xl border p-3 text-sm'>
+                  <span className='text-slate-300'>
+                    {t.trailName ? `${t.trailName} (#${t.trailId})` : `#${t.trailId}`}
+                  </span>
+                </div>
+              ))}
             </div>
           )}
         </>

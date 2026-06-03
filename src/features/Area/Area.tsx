@@ -4,8 +4,7 @@ import ChartGradeDistribution from '../../shared/components/ChartGradeDistributi
 import Top from '../../shared/components/Top/Top';
 import Activity from '../../shared/components/Activity/Activity';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
-import { getDistanceWithUnit } from '../../shared/components/Leaflet/geo-utils';
-import { SLOPE_APPROACH_COLOR, SLOPE_DESCENT_COLOR } from '../../shared/slopePolylineColors';
+import { TRAIL_ASCENT_COLOR, TRAIL_DESCENT_COLOR } from '../../shared/slopePolylineColors';
 import Media from '../../shared/components/Media/Media';
 import Todo from '../../shared/components/Todo/Todo';
 import { Loading } from '../../shared/ui/StatusWidgets';
@@ -537,39 +536,32 @@ const Area = () => {
     }));
   }, [data?.sectors]);
 
-  const { outlines, slopes } = useMemo(() => {
+  const outlines = useMemo(() => {
     const nextOutlines: NonNullable<ComponentProps<typeof Leaflet>['outlines']> = [];
-    const nextSlopes: NonNullable<ComponentProps<typeof Leaflet>['slopes']> = [];
-    if (!data?.sectors) return { outlines: nextOutlines, slopes: nextSlopes };
-
-    const showSlopeLengthOnOutline = (data.sectors.filter((s) => s.approach && s.outline).length ?? 0) > 1;
-
+    if (!data?.sectors) return nextOutlines;
     for (const s of data.sectors) {
-      let distance: string | null = null;
-      const approach = s.approach;
-      if (approach?.coordinates?.length) {
-        distance = getDistanceWithUnit(approach);
-        const label = (!s.outline || !showSlopeLengthOnOutline) && distance ? distance : '';
-        nextSlopes.push({ backgroundColor: SLOPE_APPROACH_COLOR, slope: approach, label: label ?? '' });
-      }
-      if (s.descent?.coordinates?.length) {
-        distance = getDistanceWithUnit(s.descent);
-        const label = (!s.outline || !showSlopeLengthOnOutline) && distance ? distance : '';
-        nextSlopes.push({ backgroundColor: SLOPE_DESCENT_COLOR, slope: s.descent, label: label ?? '' });
-      }
       if (s.outline?.length) {
-        const label = (s.name ?? '') + (showSlopeLengthOnOutline && distance ? ' (' + distance + ')' : '');
-        nextOutlines.push({ url: '/sector/' + s.id, label, outline: s.outline });
+        nextOutlines.push({ url: '/sector/' + s.id, label: s.name ?? '', outline: s.outline });
       }
     }
-    return { outlines: nextOutlines, slopes: nextSlopes };
+    return nextOutlines;
+  }, [data]);
+
+  const trails: ComponentProps<typeof Leaflet>['trails'] = useMemo(() => {
+    if (!data?.sectors) return [];
+    return data.sectors.flatMap((s) =>
+      (s.trails ?? []).map((t) => ({
+        trail: t,
+        backgroundColor: t.isDescent ? TRAIL_DESCENT_COLOR : TRAIL_ASCENT_COLOR,
+      })),
+    );
   }, [data]);
 
   const tabs = useMemo(() => {
     const t: { id: string; label: string; icon: typeof LayoutDashboard }[] = [];
     if (!data) return t;
     t.push({ id: 'overview', label: 'Overview', icon: LayoutDashboard });
-    const hasMapContent = markers.length > 0 || outlines.length > 0 || slopes.length > 0;
+    const hasMapContent = markers.length > 0 || outlines.length > 0 || trails.length > 0;
     if (hasMapContent) t.push({ id: 'map', label: 'Map', icon: MapIcon });
     if (data.sectors?.length) {
       const problemCount = countAreaProblems(data);
@@ -584,7 +576,7 @@ const Area = () => {
       t.push({ id: 'activity', label: 'Activity', icon: Clock });
     }
     return t;
-  }, [data, markers.length, outlines.length, slopes.length]);
+  }, [data, markers.length, outlines.length, trails.length]);
 
   /** Path segments: `/area/:id`, `/area/:id/overview`, `/area/:id/map`, …; numeric segment = media deep link. */
   const effectiveTab = useMemo(() => {
@@ -876,7 +868,7 @@ const Area = () => {
                     height='100%'
                     markers={markers}
                     outlines={outlines}
-                    slopes={slopes}
+                    trails={trails}
                     defaultCenter={
                       data.coordinates?.latitude && data.coordinates?.longitude
                         ? { lat: data.coordinates.latitude, lng: data.coordinates.longitude }

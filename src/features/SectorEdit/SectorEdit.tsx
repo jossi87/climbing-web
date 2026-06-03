@@ -2,9 +2,17 @@ import { useState, useCallback, type ComponentProps, type UIEvent, type FormEven
 import { useQueryClient } from '@tanstack/react-query';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { useMeta } from '../../shared/components/Meta';
-import { postSector, spaPathFromRedirectResponse, useAccessToken, useArea, useElevation, useSector } from '../../api';
+import {
+  postSector,
+  postTrail,
+  spaPathFromRedirectResponse,
+  useAccessToken,
+  useArea,
+  useElevation,
+  useSector,
+} from '../../api';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
-import { SLOPE_APPROACH_COLOR, SLOPE_DESCENT_COLOR } from '../../shared/slopePolylineColors';
+import { TRAIL_ASCENT_COLOR, TRAIL_DESCENT_COLOR } from '../../shared/slopePolylineColors';
 import { useNavigate, useParams } from 'react-router-dom';
 import { VisibilitySelectorField } from '../../shared/ui/VisibilitySelector';
 import type { components } from '../../@types/buldreinfo/swagger';
@@ -15,7 +23,22 @@ import { PolylineMarkers } from './PolylineMarkers';
 import { captureSentryException } from '../../utils/sentry';
 import { hours } from '../../utils/hours';
 import ExternalLink from '../../shared/ui/ExternalLinks';
-import { Info, Edit, MapPin, AlertTriangle, Hash, RotateCcw, Save, Loader2, Plus, Copy } from 'lucide-react';
+import {
+  Info,
+  Edit,
+  MapPin,
+  AlertTriangle,
+  Hash,
+  RotateCcw,
+  Save,
+  Plus,
+  Trash2,
+  ArrowUpFromLine,
+  ArrowDownFromLine,
+  Loader2,
+  Crosshair,
+  PenLine,
+} from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 import { Card, FormSwitch, MarkdownFieldLabel, NotFoundCard, SectionHeader } from '../../shared/ui';
@@ -23,6 +46,8 @@ import { sanitizeCoordInput, useCoordinateText } from '../../shared/hooks/useCoo
 
 type Area = components['schemas']['Area'];
 type Sector = components['schemas']['Sector'];
+type Trail = components['schemas']['Trail'];
+type TrailMarker = components['schemas']['TrailMarker'];
 
 const dummyEvent = {} as ChangeEvent<HTMLInputElement>;
 
@@ -83,6 +108,16 @@ type Props = {
 
 type OnChangeParams = { value: string | number | undefined };
 
+const emptyTrail = (isDescent: boolean, sectorId: number | undefined): Trail => ({
+  title: isDescent ? 'Descent' : 'Approach',
+  description: '',
+  isDescent,
+  path: [],
+  markers: [],
+  media: [],
+  sectors: sectorId != null ? [{ sectorId }] : [],
+});
+
 export const SectorEdit = ({ sector, area }: Props) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -94,10 +129,23 @@ export const SectorEdit = ({ sector, area }: Props) => {
 
   const [data, setData] = useState<Sector>(sector);
 
+  /** Local trail state — saved as part of the sector save. */
+  const [trails, setTrails] = useState<Trail[]>(() => {
+    const existing = sector.trails ?? [];
+    return existing.map((t) => ({
+      ...t,
+      sectors: t.sectors?.length ? t.sectors : [{ sectorId: sector.id }],
+    }));
+  });
+
+  /** Which trail index we are currently editing path for on the map (null = not editing a trail path). */
+  const [editingTrailPathIndex, setEditingTrailPathIndex] = useState<number | null>(null);
+
   /** `null` = do not show problem markers; array (possibly empty) = include-all mode is on. */
   const [sectorMarkers, setSectorMarkers] = useState<ComponentProps<typeof Leaflet>['markers'] | null>(null);
 
   const [saving, setSaving] = useState(false);
+  const [trailErrors, setTrailErrors] = useState<string[]>([]);
 
   /*
    * Lat/lng raw-text adapter — see {@link useCoordinateText} for the why. The parsed numbers still live in
@@ -175,8 +223,34 @@ export const SectorEdit = ({ sector, area }: Props) => {
     setData((prevState) => ({ ...prevState, externalLinks }));
   }, []);
 
+  const validateTrails = (): string[] => {
+    const errors: string[] = [];
+    const active = trails.filter((t) => !t.delete);
+    active.forEach((t, i) => {
+      if (!t.title?.trim()) {
+        errors.push(`Trail #${i + 1}: title is required`);
+      }
+      if (!t.path || t.path.length < 2) {
+        errors.push(`Trail #${i + 1} ("${t.title || 'untitled'}"): path must have at least 2 points`);
+      }
+      (t.markers ?? []).forEach((m, mi) => {
+        if (!m.label?.trim()) {
+          errors.push(`Trail #${i + 1} ("${t.title || 'untitled'}"): marker #${mi + 1} needs a label`);
+        }
+        if (!m.coordinates?.latitude || !m.coordinates?.longitude) {
+          errors.push(`Trail #${i + 1} ("${t.title || 'untitled'}"): marker #${mi + 1} needs lat/lng`);
+        }
+      });
+    });
+    return errors;
+  };
+
   const save = (event: UIEvent | FormEvent) => {
     event.preventDefault();
+    const trailErrors = validateTrails();
+    setTrailErrors(trailErrors);
+    if (trailErrors.length > 0) return;
+
     const trash = !!data.trash;
     if (!trash || confirm('Are you sure you want to move sector to trash?')) {
       setSaving(true);
@@ -196,8 +270,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
         data.parking ?? ({} as components['schemas']['Coordinates']),
         data.outline ?? [],
         data.wallDirectionManual ?? ({} as components['schemas']['CompassDirection']),
-        data.approach ?? {},
-        data.descent ?? {},
+        [], // trails are saved separately via postTrail
         data.externalLinks ?? [],
         [],
         data.problemOrder,
@@ -205,6 +278,20 @@ export const SectorEdit = ({ sector, area }: Props) => {
         .then(async (res) => {
           const nextSectorId = res.idSector && res.idSector > 0 ? res.idSector : sectorId;
           const nextAreaId = res.idArea && res.idArea > 0 ? res.idArea : areaId;
+
+          // Save trails separately via postTrail
+          const activeTrails = trails.filter((t) => !t.delete);
+          if (activeTrails.length > 0) {
+            await Promise.all(
+              activeTrails.map((t) => {
+                const trail = {
+                  ...t,
+                  sectors: [{ sectorId: nextSectorId }],
+                };
+                return postTrail(accessToken, trail);
+              }),
+            );
+          }
 
           // Keep area/sector map data fresh when returning from edit.
           await Promise.all([
@@ -252,20 +339,34 @@ export const SectorEdit = ({ sector, area }: Props) => {
         longitude: event.latlng.lng,
       });
       setData((prevState) => ({ ...prevState, outline }));
-    } else if (leafletMode === 'APPROACH') {
-      const coordinates = [...(data.approach?.coordinates || [])];
-      coordinates.push({
-        latitude: event.latlng.lat,
-        longitude: event.latlng.lng,
-      });
-      setData((prevState) => ({ ...prevState, approach: { coordinates } }));
-    } else if (leafletMode === 'DESCENT') {
-      const coordinates = [...(data.descent?.coordinates || [])];
-      coordinates.push({
-        latitude: event.latlng.lat,
-        longitude: event.latlng.lng,
-      });
-      setData((prevState) => ({ ...prevState, descent: { coordinates } }));
+    } else if (leafletMode.startsWith('TRAIL_PATH_')) {
+      const trailIndex = parseInt(leafletMode.replace('TRAIL_PATH_', ''), 10);
+      if (!isNaN(trailIndex)) {
+        if (trailMapMode === 'marker') {
+          // Add a marker at the clicked location
+          setTrails((prev) => {
+            const next = [...prev];
+            const trail = { ...next[trailIndex] };
+            const markers = [...(trail.markers ?? [])];
+            markers.push({
+              label: '',
+              coordinates: { latitude: event.latlng.lat, longitude: event.latlng.lng },
+            });
+            trail.markers = markers;
+            next[trailIndex] = trail;
+            return next;
+          });
+        } else {
+          // Add a path point
+          setTrails((prev) => {
+            const next = [...prev];
+            const trail = { ...next[trailIndex] };
+            trail.path = [...(trail.path ?? []), { latitude: event.latlng.lat, longitude: event.latlng.lng }];
+            next[trailIndex] = trail;
+            return next;
+          });
+        }
+      }
     }
   };
 
@@ -277,18 +378,6 @@ export const SectorEdit = ({ sector, area }: Props) => {
     },
     [leafletMode, setLocation],
   );
-
-  function clearDrawing() {
-    if (leafletMode === 'PARKING') {
-      setData((prevState) => ({ ...prevState, parking: undefined }));
-    } else if (leafletMode === 'POLYGON') {
-      setData((prevState) => ({ ...prevState, outline: undefined }));
-    } else if (leafletMode === 'APPROACH') {
-      setData((prevState) => ({ ...prevState, approach: undefined }));
-    } else if (leafletMode === 'DESCENT') {
-      setData((prevState) => ({ ...prevState, descent: undefined }));
-    }
-  }
 
   /*
    * Lat / lng input handlers. Three steps per keystroke:
@@ -325,71 +414,38 @@ export const SectorEdit = ({ sector, area }: Props) => {
     }));
   };
 
-  /** Neighbour sectors (excluding the current one) that have approach/descent data. */
-  const neighbourSectors = (area.sectors ?? []).filter((s) => s.id !== data.id);
-  const neighboursWithApproach = neighbourSectors.filter((s) => (s.approach?.coordinates?.length ?? 0) >= 2);
-  const neighboursWithDescent = neighbourSectors.filter((s) => (s.descent?.coordinates?.length ?? 0) >= 2);
-
-  /**
-   * Load approach or descent from a neighbour sector, replacing the current data.
-   */
-  const loadFromNeighbour = useCallback(
-    (type: 'APPROACH' | 'DESCENT', neighbour: (typeof neighbourSectors)[number]) => {
-      const slope = type === 'APPROACH' ? neighbour.approach : neighbour.descent;
-      const coords = slope?.coordinates;
-      if (!coords?.length) return;
-      if (type === 'APPROACH') {
-        setData((prev) => ({ ...prev, approach: { coordinates: [...coords] } }));
-      } else {
-        setData((prev) => ({ ...prev, descent: { coordinates: [...coords] } }));
-      }
-    },
-    [],
-  );
-
   const outlines: ComponentProps<typeof Leaflet>['outlines'] = [];
-  const slopes: ComponentProps<typeof Leaflet>['slopes'] = [];
-  neighbourSectors.forEach((s) => {
-    if (s.outline?.length) {
-      outlines.push({
-        outline: s.outline,
-        background: true,
-        label: s.name,
+  const trailPolylines: ComponentProps<typeof Leaflet>['trails'] = [];
+  (area.sectors ?? [])
+    .filter((s) => s.id !== data.id)
+    .forEach((s) => {
+      if (s.outline?.length) {
+        outlines.push({
+          outline: s.outline,
+          background: true,
+          label: s.name,
+        });
+      }
+      (s.trails ?? []).forEach((t) => {
+        trailPolylines.push({
+          trail: t,
+          backgroundColor: t.isDescent ? TRAIL_DESCENT_COLOR : TRAIL_ASCENT_COLOR,
+          background: true,
+        });
       });
-    }
-    if (s.approach?.coordinates?.length) {
-      slopes.push({
-        slope: s.approach,
-        backgroundColor: SLOPE_APPROACH_COLOR,
-        background: true,
-      });
-    }
-    if (s.descent?.coordinates?.length) {
-      slopes.push({
-        slope: s.descent,
-        backgroundColor: SLOPE_DESCENT_COLOR,
-        background: true,
-      });
-    }
-  });
+    });
 
   if (data.outline?.length) {
     outlines.push({ outline: data.outline, background: false });
   }
-  if (data.approach?.coordinates?.length) {
-    slopes.push({
-      slope: data.approach,
-      backgroundColor: SLOPE_APPROACH_COLOR,
+  trails.forEach((t) => {
+    if (t.delete) return;
+    trailPolylines.push({
+      trail: t,
+      backgroundColor: t.isDescent ? TRAIL_DESCENT_COLOR : TRAIL_ASCENT_COLOR,
       background: false,
     });
-  }
-  if (data.descent?.coordinates?.length) {
-    slopes.push({
-      slope: data.descent,
-      backgroundColor: SLOPE_DESCENT_COLOR,
-      background: false,
-    });
-  }
+  });
 
   const markers: ComponentProps<typeof Leaflet>['markers'] = [];
   if (data.parking) {
@@ -415,6 +471,88 @@ export const SectorEdit = ({ sector, area }: Props) => {
    */
   const isNew = !data.id || data.id <= 0;
   const headerTitle = isNew ? 'Add Sector' : 'Edit Sector';
+
+  // ── Trail helpers ──
+
+  const addTrail = useCallback(
+    (isDescent: boolean) => {
+      setTrails((prev) => {
+        const next = [...prev, emptyTrail(isDescent, sector.id)];
+        const newIndex = next.length - 1;
+        // Auto-select the new trail tab
+        setLeafletMode(`TRAIL_PATH_${newIndex}`);
+        setEditingTrailPathIndex(newIndex);
+        return next;
+      });
+    },
+    [sector.id],
+  );
+
+  const removeTrail = useCallback(
+    (index: number) => {
+      setTrails((prev) => {
+        const next = [...prev];
+        const trail = { ...next[index] };
+        if (trail.id && trail.id > 0) {
+          trail.delete = true;
+          next[index] = trail;
+        } else {
+          next.splice(index, 1);
+        }
+        return next;
+      });
+      // If we're editing the removed trail, switch to Parking tab
+      if (editingTrailPathIndex === index) {
+        setEditingTrailPathIndex(null);
+        setLeafletMode('PARKING');
+      } else if (editingTrailPathIndex != null && editingTrailPathIndex > index) {
+        // Shift the editing index down since the array shrunk
+        setEditingTrailPathIndex(editingTrailPathIndex - 1);
+      }
+    },
+    [editingTrailPathIndex],
+  );
+
+  const updateTrail = useCallback((index: number, patch: Partial<Trail>) => {
+    setTrails((prev) => {
+      const next = [...prev];
+      next[index] = { ...next[index], ...patch };
+      return next;
+    });
+  }, []);
+
+  /** Raw text for marker lat/lng inputs (preserves mid-typed decimals like "60.") */
+  const [markerRawText, setMarkerRawText] = useState<Record<string, string>>({});
+
+  const updateMarker = useCallback((trailIndex: number, markerIndex: number, patch: Partial<TrailMarker>) => {
+    setTrails((prev) => {
+      const next = [...prev];
+      const trail = { ...next[trailIndex] };
+      const markers = [...(trail.markers ?? [])];
+      markers[markerIndex] = { ...markers[markerIndex], ...patch };
+      trail.markers = markers;
+      next[trailIndex] = trail;
+      return next;
+    });
+  }, []);
+
+  const removeMarker = useCallback((trailIndex: number, markerIndex: number) => {
+    setTrails((prev) => {
+      const next = [...prev];
+      const trail = { ...next[trailIndex] };
+      trail.markers = (trail.markers ?? []).filter((_, i) => i !== markerIndex);
+      next[trailIndex] = trail;
+      return next;
+    });
+  }, []);
+
+  const activeTrails = trails.filter((t) => !t.delete);
+
+  /** Trail map mode: 'path' = add path points, 'marker' = add markers on click */
+  const [trailMapMode, setTrailMapMode] = useState<'path' | 'marker'>('path');
+
+  /** Whether the "+" add-trail dropdown menu is open */
+  const [showAddTrailMenu, setShowAddTrailMenu] = useState(false);
 
   return (
     <div className='w-full min-w-0 pb-20'>
@@ -585,68 +723,8 @@ export const SectorEdit = ({ sector, area }: Props) => {
         {/* ── Map ── */}
         <Card>
           <SectionHeader title='Map' icon={MapPin} />
-          {/* Toolbar */}
-          <div
-            className='border-surface-border bg-surface-card flex flex-wrap items-stretch gap-0.5 border-b px-0 py-1.5 sm:px-0 sm:py-2.5'
-            role='group'
-            aria-label='Map drawing mode'
-          >
-            {[
-              { id: 'PARKING', label: 'Parking', hasData: !!(data.parking?.latitude && data.parking?.longitude) },
-              { id: 'POLYGON', label: 'Outline', hasData: !!data.outline?.length },
-              { id: 'APPROACH', label: 'Approach', hasData: !!data.approach?.coordinates?.length },
-              { id: 'DESCENT', label: 'Descent', hasData: !!data.descent?.coordinates?.length },
-            ].map((m) => (
-              <button
-                key={m.id}
-                type='button'
-                onClick={() => setLeafletMode(m.id)}
-                className={cn(
-                  designContract.typography.uiCompact,
-                  'inline-flex min-h-7 items-center justify-center rounded-md px-1.5 py-0.5 text-[11px] tracking-wide transition-colors sm:min-h-9 sm:px-3 sm:py-1.5 sm:text-[12px]',
-                  leafletMode === m.id
-                    ? designContract.surfaces.segmentActiveBrandBorder
-                    : designContract.surfaces.segmentIdleRaised,
-                )}
-              >
-                {m.label}
-                {m.hasData ? '*' : ''}
-              </button>
-            ))}
-            <button
-              type='button'
-              onClick={clearDrawing}
-              className='border-surface-border hover:bg-surface-hover inline-flex min-h-7 items-center justify-center gap-0.5 rounded-md border border-dashed px-1.5 py-0.5 text-[11px] font-semibold tracking-wide text-orange-400 transition-colors hover:text-orange-300 sm:min-h-9 sm:gap-1.5 sm:px-3 sm:py-1.5 sm:text-[12px]'
-            >
-              <RotateCcw size={12} strokeWidth={2} aria-hidden /> Reset
-            </button>
-          </div>
-
-          {/* Map */}
-          <div className='relative z-0 h-[35vh] min-h-[220px] w-full overflow-hidden sm:h-[50vh]'>
-            <Leaflet
-              markers={markers}
-              outlines={outlines}
-              slopes={slopes}
-              defaultCenter={defaultCenter}
-              defaultZoom={defaultZoom}
-              onMouseClick={onMapMouseClick}
-              onMouseMove={onMouseMove}
-              height='100%'
-              showSatelliteImage={meta.isBouldering}
-              clusterMarkers={false}
-              rocks={undefined}
-              flyToId={null}
-            >
-              <ZoomLogic area={area} sector={data} />
-              {leafletMode === 'POLYGON' && <PolylineMarkers coordinates={data.outline ?? []} />}
-              {leafletMode === 'APPROACH' && <PolylineMarkers coordinates={data.approach?.coordinates ?? []} />}
-              {leafletMode === 'DESCENT' && <PolylineMarkers coordinates={data.descent?.coordinates ?? []} />}
-            </Leaflet>
-          </div>
-
-          {/* Include all markers */}
-          <div className='flex items-center gap-2 px-0 py-2 sm:gap-3 sm:px-0'>
+          {/* Include all markers toggle */}
+          <div className='-mt-4 mb-2 flex items-center gap-2 px-3 sm:px-5'>
             <FormSwitch
               checked={sectorMarkers !== null}
               onChange={() => {
@@ -665,8 +743,213 @@ export const SectorEdit = ({ sector, area }: Props) => {
             />
             <span className='text-[12px] font-medium text-slate-300 sm:text-[13px]'>Include all markers in sector</span>
           </div>
+          {/* Tab bar: Parking | Outline | Trail tabs | + Add */}
+          <div
+            className='border-surface-border bg-surface-card flex flex-wrap items-center gap-1 border-b px-0 py-1.5 sm:px-0 sm:py-2.5'
+            role='tablist'
+            aria-label='Map tab'
+          >
+            {/* Parking tab — split button */}
+            <div
+              className={cn(
+                'inline-flex items-center overflow-hidden rounded-md',
+                leafletMode === 'PARKING'
+                  ? 'border-brand bg-brand/20 border shadow-sm'
+                  : 'border-surface-border bg-surface-raised border',
+              )}
+            >
+              <button
+                type='button'
+                role='tab'
+                aria-selected={leafletMode === 'PARKING'}
+                onClick={() => {
+                  setLeafletMode('PARKING');
+                  setEditingTrailPathIndex(null);
+                }}
+                className={cn(
+                  designContract.typography.uiCompact,
+                  'px-2.5 py-1 text-[11px] tracking-wide transition-colors sm:px-4 sm:py-1.5 sm:text-[12px]',
+                  leafletMode === 'PARKING'
+                    ? 'type-on-accent font-semibold'
+                    : 'light:text-slate-600 light:hover:type-on-accent text-slate-300 hover:text-slate-100',
+                )}
+              >
+                Parking
+              </button>
+              {data.parking?.latitude && data.parking?.longitude && (
+                <>
+                  <div className='bg-surface-border/50 w-px self-stretch' />
+                  <button
+                    type='button'
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setData((prev) => ({ ...prev, parking: undefined }));
+                    }}
+                    className='light:text-red-600 light:hover:text-red-800 inline-flex items-center justify-center px-1.5 py-1 text-red-400 transition-colors hover:bg-red-500/15 hover:text-red-300 sm:px-2 sm:py-1.5'
+                    title='Clear parking'
+                  >
+                    <RotateCcw size={10} />
+                  </button>
+                </>
+              )}
+            </div>
+            {/* Outline tab — split button */}
+            <div
+              className={cn(
+                'inline-flex items-center overflow-hidden rounded-md',
+                leafletMode === 'POLYGON'
+                  ? 'border-brand bg-brand/20 border shadow-sm'
+                  : 'border-surface-border bg-surface-raised border',
+              )}
+            >
+              <button
+                type='button'
+                role='tab'
+                aria-selected={leafletMode === 'POLYGON'}
+                onClick={() => {
+                  setLeafletMode('POLYGON');
+                  setEditingTrailPathIndex(null);
+                }}
+                className={cn(
+                  designContract.typography.uiCompact,
+                  'px-2.5 py-1 text-[11px] tracking-wide transition-colors sm:px-4 sm:py-1.5 sm:text-[12px]',
+                  leafletMode === 'POLYGON'
+                    ? 'type-on-accent font-semibold'
+                    : 'light:text-slate-600 light:hover:type-on-accent text-slate-300 hover:text-slate-100',
+                )}
+              >
+                Outline
+              </button>
+              {(data.outline?.length ?? 0) > 0 && (
+                <>
+                  <div className='bg-surface-border/50 w-px self-stretch' />
+                  <button
+                    type='button'
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setData((prev) => ({ ...prev, outline: undefined }));
+                    }}
+                    className='light:text-red-600 light:hover:text-red-800 inline-flex items-center justify-center px-1.5 py-1 text-red-400 transition-colors hover:bg-red-500/15 hover:text-red-300 sm:px-2 sm:py-1.5'
+                    title='Clear outline'
+                  >
+                    <RotateCcw size={10} />
+                  </button>
+                </>
+              )}
+            </div>
+            {/* Trail tabs — split buttons */}
+            {activeTrails.map((trail, i) => (
+              <div
+                key={i}
+                className={cn(
+                  'inline-flex items-center overflow-hidden rounded-md',
+                  leafletMode === `TRAIL_PATH_${i}`
+                    ? 'border-brand bg-brand/20 border shadow-sm'
+                    : 'border-surface-border bg-surface-raised border',
+                )}
+              >
+                <button
+                  type='button'
+                  role='tab'
+                  aria-selected={leafletMode === `TRAIL_PATH_${i}`}
+                  onClick={() => {
+                    setLeafletMode(`TRAIL_PATH_${i}`);
+                    setEditingTrailPathIndex(i);
+                  }}
+                  className={cn(
+                    designContract.typography.uiCompact,
+                    'inline-flex items-center gap-1 px-2.5 py-1 text-[11px] tracking-wide transition-colors sm:px-4 sm:py-1.5 sm:text-[12px]',
+                    leafletMode === `TRAIL_PATH_${i}`
+                      ? 'type-on-accent font-semibold'
+                      : 'light:text-slate-600 light:hover:type-on-accent text-slate-300 hover:text-slate-100',
+                  )}
+                >
+                  {trail.isDescent ? (
+                    <ArrowDownFromLine size={10} className='text-purple-600' />
+                  ) : (
+                    <ArrowUpFromLine size={10} className='text-lime-600' />
+                  )}
+                  {trail.title || (trail.isDescent ? 'Descent' : 'Approach')}
+                </button>
+                <div className='bg-surface-border/50 w-px self-stretch' />
+                <button
+                  type='button'
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeTrail(trails.indexOf(trail));
+                  }}
+                  className='light:text-red-600 light:hover:text-red-800 inline-flex items-center justify-center px-1.5 py-1 text-red-400 transition-colors hover:bg-red-500/15 hover:text-red-300 sm:px-2 sm:py-1.5'
+                  title='Remove trail'
+                >
+                  <Trash2 size={10} />
+                </button>
+              </div>
+            ))}
+            {/* Add trail dropdown */}
+            <div className='relative ml-1'>
+              <button
+                type='button'
+                onClick={() => setShowAddTrailMenu((p) => !p)}
+                className='hover:bg-surface-hover inline-flex items-center gap-1 rounded-md px-2 py-1 text-[12px] font-medium text-slate-400 transition-colors hover:text-slate-200'
+                title='Add trail'
+              >
+                <Plus size={14} /> Add
+              </button>
+              {showAddTrailMenu && (
+                <>
+                  <div className='fixed inset-0 z-10' onClick={() => setShowAddTrailMenu(false)} />
+                  <div className='border-surface-border bg-surface-nav absolute top-full left-0 z-20 mt-1 w-40 overflow-hidden rounded-lg border shadow-xl'>
+                    <button
+                      type='button'
+                      onClick={() => {
+                        addTrail(false);
+                        setShowAddTrailMenu(false);
+                      }}
+                      className='hover:bg-surface-hover flex w-full items-center gap-2 px-3 py-2 text-[12px] font-medium text-slate-200 transition-colors'
+                    >
+                      <ArrowUpFromLine size={12} className='text-lime-500' /> Approach
+                    </button>
+                    <button
+                      type='button'
+                      onClick={() => {
+                        addTrail(true);
+                        setShowAddTrailMenu(false);
+                      }}
+                      className='hover:bg-surface-hover flex w-full items-center gap-2 px-3 py-2 text-[12px] font-medium text-slate-200 transition-colors'
+                    >
+                      <ArrowDownFromLine size={12} className='text-purple-500' /> Descent
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
 
-          {/* Lat/lng or polyline editor */}
+          {/* Map */}
+          <div className='relative z-0 h-[35vh] min-h-[220px] w-full overflow-hidden sm:h-[50vh]'>
+            <Leaflet
+              markers={markers}
+              outlines={outlines}
+              trails={trailPolylines}
+              defaultCenter={defaultCenter}
+              defaultZoom={defaultZoom}
+              onMouseClick={onMapMouseClick}
+              onMouseMove={onMouseMove}
+              height='100%'
+              showSatelliteImage={meta.isBouldering}
+              clusterMarkers={false}
+              rocks={undefined}
+              flyToId={null}
+            >
+              <ZoomLogic area={area} sector={data} />
+              {leafletMode === 'POLYGON' && <PolylineMarkers coordinates={data.outline ?? []} />}
+              {leafletMode.startsWith('TRAIL_PATH_') && editingTrailPathIndex != null && (
+                <PolylineMarkers coordinates={activeTrails[editingTrailPathIndex]?.path ?? []} />
+              )}
+            </Leaflet>
+          </div>
+
+          {/* Editor below map — depends on selected tab */}
           <div className='px-0 pb-3 sm:px-0 sm:pb-5'>
             {leafletMode === 'PARKING' && (
               <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
@@ -693,59 +976,183 @@ export const SectorEdit = ({ sector, area }: Props) => {
               </div>
             )}
 
-            {['POLYGON', 'APPROACH', 'DESCENT'].includes(leafletMode) && (
+            {leafletMode === 'POLYGON' && (
               <div className='space-y-2'>
-                <label className={labelClasses}>
-                  {leafletMode === 'POLYGON' ? 'Outline' : leafletMode === 'APPROACH' ? 'Approach' : 'Descent'}
-                </label>
                 <PolylineEditor
-                  coordinates={
-                    leafletMode === 'POLYGON'
-                      ? (data.outline ?? [])
-                      : leafletMode === 'APPROACH'
-                        ? (data.approach?.coordinates ?? [])
-                        : (data.descent?.coordinates ?? [])
-                  }
+                  coordinates={data.outline ?? []}
                   parking={data.parking ?? {}}
                   onChange={(coordinates) => {
-                    if (leafletMode === 'POLYGON') setData((prev) => ({ ...prev, outline: coordinates }));
-                    else if (leafletMode === 'APPROACH') setData((prev) => ({ ...prev, approach: { coordinates } }));
-                    else if (leafletMode === 'DESCENT') setData((prev) => ({ ...prev, descent: { coordinates } }));
+                    setData((prev) => ({ ...prev, outline: coordinates }));
                   }}
-                  upload={leafletMode !== 'POLYGON'}
-                  slopeType={leafletMode === 'DESCENT' ? 'descent' : 'approach'}
+                  upload={false}
+                  slopeType={undefined}
                 />
+              </div>
+            )}
 
-                {leafletMode === 'APPROACH' && neighboursWithApproach.length > 0 && (
-                  <div className='flex flex-wrap gap-2 pt-1'>
-                    {neighboursWithApproach.map((n) => (
-                      <button
-                        key={n.id}
-                        type='button'
-                        onClick={() => loadFromNeighbour('APPROACH', n)}
-                        className='inline-flex items-center gap-1 rounded-md border border-lime-700/40 bg-lime-950/30 px-2.5 py-1 text-[11px] font-semibold text-lime-400 transition-colors hover:bg-lime-900/40'
-                        title={`Copy approach from ${n.name}`}
-                      >
-                        <Copy size={11} strokeWidth={2} />
-                        Load {n.name}
-                      </button>
-                    ))}
-                  </div>
-                )}
+            {leafletMode.startsWith('TRAIL_PATH_') && editingTrailPathIndex != null && (
+              <div className='space-y-4 pt-2'>
+                {/* Title */}
+                <div className='space-y-1'>
+                  <label className={labelClasses}>Title *</label>
+                  <input
+                    className={cn(
+                      'type-on-accent w-full rounded-lg border px-3 py-2.5 text-sm transition-colors focus:outline-none',
+                      !activeTrails[editingTrailPathIndex].title?.trim()
+                        ? 'bg-surface-nav border-red-500/60 focus:border-red-400'
+                        : 'border-surface-border bg-surface-nav focus:border-brand',
+                    )}
+                    placeholder={activeTrails[editingTrailPathIndex].isDescent ? 'Descent' : 'Approach'}
+                    value={activeTrails[editingTrailPathIndex].title ?? ''}
+                    onChange={(e) =>
+                      updateTrail(trails.indexOf(activeTrails[editingTrailPathIndex]), { title: e.target.value })
+                    }
+                  />
+                </div>
 
-                {leafletMode === 'DESCENT' && neighboursWithDescent.length > 0 && (
-                  <div className='flex flex-wrap gap-2 pt-1'>
-                    {neighboursWithDescent.map((n) => (
-                      <button
-                        key={n.id}
-                        type='button'
-                        onClick={() => loadFromNeighbour('DESCENT', n)}
-                        className='inline-flex items-center gap-1 rounded-md border border-purple-700/40 bg-purple-950/30 px-2.5 py-1 text-[11px] font-semibold text-purple-400 transition-colors hover:bg-purple-950/40'
-                        title={`Copy descent from ${n.name}`}
-                      >
-                        <Copy size={11} strokeWidth={2} />
-                        Load {n.name}
-                      </button>
+                {/* Description */}
+                <div className='space-y-1'>
+                  <MarkdownFieldLabel className={labelClasses}>Description</MarkdownFieldLabel>
+                  <textarea
+                    className={cn(
+                      'border-surface-border bg-surface-nav type-on-accent focus:border-brand w-full resize-none rounded-lg border px-3 py-2.5 text-sm transition-colors focus:outline-none',
+                      'min-h-20',
+                    )}
+                    value={activeTrails[editingTrailPathIndex].description ?? ''}
+                    onChange={(e) =>
+                      updateTrail(trails.indexOf(activeTrails[editingTrailPathIndex]), { description: e.target.value })
+                    }
+                  />
+                </div>
+
+                {/* Path / Marker toggle */}
+                <div className='flex items-center gap-2'>
+                  <button
+                    type='button'
+                    onClick={() => setTrailMapMode('path')}
+                    className={cn(
+                      'inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-semibold transition-colors',
+                      trailMapMode === 'path' ? 'bg-brand/20 text-brand' : 'text-slate-400 hover:text-slate-200',
+                    )}
+                  >
+                    <PenLine size={12} /> Path
+                  </button>
+                  <button
+                    type='button'
+                    onClick={() => setTrailMapMode('marker')}
+                    className={cn(
+                      'inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-semibold transition-colors',
+                      trailMapMode === 'marker' ? 'bg-brand/20 text-brand' : 'text-slate-400 hover:text-slate-200',
+                    )}
+                  >
+                    <Crosshair size={12} /> Marker
+                  </button>
+                  <span className='text-[11px] text-slate-500'>
+                    {trailMapMode === 'path' ? 'Click map to add path points' : 'Click map to place a marker'}
+                  </span>
+                </div>
+
+                {/* Path editor */}
+                <div className='space-y-2'>
+                  <label className={labelClasses}>Path *</label>
+                  <PolylineEditor
+                    coordinates={activeTrails[editingTrailPathIndex]?.path ?? []}
+                    parking={data.parking ?? {}}
+                    onChange={(coordinates) => {
+                      updateTrail(trails.indexOf(activeTrails[editingTrailPathIndex]), { path: coordinates });
+                    }}
+                    upload={false}
+                    slopeType={undefined}
+                  />
+                  {(!activeTrails[editingTrailPathIndex]?.path ||
+                    activeTrails[editingTrailPathIndex]?.path.length < 2) && (
+                    <p className='ml-1 text-[11px] font-bold text-red-500'>Path must have at least 2 points</p>
+                  )}
+                </div>
+
+                {/* Markers */}
+                {(activeTrails[editingTrailPathIndex]?.markers ?? []).length > 0 && (
+                  <div className='space-y-2'>
+                    <label className={labelClasses}>Markers</label>
+                    {(activeTrails[editingTrailPathIndex]?.markers ?? []).map((marker, mi) => (
+                      <div key={mi} className='flex items-center gap-2'>
+                        <input
+                          className={cn(
+                            'type-on-accent flex-1 rounded-lg border px-2.5 py-2 text-sm transition-colors focus:outline-none',
+                            !marker.label?.trim()
+                              ? 'bg-surface-nav border-red-500/60 focus:border-red-400'
+                              : 'border-surface-border bg-surface-nav focus:border-brand',
+                          )}
+                          placeholder='Label *'
+                          value={marker.label ?? ''}
+                          onChange={(e) =>
+                            updateMarker(trails.indexOf(activeTrails[editingTrailPathIndex]), mi, {
+                              label: e.target.value,
+                            })
+                          }
+                        />
+                        <input
+                          className={cn(
+                            'type-on-accent w-28 rounded-lg border px-2.5 py-2 text-sm transition-colors focus:outline-none',
+                            !marker.coordinates?.latitude
+                              ? 'bg-surface-nav border-red-500/60 focus:border-red-400'
+                              : 'border-surface-border bg-surface-nav focus:border-brand',
+                          )}
+                          inputMode='decimal'
+                          placeholder='Lat *'
+                          value={
+                            markerRawText[`${trails.indexOf(activeTrails[editingTrailPathIndex])}-${mi}-lat`] ??
+                            marker.coordinates?.latitude ??
+                            ''
+                          }
+                          onChange={(e) => {
+                            const sanitized = sanitizeCoordInput(e.target.value);
+                            const key = `${trails.indexOf(activeTrails[editingTrailPathIndex])}-${mi}-lat`;
+                            setMarkerRawText((prev) => ({ ...prev, [key]: sanitized }));
+                            const parsed = parseFloat(sanitized);
+                            updateMarker(trails.indexOf(activeTrails[editingTrailPathIndex]), mi, {
+                              coordinates: {
+                                ...marker.coordinates,
+                                latitude: isNaN(parsed) ? (undefined as unknown as number) : parsed,
+                              },
+                            });
+                          }}
+                        />
+                        <input
+                          className={cn(
+                            'type-on-accent w-28 rounded-lg border px-2.5 py-2 text-sm transition-colors focus:outline-none',
+                            !marker.coordinates?.longitude
+                              ? 'bg-surface-nav border-red-500/60 focus:border-red-400'
+                              : 'border-surface-border bg-surface-nav focus:border-brand',
+                          )}
+                          inputMode='decimal'
+                          placeholder='Lng *'
+                          value={
+                            markerRawText[`${trails.indexOf(activeTrails[editingTrailPathIndex])}-${mi}-lng`] ??
+                            marker.coordinates?.longitude ??
+                            ''
+                          }
+                          onChange={(e) => {
+                            const sanitized = sanitizeCoordInput(e.target.value);
+                            const key = `${trails.indexOf(activeTrails[editingTrailPathIndex])}-${mi}-lng`;
+                            setMarkerRawText((prev) => ({ ...prev, [key]: sanitized }));
+                            const parsed = parseFloat(sanitized);
+                            updateMarker(trails.indexOf(activeTrails[editingTrailPathIndex]), mi, {
+                              coordinates: {
+                                ...marker.coordinates,
+                                longitude: isNaN(parsed) ? (undefined as unknown as number) : parsed,
+                              },
+                            });
+                          }}
+                        />
+                        <button
+                          type='button'
+                          onClick={() => removeMarker(trails.indexOf(activeTrails[editingTrailPathIndex]), mi)}
+                          className='shrink-0 rounded-md p-1.5 text-red-400 transition-colors hover:bg-red-500/10 hover:text-red-300'
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
                     ))}
                   </div>
                 )}
@@ -755,7 +1162,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
         </Card>
 
         {/* ── Problem order ── */}
-        {data.problemOrder && data.problemOrder.length > 1 && (
+        {data.problems && data.problems.length > 0 && (
           <Card>
             <SectionHeader title='Problem order' icon={Hash} />
             <div className='p-3 sm:p-5'>
@@ -767,18 +1174,32 @@ export const SectorEdit = ({ sector, area }: Props) => {
           </Card>
         )}
 
+        {/* ── Trail validation errors ── */}
+        {trailErrors.length > 0 && (
+          <Card>
+            <div className='space-y-1 p-3 sm:p-5'>
+              <p className='text-[12px] font-bold text-red-400'>Fix these trail issues before saving:</p>
+              {trailErrors.map((err, i) => (
+                <p key={i} className='text-[12px] text-red-300'>
+                  • {err}
+                </p>
+              ))}
+            </div>
+          </Card>
+        )}
+
         {/* ── Save / Cancel ── */}
         <div className='flex items-center justify-end gap-3'>
           <button
             type='button'
-            onClick={() => navigate(sectorId ? `/sector/${sectorId}` : `/area/${areaId}`)}
+            onClick={() => navigate(sectorId > 0 ? `/sector/${sectorId}` : `/area/${areaId}`)}
             className='form-footer-cancel'
           >
             Cancel
           </button>
           <button
             type='submit'
-            disabled={saving || !data.name || !!data.sunFromHour !== !!data.sunToHour}
+            disabled={saving || !data.name || validateTrails().length > 0}
             className='type-label flex items-center gap-2 rounded-lg bg-emerald-400 px-8 py-2.5 text-slate-950 shadow-lg shadow-emerald-900/30 transition-all hover:bg-emerald-300 disabled:opacity-50'
           >
             {saving ? <Loader2 className='animate-spin' size={16} /> : <Save size={16} />}
