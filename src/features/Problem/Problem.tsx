@@ -29,7 +29,7 @@ import TickModal from '../../shared/components/TickModal/TickModal';
 import CommentModal from '../../shared/components/CommentModal/CommentModal';
 import { TrailProfile } from '../../shared/components/TrailProfile';
 
-import { TRAIL_ASCENT_COLOR, TRAIL_DESCENT_COLOR } from '../../shared/slopePolylineColors';
+import { getTrailColor } from '../../shared/slopePolylineColors';
 import Linkify from 'linkify-react';
 import { ProblemsOnRock } from './ProblemsOnRock';
 import { ProblemTicks } from './ProblemTicks';
@@ -38,7 +38,7 @@ import { ProblemAscentOverview } from './ProblemAscentOverview';
 import { ProblemNeighboursRow } from './ProblemNeighboursRow';
 import { ProblemBoulderRockOrNeighboursRow } from './ProblemBoulderRockOrNeighboursRow';
 import { ActionMenuChip, Card, NotFoundCard, NO_PERSONAL_GRADE_LABEL, PageCardBreadcrumbRow } from '../../shared/ui';
-import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
+import { Markdown } from '../../shared/components/Markdown/Markdown';
 import {
   tabBarButtonClassName,
   tabBarIconClassName,
@@ -235,11 +235,15 @@ function ProblemLoaded({
     return [meta.defaultCenter.lat || 0, meta.defaultCenter.lng || 0];
   })();
 
-  const trails: ComponentProps<typeof Leaflet>['trails'] = (data.trails ?? []).map((t) => ({
-    trail: t,
-    backgroundColor: t.isDescent ? TRAIL_DESCENT_COLOR : TRAIL_ASCENT_COLOR,
-    label: t.title ? (t.distance ? `${t.title} (${t.distance}m)` : t.title) : undefined,
-  }));
+  let descentCount = 0;
+  const trails: ComponentProps<typeof Leaflet>['trails'] = (data.trails ?? []).map((t) => {
+    const descentIndex = t.isDescent ? descentCount++ : -1;
+    return {
+      trail: t,
+      backgroundColor: getTrailColor(!!t.isDescent, descentIndex),
+      label: t.title || undefined,
+    };
+  });
 
   const isTicked = data.ticks?.some((t) => t.writable);
   const userTick = data.ticks?.find((t) => t.writable);
@@ -416,14 +420,7 @@ function ProblemLoaded({
         />
       </div>
       {overviewChipsRow}
-      {commentText.length > 0 && (
-        <ExpandableMarkdown
-          key={data.id}
-          content={data.comment ?? ''}
-          className='pt-0.5'
-          contentClassName='max-w-none'
-        />
-      )}
+      {commentText.length > 0 && <Markdown content={data.comment ?? ''} />}
     </div>
   );
 
@@ -705,19 +702,26 @@ function ProblemLoaded({
           )}
         >
           <div className='grid min-w-0 grid-cols-1 items-stretch gap-3 sm:grid-cols-2 sm:gap-4'>
-            {(data.trails ?? []).map((t) => (
-              <div key={t.id ?? t.title} className='w-full min-w-0'>
-                <TrailProfile
-                  compact
-                  isDescent={!!t.isDescent}
-                  className='w-full min-w-0'
-                  areaName={data.areaName ?? ''}
-                  sectorName={data.sectorName ?? ''}
-                  sectorId={data.sectorId}
-                  trail={t}
-                />
-              </div>
-            ))}
+            {(() => {
+              let descentIdx = 0;
+              return (data.trails ?? []).map((t) => {
+                const di = t.isDescent ? descentIdx++ : -1;
+                return (
+                  <div key={t.id ?? t.title} className='w-full min-w-0'>
+                    <TrailProfile
+                      compact
+                      isDescent={!!t.isDescent}
+                      descentIndex={di}
+                      className='w-full min-w-0'
+                      areaName={data.areaName ?? ''}
+                      sectorName={data.sectorName ?? ''}
+                      sectorId={data.sectorId}
+                      trail={t}
+                    />
+                  </div>
+                );
+              });
+            })()}
           </div>
         </div>
       )}

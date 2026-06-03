@@ -1,10 +1,9 @@
 import { useState, useCallback, type ComponentProps, type UIEvent, type FormEvent, type ChangeEvent } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { useMeta } from '../../shared/components/Meta';
 import {
   postSector,
-  postTrail,
+  postTrails,
   spaPathFromRedirectResponse,
   useAccessToken,
   useArea,
@@ -12,7 +11,7 @@ import {
   useSector,
 } from '../../api';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
-import { TRAIL_ASCENT_COLOR, TRAIL_DESCENT_COLOR } from '../../shared/slopePolylineColors';
+import { getTrailColor } from '../../shared/slopePolylineColors';
 import { useNavigate, useParams } from 'react-router-dom';
 import { VisibilitySelectorField } from '../../shared/ui/VisibilitySelector';
 import type { components } from '../../@types/buldreinfo/swagger';
@@ -120,7 +119,6 @@ const emptyTrail = (isDescent: boolean, sectorId: number | undefined): Trail => 
 
 export const SectorEdit = ({ sector, area }: Props) => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const meta = useMeta();
   const accessToken = useAccessToken();
   const { areaId, sectorId } = useIds();
@@ -277,30 +275,17 @@ export const SectorEdit = ({ sector, area }: Props) => {
       )
         .then(async (res) => {
           const nextSectorId = res.idSector && res.idSector > 0 ? res.idSector : sectorId;
-          const nextAreaId = res.idArea && res.idArea > 0 ? res.idArea : areaId;
 
-          // Save trails separately via postTrail (including deleted trails so the server knows to delete them)
+          // Save all trails in a single POST (including deleted trails so the server knows to delete them)
           if (trails.length > 0) {
-            await Promise.all(
-              trails.map((t) => {
-                const trail = {
-                  ...t,
-                  sectors: [{ sectorId: nextSectorId }],
-                };
-                return postTrail(accessToken, trail);
-              }),
+            await postTrails(
+              accessToken,
+              trails.map((t) => ({
+                ...t,
+                sectors: [{ sectorId: nextSectorId }],
+              })),
             );
           }
-
-          // Keep area/sector map data fresh when returning from edit.
-          await Promise.all([
-            queryClient.invalidateQueries({
-              queryKey: ['/areas', { id: nextAreaId }],
-            }),
-            queryClient.invalidateQueries({
-              queryKey: ['/sectors', { id: nextSectorId }],
-            }),
-          ]);
 
           const path = spaPathFromRedirectResponse(res);
           if (path === null) return;
@@ -415,6 +400,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
 
   const outlines: ComponentProps<typeof Leaflet>['outlines'] = [];
   const trailPolylines: ComponentProps<typeof Leaflet>['trails'] = [];
+  let otherDescentCount = 0;
   (area.sectors ?? [])
     .filter((s) => s.id !== data.id)
     .forEach((s) => {
@@ -426,9 +412,10 @@ export const SectorEdit = ({ sector, area }: Props) => {
         });
       }
       (s.trails ?? []).forEach((t) => {
+        const descentIndex = t.isDescent ? otherDescentCount++ : -1;
         trailPolylines.push({
           trail: t,
-          backgroundColor: t.isDescent ? TRAIL_DESCENT_COLOR : TRAIL_ASCENT_COLOR,
+          backgroundColor: getTrailColor(!!t.isDescent, descentIndex),
           background: true,
         });
       });
@@ -437,11 +424,15 @@ export const SectorEdit = ({ sector, area }: Props) => {
   if (data.outline?.length) {
     outlines.push({ outline: data.outline, background: false });
   }
+  let localDescentCount = 0;
   trails.forEach((t) => {
     if (t.delete) return;
+    // Skip trails with no path points — Leaflet Polyline requires latlngs
+    if (!t.path || t.path.length < 2) return;
+    const descentIndex = t.isDescent ? localDescentCount++ : -1;
     trailPolylines.push({
       trail: t,
-      backgroundColor: t.isDescent ? TRAIL_DESCENT_COLOR : TRAIL_ASCENT_COLOR,
+      backgroundColor: getTrailColor(!!t.isDescent, descentIndex),
       background: false,
     });
   });
@@ -989,174 +980,178 @@ export const SectorEdit = ({ sector, area }: Props) => {
               </div>
             )}
 
-            {leafletMode.startsWith('TRAIL_PATH_') && editingTrailPathIndex != null && (
-              <div className='space-y-4 pt-2'>
-                {/* Title */}
-                <div className='space-y-1'>
-                  <label className={labelClasses}>Title *</label>
-                  <input
-                    className={cn(
-                      'type-on-accent w-full rounded-lg border px-3 py-2.5 text-sm transition-colors focus:outline-none',
-                      !activeTrails[editingTrailPathIndex].title?.trim()
-                        ? 'bg-surface-nav border-red-500/60 focus:border-red-400'
-                        : 'border-surface-border bg-surface-nav focus:border-brand',
-                    )}
-                    placeholder={activeTrails[editingTrailPathIndex].isDescent ? 'Descent' : 'Approach'}
-                    value={activeTrails[editingTrailPathIndex].title ?? ''}
-                    onChange={(e) =>
-                      updateTrail(trails.indexOf(activeTrails[editingTrailPathIndex]), { title: e.target.value })
-                    }
-                  />
-                </div>
+            {leafletMode.startsWith('TRAIL_PATH_') &&
+              editingTrailPathIndex != null &&
+              activeTrails[editingTrailPathIndex] && (
+                <div className='space-y-4 pt-2'>
+                  {/* Title */}
+                  <div className='space-y-1'>
+                    <label className={labelClasses}>Title *</label>
+                    <input
+                      className={cn(
+                        'type-on-accent w-full rounded-lg border px-3 py-2.5 text-sm transition-colors focus:outline-none',
+                        !activeTrails[editingTrailPathIndex].title?.trim()
+                          ? 'bg-surface-nav border-red-500/60 focus:border-red-400'
+                          : 'border-surface-border bg-surface-nav focus:border-brand',
+                      )}
+                      placeholder={activeTrails[editingTrailPathIndex].isDescent ? 'Descent' : 'Approach'}
+                      value={activeTrails[editingTrailPathIndex].title ?? ''}
+                      onChange={(e) =>
+                        updateTrail(trails.indexOf(activeTrails[editingTrailPathIndex]), { title: e.target.value })
+                      }
+                    />
+                  </div>
 
-                {/* Description */}
-                <div className='space-y-1'>
-                  <MarkdownFieldLabel className={labelClasses}>Description</MarkdownFieldLabel>
-                  <textarea
-                    className={cn(
-                      'border-surface-border bg-surface-nav type-on-accent focus:border-brand w-full resize-none rounded-lg border px-3 py-2.5 text-sm transition-colors focus:outline-none',
-                      'min-h-20',
-                    )}
-                    value={activeTrails[editingTrailPathIndex].description ?? ''}
-                    onChange={(e) =>
-                      updateTrail(trails.indexOf(activeTrails[editingTrailPathIndex]), { description: e.target.value })
-                    }
-                  />
-                </div>
+                  {/* Description */}
+                  <div className='space-y-1'>
+                    <MarkdownFieldLabel className={labelClasses}>Description</MarkdownFieldLabel>
+                    <textarea
+                      className={cn(
+                        'border-surface-border bg-surface-nav type-on-accent focus:border-brand w-full resize-none rounded-lg border px-3 py-2.5 text-sm transition-colors focus:outline-none',
+                        'min-h-20',
+                      )}
+                      value={activeTrails[editingTrailPathIndex].description ?? ''}
+                      onChange={(e) =>
+                        updateTrail(trails.indexOf(activeTrails[editingTrailPathIndex]), {
+                          description: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
 
-                {/* Path / Marker toggle */}
-                <div className='flex items-center gap-2'>
-                  <button
-                    type='button'
-                    onClick={() => setTrailMapMode('path')}
-                    className={cn(
-                      'inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-semibold transition-colors',
-                      trailMapMode === 'path' ? 'bg-brand/20 text-brand' : 'text-slate-400 hover:text-slate-200',
-                    )}
-                  >
-                    <PenLine size={12} /> Path
-                  </button>
-                  <button
-                    type='button'
-                    onClick={() => setTrailMapMode('marker')}
-                    className={cn(
-                      'inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-semibold transition-colors',
-                      trailMapMode === 'marker' ? 'bg-brand/20 text-brand' : 'text-slate-400 hover:text-slate-200',
-                    )}
-                  >
-                    <Crosshair size={12} /> Marker
-                  </button>
-                  <span className='text-[11px] text-slate-500'>
-                    {trailMapMode === 'path' ? 'Click map to add path points' : 'Click map to place a marker'}
-                  </span>
-                </div>
+                  {/* Path / Marker toggle */}
+                  <div className='flex items-center gap-2'>
+                    <button
+                      type='button'
+                      onClick={() => setTrailMapMode('path')}
+                      className={cn(
+                        'inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-semibold transition-colors',
+                        trailMapMode === 'path' ? 'bg-brand/20 text-brand' : 'text-slate-400 hover:text-slate-200',
+                      )}
+                    >
+                      <PenLine size={12} /> Path
+                    </button>
+                    <button
+                      type='button'
+                      onClick={() => setTrailMapMode('marker')}
+                      className={cn(
+                        'inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-semibold transition-colors',
+                        trailMapMode === 'marker' ? 'bg-brand/20 text-brand' : 'text-slate-400 hover:text-slate-200',
+                      )}
+                    >
+                      <Crosshair size={12} /> Marker
+                    </button>
+                    <span className='text-[11px] text-slate-500'>
+                      {trailMapMode === 'path' ? 'Click map to add path points' : 'Click map to place a marker'}
+                    </span>
+                  </div>
 
-                {/* Path editor */}
-                <div className='space-y-2'>
-                  <label className={labelClasses}>Path *</label>
-                  <PolylineEditor
-                    coordinates={activeTrails[editingTrailPathIndex]?.path ?? []}
-                    parking={data.parking ?? {}}
-                    onChange={(coordinates) => {
-                      updateTrail(trails.indexOf(activeTrails[editingTrailPathIndex]), { path: coordinates });
-                    }}
-                    upload={false}
-                    slopeType={undefined}
-                  />
-                  {(!activeTrails[editingTrailPathIndex]?.path ||
-                    activeTrails[editingTrailPathIndex]?.path.length < 2) && (
-                    <p className='ml-1 text-[11px] font-bold text-red-500'>Path must have at least 2 points</p>
+                  {/* Path editor */}
+                  <div className='space-y-2'>
+                    <label className={labelClasses}>Path *</label>
+                    <PolylineEditor
+                      coordinates={activeTrails[editingTrailPathIndex]?.path ?? []}
+                      parking={data.parking ?? {}}
+                      onChange={(coordinates) => {
+                        updateTrail(trails.indexOf(activeTrails[editingTrailPathIndex]), { path: coordinates });
+                      }}
+                      upload={true}
+                      slopeType={activeTrails[editingTrailPathIndex]?.isDescent ? 'descent' : 'approach'}
+                    />
+                    {(!activeTrails[editingTrailPathIndex]?.path ||
+                      activeTrails[editingTrailPathIndex]?.path.length < 2) && (
+                      <p className='ml-1 text-[11px] font-bold text-red-500'>Path must have at least 2 points</p>
+                    )}
+                  </div>
+
+                  {/* Markers */}
+                  {(activeTrails[editingTrailPathIndex]?.markers ?? []).length > 0 && (
+                    <div className='space-y-2'>
+                      <label className={labelClasses}>Markers</label>
+                      {(activeTrails[editingTrailPathIndex]?.markers ?? []).map((marker, mi) => (
+                        <div key={mi} className='flex items-center gap-2'>
+                          <input
+                            className={cn(
+                              'type-on-accent flex-1 rounded-lg border px-2.5 py-2 text-sm transition-colors focus:outline-none',
+                              !marker.label?.trim()
+                                ? 'bg-surface-nav border-red-500/60 focus:border-red-400'
+                                : 'border-surface-border bg-surface-nav focus:border-brand',
+                            )}
+                            placeholder='Label *'
+                            value={marker.label ?? ''}
+                            onChange={(e) =>
+                              updateMarker(trails.indexOf(activeTrails[editingTrailPathIndex]), mi, {
+                                label: e.target.value,
+                              })
+                            }
+                          />
+                          <input
+                            className={cn(
+                              'type-on-accent w-28 rounded-lg border px-2.5 py-2 text-sm transition-colors focus:outline-none',
+                              !marker.coordinates?.latitude
+                                ? 'bg-surface-nav border-red-500/60 focus:border-red-400'
+                                : 'border-surface-border bg-surface-nav focus:border-brand',
+                            )}
+                            inputMode='decimal'
+                            placeholder='Lat *'
+                            value={
+                              markerRawText[`${trails.indexOf(activeTrails[editingTrailPathIndex])}-${mi}-lat`] ??
+                              marker.coordinates?.latitude ??
+                              ''
+                            }
+                            onChange={(e) => {
+                              const sanitized = sanitizeCoordInput(e.target.value);
+                              const key = `${trails.indexOf(activeTrails[editingTrailPathIndex])}-${mi}-lat`;
+                              setMarkerRawText((prev) => ({ ...prev, [key]: sanitized }));
+                              const parsed = parseFloat(sanitized);
+                              updateMarker(trails.indexOf(activeTrails[editingTrailPathIndex]), mi, {
+                                coordinates: {
+                                  ...marker.coordinates,
+                                  latitude: isNaN(parsed) ? (undefined as unknown as number) : parsed,
+                                },
+                              });
+                            }}
+                          />
+                          <input
+                            className={cn(
+                              'type-on-accent w-28 rounded-lg border px-2.5 py-2 text-sm transition-colors focus:outline-none',
+                              !marker.coordinates?.longitude
+                                ? 'bg-surface-nav border-red-500/60 focus:border-red-400'
+                                : 'border-surface-border bg-surface-nav focus:border-brand',
+                            )}
+                            inputMode='decimal'
+                            placeholder='Lng *'
+                            value={
+                              markerRawText[`${trails.indexOf(activeTrails[editingTrailPathIndex])}-${mi}-lng`] ??
+                              marker.coordinates?.longitude ??
+                              ''
+                            }
+                            onChange={(e) => {
+                              const sanitized = sanitizeCoordInput(e.target.value);
+                              const key = `${trails.indexOf(activeTrails[editingTrailPathIndex])}-${mi}-lng`;
+                              setMarkerRawText((prev) => ({ ...prev, [key]: sanitized }));
+                              const parsed = parseFloat(sanitized);
+                              updateMarker(trails.indexOf(activeTrails[editingTrailPathIndex]), mi, {
+                                coordinates: {
+                                  ...marker.coordinates,
+                                  longitude: isNaN(parsed) ? (undefined as unknown as number) : parsed,
+                                },
+                              });
+                            }}
+                          />
+                          <button
+                            type='button'
+                            onClick={() => removeMarker(trails.indexOf(activeTrails[editingTrailPathIndex]), mi)}
+                            className='shrink-0 rounded-md p-1.5 text-red-400 transition-colors hover:bg-red-500/10 hover:text-red-300'
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
-
-                {/* Markers */}
-                {(activeTrails[editingTrailPathIndex]?.markers ?? []).length > 0 && (
-                  <div className='space-y-2'>
-                    <label className={labelClasses}>Markers</label>
-                    {(activeTrails[editingTrailPathIndex]?.markers ?? []).map((marker, mi) => (
-                      <div key={mi} className='flex items-center gap-2'>
-                        <input
-                          className={cn(
-                            'type-on-accent flex-1 rounded-lg border px-2.5 py-2 text-sm transition-colors focus:outline-none',
-                            !marker.label?.trim()
-                              ? 'bg-surface-nav border-red-500/60 focus:border-red-400'
-                              : 'border-surface-border bg-surface-nav focus:border-brand',
-                          )}
-                          placeholder='Label *'
-                          value={marker.label ?? ''}
-                          onChange={(e) =>
-                            updateMarker(trails.indexOf(activeTrails[editingTrailPathIndex]), mi, {
-                              label: e.target.value,
-                            })
-                          }
-                        />
-                        <input
-                          className={cn(
-                            'type-on-accent w-28 rounded-lg border px-2.5 py-2 text-sm transition-colors focus:outline-none',
-                            !marker.coordinates?.latitude
-                              ? 'bg-surface-nav border-red-500/60 focus:border-red-400'
-                              : 'border-surface-border bg-surface-nav focus:border-brand',
-                          )}
-                          inputMode='decimal'
-                          placeholder='Lat *'
-                          value={
-                            markerRawText[`${trails.indexOf(activeTrails[editingTrailPathIndex])}-${mi}-lat`] ??
-                            marker.coordinates?.latitude ??
-                            ''
-                          }
-                          onChange={(e) => {
-                            const sanitized = sanitizeCoordInput(e.target.value);
-                            const key = `${trails.indexOf(activeTrails[editingTrailPathIndex])}-${mi}-lat`;
-                            setMarkerRawText((prev) => ({ ...prev, [key]: sanitized }));
-                            const parsed = parseFloat(sanitized);
-                            updateMarker(trails.indexOf(activeTrails[editingTrailPathIndex]), mi, {
-                              coordinates: {
-                                ...marker.coordinates,
-                                latitude: isNaN(parsed) ? (undefined as unknown as number) : parsed,
-                              },
-                            });
-                          }}
-                        />
-                        <input
-                          className={cn(
-                            'type-on-accent w-28 rounded-lg border px-2.5 py-2 text-sm transition-colors focus:outline-none',
-                            !marker.coordinates?.longitude
-                              ? 'bg-surface-nav border-red-500/60 focus:border-red-400'
-                              : 'border-surface-border bg-surface-nav focus:border-brand',
-                          )}
-                          inputMode='decimal'
-                          placeholder='Lng *'
-                          value={
-                            markerRawText[`${trails.indexOf(activeTrails[editingTrailPathIndex])}-${mi}-lng`] ??
-                            marker.coordinates?.longitude ??
-                            ''
-                          }
-                          onChange={(e) => {
-                            const sanitized = sanitizeCoordInput(e.target.value);
-                            const key = `${trails.indexOf(activeTrails[editingTrailPathIndex])}-${mi}-lng`;
-                            setMarkerRawText((prev) => ({ ...prev, [key]: sanitized }));
-                            const parsed = parseFloat(sanitized);
-                            updateMarker(trails.indexOf(activeTrails[editingTrailPathIndex]), mi, {
-                              coordinates: {
-                                ...marker.coordinates,
-                                longitude: isNaN(parsed) ? (undefined as unknown as number) : parsed,
-                              },
-                            });
-                          }}
-                        />
-                        <button
-                          type='button'
-                          onClick={() => removeMarker(trails.indexOf(activeTrails[editingTrailPathIndex]), mi)}
-                          className='shrink-0 rounded-md p-1.5 text-red-400 transition-colors hover:bg-red-500/10 hover:text-red-300'
-                        >
-                          <Trash2 size={12} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+              )}
           </div>
         </Card>
 

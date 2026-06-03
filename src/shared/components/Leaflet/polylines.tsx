@@ -1,6 +1,7 @@
 import { Circle, Polyline, Tooltip, Marker } from 'react-leaflet';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { divIcon } from 'leaflet';
+import { getDistanceWithUnit } from './geo-utils';
 
 type TrailDef = {
   backgroundColor: string;
@@ -14,7 +15,7 @@ type Props = {
   trails?: TrailDef[];
 };
 
-function renderTrail(trailDef: TrailDef, opacity: number) {
+function renderTrail(trailDef: TrailDef, _opacity: number) {
   const a = trailDef;
   const coords = (a.trail.path ?? []).map((c) => ({
     lat: c.latitude ?? 0,
@@ -33,32 +34,39 @@ function renderTrail(trailDef: TrailDef, opacity: number) {
   }
   const positions = coords.map((c) => [c.lat, c.lng] as [number, number]);
   const key = a.trail.id ?? positions.map((p) => p[0] + ',' + p[1]).join(' -> ');
+  const distanceLabel = getDistanceWithUnit(a.trail);
+  const tooltipLabel = a.label && distanceLabel ? `${a.label} · ${distanceLabel}` : a.label || distanceLabel || '';
   return (
     <Polyline key={'trail-' + key} color={color} weight={weight} positions={positions}>
-      {a.label && (
-        <Tooltip opacity={opacity} permanent className='buldreinfo-tooltip-compact'>
-          {a.label}
+      {tooltipLabel && (
+        <Tooltip permanent className='buldreinfo-tooltip-compact buldreinfo-tooltip-semi'>
+          {tooltipLabel}
         </Tooltip>
       )}
-      {/* Render trail markers */}
-      {(a.trail.markers ?? []).map((m, idx) => {
-        if (!m.coordinates?.latitude || !m.coordinates?.longitude) return null;
-        const markerIcon = divIcon({
-          className: 'trail-marker-icon',
-          html: `<div style="background:${color};width:10px;height:10px;border-radius:50%;border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,0.5)"></div>`,
-          iconSize: [10, 10],
-          iconAnchor: [5, 5],
-        });
-        return (
-          <Marker key={'marker-' + idx} position={[m.coordinates.latitude, m.coordinates.longitude]} icon={markerIcon}>
-            {m.label && (
-              <Tooltip opacity={opacity} permanent className='buldreinfo-tooltip-compact'>
-                {m.label}
-              </Tooltip>
-            )}
-          </Marker>
-        );
-      })}
+      {/* Render trail markers (only for non-background trails, e.g. sector/problem pages) */}
+      {!a.background &&
+        (a.trail.markers ?? []).map((m, idx) => {
+          if (!m.coordinates?.latitude || !m.coordinates?.longitude) return null;
+          const markerIcon = divIcon({
+            className: 'trail-marker-icon',
+            html: `<div style="background:${color};width:10px;height:10px;border-radius:50%;border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,0.5)"></div>`,
+            iconSize: [10, 10],
+            iconAnchor: [5, 5],
+          });
+          return (
+            <Marker
+              key={'marker-' + idx}
+              position={[m.coordinates.latitude, m.coordinates.longitude]}
+              icon={markerIcon}
+            >
+              {m.label && (
+                <Tooltip permanent className='buldreinfo-tooltip-compact buldreinfo-tooltip-semi'>
+                  {m.label}
+                </Tooltip>
+              )}
+            </Marker>
+          );
+        })}
     </Polyline>
   );
 }

@@ -4,7 +4,7 @@ import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import ProblemList, { useProblemListCompact } from '../../shared/components/ProblemList';
 import ChartGradeDistribution from '../../shared/components/ChartGradeDistribution/ChartGradeDistribution';
 import { TrailProfile } from '../../shared/components/TrailProfile';
-import { TRAIL_ASCENT_COLOR, TRAIL_DESCENT_COLOR } from '../../shared/slopePolylineColors';
+import { getTrailColor } from '../../shared/slopePolylineColors';
 
 import Top from '../../shared/components/Top/Top';
 import Activity from '../../shared/components/Activity/Activity';
@@ -30,7 +30,7 @@ import {
   tabBarStripContainerClassName,
   TAB_BAR_ICON_SIZE,
 } from '../../design/tabBar';
-import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
+import { Markdown } from '../../shared/components/Markdown/Markdown';
 import {
   AlertTriangle,
   Check,
@@ -587,11 +587,15 @@ const Sector = () => {
       : meta.defaultCenter;
   const defaultZoom = data.parking ? 15 : meta.defaultZoom;
   let outlines: ComponentProps<typeof Leaflet>['outlines'] = undefined;
-  const trails: ComponentProps<typeof Leaflet>['trails'] = (data.trails ?? []).map((t) => ({
-    trail: t,
-    backgroundColor: t.isDescent ? TRAIL_DESCENT_COLOR : TRAIL_ASCENT_COLOR,
-    label: t.title ? (t.distance ? `${t.title} (${t.distance}m)` : t.title) : undefined,
-  }));
+  let descentCount = 0;
+  const trails: ComponentProps<typeof Leaflet>['trails'] = (data.trails ?? []).map((t) => {
+    const descentIndex = t.isDescent ? descentCount++ : -1;
+    return {
+      trail: t,
+      backgroundColor: getTrailColor(!!t.isDescent, descentIndex),
+      label: t.title || undefined,
+    };
+  });
 
   if ((data.outline ?? []).length && addPolygon) {
     outlines = [{ url: '/sector/' + data.id, label: data.name ?? '', outline: data.outline ?? [] }];
@@ -921,9 +925,7 @@ const Sector = () => {
                     <ExternalLinkLabels externalLinks={data.externalLinks} />
                   </div>
 
-                  {(data.comment ?? '').trim().length > 0 && (
-                    <ExpandableMarkdown key={data.id} content={data.comment ?? ''} contentClassName='max-w-none' />
-                  )}
+                  {(data.comment ?? '').trim().length > 0 && <Markdown content={data.comment ?? ''} />}
 
                   {(data.triviaMedia?.length ?? 0) > 0 && (
                     <div className='pt-1'>
@@ -997,19 +999,26 @@ const Sector = () => {
           )}
         >
           <div className='grid min-w-0 grid-cols-1 items-stretch gap-3 sm:grid-cols-2 sm:gap-4'>
-            {(data.trails ?? []).map((t) => (
-              <div key={t.id ?? t.title} className='w-full min-w-0'>
-                <TrailProfile
-                  compact
-                  isDescent={!!t.isDescent}
-                  className='w-full min-w-0'
-                  areaName={data.areaName ?? ''}
-                  sectorName={data.name ?? ''}
-                  sectorId={data.id}
-                  trail={t}
-                />
-              </div>
-            ))}
+            {(() => {
+              let descentIdx = 0;
+              return (data.trails ?? []).map((t) => {
+                const di = t.isDescent ? descentIdx++ : -1;
+                return (
+                  <div key={t.id ?? t.title} className='w-full min-w-0'>
+                    <TrailProfile
+                      compact
+                      isDescent={!!t.isDescent}
+                      descentIndex={di}
+                      className='w-full min-w-0'
+                      areaName={data.areaName ?? ''}
+                      sectorName={data.name ?? ''}
+                      sectorId={data.id}
+                      trail={t}
+                    />
+                  </div>
+                );
+              });
+            })()}
           </div>
         </div>
       )}

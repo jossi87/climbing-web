@@ -10,7 +10,7 @@ export {
   postProblemSvg,
   postSector,
   postTicks,
-  postTrail,
+  postTrails,
   postUserRegion,
   postMediaImage,
   postMediaVideoInitiate,

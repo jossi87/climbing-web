@@ -1,7 +1,7 @@
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { AreaChart, Area, Tooltip, XAxis, YAxis } from 'recharts';
 import { getDistanceWithUnit } from '../Leaflet/geo-utils';
-import { TRAIL_ASCENT_COLOR, TRAIL_DESCENT_COLOR } from '../../slopePolylineColors';
+import { getTrailColor } from '../../slopePolylineColors';
 import { Download, Clock, Database, ArrowUpRight, ArrowDownRight, Ruler } from 'lucide-react';
 import { useState, useLayoutEffect, useRef, useId } from 'react';
 import { cn } from '../../../lib/utils';
@@ -84,7 +84,7 @@ export const SlopeProfile = ({
   const icon = compact ? 10 : 12;
   const statText = compact ? 'text-[12px] leading-snug' : 'text-[13px] leading-snug';
   const lineColor =
-    variant === 'approach' ? TRAIL_ASCENT_COLOR : variant === 'descent' ? TRAIL_DESCENT_COLOR : '#c9ac62';
+    variant === 'approach' ? getTrailColor(false, 0) : variant === 'descent' ? getTrailColor(true, 0) : '#c9ac62';
   const chartStroke = lineColor;
   const chartFillTop = lineColor;
   const chartFillBot = lineColor;

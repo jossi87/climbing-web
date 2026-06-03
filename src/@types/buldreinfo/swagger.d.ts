@@ -888,7 +888,7 @@ export type paths = {
         };
         get?: never;
         put?: never;
-        /** Upsert trail */
+        /** Upsert trails */
         post: operations["postTrails"];
         delete?: never;
         options?: never;
@@ -1070,8 +1070,6 @@ export type components = {
             outline?: components["schemas"]["Coordinates"][];
             wallDirectionCalculated?: components["schemas"]["CompassDirection"];
             wallDirectionManual?: components["schemas"]["CompassDirection"];
-            approach?: components["schemas"]["Slope"];
-            descent?: components["schemas"]["Slope"];
             trails?: components["schemas"]["Trail"][];
             randomMedia?: components["schemas"]["MediaIdentity"];
             problems?: components["schemas"]["SectorProblem"][];
@@ -1228,17 +1226,6 @@ export type components = {
             todo?: boolean;
             t?: components["schemas"]["Type"];
             danger?: boolean;
-        };
-        Slope: {
-            coordinates?: components["schemas"]["Coordinates"][];
-            /** Format: double */
-            calculatedDurationInMinutes?: number;
-            /** Format: int64 */
-            distance?: number;
-            /** Format: int64 */
-            elevationGain?: number;
-            /** Format: int64 */
-            elevationLoss?: number;
         };
         Svg: {
             delete?: boolean;
@@ -1574,8 +1561,6 @@ export type components = {
             sectorOutline?: components["schemas"]["Coordinates"][];
             sectorWallDirectionCalculated?: components["schemas"]["CompassDirection"];
             sectorWallDirectionManual?: components["schemas"]["CompassDirection"];
-            sectorApproach?: components["schemas"]["Slope"];
-            sectorDescent?: components["schemas"]["Slope"];
             trails?: components["schemas"]["Trail"][];
             neighbours?: components["schemas"]["Neighbour"][];
             /** Format: int32 */
@@ -1857,8 +1842,6 @@ export type components = {
             outline?: components["schemas"]["Coordinates"][];
             wallDirectionCalculated?: components["schemas"]["CompassDirection"];
             wallDirectionManual?: components["schemas"]["CompassDirection"];
-            approach?: components["schemas"]["Slope"];
-            descent?: components["schemas"]["Slope"];
             trails?: components["schemas"]["Trail"][];
             media?: components["schemas"]["Media"][];
             triviaMedia?: components["schemas"]["Media"][];
@@ -4589,7 +4572,7 @@ export interface operations {
         };
         requestBody?: {
             content: {
-                "*/*": components["schemas"]["Trail"];
+                "*/*": components["schemas"]["Trail"][];
             };
         };
         responses: {

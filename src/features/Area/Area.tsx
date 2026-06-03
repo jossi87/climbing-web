@@ -4,7 +4,7 @@ import ChartGradeDistribution from '../../shared/components/ChartGradeDistributi
 import Top from '../../shared/components/Top/Top';
 import Activity from '../../shared/components/Activity/Activity';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
-import { TRAIL_ASCENT_COLOR, TRAIL_DESCENT_COLOR } from '../../shared/slopePolylineColors';
+import { getTrailColor } from '../../shared/slopePolylineColors';
 import Media from '../../shared/components/Media/Media';
 import Todo from '../../shared/components/Todo/Todo';
 import { Loading } from '../../shared/ui/StatusWidgets';
@@ -549,11 +549,15 @@ const Area = () => {
 
   const trails: ComponentProps<typeof Leaflet>['trails'] = useMemo(() => {
     if (!data?.sectors) return [];
+    let descentCount = 0;
     return data.sectors.flatMap((s) =>
-      (s.trails ?? []).map((t) => ({
-        trail: t,
-        backgroundColor: t.isDescent ? TRAIL_DESCENT_COLOR : TRAIL_ASCENT_COLOR,
-      })),
+      (s.trails ?? []).map((t) => {
+        const descentIndex = t.isDescent ? descentCount++ : -1;
+        return {
+          trail: t,
+          backgroundColor: getTrailColor(!!t.isDescent, descentIndex),
+        };
+      }),
     );
   }, [data]);
 

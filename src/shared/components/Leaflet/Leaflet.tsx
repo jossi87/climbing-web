@@ -574,7 +574,9 @@ const Leaflet = ({
           white-space: nowrap !important;
           overflow: hidden !important;
           text-overflow: ellipsis !important;
-          opacity: 0.95 !important;
+        }
+        .buldreinfo-tooltip-semi {
+          opacity: 0.7 !important;
         }
 
         .buldreinfo-tooltip-clickable {

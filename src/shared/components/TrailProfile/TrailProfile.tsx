@@ -5,9 +5,11 @@ import { useState, useLayoutEffect, useRef, useId } from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
-import { ExpandableMarkdown } from '../ExpandableMarkdown';
+import { Markdown } from '../Markdown/Markdown';
 import { useMeta } from '../Meta/context';
 import Media from '../Media/Media';
+import { getTrailColor } from '../../slopePolylineColors';
+import { getDistanceWithUnit } from '../Leaflet/geo-utils';
 
 type Trail = components['schemas']['Trail'];
 
@@ -18,8 +20,10 @@ type Props = {
   trail: Trail;
   /** Shallow chart + stats strip (problem / sector map tab); parent grid is full width below sm, half-width columns from sm. */
   compact?: boolean;
-  /** Matches Leaflet polyline hue: green ascent, violet descent. */
+  /** Whether this trail is a descent (affects color). */
   isDescent?: boolean;
+  /** Zero-based index among all descent trails (for color differentiation). */
+  descentIndex?: number;
   className?: string;
 };
 
@@ -68,6 +72,7 @@ export const TrailProfile = ({
   trail,
   compact = false,
   isDescent = false,
+  descentIndex = 0,
   className,
 }: Props) => {
   const meta = useMeta();
@@ -94,7 +99,7 @@ export const TrailProfile = ({
 
   const icon = compact ? 10 : 12;
   const statText = compact ? 'text-[12px] leading-snug' : 'text-[13px] leading-snug';
-  const lineColor = isDescent ? '#a855f7' : '#84cc16';
+  const lineColor = getTrailColor(!!isDescent, descentIndex ?? 0);
   const chartStroke = lineColor;
   const chartFillTop = lineColor;
   const chartFillBot = lineColor;
@@ -107,7 +112,7 @@ export const TrailProfile = ({
     <>
       <span className='inline-flex items-center gap-1 font-medium text-slate-100'>
         <Ruler size={icon} className='light:text-slate-600 shrink-0 text-slate-300' aria-hidden />
-        <span>{trail.distance ?? 0}m</span>
+        <span>{getDistanceWithUnit(trail)}</span>
       </span>
       <span className='inline-flex items-center gap-1 font-medium text-slate-100'>
         <ArrowUpRight size={icon} className='light:text-slate-600 shrink-0 text-slate-300' aria-hidden />
@@ -183,7 +188,7 @@ export const TrailProfile = ({
           </div>
           {hasDescription && (
             <div className='mt-1 text-[12px] text-slate-300'>
-              <ExpandableMarkdown content={trail.description ?? ''} contentClassName='max-w-none' />
+              <Markdown content={trail.description ?? ''} />
             </div>
           )}
           {hasMarkers && (
@@ -193,11 +198,16 @@ export const TrailProfile = ({
                   m.coordinates?.latitude != null && m.coordinates?.longitude != null
                     ? `https://www.google.com/maps?q=${m.coordinates.latitude},${m.coordinates.longitude}`
                     : null;
-                const markerColor = isDescent ? '#a855f7' : '#84cc16';
+                const markerColor = getTrailColor(!!isDescent, descentIndex ?? 0);
+                const coordStr =
+                  m.coordinates?.latitude != null && m.coordinates?.longitude != null
+                    ? `(${m.coordinates.latitude.toFixed(7)}${m.coordinates.latitude >= 0 ? 'N' : 'S'},${m.coordinates.longitude.toFixed(7)}${m.coordinates.longitude >= 0 ? 'E' : 'W'})`
+                    : null;
                 const inner = (
                   <>
                     <MapPin size={11} className='shrink-0' aria-hidden style={{ color: markerColor }} />
                     <span className='text-[12px] font-medium'>{m.label}</span>
+                    {coordStr && <span className='font-mono text-[11px] text-slate-500 tabular-nums'>{coordStr}</span>}
                   </>
                 );
                 return googleMapsUrl ? (

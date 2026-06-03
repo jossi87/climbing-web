@@ -295,7 +295,7 @@ export function postSector(
       'Content-Type': 'application/json',
       Accept: 'application/json',
     },
-    consistencyAction: 'nop',
+    ...invalidateQueriesAfter,
     invalidateActivityFeed: true,
   })
     .then((response) => ensureOkJson(response, url, {} as Success<'postSectors'>))
@@ -336,11 +336,11 @@ export function postTicks(
   }).then((response) => ensureOkResponse(response, url));
 }
 
-export function postTrail(accessToken: string | null, trail: components['schemas']['Trail']): Promise<Response> {
+export function postTrails(accessToken: string | null, trails: components['schemas']['Trail'][]): Promise<Response> {
   const url = `/trails`;
   return makeAuthenticatedRequest(accessToken, url, {
     method: 'POST',
-    body: JSON.stringify(trail),
+    body: JSON.stringify(trails),
     headers: {
       'Content-Type': 'application/json',
     },
