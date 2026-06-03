@@ -19,6 +19,7 @@ import { ProblemOrder } from './ProblemOrder';
 import { PolylineEditor } from './PolylineEditor';
 import { ZoomLogic } from './ZoomLogic';
 import { PolylineMarkers } from './PolylineMarkers';
+import { TrailSectorSelector } from './TrailSectorSelector';
 import { captureSentryException } from '../../utils/sentry';
 import { hours } from '../../utils/hours';
 import ExternalLink from '../../shared/ui/ExternalLinks';
@@ -282,7 +283,8 @@ export const SectorEdit = ({ sector, area }: Props) => {
               accessToken,
               trails.map((t) => ({
                 ...t,
-                sectors: [{ sectorId: nextSectorId }],
+                // Preserve the user's sector selection; if none set, default to the current sector
+                sectors: t.sectors?.length ? t.sectors : [{ sectorId: nextSectorId }],
               })),
             );
           }
@@ -761,7 +763,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
                   'px-2.5 py-1 text-[11px] tracking-wide transition-colors sm:px-4 sm:py-1.5 sm:text-[12px]',
                   leafletMode === 'PARKING'
                     ? 'type-on-accent font-semibold'
-                    : 'light:text-slate-600 light:hover:type-on-accent text-slate-300 hover:text-slate-100',
+                    : 'light:text-slate-600 light:hover:type-on-accent hover:type-on-accent text-slate-300',
                 )}
               >
                 Parking
@@ -805,7 +807,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
                   'px-2.5 py-1 text-[11px] tracking-wide transition-colors sm:px-4 sm:py-1.5 sm:text-[12px]',
                   leafletMode === 'POLYGON'
                     ? 'type-on-accent font-semibold'
-                    : 'light:text-slate-600 light:hover:type-on-accent text-slate-300 hover:text-slate-100',
+                    : 'light:text-slate-600 light:hover:type-on-accent hover:type-on-accent text-slate-300',
                 )}
               >
                 Outline
@@ -851,7 +853,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
                     'inline-flex items-center gap-1 px-2.5 py-1 text-[11px] tracking-wide transition-colors sm:px-4 sm:py-1.5 sm:text-[12px]',
                     leafletMode === `TRAIL_PATH_${i}`
                       ? 'type-on-accent font-semibold'
-                      : 'light:text-slate-600 light:hover:type-on-accent text-slate-300 hover:text-slate-100',
+                      : 'light:text-slate-600 light:hover:type-on-accent hover:type-on-accent text-slate-300',
                   )}
                 >
                   {trail.isDescent ? (
@@ -1019,6 +1021,16 @@ export const SectorEdit = ({ sector, area }: Props) => {
                     />
                   </div>
 
+                  {/* Sector sharing */}
+                  <TrailSectorSelector
+                    areaSectors={area.sectors ?? []}
+                    currentSectorId={data.id}
+                    sectors={activeTrails[editingTrailPathIndex].sectors ?? []}
+                    onChange={(sectors) =>
+                      updateTrail(trails.indexOf(activeTrails[editingTrailPathIndex]), { sectors })
+                    }
+                  />
+
                   {/* Path / Marker toggle */}
                   <div className='flex items-center gap-2'>
                     <button
@@ -1026,7 +1038,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
                       onClick={() => setTrailMapMode('path')}
                       className={cn(
                         'inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-semibold transition-colors',
-                        trailMapMode === 'path' ? 'bg-brand/20 text-brand' : 'text-slate-400 hover:text-slate-200',
+                        trailMapMode === 'path' ? 'bg-brand/20 type-on-accent' : 'hover:type-on-accent text-slate-400',
                       )}
                     >
                       <PenLine size={12} /> Path
@@ -1036,7 +1048,9 @@ export const SectorEdit = ({ sector, area }: Props) => {
                       onClick={() => setTrailMapMode('marker')}
                       className={cn(
                         'inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-semibold transition-colors',
-                        trailMapMode === 'marker' ? 'bg-brand/20 text-brand' : 'text-slate-400 hover:text-slate-200',
+                        trailMapMode === 'marker'
+                          ? 'bg-brand/20 type-on-accent'
+                          : 'hover:type-on-accent text-slate-400',
                       )}
                     >
                       <Crosshair size={12} /> Marker
@@ -1048,7 +1062,6 @@ export const SectorEdit = ({ sector, area }: Props) => {
 
                   {/* Path editor */}
                   <div className='space-y-2'>
-                    <label className={labelClasses}>Path *</label>
                     <PolylineEditor
                       coordinates={activeTrails[editingTrailPathIndex]?.path ?? []}
                       parking={data.parking ?? {}}
