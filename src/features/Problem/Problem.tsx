@@ -10,7 +10,6 @@ import {
   type ElementType,
   type SetStateAction,
 } from 'react';
-import { createPortal } from 'react-dom';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
 import GetCenterFromDegrees from '../../utils/map-utils';
@@ -23,13 +22,12 @@ import { ConditionLabels } from '../../shared/components/Widgets/ConditionLabels
 import { ExternalLinkLabels } from '../../shared/components/Widgets/ExternalLinkLabels';
 import { NoDogsAllowed } from '../../shared/components/Widgets/NoDogsAllowed';
 import { useMeta } from '../../shared/components/Meta/context';
-import { useProblem, mediaIdentityId } from '../../api';
+import { useProblem } from '../../api';
 import type { components } from '../../@types/buldreinfo/swagger';
 
 import TickModal from '../../shared/components/TickModal/TickModal';
 import CommentModal from '../../shared/components/CommentModal/CommentModal';
 import { TrailProfile } from '../../shared/components/TrailProfile';
-import MediaModal from '../../shared/components/Media/MediaModal';
 
 import { TRAIL_ASCENT_COLOR, TRAIL_DESCENT_COLOR } from '../../shared/slopePolylineColors';
 import Linkify from 'linkify-react';
@@ -188,10 +186,6 @@ function ProblemLoaded({
   const [optimisticTodo, setOptimisticTodo] = useOptimistic(data.todo, (_, newTodo: boolean) => newTodo);
   const [showTickModal, setShowTickModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState<components['schemas']['ProblemComment'] | null>(null);
-  const [trailMediaState, setTrailMediaState] = useState<{
-    trailMedia: components['schemas']['Media'][];
-    currentIndex: number;
-  } | null>(null);
 
   const handleToggleTodo = async () => {
     const newTodoValue = !optimisticTodo;
@@ -702,8 +696,14 @@ function ProblemLoaded({
         )}
       </Card>
 
-      {showMapTab && activeTab === 'map' && hasTrails && (
-        <div className={cn('mt-4 min-w-0 sm:mt-5', 'max-sm:-mx-4 max-sm:w-[calc(100%+2rem)] sm:mx-0 sm:w-full')}>
+      {hasTrails && (
+        <div
+          className={cn(
+            'mt-4 min-w-0 sm:mt-5',
+            'max-sm:-mx-4 max-sm:w-[calc(100%+2rem)] sm:mx-0 sm:w-full',
+            !(showMapTab && activeTab === 'map') && 'hidden',
+          )}
+        >
           <div className='grid min-w-0 grid-cols-1 items-stretch gap-3 sm:grid-cols-2 sm:gap-4'>
             {(data.trails ?? []).map((t) => (
               <div key={t.id ?? t.title} className='w-full min-w-0'>
@@ -715,55 +715,12 @@ function ProblemLoaded({
                   sectorName={data.sectorName ?? ''}
                   sectorId={data.sectorId}
                   trail={t}
-                  onMediaClick={(mediaId) => {
-                    const trailMedia = t.media ?? [];
-                    const idx = trailMedia.findIndex((m) => m.identity && mediaId === mediaIdentityId(m.identity));
-                    if (idx >= 0) setTrailMediaState({ trailMedia, currentIndex: idx });
-                  }}
                 />
               </div>
             ))}
           </div>
         </div>
       )}
-
-      {trailMediaState &&
-        createPortal(
-          <MediaModal
-            isSaving={false}
-            onClose={() => setTrailMediaState(null)}
-            onDelete={() => {}}
-            onRotate={() => {}}
-            onMoveImageLeft={() => {}}
-            onMoveImageRight={() => {}}
-            onMoveImageToSector={() => {}}
-            onMoveImageToProblem={() => {}}
-            m={trailMediaState.trailMedia[trailMediaState.currentIndex]}
-            pitch={0}
-            pitches={[]}
-            orderableMedia={trailMediaState.trailMedia}
-            carouselIndex={trailMediaState.currentIndex + 1}
-            carouselSize={trailMediaState.trailMedia.length}
-            showLocation={false}
-            gotoPrev={() =>
-              setTrailMediaState((prev) =>
-                prev
-                  ? { ...prev, currentIndex: (prev.currentIndex - 1 + prev.trailMedia.length) % prev.trailMedia.length }
-                  : null,
-              )
-            }
-            gotoNext={() =>
-              setTrailMediaState((prev) =>
-                prev ? { ...prev, currentIndex: (prev.currentIndex + 1) % prev.trailMedia.length } : null,
-              )
-            }
-            playVideo={() => {}}
-            stopVideo={() => {}}
-            autoPlayVideo={false}
-            optProblemId={null}
-          />,
-          document.body,
-        )}
 
       {showOverviewContent && hasPitches && data.sections && (
         <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm'>

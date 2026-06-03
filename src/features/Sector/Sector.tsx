@@ -1,11 +1,9 @@
 import { type ComponentProps, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
 import type { LucideIcon } from 'lucide-react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import ProblemList, { useProblemListCompact } from '../../shared/components/ProblemList';
 import ChartGradeDistribution from '../../shared/components/ChartGradeDistribution/ChartGradeDistribution';
 import { TrailProfile } from '../../shared/components/TrailProfile';
-import MediaModal from '../../shared/components/Media/MediaModal';
 import { TRAIL_ASCENT_COLOR, TRAIL_DESCENT_COLOR } from '../../shared/slopePolylineColors';
 
 import Top from '../../shared/components/Top/Top';
@@ -21,7 +19,7 @@ import { ConditionLabels } from '../../shared/components/Widgets/ConditionLabels
 import { ExternalLinkLabels } from '../../shared/components/Widgets/ExternalLinkLabels';
 import { NoDogsAllowed } from '../../shared/components/Widgets/NoDogsAllowed';
 import { useMeta } from '../../shared/components/Meta/context';
-import { useSector, mediaIdentityId } from '../../api';
+import { useSector } from '../../api';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { ActionMenuChip, Card, NotFoundCard, PageCardBreadcrumbRow } from '../../shared/ui';
 import { TradGearMarker } from '../../shared/ui/TradGearMarker';
@@ -410,10 +408,6 @@ const Sector = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [sectorPickerOpen, setSectorPickerOpen] = useState(false);
-  const [trailMediaState, setTrailMediaState] = useState<{
-    trailMedia: components['schemas']['Media'][];
-    currentIndex: number;
-  } | null>(null);
   const sectorPickerRef = useRef<HTMLDivElement>(null);
   const sectorPickerActiveItemRef = useRef<HTMLLIElement | null>(null);
 
@@ -994,8 +988,14 @@ const Sector = () => {
         )}
       </Card>
 
-      {effectiveTab === 'map' && hasTrails && (
-        <div className={cn('mt-4 min-w-0 sm:mt-5', 'max-sm:-mx-4 max-sm:w-[calc(100%+2rem)] sm:mx-0 sm:w-full')}>
+      {hasTrails && (
+        <div
+          className={cn(
+            'mt-4 min-w-0 sm:mt-5',
+            'max-sm:-mx-4 max-sm:w-[calc(100%+2rem)] sm:mx-0 sm:w-full',
+            effectiveTab !== 'map' && 'hidden',
+          )}
+        >
           <div className='grid min-w-0 grid-cols-1 items-stretch gap-3 sm:grid-cols-2 sm:gap-4'>
             {(data.trails ?? []).map((t) => (
               <div key={t.id ?? t.title} className='w-full min-w-0'>
@@ -1007,55 +1007,12 @@ const Sector = () => {
                   sectorName={data.name ?? ''}
                   sectorId={data.id}
                   trail={t}
-                  onMediaClick={(mediaId) => {
-                    const trailMedia = t.media ?? [];
-                    const idx = trailMedia.findIndex((m) => m.identity && mediaId === mediaIdentityId(m.identity));
-                    if (idx >= 0) setTrailMediaState({ trailMedia, currentIndex: idx });
-                  }}
                 />
               </div>
             ))}
           </div>
         </div>
       )}
-
-      {trailMediaState &&
-        createPortal(
-          <MediaModal
-            isSaving={false}
-            onClose={() => setTrailMediaState(null)}
-            onDelete={() => {}}
-            onRotate={() => {}}
-            onMoveImageLeft={() => {}}
-            onMoveImageRight={() => {}}
-            onMoveImageToSector={() => {}}
-            onMoveImageToProblem={() => {}}
-            m={trailMediaState.trailMedia[trailMediaState.currentIndex]}
-            pitch={0}
-            pitches={[]}
-            orderableMedia={trailMediaState.trailMedia}
-            carouselIndex={trailMediaState.currentIndex + 1}
-            carouselSize={trailMediaState.trailMedia.length}
-            showLocation={false}
-            gotoPrev={() =>
-              setTrailMediaState((prev) =>
-                prev
-                  ? { ...prev, currentIndex: (prev.currentIndex - 1 + prev.trailMedia.length) % prev.trailMedia.length }
-                  : null,
-              )
-            }
-            gotoNext={() =>
-              setTrailMediaState((prev) =>
-                prev ? { ...prev, currentIndex: (prev.currentIndex + 1) % prev.trailMedia.length } : null,
-              )
-            }
-            playVideo={() => {}}
-            stopVideo={() => {}}
-            autoPlayVideo={false}
-            optProblemId={null}
-          />,
-          document.body,
-        )}
 
       {effectiveTab === 'overview' && (data.problems?.length ?? 0) > 0 && (
         <div className='min-w-0'>

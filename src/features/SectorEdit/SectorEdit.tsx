@@ -279,11 +279,10 @@ export const SectorEdit = ({ sector, area }: Props) => {
           const nextSectorId = res.idSector && res.idSector > 0 ? res.idSector : sectorId;
           const nextAreaId = res.idArea && res.idArea > 0 ? res.idArea : areaId;
 
-          // Save trails separately via postTrail
-          const activeTrails = trails.filter((t) => !t.delete);
-          if (activeTrails.length > 0) {
+          // Save trails separately via postTrail (including deleted trails so the server knows to delete them)
+          if (trails.length > 0) {
             await Promise.all(
-              activeTrails.map((t) => {
+              trails.map((t) => {
                 const trail = {
                   ...t,
                   sectors: [{ sectorId: nextSectorId }],

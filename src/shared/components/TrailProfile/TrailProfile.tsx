@@ -7,7 +7,7 @@ import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 import { ExpandableMarkdown } from '../ExpandableMarkdown';
 import { useMeta } from '../Meta/context';
-import { getMediaFileUrl, mediaIdentityId, mediaIdentityVersionStamp } from '../../../api';
+import Media from '../Media/Media';
 
 type Trail = components['schemas']['Trail'];
 
@@ -21,8 +21,6 @@ type Props = {
   /** Matches Leaflet polyline hue: green ascent, violet descent. */
   isDescent?: boolean;
   className?: string;
-  /** Called when a media thumbnail is clicked. The parent should open the media modal. */
-  onMediaClick?: (mediaId: number) => void;
 };
 
 const createXmlString = (
@@ -71,7 +69,6 @@ export const TrailProfile = ({
   compact = false,
   isDescent = false,
   className,
-  onMediaClick,
 }: Props) => {
   const meta = useMeta();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -223,31 +220,15 @@ export const TrailProfile = ({
             </div>
           )}
           {hasMedia && (
-            <div className='mt-2 flex flex-wrap gap-1.5'>
-              {(trail.media ?? []).map((m, i) => {
-                const thumbUrl = m.identity
-                  ? getMediaFileUrl(mediaIdentityId(m.identity), mediaIdentityVersionStamp(m.identity), false, {
-                      minDimension: 120,
-                    })
-                  : m.url;
-                const mediaId = m.identity ? mediaIdentityId(m.identity) : 0;
-                return (
-                  <button
-                    key={i}
-                    type='button'
-                    onClick={() => onMediaClick?.(mediaId)}
-                    className='group relative h-14 w-20 overflow-hidden rounded-lg border border-white/10 bg-black/30 transition-colors hover:border-white/30'
-                    title={m.description || 'View media'}
-                  >
-                    <img
-                      src={thumbUrl}
-                      alt={m.description || ''}
-                      className='h-full w-full object-cover transition-transform duration-200 group-hover:scale-105'
-                      loading='lazy'
-                    />
-                  </button>
-                );
-              })}
+            <div className='mt-2'>
+              <Media
+                media={trail.media ?? []}
+                orderableMedia={trail.media ?? []}
+                carouselMedia={trail.media ?? []}
+                optProblemId={null}
+                showLocation={false}
+                compactTiles
+              />
             </div>
           )}
         </div>
