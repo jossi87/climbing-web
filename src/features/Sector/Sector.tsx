@@ -590,7 +590,7 @@ const Sector = () => {
   const trails: ComponentProps<typeof Leaflet>['trails'] = (data.trails ?? []).map((t) => ({
     trail: t,
     backgroundColor: t.isDescent ? TRAIL_DESCENT_COLOR : TRAIL_ASCENT_COLOR,
-    label: t.title ?? undefined,
+    label: t.title ? (t.distance ? `${t.title} (${t.distance}m)` : t.title) : undefined,
   }));
 
   if ((data.outline ?? []).length && addPolygon) {
