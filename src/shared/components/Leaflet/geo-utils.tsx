@@ -1,10 +1,7 @@
 import type { components } from '../../../@types/buldreinfo/swagger';
 
-export function getDistanceWithUnit(slope: components['schemas']['Slope'] | components['schemas']['Trail']) {
-  if (!slope) {
-    return null;
-  }
-  const m = slope.distance ?? 0;
+export function getDistanceWithUnit(trail: components['schemas']['Trail']) {
+  const m = trail.distance ?? 0;
   if (m > 1000) {
     return Math.round(m / 100) / 10 + 'km';
   }

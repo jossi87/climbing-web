@@ -24,9 +24,13 @@ export const ZoomLogic = ({ area: loadedArea, sector: loadedSector }: Props) => 
         }
       }
 
-      if (sectorRef.current.approach?.coordinates?.length) {
-        for (const coordinates of sectorRef.current.approach.coordinates) {
-          bounds.extend([coordinates.latitude ?? defaultCenter.lat, coordinates.longitude ?? defaultCenter.lng]);
+      if (sectorRef.current.trails?.length) {
+        for (const trail of sectorRef.current.trails) {
+          if (trail.path?.length) {
+            for (const coordinates of trail.path) {
+              bounds.extend([coordinates.latitude ?? defaultCenter.lat, coordinates.longitude ?? defaultCenter.lng]);
+            }
+          }
         }
       }
 
