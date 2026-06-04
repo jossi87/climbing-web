@@ -1,6 +1,6 @@
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { AreaChart, Area, Tooltip, XAxis, YAxis } from 'recharts';
-import { Download, Clock, ArrowUpRight, ArrowDownRight, Ruler, MapPin, ImageIcon } from 'lucide-react';
+import { Download, Clock, ArrowUpRight, ArrowDownRight, Ruler, MapPin, ImageIcon, Database } from 'lucide-react';
 import { useState, useLayoutEffect, useRef, useId } from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '../../../lib/utils';
@@ -97,8 +97,7 @@ export const TrailProfile = ({
     return () => observer.disconnect();
   }, []);
 
-  const icon = compact ? 10 : 12;
-  const statText = compact ? 'text-[12px] leading-snug' : 'text-[13px] leading-snug';
+  const icon = compact ? 9 : 10;
   const lineColor = getTrailColor(!!isDescent, descentIndex ?? 0);
   const chartStroke = lineColor;
   const chartFillTop = lineColor;
@@ -128,8 +127,8 @@ export const TrailProfile = ({
       </span>
       {sources ? (
         <span className='inline-flex max-w-full min-w-0 items-center gap-1 font-medium text-slate-100'>
-          <MapPin size={icon} className='light:text-slate-600 shrink-0 text-slate-300' aria-hidden />
-          <span className='min-w-0 truncate' title={sources}>
+          <Database size={icon} className='light:text-slate-600 shrink-0 text-slate-300' aria-hidden />
+          <span className='min-w-0 truncate' title='Elevation source'>
             {sources}
           </span>
         </span>
@@ -139,7 +138,7 @@ export const TrailProfile = ({
         type='button'
         onClick={() => downloadGpxFile(areaName ?? '', sectorName ?? '', trail.title ?? '', trail.path ?? [])}
         className={cn(
-          'group inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-semibold transition-[background-color,border-color,color] focus-visible:ring-2 focus-visible:outline-none',
+          'group inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-semibold transition-[background-color,border-color,color] focus-visible:ring-2 focus-visible:outline-none max-sm:px-1.5 max-sm:py-0 max-sm:text-[10px]',
           'border-brand-border/55 bg-brand/12 text-brand hover:border-brand-border hover:bg-brand/22 hover:text-brand',
           'focus-visible:ring-brand-border/60 light:border-brand-border light:bg-brand light:text-[color:var(--color-brand-foreground)] light:hover:bg-[#d8bb70] light:hover:text-[color:var(--color-brand-foreground)]',
         )}
@@ -164,8 +163,8 @@ export const TrailProfile = ({
       {trail.title ? (
         <div
           className={cn(
-            'bg-surface-raised border-surface-border/50 relative border-b py-1.5',
-            compact ? 'px-2.5 sm:px-3.5' : 'px-3 sm:px-3.5',
+            'bg-surface-raised border-surface-border/50 relative border-b',
+            compact ? 'px-2.5 max-sm:p-3 sm:px-3.5' : 'px-3 max-sm:p-3 sm:px-3.5',
           )}
         >
           <div className='flex items-start justify-between gap-2'>
@@ -201,7 +200,7 @@ export const TrailProfile = ({
                 const markerColor = getTrailColor(!!isDescent, descentIndex ?? 0);
                 const coordStr =
                   m.coordinates?.latitude != null && m.coordinates?.longitude != null
-                    ? `(${m.coordinates.latitude.toFixed(7)}${m.coordinates.latitude >= 0 ? 'N' : 'S'},${m.coordinates.longitude.toFixed(7)}${m.coordinates.longitude >= 0 ? 'E' : 'W'})`
+                    ? `(${m.coordinates.latitude.toFixed(3)}${m.coordinates.latitude >= 0 ? 'N' : 'S'},${m.coordinates.longitude.toFixed(3)}${m.coordinates.longitude >= 0 ? 'E' : 'W'})`
                     : null;
                 const inner = (
                   <>
@@ -216,13 +215,16 @@ export const TrailProfile = ({
                     href={googleMapsUrl}
                     target='_blank'
                     rel='noopener noreferrer'
-                    className='type-on-accent hover:type-on-accent inline-flex items-center gap-1.5 rounded-lg border border-white/12 bg-white/6 px-2 py-1 transition-colors hover:border-white/22 hover:bg-white/12'
+                    className='type-on-accent hover:type-on-accent inline-flex items-center gap-1 rounded-lg border border-white/12 bg-white/6 px-1.5 py-0.5 text-[11px] transition-colors hover:border-white/22 hover:bg-white/12 max-sm:text-[10px]'
                     title='Open in Google Maps'
                   >
                     {inner}
                   </a>
                 ) : (
-                  <div key={i} className='inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-slate-400'>
+                  <div
+                    key={i}
+                    className='inline-flex items-center gap-1 rounded-lg px-1.5 py-0.5 text-[11px] text-slate-400 max-sm:text-[10px]'
+                  >
                     {inner}
                   </div>
                 );
@@ -248,7 +250,9 @@ export const TrailProfile = ({
         ref={containerRef}
         className={cn(
           'from-surface-card via-surface-raised to-surface-card relative w-full overflow-hidden bg-gradient-to-b',
-          compact ? 'aspect-[12/2.5] sm:aspect-[20/2.5]' : 'aspect-[5/2] min-h-[4.75rem] p-0.5 sm:min-h-[5.25rem]',
+          compact
+            ? 'aspect-[12/2.5] max-sm:h-16 sm:aspect-[20/2.5]'
+            : 'aspect-[5/2] min-h-[4.75rem] p-0.5 max-sm:h-16 sm:min-h-[5.25rem]',
         )}
       >
         {dims && (
@@ -302,12 +306,14 @@ export const TrailProfile = ({
 
       <div
         className={cn(
-          'border-surface-border/80 bg-surface-raised border-t py-2 text-slate-200',
+          'border-surface-border/80 bg-surface-raised border-t text-slate-200',
           compact ? 'px-2.5 sm:px-3' : 'px-2.5 sm:px-3',
-          statText,
+          'px-2.5 py-1.5 text-[11px] leading-snug max-sm:px-2 max-sm:py-1 max-sm:text-[10px] max-sm:leading-tight',
         )}
       >
-        <div className='flex flex-wrap items-center gap-x-1.5 gap-y-1'>{statsInner}</div>
+        <div className='flex flex-wrap items-center gap-x-1.5 gap-y-1 max-sm:gap-x-2 max-sm:gap-y-0.5 max-sm:[&_svg]:h-3 max-sm:[&_svg]:w-3 max-sm:[&_svg]:self-center'>
+          {statsInner}
+        </div>
       </div>
     </div>
   );

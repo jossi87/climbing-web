@@ -149,6 +149,7 @@ const MediaEdit = () => {
         if (m?.guestbookId) return 'guestbook';
         if ((m?.areas ?? []).length > 0) return 'area';
         if ((m?.sectors ?? []).length > 0) return 'sector';
+        if ((m?.trailIds ?? []).length > 0) return 'trail';
         return 'problem';
       })();
 
@@ -176,6 +177,7 @@ const MediaEdit = () => {
           }))
         : undefined,
     guestbook: connectionType === 'guestbook' && m ? { guestbookId: m.guestbookId ?? 0 } : undefined,
+    trails: connectionType === 'trail' && m ? (m.trailIds ?? []).map((trailId) => ({ trailId })) : undefined,
   };
 
   const editCallbacks: MediaMetadataCallbacks = {

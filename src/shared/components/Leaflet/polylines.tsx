@@ -35,12 +35,14 @@ function renderTrail(trailDef: TrailDef, _opacity: number) {
   const positions = coords.map((c) => [c.lat, c.lng] as [number, number]);
   const key = a.trail.id ?? positions.map((p) => p[0] + ',' + p[1]).join(' -> ');
   const distanceLabel = getDistanceWithUnit(a.trail);
+  const hasMedia = (a.trail.media ?? []).length > 0;
   const tooltipLabel = a.label && distanceLabel ? `${a.label} · ${distanceLabel}` : a.label || distanceLabel || '';
   return (
     <Polyline key={'trail-' + key} color={color} weight={weight} positions={positions}>
       {tooltipLabel && (
         <Tooltip permanent className='buldreinfo-tooltip-compact buldreinfo-tooltip-semi'>
           {tooltipLabel}
+          {hasMedia ? ' 📷' : ''}
         </Tooltip>
       )}
       {/* Render trail markers (only for non-background trails, e.g. sector/problem pages) */}
