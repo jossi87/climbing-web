@@ -257,6 +257,7 @@ function ProblemLoaded({
   const hasMetaCard = hasRockBlock && meta.isClimbing;
 
   const hasTrails = (data.trails?.length ?? 0) > 0;
+  const trailsWithMedia = (data.trails ?? []).filter((tr) => (tr.media ?? []).length > 0);
   const hasSectorOutline = (data.sectorOutline?.length ?? 0) > 0;
   const showMapTab = markers.length > 0 || hasTrails || (hasSectorOutline && !data.coordinates);
 
@@ -650,11 +651,19 @@ function ProblemLoaded({
                 onClick={() => setProblemTab('map')}
                 className={tabBarButtonClassName(activeTab === 'map')}
               >
-                <MapIcon
-                  size={TAB_BAR_ICON_SIZE}
-                  strokeWidth={activeTab === 'map' ? 2.3 : 2}
-                  className={tabBarIconClassName(activeTab === 'map')}
-                />
+                <span className='relative inline-flex'>
+                  <MapIcon
+                    size={TAB_BAR_ICON_SIZE}
+                    strokeWidth={activeTab === 'map' ? 2.3 : 2}
+                    className={tabBarIconClassName(activeTab === 'map')}
+                  />
+                  {trailsWithMedia.length > 0 && (
+                    <span className='absolute -top-0.5 -right-0.5 flex h-2 w-2'>
+                      <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75' />
+                      <span className='relative inline-flex h-2 w-2 rounded-full bg-sky-500' />
+                    </span>
+                  )}
+                </span>
                 <span className={designContract.controls.tabBarLabel}>Map</span>
               </button>
             </div>
