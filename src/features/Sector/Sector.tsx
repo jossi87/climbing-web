@@ -49,6 +49,7 @@ import {
   BarChart2,
   Trophy,
   Clock,
+  Sparkles,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
@@ -464,10 +465,17 @@ const Sector = () => {
     const addPolygon = meta.isClimbing || markers.length === 0;
     const hasOutlineOnMap = (data.outline ?? []).length > 0 && addPolygon;
     const hasApproachOrDescent = (data.trails ?? []).length > 0;
-    const trailsWithMedia = (data.trails ?? []).filter((tr) => (tr.media ?? []).length > 0);
+    const trailsWithRichContent = (data.trails ?? []).filter(
+      (tr) => (tr.media ?? []).length > 0 || (tr.description ?? '').trim().length > 0,
+    );
 
     if (markers.length > 0 || hasOutlineOnMap || hasApproachOrDescent) {
-      t.push({ id: 'map', label: 'Map', icon: MapIcon, hasMedia: trailsWithMedia.length > 0 });
+      t.push({
+        id: 'map',
+        label: 'Map',
+        icon: MapIcon,
+        hasMedia: trailsWithRichContent.length > 0,
+      });
     }
     if ((data.problems ?? []).length > 0) {
       t.push({ id: 'distribution', label: 'Distribution', icon: BarChart2 });
@@ -847,14 +855,15 @@ const Sector = () => {
                         strokeWidth={isActive ? 2.3 : 2}
                         className={tabBarIconClassName(isActive)}
                       />
+                    </span>
+                    <span className={designContract.controls.tabBarLabel}>
+                      {t.label}
                       {t.hasMedia && (
-                        <span className='absolute -top-0.5 -right-0.5 flex h-2 w-2'>
-                          <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75' />
-                          <span className='relative inline-flex h-2 w-2 rounded-full bg-sky-500' />
+                        <span title='Contains trail with description or media'>
+                          <Sparkles size={10} strokeWidth={2.5} className='text-brand ml-0.5 inline-block' />
                         </span>
                       )}
                     </span>
-                    <span className={designContract.controls.tabBarLabel}>{t.label}</span>
                   </button>
                 );
               })}

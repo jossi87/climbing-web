@@ -58,6 +58,7 @@ import {
   ChevronRight,
   AlertTriangle,
   Image as ImageIcon,
+  Sparkles,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
@@ -257,7 +258,9 @@ function ProblemLoaded({
   const hasMetaCard = hasRockBlock && meta.isClimbing;
 
   const hasTrails = (data.trails?.length ?? 0) > 0;
-  const trailsWithMedia = (data.trails ?? []).filter((tr) => (tr.media ?? []).length > 0);
+  const trailsWithRichContent = (data.trails ?? []).filter(
+    (tr) => (tr.media ?? []).length > 0 || (tr.description ?? '').trim().length > 0,
+  );
   const hasSectorOutline = (data.sectorOutline?.length ?? 0) > 0;
   const showMapTab = markers.length > 0 || hasTrails || (hasSectorOutline && !data.coordinates);
 
@@ -657,14 +660,15 @@ function ProblemLoaded({
                     strokeWidth={activeTab === 'map' ? 2.3 : 2}
                     className={tabBarIconClassName(activeTab === 'map')}
                   />
-                  {trailsWithMedia.length > 0 && (
-                    <span className='absolute -top-0.5 -right-0.5 flex h-2 w-2'>
-                      <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75' />
-                      <span className='relative inline-flex h-2 w-2 rounded-full bg-sky-500' />
+                </span>
+                <span className={designContract.controls.tabBarLabel}>
+                  Map
+                  {trailsWithRichContent.length > 0 && (
+                    <span title='Contains trail with description or media'>
+                      <Sparkles size={10} strokeWidth={2.5} className='text-brand ml-0.5 inline-block' />
                     </span>
                   )}
                 </span>
-                <span className={designContract.controls.tabBarLabel}>Map</span>
               </button>
             </div>
             {activeTab === 'overview' ? (

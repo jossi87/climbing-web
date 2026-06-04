@@ -246,6 +246,15 @@ export const TrailProfile = ({
         </div>
       ) : null}
 
+      {hasDescription && hasMedia ? (
+        <>
+          <div className='pt-3' />
+          <hr className='border-surface-border/60 mx-0' />
+          <div className='bg-surface-raised/60 px-2.5 py-1 max-sm:px-2'>
+            <span className='text-[11px] font-semibold tracking-wide text-slate-400 uppercase'>Hike profile:</span>
+          </div>
+        </>
+      ) : null}
       <div
         ref={containerRef}
         className={cn(
