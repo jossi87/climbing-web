@@ -364,16 +364,6 @@ const Media = ({
             onMoveImageRight={() =>
               executeMediaAction((token) => moveMedia(token, mediaIdentityId(m.identity), false, 0, 0, 0))
             }
-            onMoveImageToSector={() =>
-              executeMediaAction((token) =>
-                moveMedia(token, mediaIdentityId(m.identity), false, 0, m.enableMoveToIdSector ?? 0, 0),
-              )
-            }
-            onMoveImageToProblem={() =>
-              executeMediaAction((token) =>
-                moveMedia(token, mediaIdentityId(m.identity), false, 0, 0, m.enableMoveToIdProblem ?? 0),
-              )
-            }
             orderableMedia={orderableMedia ?? []}
             carouselIndex={
               (carouselMedia?.findIndex((x) => mediaIdentityId(x.identity) === mediaIdentityId(m.identity)) ?? -1) + 1

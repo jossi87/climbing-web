@@ -692,6 +692,23 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/v2/media/order": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Reorder media */
+        patch: operations["patchMediaOrder"];
+        trace?: never;
+    };
     "/v2/comments": {
         parameters: {
             query?: never;
@@ -930,23 +947,6 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/v2/media/location": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Update media location */
-        put: operations["putMediaLocation"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
 };
 export type webhooks = Record<string, never>;
 export type components = {
@@ -1137,15 +1137,11 @@ export type components = {
             /** Format: int32 */
             thumbnailSeconds?: number;
             inherited?: boolean;
-            /** Format: int32 */
-            enableMoveToIdSector?: number;
-            /** Format: int32 */
-            enableMoveToIdProblem?: number;
             url?: string;
             areas?: components["schemas"]["MediaArea"][];
             sectors?: components["schemas"]["MediaSector"][];
             problems?: components["schemas"]["MediaProblem"][];
-            trailIds?: number[];
+            trails?: components["schemas"]["MediaTrail"][];
             /** Format: int32 */
             guestbookId?: number;
             /** Format: int32 */
@@ -1168,14 +1164,20 @@ export type components = {
             problemNumPitches?: number;
             /** Format: int64 */
             milliseconds?: number;
+            /** Format: int32 */
+            areaId?: number;
             areaName?: string;
+            /** Format: int32 */
+            sectorId?: number;
             sectorName?: string;
             trivia?: boolean;
         };
         MediaSector: {
             /** Format: int32 */
-            sectorId?: number;
+            areaId?: number;
             areaName?: string;
+            /** Format: int32 */
+            sectorId?: number;
             sectorName?: string;
             trivia?: boolean;
         };
@@ -1189,6 +1191,17 @@ export type components = {
             rappelX?: number;
             /** Format: int32 */
             rappelY?: number;
+        };
+        MediaTrail: {
+            /** Format: int32 */
+            areaId?: number;
+            areaName?: string;
+            /** Format: int32 */
+            sectorId?: number;
+            sectorName?: string;
+            /** Format: int32 */
+            trailId?: number;
+            trailTitle?: string;
         };
         SectorProblem: {
             /** Format: int32 */
@@ -2150,8 +2163,8 @@ export type components = {
             parameters?: {
                 [key: string]: string;
             };
-            wildcardType?: boolean;
             wildcardSubtype?: boolean;
+            wildcardType?: boolean;
         };
         MessageBodyWorkers: Record<string, never>;
         MultiPart: {
@@ -4074,6 +4087,52 @@ export interface operations {
             };
         };
     };
+    patchMediaOrder: {
+        parameters: {
+            query: {
+                /** @description Media id */
+                id: number;
+                /** @description Move left */
+                left?: boolean;
+                /** @description Move right */
+                right?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     postComments: {
         parameters: {
             query?: never;
@@ -4650,54 +4709,6 @@ export interface operations {
                 idMedia: number;
                 /** @description Degrees (90/180/270) */
                 degrees: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    putMediaLocation: {
-        parameters: {
-            query: {
-                /** @description Media id */
-                id: number;
-                /** @description Move left */
-                left: boolean;
-                /** @description To sector id (will move media to sector if toSectorId>0, toIdArea=0 and toIdProblem=0) */
-                toIdSector: number;
-                /** @description To problem id (will move media to problem if toProblemId>0, toIdArea=0 and toSectorId=0) */
-                toIdProblem: number;
             };
             header?: never;
             path?: never;

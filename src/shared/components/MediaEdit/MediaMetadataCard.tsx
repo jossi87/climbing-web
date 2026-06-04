@@ -1,9 +1,11 @@
-import { useState } from 'react';
-import { MessageSquare, User as UserIcon, Users, Plus } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { MessageSquare, User as UserIcon, Users, ChevronDown, Trash2 } from 'lucide-react';
+
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { UserSelector, UsersSelector } from '../../ui/UserSelector';
 import { cn } from '../../../lib/utils';
-import { designContract } from '../../../design/contract';
+
 import ProblemRow from './ProblemRow';
 import { formatProblemOption } from './problemUtils';
 import type { ProblemState } from './ProblemRow';
@@ -11,9 +13,7 @@ import type { ProblemState } from './ProblemRow';
 type ProblemSearchResult = components['schemas']['ProblemSearchResult'];
 type User = components['schemas']['User'];
 
-const fieldLabelClass = cn(designContract.typography.label, 'text-slate-300');
-
-export type MediaConnectionType = 'area' | 'sector' | 'problem' | 'guestbook' | 'trail';
+export type MediaConnectionType = 'area' | 'sector' | 'problem' | 'guestbook' | 'trail' | 'user';
 
 export type MediaMetadata = {
   description: string;
@@ -27,7 +27,7 @@ export type MediaMetadata = {
   /** Read-only guestbook info */
   guestbook?: { guestbookId: number; guestbookName?: string };
   /** Read-only trail info */
-  trails?: { trailId: number; trailName?: string }[];
+  trails?: { trailId: number; trailName?: string; trailTitle?: string }[];
 };
 
 export type MediaMetadataCallbacks = {
@@ -37,7 +37,11 @@ export type MediaMetadataCallbacks = {
   onProblemsChange: (problems: ProblemState[]) => void;
   onAreaTriviaChange: (areaId: number, trivia: boolean) => void;
   onSectorTriviaChange: (sectorId: number, trivia: boolean) => void;
+  onTrailsChange?: (trails: { trailId: number; trailTitle?: string }[]) => void;
 };
+
+type SectorOption = { id: number; name: string; label: string };
+type TrailOption = { id: number; title: string; label: string; sectorName?: string };
 
 type Props = {
   metadata: MediaMetadata;
@@ -51,8 +55,129 @@ type Props = {
   hasEmptyProblem?: boolean;
   hasDuplicateTime?: boolean;
   hasNoProblems?: boolean;
+  hasNoTrails?: boolean;
   /** Which sections to render: 'basic' (description/photographer/tagged) or 'connected' (problems/areas/sectors/guestbook). Defaults to 'all'. */
   variant?: 'basic' | 'connected' | 'all';
+  /** Sector options for the dropdown (sectors in context) */
+  sectorOptions?: SectorOption[];
+  /** Called when user selects a different sector from the dropdown */
+  onSectorChange?: (sectorId: number, sectorName: string) => void;
+  /** Trail options for the dropdown (trails in context) */
+  trailOptions?: TrailOption[];
+};
+
+/** A portal-based dropdown menu that renders at the document root to avoid z-index/overflow clipping. */
+const DropdownMenu = ({
+  open,
+  onClose,
+  triggerRef,
+  children,
+}: {
+  open: boolean;
+  onClose: () => void;
+  triggerRef: React.RefObject<HTMLElement | null>;
+  children: React.ReactNode;
+}) => {
+  const [position, setPosition] = useState<{ top: number; left: number; width: number } | null>(null);
+
+  useEffect(() => {
+    if (!open || !triggerRef.current) {
+      setPosition(null);
+      return;
+    }
+    const rect = triggerRef.current.getBoundingClientRect();
+    setPosition({ top: rect.bottom + 4, left: rect.left, width: Math.max(rect.width, 224) });
+  }, [open, triggerRef]);
+
+  if (!open || !position) return null;
+
+  return createPortal(
+    <>
+      <div className='fixed inset-0 z-[100]' onClick={onClose} />
+      <div
+        className='fixed z-[101] overflow-hidden rounded-lg border border-white/12 bg-slate-800 shadow-lg'
+        style={{ top: position.top, left: position.left, width: position.width }}
+      >
+        {children}
+      </div>
+    </>,
+    document.body,
+  );
+};
+
+/** A single trail row with a simple dropdown (like sectors). */
+const TrailRow = ({
+  trail,
+  trailOptions,
+  onSelectTrail,
+  onRemove,
+}: {
+  trail: { trailId: number; trailName?: string; trailTitle?: string };
+  trailOptions: TrailOption[];
+  onSelectTrail: (trailId: number, trailTitle: string, label?: string) => void;
+  onRemove: () => void;
+}) => {
+  const [showDropdown, setShowDropdown] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const handleRemove = () => {
+    if (window.confirm('Remove this trail from the list?')) {
+      onRemove();
+    }
+  };
+
+  // Find the selected trail option to get sector name
+  const selectedOption = trailOptions.find((opt) => opt.id === trail.trailId);
+
+  return (
+    <div className='bg-surface-raised border-surface-border flex items-center gap-2 rounded-xl border p-2.5'>
+      {/* Trail dropdown */}
+      <div className='relative min-w-0 flex-1'>
+        <button
+          ref={buttonRef}
+          type='button'
+          onClick={() => setShowDropdown(!showDropdown)}
+          className={cn(
+            'inline-flex w-full items-center justify-between gap-1 rounded-lg border px-3 py-1.5 text-left text-sm text-slate-300 hover:text-slate-100',
+            trail.trailId && trail.trailId > 0 ? 'border-white/12' : 'border-rose-500/50',
+          )}
+        >
+          <span className='truncate'>
+            {selectedOption ? selectedOption.label : (trail.trailName ?? trail.trailTitle ?? 'Select trail...')}
+          </span>
+          <ChevronDown size={12} className='shrink-0 text-slate-500' />
+        </button>
+
+        <DropdownMenu open={showDropdown} onClose={() => setShowDropdown(false)} triggerRef={buttonRef}>
+          {trailOptions.map((opt) => (
+            <button
+              key={opt.id}
+              type='button'
+              className={cn(
+                'flex w-full items-center px-3 py-2 text-left text-xs transition-colors',
+                opt.id === trail.trailId ? 'bg-brand/20 text-brand' : 'text-slate-300 hover:bg-slate-700',
+              )}
+              onClick={() => {
+                onSelectTrail(opt.id, opt.title, opt.label);
+                setShowDropdown(false);
+              }}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </DropdownMenu>
+      </div>
+
+      <button
+        type='button'
+        onClick={handleRemove}
+        className='shrink-0 rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-red-500/10 hover:text-red-400'
+        aria-label='Remove trail'
+      >
+        <Trash2 size={14} />
+      </button>
+    </div>
+  );
 };
 
 export const MediaMetadataCard = ({
@@ -64,19 +189,16 @@ export const MediaMetadataCard = ({
   hasEmptyProblem,
   hasDuplicateTime,
   hasNoProblems,
+  hasNoTrails,
   variant = 'all',
+  sectorOptions,
+  onSectorChange,
+  trailOptions,
 }: Props) => {
-  const [focusedProblemIndex, setFocusedProblemIndex] = useState<number | null>(null);
   const [problemSearchInputs, setProblemSearchInputs] = useState<Record<number, string>>({});
 
-  const addProblem = () => {
-    const newIndex = metadata.problems.length;
-    setTimeout(() => setFocusedProblemIndex(newIndex), 0);
-    callbacks.onProblemsChange([
-      ...metadata.problems,
-      { problemId: 0, problemName: '', problemGrade: '', milliseconds: 0 },
-    ]);
-  };
+  const [sectorDropdownOpen, setSectorDropdownOpen] = useState(false);
+  const sectorButtonRef = useRef<HTMLButtonElement>(null);
 
   const selectProblem = (index: number, problem: ProblemSearchResult) => {
     const next = [...metadata.problems];
@@ -195,17 +317,6 @@ export const MediaMetadataCard = ({
           {/* Connected problems (editable) */}
           {connectionType === 'problem' && (
             <div className='mt-4 space-y-3'>
-              <div className='flex items-center justify-between'>
-                <span className={cn(fieldLabelClass, 'ml-1')}>Problems</span>
-                <button
-                  type='button'
-                  onClick={addProblem}
-                  className='bg-surface-raised hover:bg-surface-raised-hover inline-flex items-center gap-1 rounded-lg border border-white/12 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:border-white/22'
-                >
-                  <Plus size={12} /> Add
-                </button>
-              </div>
-              {metadata.problems.length === 0 && <p className='text-xs text-slate-500'>No problems connected.</p>}
               <div className='space-y-2'>
                 {metadata.problems.map((p, i) => (
                   <ProblemRow
@@ -223,7 +334,6 @@ export const MediaMetadataCard = ({
                     onPitchChange={(pitch) => updateProblemPitch(i, pitch)}
                     onTriviaChange={(trivia) => updateProblemTrivia(i, trivia)}
                     onRemove={() => removeProblem(i)}
-                    autoFocus={focusedProblemIndex === i}
                   />
                 ))}
               </div>
@@ -238,7 +348,6 @@ export const MediaMetadataCard = ({
           {/* Connected areas (with trivia checkbox on the right) */}
           {connectionType === 'area' && metadata.areas && metadata.areas.length > 0 && (
             <div className='mt-4 space-y-2'>
-              <span className={cn(fieldLabelClass, 'ml-1')}>Areas</span>
               {metadata.areas.map((a) => (
                 <div
                   key={a.areaId}
@@ -262,16 +371,54 @@ export const MediaMetadataCard = ({
           {/* Connected sectors (with trivia checkbox on the right) */}
           {connectionType === 'sector' && metadata.sectors && metadata.sectors.length > 0 && (
             <div className='mt-4 space-y-2'>
-              <span className={cn(fieldLabelClass, 'ml-1')}>Sectors</span>
               {metadata.sectors.map((s) => (
                 <div
                   key={s.sectorId}
                   className='bg-surface-raised border-surface-border flex items-center justify-between rounded-xl border p-3 text-sm'
                 >
-                  <span className='text-slate-300'>
-                    {s.sectorName}
-                    {s.areaName && <span className='text-slate-500'> ({s.areaName})</span>}
-                  </span>
+                  {/* Sector name: dropdown if sectorOptions provided, otherwise plain text */}
+                  {sectorOptions && sectorOptions.length > 0 && onSectorChange ? (
+                    <div className='relative'>
+                      <button
+                        ref={sectorButtonRef}
+                        type='button'
+                        onClick={() => setSectorDropdownOpen(!sectorDropdownOpen)}
+                        className='inline-flex items-center gap-1 text-slate-300 hover:text-slate-100'
+                      >
+                        {s.sectorName}
+                        {s.areaName ? <span className='text-slate-500'> ({s.areaName})</span> : null}
+                        <ChevronDown size={12} className='text-slate-500' />
+                      </button>
+
+                      <DropdownMenu
+                        open={sectorDropdownOpen}
+                        onClose={() => setSectorDropdownOpen(false)}
+                        triggerRef={sectorButtonRef}
+                      >
+                        {sectorOptions.map((opt) => (
+                          <button
+                            key={opt.id}
+                            type='button'
+                            className={cn(
+                              'flex w-full items-center px-3 py-2 text-left text-xs transition-colors',
+                              opt.id === s.sectorId ? 'bg-brand/20 text-brand' : 'text-slate-300 hover:bg-slate-700',
+                            )}
+                            onClick={() => {
+                              onSectorChange(opt.id, opt.name);
+                              setSectorDropdownOpen(false);
+                            }}
+                          >
+                            {opt.label}
+                          </button>
+                        ))}
+                      </DropdownMenu>
+                    </div>
+                  ) : (
+                    <span className='text-slate-300'>
+                      {s.sectorName}
+                      {s.areaName && <span className='text-slate-500'> ({s.areaName})</span>}
+                    </span>
+                  )}
                   <label className='flex shrink-0 items-center gap-1.5 text-xs text-slate-400'>
                     <input
                       type='checkbox'
@@ -289,24 +436,34 @@ export const MediaMetadataCard = ({
           {/* Guestbook (read-only) */}
           {connectionType === 'guestbook' && metadata.guestbook && (
             <div className='mt-4 space-y-2'>
-              <span className={cn(fieldLabelClass, 'ml-1')}>Guestbook comment</span>
               <div className='bg-surface-raised border-surface-border rounded-xl border p-3 text-sm text-slate-400'>
                 {metadata.guestbook.guestbookName ?? `Comment #${metadata.guestbook.guestbookId}`}
               </div>
             </div>
           )}
 
-          {/* Connected trails (read-only) */}
-          {connectionType === 'trail' && metadata.trails && metadata.trails.length > 0 && (
-            <div className='mt-4 space-y-2'>
-              <span className={cn(fieldLabelClass, 'ml-1')}>Trails</span>
-              {metadata.trails.map((t) => (
-                <div key={t.trailId} className='bg-surface-raised border-surface-border rounded-xl border p-3 text-sm'>
-                  <span className='text-slate-300'>
-                    {t.trailName ? `${t.trailName} (#${t.trailId})` : `#${t.trailId}`}
-                  </span>
-                </div>
-              ))}
+          {/* Connected trails (editable) */}
+          {connectionType === 'trail' && (
+            <div className='mt-4 space-y-3'>
+              <div className='space-y-2'>
+                {(metadata.trails ?? []).map((t, i) => (
+                  <TrailRow
+                    key={i}
+                    trail={t}
+                    trailOptions={trailOptions ?? []}
+                    onSelectTrail={(trailId: number, trailTitle: string, label?: string) => {
+                      const next = [...(metadata.trails ?? [])];
+                      next[i] = { trailId, trailName: label ?? trailTitle };
+                      callbacks.onTrailsChange?.(next);
+                    }}
+                    onRemove={() => {
+                      const next = (metadata.trails ?? []).filter((_, idx) => idx !== i);
+                      callbacks.onTrailsChange?.(next);
+                    }}
+                  />
+                ))}
+              </div>
+              {hasNoTrails && <p className='text-xs text-red-400'>At least one trail is required.</p>}
             </div>
           )}
         </>

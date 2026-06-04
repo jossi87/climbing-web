@@ -13,7 +13,6 @@ import {
   Paintbrush,
   ArrowLeft,
   ArrowRight,
-  Move,
   Download,
   RotateCcw,
   RotateCw,
@@ -202,8 +201,6 @@ type Props = {
   onRotate: (deg: number) => void;
   onMoveImageLeft: () => void;
   onMoveImageRight: () => void;
-  onMoveImageToSector: () => void;
-  onMoveImageToProblem: () => void;
   m: components['schemas']['Media'];
   pitch: number;
   pitches: components['schemas']['ProblemSection'][];
@@ -226,8 +223,6 @@ const MediaModal = ({
   onRotate,
   onMoveImageLeft,
   onMoveImageRight,
-  onMoveImageToSector,
-  onMoveImageToProblem,
   m,
   pitch,
   pitches,
@@ -428,13 +423,7 @@ const MediaModal = ({
     isAdmin &&
     isImage &&
     (orderableMedia ?? []).some((om) => mediaIdentityId(om.identity) === mediaIdentityId(m.identity));
-  const canMove = isAdmin && isImage;
-  const hasMenuTopActions =
-    canDrawTopo ||
-    canDrawMedia ||
-    canOrder ||
-    (canMove && (m.enableMoveToIdSector ?? 0) > 0) ||
-    (canMove && (m.enableMoveToIdProblem ?? 0) > 0);
+  const hasMenuTopActions = canDrawTopo || canDrawMedia || canOrder;
   const hasMenuBottomActions = !m.embedUrl || canRotate || canEdit || canDelete;
 
   const attachCarouselSwipeHandlers = isMobile && carouselSize > 1 && visualViewportScale <= 1.05;
@@ -645,17 +634,6 @@ const MediaModal = ({
                   {canOrder && (
                     <button type='button' onClick={onMoveImageRight} className={mediaMenuItemClass}>
                       <ArrowRight size={14} className={mediaMenuIconClass} strokeWidth={2} /> Move image right
-                    </button>
-                  )}
-                  {canMove && (m.enableMoveToIdSector ?? 0) > 0 && (
-                    <button type='button' onClick={onMoveImageToSector} className={mediaMenuItemClass}>
-                      <Move size={14} className={mediaMenuIconClass} strokeWidth={2} /> Move image to sector
-                    </button>
-                  )}
-                  {canMove && (m.enableMoveToIdProblem ?? 0) > 0 && (
-                    <button type='button' onClick={onMoveImageToProblem} className={mediaMenuItemClass}>
-                      <Move size={14} className={mediaMenuIconClass} strokeWidth={2} /> Move image to{' '}
-                      {isBouldering ? 'problem' : 'route'}
                     </button>
                   )}
                   {hasMenuTopActions && hasMenuBottomActions && <div className='bg-surface-border/50 my-2 h-px' />}
@@ -1059,7 +1037,7 @@ const MediaModal = ({
             {(m.areas?.length ||
               m.sectors?.length ||
               m.problems?.length ||
-              m.trailIds?.length ||
+              m.trails?.length ||
               m.guestbookId ||
               m.userAvatarId) && (
               <div className='border-surface-border/50 border-t pt-6'>
@@ -1105,11 +1083,17 @@ const MediaModal = ({
                         </p>
                       );
                     })}
-                  {(m.trailIds ?? []).map((id) => (
-                    <p key={id} className='type-body text-xs font-semibold'>
-                      Trail #{id}
-                    </p>
-                  ))}
+                  {(m.trails ?? []).map((t) => {
+                    const location = [t.sectorName, t.areaName].filter(Boolean).join(' · ');
+                    return (
+                      <p key={t.trailId} className='type-body text-xs font-semibold'>
+                        Trail #{t.trailId}
+                        {t.trailTitle ? ` · ${t.trailTitle}` : ''}
+                        {location ? ` (${location})` : ''}
+                      </p>
+                    );
+                  })}
+
                   {!!m.guestbookId && <p className='type-body text-xs font-semibold'>Guestbook entry</p>}
                   {!!m.userAvatarId && <p className='type-body text-xs font-semibold'>User avatar</p>}
                 </div>

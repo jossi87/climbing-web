@@ -1,8 +1,10 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth0 } from '@auth0/auth0-react';
-import { Save, Loader2, Image, X } from 'lucide-react';
+import { Save, Loader2, Image, X, ChevronDown, Plus } from 'lucide-react';
+
 import type { components } from '../../@types/buldreinfo/swagger';
 import {
   useMediaSvg,
@@ -12,6 +14,8 @@ import {
   postMediaVideoComplete,
   postMediaVideoEmbed,
   uploadToPresignedUrl,
+  useArea,
+  useSector,
 } from '../../api';
 import { getMediaFileUrl, mediaIdentityId, mediaIdentityVersionStamp } from '../../api/utils';
 import { Loading } from '../../shared/ui/StatusWidgets';
@@ -65,6 +69,14 @@ const makeEmptyItem = (): UploadItem => ({
   thumbnailDuration: 0,
 });
 
+/** Connection type options shown in the dropdown (excludes guestbook) */
+const CONNECTION_TYPE_OPTIONS: { value: MediaConnectionType; label: string }[] = [
+  { value: 'area', label: 'Connected to area' },
+  { value: 'sector', label: 'Connected to sector' },
+  { value: 'problem', label: 'Connected to problem(s)' },
+  { value: 'trail', label: 'Connected to trail(s)' },
+];
+
 const MediaEdit = () => {
   const { getAccessTokenSilently } = useAuth0();
   const queryClient = useQueryClient();
@@ -94,6 +106,7 @@ const MediaEdit = () => {
   const [photographer, setPhotographer] = useState<User | undefined>(undefined);
   const [tagged, setTagged] = useState<User[]>([]);
   const [problems, setProblems] = useState<ProblemState[]>([]);
+  const [trails, setTrails] = useState<{ trailId: number; trailTitle?: string }[]>([]);
   const [areaTrivia, setAreaTrivia] = useState<Record<number, boolean>>({});
   const [sectorTrivia, setSectorTrivia] = useState<Record<number, boolean>>({});
   const [saving, setSaving] = useState(false);
@@ -106,6 +119,26 @@ const MediaEdit = () => {
   const [thumbnailSeconds, setThumbnailSeconds] = useState<number>(0);
   const [thumbnailDuration, setThumbnailDuration] = useState(0);
 
+  // ── Connection type & move-to state (edit mode only) ───────────────
+  const [editConnectionType, setEditConnectionType] = useState<MediaConnectionType | null>(null);
+  const [moveTarget, setMoveTarget] = useState<{
+    type: MediaConnectionType;
+    id: number;
+    name: string;
+    areaName?: string;
+    sectorName?: string;
+  } | null>(null);
+  const [typeDropdownOpen, setTypeDropdownOpen] = useState(false);
+
+  // ── Fetch context data for entity dropdowns ────────────────────────
+  // Derive area/sector context from any connection type (problem, sector, area, trail)
+  const currentAreaId =
+    m?.sectors?.[0]?.areaId ?? m?.areas?.[0]?.areaId ?? m?.problems?.[0]?.areaId ?? m?.trails?.[0]?.areaId ?? 0;
+
+  const { data: areaData } = useArea(currentAreaId);
+  const currentSectorId = m?.sectors?.[0]?.sectorId ?? m?.problems?.[0]?.sectorId ?? m?.trails?.[0]?.sectorId ?? 0;
+  const { data: sectorData } = useSector(currentSectorId);
+
   // ── Initialize edit mode from loaded data ──────────────────────────
   const initializedRef = useRef(false);
   useEffect(() => {
@@ -115,9 +148,32 @@ const MediaEdit = () => {
     setPhotographer(m.photographer ? { id: m.photographer.id, name: m.photographer.name } : undefined);
     setTagged(m.tagged ?? []);
     setProblems(m.problems ?? []);
+    // Deduplicate by trailId (a trail can span multiple sectors, resulting in duplicate entries)
+    setTrails(
+      (m.trails ?? []).reduce<{ trailId: number; trailTitle?: string }[]>((acc, t) => {
+        const id = t.trailId ?? 0;
+        if (!acc.some((a) => a.trailId === id)) {
+          acc.push({ trailId: id, trailTitle: t.trailTitle });
+        }
+        return acc;
+      }, []),
+    );
+
     setAreaTrivia(Object.fromEntries((m.areas ?? []).map((a) => [a.areaId ?? 0, a.trivia ?? false])));
     setSectorTrivia(Object.fromEntries((m.sectors ?? []).map((s) => [s.sectorId ?? 0, s.trivia ?? false])));
     setThumbnailSeconds(m.thumbnailSeconds ?? 0);
+
+    // Derive initial connection type from loaded data
+    const initialType: MediaConnectionType = (() => {
+      if (m.guestbookId) return 'guestbook';
+      if (m.userAvatarId) return 'user';
+      if ((m.areas ?? []).length > 0) return 'area';
+      if ((m.sectors ?? []).length > 0) return 'sector';
+      if ((m.trails ?? []).length > 0) return 'trail';
+      return 'problem';
+    })();
+
+    setEditConnectionType(initialType);
   }, [m]);
 
   const isVideo = !!m?.isMovie;
@@ -143,41 +199,161 @@ const MediaEdit = () => {
     }
   }, [m?.embedUrl]);
 
-  const connectionType: MediaConnectionType = isAddMode
-    ? addType
-    : (() => {
-        if (m?.guestbookId) return 'guestbook';
-        if ((m?.areas ?? []).length > 0) return 'area';
-        if ((m?.sectors ?? []).length > 0) return 'sector';
-        if ((m?.trailIds ?? []).length > 0) return 'trail';
-        return 'problem';
-      })();
+  const connectionType: MediaConnectionType = isAddMode ? addType : (editConnectionType ?? 'problem');
+
+  /** Switch connection type — auto-selects first entity in context */
+  const handleChangeConnectionType = (newType: MediaConnectionType) => {
+    setEditConnectionType(newType);
+    if (newType !== 'problem') {
+      setProblems([]);
+    }
+    // Auto-select the first entity in context
+    if (newType === 'area') {
+      const areaId =
+        m?.areas?.[0]?.areaId ?? m?.sectors?.[0]?.areaId ?? m?.problems?.[0]?.areaId ?? m?.trails?.[0]?.areaId ?? 0;
+      const areaName = m?.areas?.[0]?.areaName ?? areaData?.name ?? m?.problems?.[0]?.areaName ?? '';
+      if (areaId > 0) {
+        setMoveTarget({ type: 'area', id: areaId, name: areaName });
+      } else {
+        setMoveTarget(null);
+      }
+    } else if (newType === 'sector') {
+      const sectorId = m?.sectors?.[0]?.sectorId ?? m?.problems?.[0]?.sectorId ?? m?.trails?.[0]?.sectorId ?? 0;
+      const sectorName = m?.sectors?.[0]?.sectorName ?? sectorData?.name ?? m?.problems?.[0]?.sectorName ?? '';
+      const areaName = m?.sectors?.[0]?.areaName ?? sectorData?.areaName ?? m?.problems?.[0]?.areaName ?? '';
+      if (sectorId > 0) {
+        setMoveTarget({ type: 'sector', id: sectorId, name: sectorName, areaName });
+      } else {
+        setMoveTarget(null);
+      }
+    } else if (newType === 'trail') {
+      const trails = sectorData?.trails ?? [];
+      if (trails.length > 0) {
+        const first = trails[0];
+        setMoveTarget({ type: 'trail', id: first.id ?? 0, name: first.title ?? `#${first.id ?? 0}` });
+      } else {
+        setMoveTarget(null);
+      }
+    } else {
+      setMoveTarget(null);
+    }
+
+    setTypeDropdownOpen(false);
+  };
+
+  /** Select a new entity to move the media to */
+  const handleSelectEntity = (type: MediaConnectionType, id: number, name: string, areaName?: string) => {
+    setMoveTarget({ type, id, name, areaName });
+  };
+
+  // ── Build entity dropdown options based on connection type ─────────
+  // Only shows entities IN CONTEXT (the area/sector/trail the media is currently connected to,
+  // or siblings in the same area/sector hierarchy)
+  const entityOptions = useMemo(() => {
+    if (connectionType === 'area') {
+      // Only the area the media is currently in context of
+      const areaId =
+        m?.areas?.[0]?.areaId ?? m?.sectors?.[0]?.areaId ?? m?.problems?.[0]?.areaId ?? m?.trails?.[0]?.areaId ?? 0;
+      const areaName = m?.areas?.[0]?.areaName ?? areaData?.name ?? m?.problems?.[0]?.areaName ?? '';
+      if (areaId > 0) {
+        return [{ id: areaId, name: areaName, label: areaName }];
+      }
+      return [];
+    }
+
+    if (connectionType === 'sector') {
+      // All sectors in the same area (so user can move between sectors)
+      return (areaData?.sectors ?? []).map((s) => ({
+        id: s.id ?? 0,
+        name: s.name ?? '',
+        label: `${s.name ?? ''}${s.areaName ? ` (${s.areaName})` : ''}`,
+      }));
+    }
+
+    if (connectionType === 'trail') {
+      // Trails in the same sector (the sector the media is currently in)
+      return (sectorData?.trails ?? []).map((t) => ({
+        id: t.id ?? 0,
+        name: t.title ?? `#${t.id ?? 0}`,
+        label: t.title ?? `#${t.id ?? 0}`,
+      }));
+    }
+    return [];
+  }, [connectionType, m, areaData, sectorData]);
+
+  // ── Trail options for dropdown (all trails in the current sector context) ──
+  const trailOptions = useMemo(() => {
+    const seen = new Set<number>();
+    return (sectorData?.trails ?? [])
+      .filter((t) => {
+        const id = t.id ?? 0;
+        if (seen.has(id)) return false;
+        seen.add(id);
+        return true;
+      })
+      .map((t) => {
+        const id = t.id ?? 0;
+        const title = t.title ?? `#${id}`;
+        // Collect all sector names for this trail (from t.sectors array)
+        const sectorNames = (t.sectors ?? [])
+          .map((s) => s.sectorName)
+          .filter(Boolean)
+          .join(', ');
+        return {
+          id,
+          title,
+          label: sectorNames ? `${title} (${sectorNames})` : title,
+          sectorName: sectorNames,
+        };
+      });
+  }, [sectorData?.trails]);
 
   // ── Build edit-mode metadata for the shared card ────────────────────
+  // Derive trail display labels from trailOptions (includes sector context)
+  const trailsWithLabels = useMemo(
+    () =>
+      trails.map((t) => {
+        const opt = trailOptions.find((o) => o.id === t.trailId);
+        return { trailId: t.trailId, trailTitle: opt?.label ?? t.trailTitle ?? `#${t.trailId}` };
+      }),
+    [trails, trailOptions],
+  );
+
   const editMetadata: MediaMetadata = {
     description,
     photographer,
     tagged,
     problems,
     areas:
-      connectionType === 'area' && m
-        ? (m.areas ?? []).map((a) => ({
-            areaId: a.areaId ?? 0,
-            areaName: a.areaName ?? '',
-            trivia: areaTrivia[a.areaId ?? 0] ?? false,
-          }))
-        : undefined,
+      connectionType === 'area' && moveTarget
+        ? [{ areaId: moveTarget.id, areaName: moveTarget.name, trivia: areaTrivia[moveTarget.id] ?? false }]
+        : connectionType === 'area' && m
+          ? (m.areas ?? []).map((a) => ({
+              areaId: a.areaId ?? 0,
+              areaName: a.areaName ?? '',
+              trivia: areaTrivia[a.areaId ?? 0] ?? false,
+            }))
+          : undefined,
     sectors:
-      connectionType === 'sector' && m
-        ? (m.sectors ?? []).map((s) => ({
-            sectorId: s.sectorId ?? 0,
-            sectorName: s.sectorName ?? '',
-            areaName: s.areaName ?? '',
-            trivia: sectorTrivia[s.sectorId ?? 0] ?? false,
-          }))
-        : undefined,
+      connectionType === 'sector' && moveTarget
+        ? [
+            {
+              sectorId: moveTarget.id,
+              sectorName: moveTarget.name,
+              areaName: moveTarget.areaName,
+              trivia: sectorTrivia[moveTarget.id] ?? false,
+            },
+          ]
+        : connectionType === 'sector' && m
+          ? (m.sectors ?? []).map((s) => ({
+              sectorId: s.sectorId ?? 0,
+              sectorName: s.sectorName ?? '',
+              areaName: s.areaName ?? '',
+              trivia: sectorTrivia[s.sectorId ?? 0] ?? false,
+            }))
+          : undefined,
     guestbook: connectionType === 'guestbook' && m ? { guestbookId: m.guestbookId ?? 0 } : undefined,
-    trails: connectionType === 'trail' && m ? (m.trailIds ?? []).map((trailId) => ({ trailId })) : undefined,
+    trails: connectionType === 'trail' ? trailsWithLabels : undefined,
   };
 
   const editCallbacks: MediaMetadataCallbacks = {
@@ -187,6 +363,7 @@ const MediaEdit = () => {
     onProblemsChange: setProblems,
     onAreaTriviaChange: (areaId, trivia) => setAreaTrivia((prev) => ({ ...prev, [areaId]: trivia })),
     onSectorTriviaChange: (sectorId, trivia) => setSectorTrivia((prev) => ({ ...prev, [sectorId]: trivia })),
+    onTrailsChange: setTrails,
   };
 
   // ── Upload progress state ──────────────────────────────────────────
@@ -245,7 +422,7 @@ const MediaEdit = () => {
           } else if (connectionType === 'sector') {
             body.sectors = [{ sectorId: addEntityId, sectorName: addEntityName, trivia: item.sectorTrivia }];
           } else if (connectionType === 'trail' && addTrailId > 0) {
-            body.trailIds = [addTrailId];
+            body.trails = [{ trailId: addTrailId }];
           }
           if (item.file) {
             const isVideo = item.file.type.startsWith('video/');
@@ -305,6 +482,13 @@ const MediaEdit = () => {
           photographer: photographer ? { id: photographer.id ?? 0, name: photographer.name ?? '' } : undefined,
           tagged: tagged.map((u) => ({ id: u.id ?? 0, name: u.name ?? '' })),
           thumbnailSeconds: Math.floor(thumbnailSeconds),
+          // Clear all connection fields — only the active type will be set below
+          areas: undefined,
+          sectors: undefined,
+          problems: undefined,
+          trails: undefined,
+          guestbookId: undefined,
+          userAvatarId: undefined,
         };
         if (connectionType === 'problem') {
           body.problems = problems.map((p) => ({
@@ -319,16 +503,23 @@ const MediaEdit = () => {
             trivia: p.trivia ?? false,
           }));
         } else if (connectionType === 'area') {
-          body.areas = (m.areas ?? []).map((a) => ({
-            ...a,
-            trivia: areaTrivia[a.areaId ?? 0] ?? false,
-          }));
+          body.areas = moveTarget
+            ? [{ areaId: moveTarget.id, areaName: moveTarget.name, trivia: areaTrivia[moveTarget.id] ?? false }]
+            : (m.areas ?? []).map((a) => ({
+                ...a,
+                trivia: areaTrivia[a.areaId ?? 0] ?? false,
+              }));
         } else if (connectionType === 'sector') {
-          body.sectors = (m.sectors ?? []).map((s) => ({
-            ...s,
-            trivia: sectorTrivia[s.sectorId ?? 0] ?? false,
-          }));
+          body.sectors = moveTarget
+            ? [{ sectorId: moveTarget.id, sectorName: moveTarget.name, trivia: sectorTrivia[moveTarget.id] ?? false }]
+            : (m.sectors ?? []).map((s) => ({
+                ...s,
+                trivia: sectorTrivia[s.sectorId ?? 0] ?? false,
+              }));
+        } else if (connectionType === 'trail') {
+          body.trails = trails.map((t) => ({ trailId: t.trailId ?? 0, trailTitle: t.trailTitle }));
         }
+
         await putMedia(token, body);
         await Promise.all([
           queryClient.refetchQueries({
@@ -387,7 +578,12 @@ const MediaEdit = () => {
       (p.milliseconds ?? 0) > 0 && problems.findIndex((c) => (c.milliseconds ?? 0) === (p.milliseconds ?? 0)) !== i,
   );
   const hasNoProblems = connectionType === 'problem' && problems.length === 0;
-  const canSave = !!photographer && !hasEmptyProblem && !hasDuplicateTime && !hasNoProblems;
+  const hasNoTrails =
+    connectionType === 'trail' && (trails.length === 0 || trails.some((t) => !t.trailId || t.trailId === 0));
+
+  // If media is connected to multiple problems, the type dropdown is read-only (can't move)
+  const typeReadOnly = connectionType === 'problem' && (m?.problems ?? []).length > 1;
+  const canSave = !!photographer && !hasEmptyProblem && !hasDuplicateTime && !hasNoProblems && !hasNoTrails;
 
   // ── Validation (add mode) ────────────────────────────────────────────
   const canSaveAdd =
@@ -587,7 +783,7 @@ const MediaEdit = () => {
             {m && (
               <>
                 {/* Header with media ID */}
-                <div className='mb-3 flex items-center justify-between'>
+                <div className='mb-3'>
                   <span className='text-[13px] font-medium text-slate-400'>Media #{mediaIdVal}</span>
                 </div>
 
@@ -630,21 +826,26 @@ const MediaEdit = () => {
                       </div>
                     )}
 
-                    {/* Connected stuff in left column (unless video + problem with timestamps) */}
+                    {/* Connected section (unless video + problem with timestamps) */}
                     {!(isVideo && connectionType === 'problem') && (
-                      <div className='mt-4'>
-                        <MediaMetadataCard
-                          variant='connected'
-                          metadata={editMetadata}
-                          callbacks={editCallbacks}
-                          connectionType={connectionType}
-                          maxSeconds={thumbnailDuration}
-                          showTimeInput={isVideo}
-                          hasEmptyProblem={hasEmptyProblem}
-                          hasDuplicateTime={hasDuplicateTime}
-                          hasNoProblems={hasNoProblems}
-                        />
-                      </div>
+                      <ConnectedSection
+                        connectionType={connectionType}
+                        editMetadata={editMetadata}
+                        editCallbacks={editCallbacks}
+                        typeDropdownOpen={typeDropdownOpen}
+                        setTypeDropdownOpen={setTypeDropdownOpen}
+                        onConnectionTypeChange={handleChangeConnectionType}
+                        sectorOptions={entityOptions}
+                        onSectorChange={(sectorId, sectorName) => handleSelectEntity('sector', sectorId, sectorName)}
+                        trailOptions={trailOptions}
+                        thumbnailDuration={thumbnailDuration}
+                        isVideo={isVideo}
+                        hasEmptyProblem={hasEmptyProblem}
+                        hasDuplicateTime={hasDuplicateTime}
+                        hasNoProblems={hasNoProblems}
+                        hasNoTrails={hasNoTrails}
+                        typeReadOnly={typeReadOnly}
+                      />
                     )}
                   </div>
                   {/* Right: Preview */}
@@ -688,16 +889,23 @@ const MediaEdit = () => {
                 {/* Full-width row: connected problems with timestamps (only for video + problem) */}
                 {isVideo && connectionType === 'problem' && (
                   <div className='mt-4'>
-                    <MediaMetadataCard
-                      variant='connected'
-                      metadata={editMetadata}
-                      callbacks={editCallbacks}
+                    <ConnectedSection
                       connectionType={connectionType}
-                      maxSeconds={thumbnailDuration}
-                      showTimeInput={true}
+                      editMetadata={editMetadata}
+                      editCallbacks={editCallbacks}
+                      typeDropdownOpen={typeDropdownOpen}
+                      setTypeDropdownOpen={setTypeDropdownOpen}
+                      onConnectionTypeChange={handleChangeConnectionType}
+                      sectorOptions={entityOptions}
+                      onSectorChange={(sectorId, sectorName) => handleSelectEntity('sector', sectorId, sectorName)}
+                      trailOptions={trailOptions}
+                      thumbnailDuration={thumbnailDuration}
+                      isVideo={true}
                       hasEmptyProblem={hasEmptyProblem}
                       hasDuplicateTime={hasDuplicateTime}
                       hasNoProblems={hasNoProblems}
+                      hasNoTrails={hasNoTrails}
+                      typeReadOnly={typeReadOnly}
                     />
                   </div>
                 )}
@@ -726,6 +934,157 @@ const MediaEdit = () => {
       {/* Upload progress dialog */}
       {uploadTasks.length > 0 && <UploadProgressDialog tasks={uploadTasks} />}
     </>
+  );
+};
+
+// ── ConnectedSection: type dropdown + entity content ──────────────────
+type ConnectedSectionProps = {
+  connectionType: MediaConnectionType;
+  editMetadata: MediaMetadata;
+  editCallbacks: MediaMetadataCallbacks;
+  typeDropdownOpen: boolean;
+  setTypeDropdownOpen: (v: boolean) => void;
+  onConnectionTypeChange: (t: MediaConnectionType) => void;
+  sectorOptions: { id: number; name: string; label: string }[];
+  onSectorChange: (sectorId: number, sectorName: string) => void;
+  trailOptions: { id: number; title: string; label: string }[];
+  thumbnailDuration: number;
+  isVideo: boolean;
+  hasEmptyProblem: boolean;
+  hasDuplicateTime: boolean;
+  hasNoProblems: boolean;
+  hasNoTrails: boolean;
+  /** If true, the type dropdown is disabled (read-only label) */
+  typeReadOnly?: boolean;
+};
+
+const ConnectedSection = ({
+  connectionType,
+  editMetadata,
+  editCallbacks,
+  typeDropdownOpen,
+  setTypeDropdownOpen,
+  onConnectionTypeChange,
+  sectorOptions,
+  onSectorChange,
+  trailOptions,
+  thumbnailDuration,
+  isVideo,
+  hasEmptyProblem,
+  hasDuplicateTime,
+  hasNoProblems,
+  hasNoTrails,
+  typeReadOnly = false,
+}: ConnectedSectionProps) => {
+  // Guestbook and User are read-only — show a static label, no dropdown
+  const isReadOnly = connectionType === 'guestbook' || connectionType === 'user' || typeReadOnly;
+  const typeButtonRef = useRef<HTMLButtonElement>(null);
+
+  return (
+    <div className='mt-4 space-y-3'>
+      {/* Row 1: Type label or dropdown — this IS the title */}
+      <div className='flex items-center gap-3'>
+        {isReadOnly ? (
+          <span className='text-sm font-medium whitespace-nowrap text-slate-400'>
+            {connectionType === 'guestbook'
+              ? 'Connected to guestbook'
+              : connectionType === 'user'
+                ? 'Connected to user'
+                : 'Connected to problem(s)'}
+          </span>
+        ) : (
+          <div className='relative'>
+            <button
+              ref={typeButtonRef}
+              type='button'
+              onClick={() => setTypeDropdownOpen(!typeDropdownOpen)}
+              className='inline-flex items-center gap-1.5 text-sm font-medium whitespace-nowrap text-slate-200 hover:text-slate-100'
+            >
+              {CONNECTION_TYPE_OPTIONS.find((o) => o.value === connectionType)?.label ?? connectionType}
+              <ChevronDown size={14} className='text-slate-500' />
+            </button>
+            {typeDropdownOpen &&
+              typeButtonRef.current &&
+              createPortal(
+                <>
+                  <div className='fixed inset-0 z-[100]' onClick={() => setTypeDropdownOpen(false)} />
+                  <div
+                    className='fixed z-[101] overflow-hidden rounded-lg border border-white/12 bg-slate-800 shadow-lg'
+                    style={{
+                      top: typeButtonRef.current.getBoundingClientRect().bottom + 4,
+                      left: typeButtonRef.current.getBoundingClientRect().left,
+                      width: Math.max(typeButtonRef.current.getBoundingClientRect().width, 192),
+                    }}
+                  >
+                    {CONNECTION_TYPE_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.value}
+                        type='button'
+                        className={cn(
+                          'flex w-full items-center px-3 py-2 text-left text-sm transition-colors',
+                          opt.value === connectionType ? 'bg-brand/20 text-brand' : 'text-slate-300 hover:bg-slate-700',
+                        )}
+                        onClick={() => onConnectionTypeChange(opt.value)}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </>,
+                document.body,
+              )}
+          </div>
+        )}
+
+        {/* Add button for problems — on the same line as the dropdown */}
+        {connectionType === 'problem' && (
+          <button
+            type='button'
+            onClick={() => {
+              const newProblems = [
+                ...editMetadata.problems,
+                { problemId: 0, problemName: '', problemGrade: '', milliseconds: 0 },
+              ];
+              editCallbacks.onProblemsChange(newProblems);
+            }}
+            className='bg-surface-raised hover:bg-surface-raised-hover inline-flex items-center gap-1 rounded-lg border border-white/12 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:border-white/22'
+          >
+            <Plus size={12} /> Add
+          </button>
+        )}
+
+        {/* Add button for trails — on the same line as the dropdown */}
+        {connectionType === 'trail' && (
+          <button
+            type='button'
+            onClick={() => {
+              const newTrails = [...(editMetadata.trails ?? []), { trailId: 0, trailName: '' }];
+              editCallbacks.onTrailsChange?.(newTrails);
+            }}
+            className='bg-surface-raised hover:bg-surface-raised-hover inline-flex items-center gap-1 rounded-lg border border-white/12 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:border-white/22'
+          >
+            <Plus size={12} /> Add
+          </button>
+        )}
+      </div>
+
+      {/* Row 2: Entity content — delegate to MediaMetadataCard */}
+      <MediaMetadataCard
+        variant='connected'
+        metadata={editMetadata}
+        callbacks={editCallbacks}
+        connectionType={connectionType}
+        maxSeconds={thumbnailDuration}
+        showTimeInput={isVideo}
+        hasEmptyProblem={hasEmptyProblem}
+        hasDuplicateTime={hasDuplicateTime}
+        hasNoProblems={hasNoProblems}
+        hasNoTrails={hasNoTrails}
+        sectorOptions={sectorOptions}
+        onSectorChange={onSectorChange}
+        trailOptions={trailOptions}
+      />
+    </div>
   );
 };
 
@@ -841,13 +1200,10 @@ const UploadItemCard = ({
             <video
               ref={videoRef}
               src={item.preview}
-              className='w-full rounded-xl object-contain'
+              className='w-full rounded-xl'
               controls
-              preload='metadata'
               onLoadedMetadata={handleVideoLoaded}
             />
-          ) : item.preview || item.embedThumbnailUrl ? (
-            <img src={item.preview ?? item.embedThumbnailUrl} className='w-full rounded-xl object-contain' alt='' />
           ) : item.embedVideoUrl ? (
             <div className='aspect-video w-full overflow-hidden rounded-xl bg-black'>
               <iframe
@@ -858,11 +1214,17 @@ const UploadItemCard = ({
                 title='Embedded video'
               />
             </div>
-          ) : null}
+          ) : item.preview ? (
+            <img src={item.preview} alt={item.description ?? ''} className='w-full rounded-xl' />
+          ) : (
+            <div className='flex aspect-video items-center justify-center rounded-xl bg-slate-800 text-slate-600'>
+              <Image size={32} />
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Full-width row: connected stuff (only for video + problem, where timestamps need space) */}
+      {/* Full-width connected problems with timestamps (only for video + problem) */}
       {showConnectedFullWidth && (
         <div className='mt-4'>
           <MediaMetadataCard
