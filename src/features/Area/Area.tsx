@@ -541,7 +541,19 @@ const Area = () => {
     if (!data?.sectors) return nextOutlines;
     for (const s of data.sectors) {
       if (s.outline?.length) {
-        nextOutlines.push({ url: '/sector/' + s.id, label: s.name ?? '', outline: s.outline });
+        // Find the first approach trail distance for this sector
+        const approachTrail = (s.trails ?? []).find((t) => !t.isDescent);
+        const distanceLabel = approachTrail?.distance
+          ? approachTrail.distance > 1000
+            ? Math.round(approachTrail.distance / 100) / 10 + 'km'
+            : Math.round(approachTrail.distance) + 'm'
+          : undefined;
+        const label = s.name ?? '';
+        nextOutlines.push({
+          url: '/sector/' + s.id,
+          label: distanceLabel ? `${label} · ${distanceLabel}` : label,
+          outline: s.outline,
+        });
       }
     }
     return nextOutlines;

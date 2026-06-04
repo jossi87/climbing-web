@@ -36,7 +36,7 @@ function renderTrail(trailDef: TrailDef, _opacity: number) {
   const key = a.trail.id ?? positions.map((p) => p[0] + ',' + p[1]).join(' -> ');
   const distanceLabel = getDistanceWithUnit(a.trail);
   const hasMedia = (a.trail.media ?? []).length > 0;
-  const tooltipLabel = a.label && distanceLabel ? `${a.label} · ${distanceLabel}` : a.label || distanceLabel || '';
+  const tooltipLabel = a.label && distanceLabel ? `${a.label} · ${distanceLabel}` : a.label || '';
   return (
     <Polyline key={'trail-' + key} color={color} weight={weight} positions={positions}>
       {tooltipLabel && (
