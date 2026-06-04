@@ -12,7 +12,9 @@ type Props = {
   contentClassName?: string;
 };
 
-const COLLAPSED_MAX_H = 'max-h-[8.75rem]';
+/** Minimum number of *additional* lines that must be hidden before the toggle appears.
+ *  Prevents "Show more" when only a trivial sliver of the last line is clipped. */
+const MIN_HIDDEN_LINES = 1;
 
 /**
  * Collapsible long markdown (problem / area / sector descriptions, trivia, aid notes).
@@ -32,7 +34,8 @@ export const ExpandableMarkdown = ({ content, className, contentClassName }: Pro
 
     const measure = () => {
       if (expanded) return;
-      setOverflowsWhenCollapsed(el.scrollHeight > el.clientHeight + 1);
+      const lineHeight = parseFloat(getComputedStyle(el).lineHeight) || 24;
+      setOverflowsWhenCollapsed(el.scrollHeight > el.clientHeight + lineHeight * MIN_HIDDEN_LINES);
     };
 
     measure();
@@ -55,8 +58,7 @@ export const ExpandableMarkdown = ({ content, className, contentClassName }: Pro
           '[&_p+p]:mt-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0',
           'hover:[&_a]:text-brand light:[&_a]:decoration-slate-400/40 [&_a]:text-inherit [&_a]:underline [&_a]:decoration-white/15 [&_a]:underline-offset-2 [&_a]:transition-colors',
           contentClassName,
-          !expanded && COLLAPSED_MAX_H,
-          !expanded && 'overflow-hidden',
+          !expanded && 'line-clamp-6',
         )}
       >
         <Markdown content={content} />
