@@ -338,7 +338,7 @@ export type paths = {
             path?: never;
             cookie?: never;
         };
-        /** Get profile media by id */
+        /** Get profile media by user id */
         get: operations["getProfileMedia"];
         put?: never;
         post?: never;
@@ -1137,7 +1137,6 @@ export type components = {
             /** Format: int32 */
             thumbnailSeconds?: number;
             inherited?: boolean;
-            url?: string;
             areas?: components["schemas"]["MediaArea"][];
             sectors?: components["schemas"]["MediaSector"][];
             problems?: components["schemas"]["MediaProblem"][];
@@ -2166,8 +2165,8 @@ export type components = {
             parameters?: {
                 [key: string]: string;
             };
-            wildcardType?: boolean;
             wildcardSubtype?: boolean;
+            wildcardType?: boolean;
         };
         MessageBodyWorkers: Record<string, never>;
         MultiPart: {

@@ -522,17 +522,6 @@ const MediaModal = ({
           {...(attachCarouselSwipeHandlers ? handlers : {})}
         >
           <div className='absolute top-3 right-3 z-170 flex max-w-[calc(100vw-1.5rem)] flex-nowrap items-center justify-end gap-1 sm:top-4 sm:right-4 sm:gap-2'>
-            {m.url && (
-              <button
-                type='button'
-                onClick={() => window.open(m.url ?? '', '_blank')}
-                title='Open original'
-                className={mediaModalToolbarIconBtnClass}
-              >
-                <ExternalLink size={17} strokeWidth={2} />
-              </button>
-            )}
-
             {canShowSidebar && (
               <button
                 type='button'
@@ -1049,15 +1038,31 @@ const MediaModal = ({
                     ?.filter((a) => a.areaName?.trim() && a.areaName.trim() !== '0')
                     .map((a) => (
                       <p key={a.areaId} className='type-body text-xs font-semibold'>
-                        {a.areaName}
+                        <Link
+                          to={`/area/${a.areaId}`}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          className='hover:text-brand inline-flex items-center gap-1 transition-colors'
+                        >
+                          {a.areaName}
+                          <ExternalLink size={10} strokeWidth={2} className='shrink-0 opacity-60' />
+                        </Link>
                       </p>
                     ))}
                   {m.sectors
                     ?.filter((s) => s.sectorName?.trim() && s.sectorName.trim() !== '0')
                     .map((s) => (
                       <p key={s.sectorId} className='type-body text-xs font-semibold'>
-                        {s.sectorName}
-                        {s.areaName ? ` (${s.areaName})` : ''}
+                        <Link
+                          to={`/sector/${s.sectorId}`}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          className='hover:text-brand inline-flex items-center gap-1 transition-colors'
+                        >
+                          {s.sectorName}
+                          {s.areaName ? ` (${s.areaName})` : ''}
+                          <ExternalLink size={10} strokeWidth={2} className='shrink-0 opacity-60' />
+                        </Link>
                       </p>
                     ))}
                   {m.problems
@@ -1072,14 +1077,22 @@ const MediaModal = ({
                       const location = [area, sector].filter(Boolean).join(' · ');
                       return (
                         <p key={p.problemId} className='type-body text-xs font-semibold'>
-                          {p.problemName}
-                          {hasGrade ? ` · ${grade}` : ''}
-                          {hasPitch && hasNumPitches
-                            ? ` · Pitch ${p.problemPitch} / ${p.problemNumPitches}`
-                            : hasPitch
-                              ? ` · Pitch ${p.problemPitch}`
-                              : ''}
-                          {location ? ` (${location})` : ''}
+                          <Link
+                            to={`/problem/${p.problemId}`}
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            className='hover:text-brand inline-flex items-center gap-1 transition-colors'
+                          >
+                            {p.problemName}
+                            {hasGrade ? ` · ${grade}` : ''}
+                            {hasPitch && hasNumPitches
+                              ? ` · Pitch ${p.problemPitch} / ${p.problemNumPitches}`
+                              : hasPitch
+                                ? ` · Pitch ${p.problemPitch}`
+                                : ''}
+                            {location ? ` (${location})` : ''}
+                            <ExternalLink size={10} strokeWidth={2} className='shrink-0 opacity-60' />
+                          </Link>
                         </p>
                       );
                     })}
@@ -1088,11 +1101,28 @@ const MediaModal = ({
                       .map((s) => [s.sectorName, s.areaName].filter(Boolean).join(' · '))
                       .filter(Boolean)
                       .join(', ');
+                    const firstSectorId = t.sectors?.[0]?.sectorId;
                     return (
                       <p key={t.trailId} className='type-body text-xs font-semibold'>
-                        Trail #{t.trailId}
-                        {t.trailTitle ? ` · ${t.trailTitle}` : ''}
-                        {sectorNames ? ` (${sectorNames})` : ''}
+                        {firstSectorId ? (
+                          <Link
+                            to={`/sector/${firstSectorId}/map`}
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            className='hover:text-brand inline-flex items-center gap-1 transition-colors'
+                          >
+                            Trail #{t.trailId}
+                            {t.trailTitle ? ` · ${t.trailTitle}` : ''}
+                            {sectorNames ? ` (${sectorNames})` : ''}
+                            <ExternalLink size={10} strokeWidth={2} className='shrink-0 opacity-60' />
+                          </Link>
+                        ) : (
+                          <>
+                            Trail #{t.trailId}
+                            {t.trailTitle ? ` · ${t.trailTitle}` : ''}
+                            {sectorNames ? ` (${sectorNames})` : ''}
+                          </>
+                        )}
                       </p>
                     );
                   })}
