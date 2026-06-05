@@ -143,15 +143,6 @@ const MediaEdit = () => {
   const { data: areaData } = useArea(contextAreaId);
   // Fetch sector data for the current sector context (if any)
   const { data: sectorData } = useSector(contextSectorId);
-  // Collect all sector IDs in the area so we can fetch trails from all of them
-  const sectorIdsInArea = useMemo(
-    () => (areaData?.sectors ?? []).map((s) => s.id).filter((id): id is number => !!id && id > 0),
-    [areaData?.sectors],
-  );
-  // When media is connected to an area (no sector), fetch the first sector's data
-  // to get trail options for the area
-  const fallbackSectorId = !contextSectorId && sectorIdsInArea.length > 0 ? sectorIdsInArea[0] : 0;
-  const { data: fallbackSectorData } = useSector(fallbackSectorId);
 
   // ── Initialize edit mode from loaded data ──────────────────────────
   const initializedRef = useRef(false);
@@ -243,9 +234,20 @@ const MediaEdit = () => {
         setMoveTarget(null);
       }
     } else if (newType === 'trail') {
-      const trails = sectorData?.trails ?? [];
-      if (trails.length > 0) {
-        const first = trails[0];
+      // Collect all trails from all sectors in the area
+      const allTrails: components['schemas']['Trail'][] = [];
+      const seen = new Set<number>();
+      for (const s of areaData?.sectors ?? []) {
+        for (const t of s.trails ?? []) {
+          const id = t.id ?? 0;
+          if (!seen.has(id)) {
+            seen.add(id);
+            allTrails.push(t);
+          }
+        }
+      }
+      if (allTrails.length > 0) {
+        const first = allTrails[0];
         setMoveTarget({ type: 'trail', id: first.id ?? 0, name: first.title ?? `#${first.id ?? 0}` });
       } else {
         setMoveTarget(null);
@@ -287,61 +289,68 @@ const MediaEdit = () => {
     }
 
     if (connectionType === 'trail') {
-      // Trails in the same sector (the sector the media is currently in)
-      // NOTE: WS getSectorTrails doesn't populate t.sectors, so use sectorData.name
-      const sn = sectorData?.name ?? '';
-      const an = sectorData?.areaName ?? '';
-      const suffix = an && sn ? `${an} · ${sn}` : an || sn || '';
-      return (sectorData?.trails ?? []).map((t) => {
-        const id = t.id ?? 0;
-        const title = t.title ?? `#${id}`;
-        return {
-          id,
-          name: title,
-          label: suffix ? `${title} (${suffix})` : title,
-        };
-      });
+      // All trails in the area (from areaData.sectors each with trails[])
+      // so that trails on neighbour sectors are also visible.
+      const seen = new Set<number>();
+      const result: { id: number; name: string; label: string }[] = [];
+      for (const s of areaData?.sectors ?? []) {
+        const sn = s.name ?? '';
+        const an = s.areaName ?? '';
+        const suffix = an && sn ? `${an} · ${sn}` : an || sn || '';
+        for (const t of s.trails ?? []) {
+          const id = t.id ?? 0;
+          if (seen.has(id)) continue;
+          seen.add(id);
+          const title = t.title ?? `#${id}`;
+          result.push({
+            id,
+            name: title,
+            label: suffix ? `${title} (${suffix})` : title,
+          });
+        }
+      }
+      return result;
     }
     return [];
-  }, [connectionType, m, areaData, sectorData]);
+  }, [connectionType, m, areaData]);
 
-  // ── Trail options for dropdown (all trails in context) ──────────────
-  // Collects trails from the current sector context AND from the fallback
-  // sector (first sector in the area, used when media is connected to area
-  // with no sector).
+  // ── Trail options for dropdown (ALL trails in the area) ──────────────
+  // Collects trails from ALL sectors in the area (via areaData.sectors),
+  // so that trails on neighbour sectors are also visible when editing
+  // a media that is connected to a trail.
   // NOTE: The WS getSectorTrails does NOT populate t.sectors, so we derive
   // the sector name from the sector data itself (sectorData.name/areaName).
   const trailOptions = useMemo(() => {
     const seen = new Set<number>();
-    // Build a map of trailId -> sector name from the sector data context
-    const sectorName = sectorData?.name ?? '';
-    const areaName = sectorData?.areaName ?? '';
-    const fallbackSectorName = fallbackSectorData?.name ?? '';
-    const fallbackAreaName = fallbackSectorData?.areaName ?? '';
-    const allTrails = [...(sectorData?.trails ?? []), ...(fallbackSectorData?.trails ?? [])];
-    return allTrails
-      .filter((t) => {
+    // Collect trails from all sectors in the area (areaData.sectors each have trails[])
+    const allSectors = areaData?.sectors ?? [];
+    const allTrails: components['schemas']['Trail'][] = [];
+    const trailSectorMap = new Map<number, { sectorName: string; areaName: string }>();
+    for (const s of allSectors) {
+      const sn = s.name ?? '';
+      const an = s.areaName ?? '';
+      for (const t of s.trails ?? []) {
         const id = t.id ?? 0;
-        if (seen.has(id)) return false;
-        seen.add(id);
-        return true;
-      })
-      .map((t) => {
-        const id = t.id ?? 0;
-        const title = t.title ?? `#${id}`;
-        // Determine which sector context this trail comes from
-        const isFromSectorData = sectorData?.trails?.some((st) => st.id === id);
-        const sn = isFromSectorData ? sectorName : fallbackSectorName;
-        const an = isFromSectorData ? areaName : fallbackAreaName;
-        const suffix = an && sn ? `${an} · ${sn}` : an || sn || '';
-        return {
-          id,
-          title,
-          label: suffix ? `${title} (${suffix})` : title,
-          sectorName: suffix,
-        };
-      });
-  }, [sectorData, fallbackSectorData]);
+        if (!seen.has(id)) {
+          seen.add(id);
+          allTrails.push(t);
+          trailSectorMap.set(id, { sectorName: sn, areaName: an });
+        }
+      }
+    }
+    return allTrails.map((t) => {
+      const id = t.id ?? 0;
+      const title = t.title ?? `#${id}`;
+      const { sectorName: sn, areaName: an } = trailSectorMap.get(id) ?? { sectorName: '', areaName: '' };
+      const suffix = an && sn ? `${an} · ${sn}` : an || sn || '';
+      return {
+        id,
+        title,
+        label: suffix ? `${title} (${suffix})` : title,
+        sectorName: suffix,
+      };
+    });
+  }, [areaData?.sectors]);
 
   // ── Build edit-mode metadata for the shared card ────────────────────
   // Derive trail display labels from trailOptions (includes sector context)
