@@ -1084,12 +1084,15 @@ const MediaModal = ({
                       );
                     })}
                   {(m.trails ?? []).map((t) => {
-                    const location = [t.sectorName, t.areaName].filter(Boolean).join(' · ');
+                    const sectorNames = (t.sectors ?? [])
+                      .map((s) => [s.sectorName, s.areaName].filter(Boolean).join(' · '))
+                      .filter(Boolean)
+                      .join(', ');
                     return (
                       <p key={t.trailId} className='type-body text-xs font-semibold'>
                         Trail #{t.trailId}
                         {t.trailTitle ? ` · ${t.trailTitle}` : ''}
-                        {location ? ` (${location})` : ''}
+                        {sectorNames ? ` (${sectorNames})` : ''}
                       </p>
                     );
                   })}

@@ -96,7 +96,12 @@ export function ConditionLabels({
       flowNodes.push(<SunriseSunset key='rise' lat={lat!} lng={lng!} variant='inline' />);
       flowNodes.push(<YrLink key='yr' lat={lat!} lng={lng!} />);
       flowNodes.push(
-        <a key='cam' href={`/webcams/${JSON.stringify({ lat, lng, label })}`} target='_blank' rel='noreferrer'>
+        <a
+          key='cam'
+          href={`/webcams/${encodeURIComponent(JSON.stringify({ lat, lng, label }))}`}
+          target='_blank'
+          rel='noreferrer'
+        >
           <span
             className={cn(
               designContract.typography.menuItem,
@@ -150,7 +155,7 @@ export function ConditionLabels({
       <SunOnWall sunFromHour={sunFromHour} sunToHour={sunToHour} />
       <SunriseSunset lat={lat} lng={lng} />
       <YrLink lat={lat} lng={lng} />
-      <a href={`/webcams/${JSON.stringify({ lat, lng, label })}`} target='_blank' rel='noreferrer'>
+      <a href={`/webcams/${encodeURIComponent(JSON.stringify({ lat, lng, label }))}`} target='_blank' rel='noreferrer'>
         <Badge icon={Video} className={designContract.surfaces.badgeLinkHover}>
           Webcams
         </Badge>

@@ -1194,14 +1194,17 @@ export type components = {
         };
         MediaTrail: {
             /** Format: int32 */
+            trailId?: number;
+            trailTitle?: string;
+            sectors?: components["schemas"]["MediaTrailSector"][];
+        };
+        MediaTrailSector: {
+            /** Format: int32 */
             areaId?: number;
             areaName?: string;
             /** Format: int32 */
             sectorId?: number;
             sectorName?: string;
-            /** Format: int32 */
-            trailId?: number;
-            trailTitle?: string;
         };
         SectorProblem: {
             /** Format: int32 */
@@ -2163,8 +2166,8 @@ export type components = {
             parameters?: {
                 [key: string]: string;
             };
-            wildcardSubtype?: boolean;
             wildcardType?: boolean;
+            wildcardSubtype?: boolean;
         };
         MessageBodyWorkers: Record<string, never>;
         MultiPart: {

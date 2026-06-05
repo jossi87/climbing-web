@@ -111,11 +111,14 @@ const TrailRow = ({
   trailOptions,
   onSelectTrail,
   onRemove,
+  /** Trail IDs already selected in other rows (to prevent duplicates) */
+  selectedTrailIds,
 }: {
   trail: { trailId: number; trailName?: string; trailTitle?: string };
   trailOptions: TrailOption[];
   onSelectTrail: (trailId: number, trailTitle: string, label?: string) => void;
   onRemove: () => void;
+  selectedTrailIds?: Set<number>;
 }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -128,6 +131,9 @@ const TrailRow = ({
 
   // Find the selected trail option to get sector name
   const selectedOption = trailOptions.find((opt) => opt.id === trail.trailId);
+
+  // Filter out trails already selected in other rows (unique index constraint)
+  const filteredOptions = trailOptions.filter((opt) => opt.id === trail.trailId || !selectedTrailIds?.has(opt.id));
 
   return (
     <div className='bg-surface-raised border-surface-border flex items-center gap-2 rounded-xl border p-2.5'>
@@ -143,13 +149,13 @@ const TrailRow = ({
           )}
         >
           <span className='truncate'>
-            {selectedOption ? selectedOption.label : (trail.trailName ?? trail.trailTitle ?? 'Select trail...')}
+            {selectedOption ? selectedOption.label : trail.trailName || trail.trailTitle || 'Select trail...'}
           </span>
           <ChevronDown size={12} className='shrink-0 text-slate-500' />
         </button>
 
         <DropdownMenu open={showDropdown} onClose={() => setShowDropdown(false)} triggerRef={buttonRef}>
-          {trailOptions.map((opt) => (
+          {filteredOptions.map((opt) => (
             <button
               key={opt.id}
               type='button'
@@ -369,67 +375,105 @@ export const MediaMetadataCard = ({
           )}
 
           {/* Connected sectors (with trivia checkbox on the right) */}
-          {connectionType === 'sector' && metadata.sectors && metadata.sectors.length > 0 && (
+          {connectionType === 'sector' && (
             <div className='mt-4 space-y-2'>
-              {metadata.sectors.map((s) => (
-                <div
-                  key={s.sectorId}
-                  className='bg-surface-raised border-surface-border flex items-center justify-between rounded-xl border p-3 text-sm'
-                >
-                  {/* Sector name: dropdown if sectorOptions provided, otherwise plain text */}
-                  {sectorOptions && sectorOptions.length > 0 && onSectorChange ? (
-                    <div className='relative'>
-                      <button
-                        ref={sectorButtonRef}
-                        type='button'
-                        onClick={() => setSectorDropdownOpen(!sectorDropdownOpen)}
-                        className='inline-flex items-center gap-1 text-slate-300 hover:text-slate-100'
-                      >
-                        {s.sectorName}
-                        {s.areaName ? <span className='text-slate-500'> ({s.areaName})</span> : null}
-                        <ChevronDown size={12} className='text-slate-500' />
-                      </button>
+              {/* If we have sectors in metadata, show them with trivia checkboxes */}
+              {metadata.sectors && metadata.sectors.length > 0 ? (
+                metadata.sectors.map((s) => (
+                  <div
+                    key={s.sectorId}
+                    className='bg-surface-raised border-surface-border flex items-center justify-between rounded-xl border p-3 text-sm'
+                  >
+                    {/* Sector name: dropdown if sectorOptions provided, otherwise plain text */}
+                    {sectorOptions && sectorOptions.length > 0 && onSectorChange ? (
+                      <div className='relative'>
+                        <button
+                          ref={sectorButtonRef}
+                          type='button'
+                          onClick={() => setSectorDropdownOpen(!sectorDropdownOpen)}
+                          className='inline-flex items-center gap-1 text-slate-300 hover:text-slate-100'
+                        >
+                          {s.sectorName}
+                          {s.areaName ? <span className='text-slate-500'> ({s.areaName})</span> : null}
+                          <ChevronDown size={12} className='text-slate-500' />
+                        </button>
 
-                      <DropdownMenu
-                        open={sectorDropdownOpen}
-                        onClose={() => setSectorDropdownOpen(false)}
-                        triggerRef={sectorButtonRef}
-                      >
-                        {sectorOptions.map((opt) => (
-                          <button
-                            key={opt.id}
-                            type='button'
-                            className={cn(
-                              'flex w-full items-center px-3 py-2 text-left text-xs transition-colors',
-                              opt.id === s.sectorId ? 'bg-brand/20 text-brand' : 'text-slate-300 hover:bg-slate-700',
-                            )}
-                            onClick={() => {
-                              onSectorChange(opt.id, opt.name);
-                              setSectorDropdownOpen(false);
-                            }}
-                          >
-                            {opt.label}
-                          </button>
-                        ))}
-                      </DropdownMenu>
-                    </div>
-                  ) : (
-                    <span className='text-slate-300'>
-                      {s.sectorName}
-                      {s.areaName && <span className='text-slate-500'> ({s.areaName})</span>}
-                    </span>
-                  )}
-                  <label className='flex shrink-0 items-center gap-1.5 text-xs text-slate-400'>
-                    <input
-                      type='checkbox'
-                      checked={s.trivia}
-                      onChange={(e) => callbacks.onSectorTriviaChange(s.sectorId, e.target.checked)}
-                      className='text-brand focus:ring-brand/50 h-4 w-4 rounded border-white/20 bg-slate-700 focus:ring-2'
-                    />
-                    Trivia
-                  </label>
+                        <DropdownMenu
+                          open={sectorDropdownOpen}
+                          onClose={() => setSectorDropdownOpen(false)}
+                          triggerRef={sectorButtonRef}
+                        >
+                          {sectorOptions.map((opt) => (
+                            <button
+                              key={opt.id}
+                              type='button'
+                              className={cn(
+                                'flex w-full items-center px-3 py-2 text-left text-xs transition-colors',
+                                opt.id === s.sectorId ? 'bg-brand/20 text-brand' : 'text-slate-300 hover:bg-slate-700',
+                              )}
+                              onClick={() => {
+                                onSectorChange(opt.id, opt.name);
+                                setSectorDropdownOpen(false);
+                              }}
+                            >
+                              {opt.label}
+                            </button>
+                          ))}
+                        </DropdownMenu>
+                      </div>
+                    ) : (
+                      <span className='text-slate-300'>
+                        {s.sectorName}
+                        {s.areaName && <span className='text-slate-500'> ({s.areaName})</span>}
+                      </span>
+                    )}
+                    <label className='flex shrink-0 items-center gap-1.5 text-xs text-slate-400'>
+                      <input
+                        type='checkbox'
+                        checked={s.trivia}
+                        onChange={(e) => callbacks.onSectorTriviaChange(s.sectorId, e.target.checked)}
+                        className='text-brand focus:ring-brand/50 h-4 w-4 rounded border-white/20 bg-slate-700 focus:ring-2'
+                      />
+                      Trivia
+                    </label>
+                  </div>
+                ))
+              ) : /* No sectors selected yet — show a dropdown to pick one */
+              sectorOptions && sectorOptions.length > 0 && onSectorChange ? (
+                <div className='bg-surface-raised border-surface-border rounded-xl border p-3 text-sm'>
+                  <div className='relative'>
+                    <button
+                      ref={sectorButtonRef}
+                      type='button'
+                      onClick={() => setSectorDropdownOpen(!sectorDropdownOpen)}
+                      className='inline-flex items-center gap-1 text-slate-400 hover:text-slate-100'
+                    >
+                      <span>Select sector...</span>
+                      <ChevronDown size={12} className='text-slate-500' />
+                    </button>
+
+                    <DropdownMenu
+                      open={sectorDropdownOpen}
+                      onClose={() => setSectorDropdownOpen(false)}
+                      triggerRef={sectorButtonRef}
+                    >
+                      {sectorOptions.map((opt) => (
+                        <button
+                          key={opt.id}
+                          type='button'
+                          className='flex w-full items-center px-3 py-2 text-left text-xs text-slate-300 transition-colors hover:bg-slate-700'
+                          onClick={() => {
+                            onSectorChange(opt.id, opt.name);
+                            setSectorDropdownOpen(false);
+                          }}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </DropdownMenu>
+                  </div>
                 </div>
-              ))}
+              ) : null}
             </div>
           )}
 
@@ -442,26 +486,40 @@ export const MediaMetadataCard = ({
             </div>
           )}
 
-          {/* Connected trails (editable) */}
+          {/* Connected trails — editable when trailOptions provided, otherwise read-only (add mode) */}
           {connectionType === 'trail' && (
             <div className='mt-4 space-y-3'>
               <div className='space-y-2'>
-                {(metadata.trails ?? []).map((t, i) => (
-                  <TrailRow
-                    key={i}
-                    trail={t}
-                    trailOptions={trailOptions ?? []}
-                    onSelectTrail={(trailId: number, trailTitle: string, label?: string) => {
-                      const next = [...(metadata.trails ?? [])];
-                      next[i] = { trailId, trailName: label ?? trailTitle };
-                      callbacks.onTrailsChange?.(next);
-                    }}
-                    onRemove={() => {
-                      const next = (metadata.trails ?? []).filter((_, idx) => idx !== i);
-                      callbacks.onTrailsChange?.(next);
-                    }}
-                  />
-                ))}
+                {(metadata.trails ?? []).map((t, i) => {
+                  // Build set of trail IDs already selected in other rows (unique index constraint)
+                  const selectedTrailIds = new Set(
+                    (metadata.trails ?? []).map((other, j) => (j !== i ? other.trailId : 0)).filter((id) => id > 0),
+                  );
+                  return trailOptions && trailOptions.length > 0 ? (
+                    <TrailRow
+                      key={i}
+                      trail={t}
+                      trailOptions={trailOptions}
+                      selectedTrailIds={selectedTrailIds}
+                      onSelectTrail={(trailId: number, trailTitle: string, label?: string) => {
+                        const next = [...(metadata.trails ?? [])];
+                        next[i] = { trailId, trailName: label ?? trailTitle };
+                        callbacks.onTrailsChange?.(next);
+                      }}
+                      onRemove={() => {
+                        const next = (metadata.trails ?? []).filter((_, idx) => idx !== i);
+                        callbacks.onTrailsChange?.(next);
+                      }}
+                    />
+                  ) : (
+                    <div
+                      key={i}
+                      className='bg-surface-raised border-surface-border rounded-xl border p-3 text-sm text-slate-400'
+                    >
+                      {t.trailName || t.trailTitle || `Trail #${t.trailId}`}
+                    </div>
+                  );
+                })}
               </div>
               {hasNoTrails && <p className='text-xs text-red-400'>At least one trail is required.</p>}
             </div>

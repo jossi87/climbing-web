@@ -130,14 +130,28 @@ const MediaEdit = () => {
   } | null>(null);
   const [typeDropdownOpen, setTypeDropdownOpen] = useState(false);
 
-  // ── Fetch context data for entity dropdowns ────────────────────────
-  // Derive area/sector context from any connection type (problem, sector, area, trail)
-  const currentAreaId =
-    m?.sectors?.[0]?.areaId ?? m?.areas?.[0]?.areaId ?? m?.problems?.[0]?.areaId ?? m?.trails?.[0]?.areaId ?? 0;
+  // ── Context IDs for fetching area/sector data ──────────────────────
+  // These are derived from the media's current connections, so we can
+  // show the correct entity dropdowns (sectors in area, trails in sector).
+  // For trails, areaId/sectorId are now in the sectors array (MediaTrailSector[])
+  const trailAreaId = m?.trails?.[0]?.sectors?.[0]?.areaId ?? 0;
+  const trailSectorId = m?.trails?.[0]?.sectors?.[0]?.sectorId ?? 0;
+  const contextAreaId =
+    m?.sectors?.[0]?.areaId ?? m?.areas?.[0]?.areaId ?? m?.problems?.[0]?.areaId ?? trailAreaId ?? 0;
+  const contextSectorId = m?.sectors?.[0]?.sectorId ?? m?.problems?.[0]?.sectorId ?? trailSectorId ?? 0;
 
-  const { data: areaData } = useArea(currentAreaId);
-  const currentSectorId = m?.sectors?.[0]?.sectorId ?? m?.problems?.[0]?.sectorId ?? m?.trails?.[0]?.sectorId ?? 0;
-  const { data: sectorData } = useSector(currentSectorId);
+  const { data: areaData } = useArea(contextAreaId);
+  // Fetch sector data for the current sector context (if any)
+  const { data: sectorData } = useSector(contextSectorId);
+  // Collect all sector IDs in the area so we can fetch trails from all of them
+  const sectorIdsInArea = useMemo(
+    () => (areaData?.sectors ?? []).map((s) => s.id).filter((id): id is number => !!id && id > 0),
+    [areaData?.sectors],
+  );
+  // When media is connected to an area (no sector), fetch the first sector's data
+  // to get trail options for the area
+  const fallbackSectorId = !contextSectorId && sectorIdsInArea.length > 0 ? sectorIdsInArea[0] : 0;
+  const { data: fallbackSectorData } = useSector(fallbackSectorId);
 
   // ── Initialize edit mode from loaded data ──────────────────────────
   const initializedRef = useRef(false);
@@ -207,10 +221,12 @@ const MediaEdit = () => {
     if (newType !== 'problem') {
       setProblems([]);
     }
+    // For trails, areaId/sectorId are now in the sectors array (MediaTrailSector[])
+    const trailAreaId = m?.trails?.[0]?.sectors?.[0]?.areaId ?? 0;
+    const trailSectorId = m?.trails?.[0]?.sectors?.[0]?.sectorId ?? 0;
     // Auto-select the first entity in context
     if (newType === 'area') {
-      const areaId =
-        m?.areas?.[0]?.areaId ?? m?.sectors?.[0]?.areaId ?? m?.problems?.[0]?.areaId ?? m?.trails?.[0]?.areaId ?? 0;
+      const areaId = m?.areas?.[0]?.areaId ?? m?.sectors?.[0]?.areaId ?? m?.problems?.[0]?.areaId ?? trailAreaId ?? 0;
       const areaName = m?.areas?.[0]?.areaName ?? areaData?.name ?? m?.problems?.[0]?.areaName ?? '';
       if (areaId > 0) {
         setMoveTarget({ type: 'area', id: areaId, name: areaName });
@@ -218,7 +234,7 @@ const MediaEdit = () => {
         setMoveTarget(null);
       }
     } else if (newType === 'sector') {
-      const sectorId = m?.sectors?.[0]?.sectorId ?? m?.problems?.[0]?.sectorId ?? m?.trails?.[0]?.sectorId ?? 0;
+      const sectorId = m?.sectors?.[0]?.sectorId ?? m?.problems?.[0]?.sectorId ?? trailSectorId ?? 0;
       const sectorName = m?.sectors?.[0]?.sectorName ?? sectorData?.name ?? m?.problems?.[0]?.sectorName ?? '';
       const areaName = m?.sectors?.[0]?.areaName ?? sectorData?.areaName ?? m?.problems?.[0]?.areaName ?? '';
       if (sectorId > 0) {
@@ -252,8 +268,8 @@ const MediaEdit = () => {
   const entityOptions = useMemo(() => {
     if (connectionType === 'area') {
       // Only the area the media is currently in context of
-      const areaId =
-        m?.areas?.[0]?.areaId ?? m?.sectors?.[0]?.areaId ?? m?.problems?.[0]?.areaId ?? m?.trails?.[0]?.areaId ?? 0;
+      const trailAreaId = m?.trails?.[0]?.sectors?.[0]?.areaId ?? 0;
+      const areaId = m?.areas?.[0]?.areaId ?? m?.sectors?.[0]?.areaId ?? m?.problems?.[0]?.areaId ?? trailAreaId ?? 0;
       const areaName = m?.areas?.[0]?.areaName ?? areaData?.name ?? m?.problems?.[0]?.areaName ?? '';
       if (areaId > 0) {
         return [{ id: areaId, name: areaName, label: areaName }];
@@ -272,19 +288,38 @@ const MediaEdit = () => {
 
     if (connectionType === 'trail') {
       // Trails in the same sector (the sector the media is currently in)
-      return (sectorData?.trails ?? []).map((t) => ({
-        id: t.id ?? 0,
-        name: t.title ?? `#${t.id ?? 0}`,
-        label: t.title ?? `#${t.id ?? 0}`,
-      }));
+      // NOTE: WS getSectorTrails doesn't populate t.sectors, so use sectorData.name
+      const sn = sectorData?.name ?? '';
+      const an = sectorData?.areaName ?? '';
+      const suffix = an && sn ? `${an} · ${sn}` : an || sn || '';
+      return (sectorData?.trails ?? []).map((t) => {
+        const id = t.id ?? 0;
+        const title = t.title ?? `#${id}`;
+        return {
+          id,
+          name: title,
+          label: suffix ? `${title} (${suffix})` : title,
+        };
+      });
     }
     return [];
   }, [connectionType, m, areaData, sectorData]);
 
-  // ── Trail options for dropdown (all trails in the current sector context) ──
+  // ── Trail options for dropdown (all trails in context) ──────────────
+  // Collects trails from the current sector context AND from the fallback
+  // sector (first sector in the area, used when media is connected to area
+  // with no sector).
+  // NOTE: The WS getSectorTrails does NOT populate t.sectors, so we derive
+  // the sector name from the sector data itself (sectorData.name/areaName).
   const trailOptions = useMemo(() => {
     const seen = new Set<number>();
-    return (sectorData?.trails ?? [])
+    // Build a map of trailId -> sector name from the sector data context
+    const sectorName = sectorData?.name ?? '';
+    const areaName = sectorData?.areaName ?? '';
+    const fallbackSectorName = fallbackSectorData?.name ?? '';
+    const fallbackAreaName = fallbackSectorData?.areaName ?? '';
+    const allTrails = [...(sectorData?.trails ?? []), ...(fallbackSectorData?.trails ?? [])];
+    return allTrails
       .filter((t) => {
         const id = t.id ?? 0;
         if (seen.has(id)) return false;
@@ -294,25 +329,29 @@ const MediaEdit = () => {
       .map((t) => {
         const id = t.id ?? 0;
         const title = t.title ?? `#${id}`;
-        // Collect all sector names for this trail (from t.sectors array)
-        const sectorNames = (t.sectors ?? [])
-          .map((s) => s.sectorName)
-          .filter(Boolean)
-          .join(', ');
+        // Determine which sector context this trail comes from
+        const isFromSectorData = sectorData?.trails?.some((st) => st.id === id);
+        const sn = isFromSectorData ? sectorName : fallbackSectorName;
+        const an = isFromSectorData ? areaName : fallbackAreaName;
+        const suffix = an && sn ? `${an} · ${sn}` : an || sn || '';
         return {
           id,
           title,
-          label: sectorNames ? `${title} (${sectorNames})` : title,
-          sectorName: sectorNames,
+          label: suffix ? `${title} (${suffix})` : title,
+          sectorName: suffix,
         };
       });
-  }, [sectorData?.trails]);
+  }, [sectorData, fallbackSectorData]);
 
   // ── Build edit-mode metadata for the shared card ────────────────────
   // Derive trail display labels from trailOptions (includes sector context)
+  // Keep trailTitle as undefined for unselected trails (trailId === 0) so TrailRow shows "Select trail..."
   const trailsWithLabels = useMemo(
     () =>
       trails.map((t) => {
+        if (!t.trailId || t.trailId === 0) {
+          return { trailId: 0, trailTitle: undefined };
+        }
         const opt = trailOptions.find((o) => o.id === t.trailId);
         return { trailId: t.trailId, trailTitle: opt?.label ?? t.trailTitle ?? `#${t.trailId}` };
       }),
@@ -583,7 +622,17 @@ const MediaEdit = () => {
 
   // If media is connected to multiple problems, the type dropdown is read-only (can't move)
   const typeReadOnly = connectionType === 'problem' && (m?.problems ?? []).length > 1;
-  const canSave = !!photographer && !hasEmptyProblem && !hasDuplicateTime && !hasNoProblems && !hasNoTrails;
+  // Validate that a connection target is selected for the current type
+  const hasNoArea = connectionType === 'area' && !moveTarget && (!m?.areas || m.areas.length === 0);
+  const hasNoSector = connectionType === 'sector' && !moveTarget && (!m?.sectors || m.sectors.length === 0);
+  const canSave =
+    !!photographer &&
+    !hasEmptyProblem &&
+    !hasDuplicateTime &&
+    !hasNoProblems &&
+    !hasNoTrails &&
+    !hasNoArea &&
+    !hasNoSector;
 
   // ── Validation (add mode) ────────────────────────────────────────────
   const canSaveAdd =
@@ -709,7 +758,10 @@ const MediaEdit = () => {
       connectionType === 'sector'
         ? [{ sectorId: addEntityId, sectorName: addEntityName, areaName: addAreaName, trivia: item.sectorTrivia }]
         : undefined,
-    trails: connectionType === 'trail' && addTrailId > 0 ? [{ trailId: addTrailId }] : undefined,
+    trails:
+      connectionType === 'trail' && addTrailId > 0
+        ? [{ trailId: addTrailId, trailName: addEntityName || `Trail #${addTrailId}` }]
+        : undefined,
   });
 
   const buildItemCallbacks = (idx: number): MediaMetadataCallbacks => ({
