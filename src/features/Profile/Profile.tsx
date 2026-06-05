@@ -104,12 +104,15 @@ const Profile = () => {
     ),
   ).sort();
 
+  const numMedia = (kpis?.numImageTags ?? 0) + (kpis?.numVideoTags ?? 0);
+  const numCaptured = (kpis?.numImagesCreated ?? 0) + (kpis?.numVideosCreated ?? 0);
+
   const navItems = [
     { id: Page.overview, label: 'Overview', icon: LayoutDashboard },
     { id: Page.ascents, label: 'Ascents', icon: List },
     { id: Page.todo, label: 'Todo', icon: Bookmark },
-    { id: Page.media, label: 'Media', icon: Images },
-    { id: Page.captured, label: 'Captured', icon: Camera },
+    { id: Page.media, label: numMedia > 0 ? `Media (${numMedia})` : 'Media', icon: Images },
+    { id: Page.captured, label: numCaptured > 0 ? `Captured (${numCaptured})` : 'Captured', icon: Camera },
   ];
 
   return (
