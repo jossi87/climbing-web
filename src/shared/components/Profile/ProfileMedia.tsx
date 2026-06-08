@@ -22,13 +22,7 @@ const ProfileMedia = ({ userId, captured }: Props) => {
   }
 
   return (
-    <MetaContext.Provider
-      value={{
-        ...meta,
-        isAdmin: false,
-        isSuperAdmin: false,
-      }}
-    >
+    <MetaContext.Provider value={meta}>
       <Media
         pitches={null}
         media={data}

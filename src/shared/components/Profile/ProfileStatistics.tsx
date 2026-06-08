@@ -5,10 +5,10 @@ import { rowListTypeKey, type Row } from '../ProblemList/types';
 import Leaflet from '../Leaflet/Leaflet';
 import { LockSymbol, Stars } from '../../ui/Indicators';
 import { Loading } from '../../ui/StatusWidgets';
-import { numberWithCommas, useProfileAscents } from '../../../api';
+import { useProfileAscents } from '../../../api';
 import { useMeta } from '../Meta';
 import type { components } from '../../../@types/buldreinfo/swagger';
-import { AlertCircle, Check, Plus, Camera, Video, Repeat, type LucideIcon } from 'lucide-react';
+import { AlertCircle, ExternalLink } from 'lucide-react';
 import { NoPersonalGradeBadge } from '../../ui/NoPersonalGradeBadge';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
@@ -127,64 +127,60 @@ const TickListItemInner = ({ tick }: TickListItemProps) => {
 type ProfileStatisticsProps = {
   userId: number;
   view: 'overview' | 'map' | 'ascents';
-  gradeDistribution?: components['schemas']['ProfileGradeDistribution'][];
+  disciplines?: components['schemas']['ProfileDiscipline'][];
   kpis?: components['schemas']['ProfileKpis'];
 };
 
-type OverviewStatItemProps = {
-  icon: LucideIcon;
-  label: string;
-  value: number;
-};
+/** Overview sub-component — renders a card per discipline with grade distribution chart. */
+const ProfileOverview = ({ disciplines }: { disciplines: components['schemas']['ProfileDiscipline'][] }) => {
+  const currentUrl = window.location.href;
 
-/** Neutrals only: `text-slate-*` remaps under `html[data-theme="light"]` for ink on white cards. */
-const OverviewStatItem = ({ icon: Icon, label, value }: OverviewStatItemProps) => (
-  <div className='bg-surface-card group relative flex h-full w-full min-w-0 flex-col items-center justify-center overflow-hidden border border-transparent p-2 text-center transition-all duration-300 sm:p-3'>
-    <div className='light:text-slate-600 mb-1 text-slate-300 sm:mb-2'>
-      <Icon size={14} strokeWidth={2.25} aria-hidden />
-    </div>
-    <div className='mb-1 flex h-5 items-center justify-center'>
-      <span className='text-[14px] leading-none font-semibold text-slate-100 tabular-nums sm:text-[15px]'>
-        {numberWithCommas(value)}
-      </span>
-    </div>
-    <div className='type-small h-3 text-slate-400'>{label}</div>
-  </div>
-);
-
-/** Overview sub-component — only uses gradeDistribution and kpis, no extra API calls. */
-const ProfileOverview = ({
-  gradeDistribution,
-  kpis,
-  isClimbing,
-}: {
-  gradeDistribution: components['schemas']['ProfileGradeDistribution'][];
-  kpis?: components['schemas']['ProfileKpis'];
-  isClimbing: boolean;
-}) => {
-  const totalAscents = gradeDistribution.reduce((sum, g) => sum + (g.fa ?? 0) + (g.tick ?? 0), 0);
-  const totalFas = gradeDistribution.reduce((sum, g) => sum + (g.fa ?? 0), 0);
-  const totalRepeats = gradeDistribution.reduce((sum, g) => sum + (g.repeat ?? 0), 0);
+  if (!disciplines.length) {
+    return <div className='py-10 text-center text-slate-500'>No discipline data available.</div>;
+  }
 
   return (
-    <div className='space-y-4'>
-      <div
-        className={cn(
-          'bg-surface-border grid gap-px overflow-hidden rounded-xl',
-          isClimbing ? 'grid-cols-7' : 'grid-cols-6',
-        )}
-      >
-        <OverviewStatItem icon={Check} label='Ascents' value={totalAscents} />
-        <OverviewStatItem icon={Plus} label='FAs' value={totalFas} />
-        {isClimbing ? <OverviewStatItem icon={Repeat} label='Repeats' value={totalRepeats} /> : null}
-        <OverviewStatItem icon={Camera} label='Tags' value={kpis?.numImageTags ?? 0} />
-        <OverviewStatItem icon={Camera} label='Captured' value={kpis?.numImagesCreated ?? 0} />
-        <OverviewStatItem icon={Video} label='Tags' value={kpis?.numVideoTags ?? 0} />
-        <OverviewStatItem icon={Video} label='Captured' value={kpis?.numVideosCreated ?? 0} />
-      </div>
-      <div className='overflow-hidden rounded-xl'>
-        <Chart gradeDistribution={gradeDistribution} />
-      </div>
+    <div className={cn('-mx-4 grid grid-cols-1 gap-6 sm:-mx-6', disciplines.length > 1 && 'sm:grid-cols-2')}>
+      {disciplines.map((d) => {
+        const gradeDist = d.gradeDistribution ?? [];
+        const totalAscents = gradeDist.reduce((sum, g) => sum + (g.fa ?? 0) + (g.tick ?? 0), 0);
+        const totalFas = gradeDist.reduce((sum, g) => sum + (g.fa ?? 0), 0);
+        const totalTicks = gradeDist.reduce((sum, g) => sum + (g.tick ?? 0), 0);
+        const isCurrentPage = d.url && d.url === currentUrl;
+
+        return (
+          <div key={d.discipline ?? 'unknown'} className='overflow-hidden'>
+            {/* Discipline header */}
+            <div className='bg-surface-raised px-4 py-3 sm:px-5'>
+              <div className='flex min-w-0 items-center gap-2'>
+                <h3 className='type-h3 shrink-0 truncate font-semibold text-slate-100'>{d.discipline ?? 'Unknown'}</h3>
+                {d.url && !isCurrentPage && (
+                  <a
+                    href={d.url}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='inline-flex shrink-0 items-center justify-center rounded-md p-1.5 text-slate-400 transition-colors hover:bg-white/10 hover:text-slate-200'
+                    aria-label='Open external link'
+                  >
+                    <ExternalLink size={16} strokeWidth={2} />
+                  </a>
+                )}
+              </div>
+              <div className='mt-1 text-[13px] text-slate-400'>
+                <span className='tabular-nums'>
+                  <span className='font-medium text-slate-200'>{totalAscents}</span> ascents (
+                  <span className='font-medium text-slate-200'>{totalFas}</span> FA,{' '}
+                  <span className='font-medium text-slate-200'>{totalTicks}</span> ticks)
+                </span>
+              </div>
+            </div>
+            {/* Grade distribution chart */}
+            <div className='bg-surface-card px-4 py-3 sm:px-5'>
+              <Chart gradeDistribution={gradeDist} />
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };
@@ -425,11 +421,9 @@ const ProfileAscentsView = ({ userId }: { userId: number }) => {
   );
 };
 
-const ProfileStatistics = ({ userId, view, gradeDistribution, kpis }: ProfileStatisticsProps) => {
-  const { isClimbing } = useMeta();
-
+const ProfileStatistics = ({ userId, view, disciplines }: ProfileStatisticsProps) => {
   if (view === 'overview') {
-    return <ProfileOverview gradeDistribution={gradeDistribution ?? []} kpis={kpis} isClimbing={isClimbing} />;
+    return <ProfileOverview disciplines={disciplines ?? []} />;
   }
 
   if (view === 'ascents') {

@@ -92,7 +92,7 @@ const Profile = () => {
 
   const identity = profile.identity;
   const kpis = profile.kpis;
-  const gradeDistribution = profile.gradeDistribution;
+  const disciplines = profile.disciplines;
 
   const fullName = [identity?.firstname ?? '', identity?.lastname ?? ''].filter(Boolean).join(' ');
   const regions = Array.from(
@@ -189,12 +189,7 @@ const Profile = () => {
           )}
         >
           {activePage === Page.overview && (
-            <ProfileStatistics
-              userId={profileUserId}
-              view='overview'
-              gradeDistribution={gradeDistribution ?? []}
-              kpis={kpis}
-            />
+            <ProfileStatistics userId={profileUserId} view='overview' disciplines={disciplines ?? []} kpis={kpis} />
           )}
           {activePage === Page.ascents && <ProfileStatistics userId={profileUserId} view='ascents' />}
           {activePage === Page.todo && (

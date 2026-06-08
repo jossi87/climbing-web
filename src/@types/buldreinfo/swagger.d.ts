@@ -1685,6 +1685,20 @@ export type components = {
             identity?: components["schemas"]["ProfileIdentity"];
             kpis?: components["schemas"]["ProfileKpis"];
             gradeDistribution?: components["schemas"]["ProfileGradeDistribution"][];
+            disciplines?: components["schemas"]["ProfileDiscipline"][];
+        };
+        ProfileDiscipline: {
+            discipline?: string;
+            url?: string;
+            gradeDistribution?: components["schemas"]["ProfileDisciplineGradeDistribution"][];
+        };
+        ProfileDisciplineGradeDistribution: {
+            grade?: string;
+            color?: string;
+            /** Format: int32 */
+            fa?: number;
+            /** Format: int32 */
+            tick?: number;
         };
         ProfileGradeDistribution: {
             grade?: string;
@@ -2165,8 +2179,8 @@ export type components = {
             parameters?: {
                 [key: string]: string;
             };
-            wildcardSubtype?: boolean;
             wildcardType?: boolean;
+            wildcardSubtype?: boolean;
         };
         MessageBodyWorkers: Record<string, never>;
         MultiPart: {
