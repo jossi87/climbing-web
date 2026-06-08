@@ -986,14 +986,47 @@ const MediaModal = ({
                   <p className='type-label mb-2 flex items-center gap-2'>
                     <UserIcon size={12} /> Photographer
                   </p>
-                  <p className='type-body text-xs font-semibold'>{m.photographer?.name || 'Unknown'}</p>
+                  <p className='type-body text-xs font-semibold'>
+                    {m.photographer?.id ? (
+                      <Link
+                        to={`/user/${m.photographer.id}`}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='hover:text-brand inline-flex items-center gap-1 transition-colors'
+                      >
+                        {m.photographer.name}
+                        <ExternalLink size={10} strokeWidth={2} className='shrink-0 opacity-60' />
+                      </Link>
+                    ) : (
+                      m.photographer?.name || 'Unknown'
+                    )}
+                  </p>
                 </div>
                 {m.tagged && m.tagged.length > 0 && (
                   <div>
                     <p className='type-label mb-2 flex items-center gap-2'>
                       <UsersIcon size={12} /> In shot
                     </p>
-                    <p className='type-body text-xs font-semibold'>{m.tagged.map((u) => u.name).join(', ')}</p>
+                    <p className='type-body text-xs font-semibold'>
+                      {m.tagged.map((u, i) => (
+                        <span key={u.id ?? i}>
+                          {i > 0 && <span className='text-slate-500'>, </span>}
+                          {u.id ? (
+                            <Link
+                              to={`/user/${u.id}`}
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              className='hover:text-brand inline-flex items-center gap-1 transition-colors'
+                            >
+                              {u.name}
+                              <ExternalLink size={10} strokeWidth={2} className='shrink-0 opacity-60' />
+                            </Link>
+                          ) : (
+                            u.name
+                          )}
+                        </span>
+                      ))}
+                    </p>
                   </div>
                 )}
               </div>
