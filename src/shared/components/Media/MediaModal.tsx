@@ -335,6 +335,18 @@ const MediaModal = ({
   const isImage = !m?.isMovie;
   const isVideo = !!m?.isMovie;
 
+  /** Whether the embed URL is an Instagram URL (not a YouTube/Vimeo iframe embed) */
+  const isInstagramEmbed =
+    !!m.embedUrl &&
+    (() => {
+      try {
+        const host = new URL(m.embedUrl).hostname.toLowerCase();
+        return host === 'www.instagram.com' || host === 'instagram.com';
+      } catch {
+        return false;
+      }
+    })();
+
   /**
    * When the problem list sidebar is open, backdrop / empty-SVG clicks should dismiss it first.
    * {@link SvgViewer} calls `close` on SVG background clicks — that path must use this too (not raw `onClose`).
@@ -424,7 +436,7 @@ const MediaModal = ({
     isImage &&
     (orderableMedia ?? []).some((om) => mediaIdentityId(om.identity) === mediaIdentityId(m.identity));
   const hasMenuTopActions = canDrawTopo || canDrawMedia || canOrder;
-  const hasMenuBottomActions = !m.embedUrl || canRotate || canEdit || canDelete;
+  const hasMenuBottomActions = !m.embedUrl || isInstagramEmbed || canRotate || canEdit || canDelete;
 
   const attachCarouselSwipeHandlers = isMobile && carouselSize > 1 && visualViewportScale <= 1.05;
 
@@ -560,7 +572,7 @@ const MediaModal = ({
               </button>
             )}
 
-            {(isImage || (isVideo && !m.embedUrl)) && !(hasAnySvgs && pitch > 0) && (
+            {(isImage || (isVideo && (!m.embedUrl || isInstagramEmbed))) && !(hasAnySvgs && pitch > 0) && (
               <button
                 type='button'
                 onClick={() => setZoomMode(true)}
@@ -627,7 +639,7 @@ const MediaModal = ({
                   )}
                   {hasMenuTopActions && hasMenuBottomActions && <div className='bg-surface-border/50 my-2 h-px' />}
 
-                  {!m.embedUrl && (
+                  {(!m.embedUrl || isInstagramEmbed) && (
                     <button
                       type='button'
                       onClick={() =>
@@ -753,7 +765,7 @@ const MediaModal = ({
                   }}
                 />
               )
-            ) : m.embedUrl ? (
+            ) : m.embedUrl && !isInstagramEmbed ? (
               <div
                 data-modal-media-root
                 className='flex h-full min-h-0 w-full min-w-0 items-center justify-center p-0 sm:p-2'
@@ -781,6 +793,55 @@ const MediaModal = ({
                   </div>
                 </div>
               </div>
+            ) : isInstagramEmbed && isVideo ? (
+              autoPlayVideo ? (
+                <div
+                  data-modal-media-root
+                  className='flex h-full min-h-0 w-full max-w-[100vw] items-center justify-center'
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <VideoPlayer media={m} optProblemId={optProblemId} className='h-full max-h-screen w-full' />
+                </div>
+              ) : (
+                <div
+                  data-modal-media-root
+                  className='group relative flex h-full min-h-0 w-full min-w-0 cursor-pointer'
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    playVideo();
+                  }}
+                >
+                  <img
+                    className='h-full min-h-0 w-full min-w-0 object-contain opacity-90 transition-opacity group-hover:opacity-100'
+                    src={getMediaFileUrl(mediaIdentityId(m.identity), mediaIdentityVersionStamp(m.identity), false, {
+                      targetWidth: 1080,
+                    })}
+                    alt=''
+                  />
+                  <div className='pointer-events-none absolute inset-0 flex items-center justify-center'>
+                    <VideoPlayOverlayDisc size='modal' />
+                  </div>
+                </div>
+              )
+            ) : isInstagramEmbed ? (
+              <img
+                data-modal-media-root
+                className='touch-pan-pinch h-full min-h-0 w-full min-w-0 cursor-pointer object-contain select-none'
+                src={getMediaFileUrl(mediaIdentityId(m.identity), mediaIdentityVersionStamp(m.identity), false, {
+                  targetWidth: Math.min(1920, Math.max(m.width ?? 0, 1920)),
+                })}
+                srcSet={getMediaFileUrlSrcSet(
+                  mediaIdentityId(m.identity),
+                  mediaIdentityVersionStamp(m.identity),
+                  Math.max(m.width ?? 0, 1920),
+                )}
+                sizes='100vw'
+                alt=''
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!wasSwiping.current && offsetX === 0) closeSidebarOrModal();
+                }}
+              />
             ) : autoPlayVideo ? (
               <div
                 data-modal-media-root
@@ -1172,6 +1233,25 @@ const MediaModal = ({
                   <Info size={12} /> Description
                 </p>
                 <p className='type-body text-xs leading-relaxed font-semibold'>{m.description.trim()}</p>
+              </div>
+            )}
+
+            {isInstagramEmbed && m.embedUrl && (
+              <div className='border-surface-border/50 border-t pt-6'>
+                <p className='type-label mb-2 flex items-center gap-2'>
+                  <ExternalLink size={12} /> Source
+                </p>
+                <p className='type-body text-xs font-semibold'>
+                  <a
+                    href={m.embedUrl}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='hover:text-brand inline-flex items-center gap-1 break-all transition-colors'
+                  >
+                    {m.embedUrl}
+                    <ExternalLink size={10} strokeWidth={2} className='shrink-0 opacity-60' />
+                  </a>
+                </p>
               </div>
             )}
           </div>

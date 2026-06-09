@@ -191,6 +191,18 @@ const MediaEdit = () => {
   const isVideo = !!m?.isMovie;
   const hasEmbed = !!m?.embedUrl;
 
+  /** Whether the embed URL is an Instagram URL (not a YouTube/Vimeo iframe embed) */
+  const isInstagramEmbed =
+    !!m?.embedUrl &&
+    (() => {
+      try {
+        const host = new URL(m.embedUrl).hostname.toLowerCase();
+        return host === 'www.instagram.com' || host === 'instagram.com';
+      } catch {
+        return false;
+      }
+    })();
+
   const embedSrc = useMemo(() => {
     const raw = m?.embedUrl?.trim();
     if (!raw) return '';
@@ -892,8 +904,8 @@ const MediaEdit = () => {
                       connectionType={connectionType}
                     />
 
-                    {/* Thumbnail picker for videos (hidden for embedded videos) */}
-                    {isVideo && !hasEmbed && (
+                    {/* Thumbnail picker for videos (hidden for YouTube/Vimeo embeds, shown for Instagram videos which are stored in our S3) */}
+                    {isVideo && (!hasEmbed || isInstagramEmbed) && (
                       <div className='mt-3 space-y-1.5'>
                         <div className='flex items-center gap-2'>
                           <Image size={14} className='text-slate-500' />
@@ -944,7 +956,7 @@ const MediaEdit = () => {
                   </div>
                   {/* Right: Preview */}
                   <div>
-                    {hasEmbed ? (
+                    {hasEmbed && !isInstagramEmbed ? (
                       <div className='aspect-video w-full overflow-hidden rounded-xl bg-black'>
                         <iframe
                           src={embedSrc}
