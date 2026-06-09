@@ -519,6 +519,10 @@ const MediaEdit = () => {
             // Embed-only (no file)
             // Check if this is an Instagram embed (has instagramSelectedCdnUrl)
             if (item.instagramSelectedCdnUrl && meta?.isSuperAdmin) {
+              // Include thumbnailSeconds for Instagram videos
+              if (item.instagramSelectedIsVideo) {
+                body.thumbnailSeconds = Math.floor(item.thumbnailSeconds);
+              }
               // Use Instagram save endpoint for Instagram embeds
               updateTask(i, { state: 'uploading' });
               await postMediaInstagramSave(
@@ -744,6 +748,7 @@ const MediaEdit = () => {
       item.instagramSelectedCdnUrl = info.instagramSelectedCdnUrl;
       item.instagramSelectedIsVideo = info.instagramSelectedIsVideo;
       item.instagramSelectedMediaIndex = info.instagramSelectedMediaIndex;
+      item.thumbnailSeconds = info.embedMilliseconds ?? 0;
       // Pre-fill photographer
       if (meta?.authenticatedName) {
         item.photographer = { id: 0, name: meta.authenticatedName };
