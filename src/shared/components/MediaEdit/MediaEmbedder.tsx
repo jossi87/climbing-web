@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { Film, Plus, Loader2, Image, Check } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
@@ -93,6 +93,8 @@ const MediaEmbedder = ({ addMedia, stack, isSuperAdmin, getAccessToken }: Props)
   const [instagramError, setInstagramError] = useState<string | null>(null);
   /** Track which carousel items have been added (by mediaIndex) so they can be visually dimmed */
   const [selectedIndices, setSelectedIndices] = useState<Set<number>>(new Set());
+  /** Persist the base Instagram URL across multiple selections (ref, not state, so it survives setUrl('')) */
+  const instagramBaseUrlRef = useRef<string>('');
 
   const handleAdd = useCallback(async () => {
     if (!url.trim()) return;
@@ -134,6 +136,8 @@ const MediaEmbedder = ({ addMedia, stack, isSuperAdmin, getAccessToken }: Props)
           return;
         }
         // Multiple results — show list for user to choose from
+        // Store the cleaned base URL so it persists across multiple selections
+        instagramBaseUrlRef.current = stripInstagramUrlParams(url.trim());
         setInstagramItems(results);
         return;
       }
@@ -185,9 +189,8 @@ const MediaEmbedder = ({ addMedia, stack, isSuperAdmin, getAccessToken }: Props)
       // embedVideoUrl should be the original Instagram link (with index for carousel posts),
       // not the CDN URL. The CDN URL is passed via instagramSelectedCdnUrl so the server
       // can download the media. The thumbnail uses the CDN URL for preview.
-      // Strip any existing query params/hash from the URL first, then append ?img_index=N
-      // (1-based, matching Instagram's convention).
-      const baseUrl = stripInstagramUrlParams(url.trim());
+      // Use the stored base URL from the ref (survives setUrl('') across multiple selections).
+      const baseUrl = instagramBaseUrlRef.current;
       const embedUrl = baseUrl + '?img_index=' + (mediaIndex + 1);
       addMedia({
         embedVideoUrl: embedUrl,
@@ -200,7 +203,7 @@ const MediaEmbedder = ({ addMedia, stack, isSuperAdmin, getAccessToken }: Props)
       // Don't clear the list — user may want to add more items from the carousel
       setUrl('');
     },
-    [addMedia, url],
+    [addMedia],
   );
 
   const handleCancelInstagram = useCallback(() => {
