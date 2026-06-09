@@ -94,8 +94,13 @@ const MediaEmbedder = ({ addMedia, stack, isSuperAdmin, getAccessToken }: Props)
           // Single result — add directly, no selection step needed
           const item = results[0];
           if (item.cdnUrl) {
+            // embedVideoUrl should be the original Instagram link (with index for carousel posts),
+            // not the CDN URL. The CDN URL is passed via instagramSelectedCdnUrl so the server
+            // can download the media.
+            const embedUrl =
+              item.mediaIndex != null && item.mediaIndex > 0 ? url.trim() + '#' + item.mediaIndex : url.trim();
             addMedia({
-              embedVideoUrl: item.cdnUrl,
+              embedVideoUrl: embedUrl,
               embedThumbnailUrl: item.cdnUrl,
               embedMilliseconds: 0,
               instagramSelectedCdnUrl: item.cdnUrl,
@@ -151,10 +156,12 @@ const MediaEmbedder = ({ addMedia, stack, isSuperAdmin, getAccessToken }: Props)
   const handleSelectInstagram = useCallback(
     (item: InstagramMedia) => {
       if (!item.cdnUrl) return;
-      // Pass the cdnUrl as embedVideoUrl so the preview shows,
-      // and include Instagram selection info for the save flow
+      // embedVideoUrl should be the original Instagram link (with index for carousel posts),
+      // not the CDN URL. The CDN URL is passed via instagramSelectedCdnUrl so the server
+      // can download the media. The thumbnail uses the CDN URL for preview.
+      const embedUrl = item.mediaIndex != null && item.mediaIndex > 0 ? url.trim() + '#' + item.mediaIndex : url.trim();
       addMedia({
-        embedVideoUrl: item.cdnUrl,
+        embedVideoUrl: embedUrl,
         embedThumbnailUrl: item.cdnUrl,
         embedMilliseconds: 0,
         instagramSelectedCdnUrl: item.cdnUrl,
@@ -163,7 +170,7 @@ const MediaEmbedder = ({ addMedia, stack, isSuperAdmin, getAccessToken }: Props)
       setInstagramItems(null);
       setUrl('');
     },
-    [addMedia],
+    [addMedia, url],
   );
 
   const handleCancelInstagram = useCallback(() => {
