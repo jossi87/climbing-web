@@ -71,6 +71,21 @@ function isInstagramUrl(url: string): boolean {
   }
 }
 
+/**
+ * Strip query params and hash from an Instagram URL, returning the clean base URL
+ * (e.g. "https://www.instagram.com/p/DZHgtpKiPdn/").
+ */
+function stripInstagramUrlParams(url: string): string {
+  try {
+    const u = new URL(url);
+    u.search = '';
+    u.hash = '';
+    return u.toString();
+  } catch {
+    return url;
+  }
+}
+
 const MediaEmbedder = ({ addMedia, stack, isSuperAdmin, getAccessToken }: Props) => {
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
@@ -101,11 +116,11 @@ const MediaEmbedder = ({ addMedia, stack, isSuperAdmin, getAccessToken }: Props)
             // embedVideoUrl should be the original Instagram link (with index for carousel posts),
             // not the CDN URL. The CDN URL is passed via instagramSelectedCdnUrl so the server
             // can download the media.
-            // The mediaIndex from the API is 0-based; convert to 1-based for the URL fragment
-            // to match Instagram's convention (e.g. #1, #2, #3).
+            // Strip any existing query params/hash from the URL first, then append ?img_index=N
+            // (1-based, matching Instagram's convention).
+            const baseUrl = stripInstagramUrlParams(url.trim());
             const mediaIndex = item.mediaIndex ?? 0;
-            // Always append 1-based index as URL fragment for carousel posts
-            const embedUrl = url.trim() + '#' + (mediaIndex + 1);
+            const embedUrl = baseUrl + '?img_index=' + (mediaIndex + 1);
             addMedia({
               embedVideoUrl: embedUrl,
               embedThumbnailUrl: item.cdnUrl,
@@ -170,10 +185,10 @@ const MediaEmbedder = ({ addMedia, stack, isSuperAdmin, getAccessToken }: Props)
       // embedVideoUrl should be the original Instagram link (with index for carousel posts),
       // not the CDN URL. The CDN URL is passed via instagramSelectedCdnUrl so the server
       // can download the media. The thumbnail uses the CDN URL for preview.
-      // The mediaIndex from the API is 0-based; convert to 1-based for the URL fragment
-      // to match Instagram's convention (e.g. #1, #2, #3).
-      // Always append 1-based index as URL fragment for carousel posts
-      const embedUrl = url.trim() + '#' + (mediaIndex + 1);
+      // Strip any existing query params/hash from the URL first, then append ?img_index=N
+      // (1-based, matching Instagram's convention).
+      const baseUrl = stripInstagramUrlParams(url.trim());
+      const embedUrl = baseUrl + '?img_index=' + (mediaIndex + 1);
       addMedia({
         embedVideoUrl: embedUrl,
         embedThumbnailUrl: item.cdnUrl,
