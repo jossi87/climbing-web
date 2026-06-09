@@ -1306,9 +1306,10 @@ const UploadItemCard = ({
             />
           ) : item.embedVideoUrl && isInstagramVideo ? (
             // Instagram videos are MP4s — show as <video>, not iframe
+            // Use instagramSelectedCdnUrl for the video source (CDN), not embedVideoUrl (Instagram page URL)
             <video
               ref={videoRef}
-              src={item.embedVideoUrl}
+              src={item.instagramSelectedCdnUrl ?? item.embedVideoUrl}
               className='w-full rounded-xl'
               controls
               crossOrigin='anonymous'

@@ -250,9 +250,9 @@ export const designContract = {
     /** Add (+) — create entity; sky accent so it reads separately from gold **edit** actions. */
     pageHeaderIconButtonAdd:
       'border-sky-400/45 bg-sky-500/20 text-sky-300 hover:bg-sky-500/30 hover:text-sky-200 light:border-2 light:border-sky-700 light:bg-sky-100 light:text-sky-950 light:shadow-sm light:hover:border-sky-800 light:hover:bg-sky-200 light:hover:text-sky-950',
-    /** Add media (image icon) — amber (same as edit), since adding media is an edit action. */
+    /** Add media (image icon) — violet accent, distinct from amber edit and sky-blue add. */
     pageHeaderIconButtonMedia:
-      'border-amber-300/45 bg-amber-400/18 text-amber-100 hover:bg-amber-400/28 light:border-2 light:border-amber-700 light:bg-amber-100 light:text-amber-950 light:shadow-sm light:hover:border-amber-800 light:hover:bg-amber-200 light:hover:text-amber-950',
+      'border-fuchsia-300/45 bg-fuchsia-400/18 text-fuchsia-100 hover:bg-fuchsia-400/28 light:border-2 light:border-fuchsia-700 light:bg-fuchsia-100 light:text-fuchsia-950 light:shadow-sm light:hover:border-fuchsia-800 light:hover:bg-fuchsia-200 light:hover:text-fuchsia-950',
     /** Comment (chat bubble) — default neutral, no accent color. */
     pageHeaderIconButtonComment:
       'border-surface-border bg-surface-raised text-slate-300 hover:bg-surface-raised-hover hover:text-slate-200 light:border-slate-300 light:bg-slate-100 light:text-slate-600 light:shadow-sm light:hover:border-slate-400 light:hover:bg-slate-200 light:hover:text-slate-800',
