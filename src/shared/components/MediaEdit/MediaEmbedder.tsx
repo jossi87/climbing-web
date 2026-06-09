@@ -99,15 +99,18 @@ const MediaEmbedder = ({ addMedia, stack, isSuperAdmin, getAccessToken }: Props)
             // embedVideoUrl should be the original Instagram link (with index for carousel posts),
             // not the CDN URL. The CDN URL is passed via instagramSelectedCdnUrl so the server
             // can download the media.
-            const embedUrl =
-              item.mediaIndex != null && item.mediaIndex > 0 ? url.trim() + '#' + item.mediaIndex : url.trim();
+            // The mediaIndex from the API is 0-based; convert to 1-based for the URL fragment
+            // to match Instagram's convention (e.g. #1, #2, #3).
+            const mediaIndex = item.mediaIndex ?? 0;
+            // Always append 1-based index as URL fragment for carousel posts
+            const embedUrl = url.trim() + '#' + (mediaIndex + 1);
             addMedia({
               embedVideoUrl: embedUrl,
               embedThumbnailUrl: item.cdnUrl,
               embedMilliseconds: 0,
               instagramSelectedCdnUrl: item.cdnUrl,
               instagramSelectedIsVideo: item.isVideo ?? false,
-              instagramSelectedMediaIndex: item.mediaIndex ?? 0,
+              instagramSelectedMediaIndex: mediaIndex,
             });
             setUrl('');
           }
@@ -162,16 +165,20 @@ const MediaEmbedder = ({ addMedia, stack, isSuperAdmin, getAccessToken }: Props)
       // embedVideoUrl should be the original Instagram link (with index for carousel posts),
       // not the CDN URL. The CDN URL is passed via instagramSelectedCdnUrl so the server
       // can download the media. The thumbnail uses the CDN URL for preview.
-      const embedUrl = item.mediaIndex != null && item.mediaIndex > 0 ? url.trim() + '#' + item.mediaIndex : url.trim();
+      // The mediaIndex from the API is 0-based; convert to 1-based for the URL fragment
+      // to match Instagram's convention (e.g. #1, #2, #3).
+      const mediaIndex = item.mediaIndex ?? 0;
+      // Always append 1-based index as URL fragment for carousel posts
+      const embedUrl = url.trim() + '#' + (mediaIndex + 1);
       addMedia({
         embedVideoUrl: embedUrl,
         embedThumbnailUrl: item.cdnUrl,
         embedMilliseconds: 0,
         instagramSelectedCdnUrl: item.cdnUrl,
         instagramSelectedIsVideo: item.isVideo ?? false,
-        instagramSelectedMediaIndex: item.mediaIndex ?? 0,
+        instagramSelectedMediaIndex: mediaIndex,
       });
-      setInstagramItems(null);
+      // Don't clear the list — user may want to add more items from the carousel
       setUrl('');
     },
     [addMedia, url],
