@@ -16,6 +16,8 @@ type Props = {
     instagramSelectedCdnUrl?: string;
     /** Instagram-specific: whether the selected media is a video */
     instagramSelectedIsVideo?: boolean;
+    /** Instagram-specific: the media index for carousel posts */
+    instagramSelectedMediaIndex?: number;
   }) => void;
   stack?: boolean;
   /** Whether the current user is a superadmin (shows Instagram support) */
@@ -105,6 +107,7 @@ const MediaEmbedder = ({ addMedia, stack, isSuperAdmin, getAccessToken }: Props)
               embedMilliseconds: 0,
               instagramSelectedCdnUrl: item.cdnUrl,
               instagramSelectedIsVideo: item.isVideo ?? false,
+              instagramSelectedMediaIndex: item.mediaIndex ?? 0,
             });
             setUrl('');
           }
@@ -166,6 +169,7 @@ const MediaEmbedder = ({ addMedia, stack, isSuperAdmin, getAccessToken }: Props)
         embedMilliseconds: 0,
         instagramSelectedCdnUrl: item.cdnUrl,
         instagramSelectedIsVideo: item.isVideo ?? false,
+        instagramSelectedMediaIndex: item.mediaIndex ?? 0,
       });
       setInstagramItems(null);
       setUrl('');

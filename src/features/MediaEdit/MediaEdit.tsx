@@ -61,6 +61,8 @@ type UploadItem = {
   instagramSelectedCdnUrl?: string;
   /** Instagram-specific: whether the selected media is a video */
   instagramSelectedIsVideo?: boolean;
+  /** Instagram-specific: the media index for carousel posts */
+  instagramSelectedMediaIndex?: number;
 };
 
 const makeEmptyItem = (): UploadItem => ({
@@ -512,6 +514,7 @@ const MediaEdit = () => {
                 body,
                 item.instagramSelectedCdnUrl,
                 item.instagramSelectedIsVideo ?? false,
+                item.instagramSelectedMediaIndex ?? 0,
               );
               updateTask(i, { state: 'done' });
             } else {
@@ -721,12 +724,14 @@ const MediaEdit = () => {
       embedMilliseconds?: number;
       instagramSelectedCdnUrl?: string;
       instagramSelectedIsVideo?: boolean;
+      instagramSelectedMediaIndex?: number;
     }) => {
       const item = makeEmptyItem();
       item.embedVideoUrl = info.embedVideoUrl;
       item.embedThumbnailUrl = info.embedThumbnailUrl;
       item.instagramSelectedCdnUrl = info.instagramSelectedCdnUrl;
       item.instagramSelectedIsVideo = info.instagramSelectedIsVideo;
+      item.instagramSelectedMediaIndex = info.instagramSelectedMediaIndex;
       // Pre-fill photographer
       if (meta?.authenticatedName) {
         item.photographer = { id: 0, name: meta.authenticatedName };

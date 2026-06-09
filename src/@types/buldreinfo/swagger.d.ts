@@ -2202,8 +2202,8 @@ export type components = {
             parameters?: {
                 [key: string]: string;
             };
-            wildcardSubtype?: boolean;
             wildcardType?: boolean;
+            wildcardSubtype?: boolean;
         };
         MessageBodyWorkers: Record<string, never>;
         MultiPart: {
@@ -4278,6 +4278,7 @@ export interface operations {
             header?: {
                 "X-Selected-Cdn-Url"?: string;
                 "X-Selected-Is-Video"?: boolean;
+                "X-Selected-Media-Index"?: number;
             };
             path?: never;
             cookie?: never;

@@ -460,13 +460,14 @@ export function postMediaInstagramScrape(
 /**
  * Commit verified Instagram media to application storage.
  * Sends a Media payload to POST /media/instagram-save and returns the created Media.
- * Headers X-Selected-Cdn-Url and X-Selected-Is-Video are passed to avoid re-scraping.
+ * Headers X-Selected-Cdn-Url, X-Selected-Is-Video and X-Selected-Media-Index are passed to avoid re-scraping.
  */
 export function postMediaInstagramSave(
   accessToken: string | null,
   media: components['schemas']['Media'],
   selectedCdnUrl: string,
   selectedIsVideo: boolean,
+  selectedMediaIndex: number,
 ): Promise<components['schemas']['Media']> {
   const apiUrl = `/media/instagram-save`;
   return makeAuthenticatedRequest(accessToken, apiUrl, {
@@ -477,6 +478,7 @@ export function postMediaInstagramSave(
       Accept: 'application/json',
       'X-Selected-Cdn-Url': selectedCdnUrl,
       'X-Selected-Is-Video': String(selectedIsVideo),
+      'X-Selected-Media-Index': String(selectedMediaIndex),
     },
     ...invalidateQueriesAfter,
   }).then((response) => ensureOkJson(response, apiUrl, {} as components['schemas']['Media']));

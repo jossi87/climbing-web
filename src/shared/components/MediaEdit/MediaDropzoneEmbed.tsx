@@ -45,6 +45,8 @@ type Props = {
     instagramSelectedCdnUrl?: string;
     /** Instagram-specific: whether the selected media is a video */
     instagramSelectedIsVideo?: boolean;
+    /** Instagram-specific: the media index for carousel posts */
+    instagramSelectedMediaIndex?: number;
   }) => void;
   /** Optional extra content rendered below the dropzone/embed area */
   children?: ReactNode;
@@ -111,7 +113,7 @@ export const MediaDropzoneEmbed = ({ onFilesAdded, onEmbedAdded, children, isSup
   return (
     <div className='space-y-4'>
       {/* Two columns on desktop: left=dropzone, right=embed */}
-      <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
+      <div className='grid grid-cols-1 items-center gap-4 md:grid-cols-2'>
         {/* Dropzone */}
         <div
           {...getRootProps()}
