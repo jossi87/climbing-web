@@ -2,7 +2,7 @@ import { memo } from 'react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 
 type Props = {
-  gradeDistribution: components['schemas']['ProfileGradeDistribution'][];
+  gradeDistribution: components['schemas']['ProfileDisciplineGradeDistribution'][];
 };
 
 /**

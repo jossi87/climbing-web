@@ -13,6 +13,7 @@ import {
   postMediaVideoInitiate,
   postMediaVideoComplete,
   postMediaVideoEmbed,
+  postMediaInstagramSave,
   uploadToPresignedUrl,
   useArea,
   useSector,
@@ -56,6 +57,10 @@ type UploadItem = {
   /** Thumbnail picker state (for videos) */
   thumbnailSeconds: number;
   thumbnailDuration: number;
+  /** Instagram-specific: the selected CDN URL to pass as header on save */
+  instagramSelectedCdnUrl?: string;
+  /** Instagram-specific: whether the selected media is a video */
+  instagramSelectedIsVideo?: boolean;
 };
 
 const makeEmptyItem = (): UploadItem => ({
@@ -497,10 +502,24 @@ const MediaEdit = () => {
               updateTask(i, { state: 'done' });
             }
           } else {
-            // Embed-only (no file) — use the dedicated /media/video/embed endpoint
-            updateTask(i, { state: 'uploading' });
-            await postMediaVideoEmbed(token, body);
-            updateTask(i, { state: 'done' });
+            // Embed-only (no file)
+            // Check if this is an Instagram embed (has instagramSelectedCdnUrl)
+            if (item.instagramSelectedCdnUrl && meta?.isSuperAdmin) {
+              // Use Instagram save endpoint for Instagram embeds
+              updateTask(i, { state: 'uploading' });
+              await postMediaInstagramSave(
+                token,
+                body,
+                item.instagramSelectedCdnUrl,
+                item.instagramSelectedIsVideo ?? false,
+              );
+              updateTask(i, { state: 'done' });
+            } else {
+              // Use the dedicated /media/video/embed endpoint for YouTube/Vimeo
+              updateTask(i, { state: 'uploading' });
+              await postMediaVideoEmbed(token, body);
+              updateTask(i, { state: 'done' });
+            }
           }
         }
         await Promise.all([
@@ -700,10 +719,14 @@ const MediaEdit = () => {
       embedVideoUrl: string | undefined;
       embedThumbnailUrl: string | undefined;
       embedMilliseconds?: number;
+      instagramSelectedCdnUrl?: string;
+      instagramSelectedIsVideo?: boolean;
     }) => {
       const item = makeEmptyItem();
       item.embedVideoUrl = info.embedVideoUrl;
       item.embedThumbnailUrl = info.embedThumbnailUrl;
+      item.instagramSelectedCdnUrl = info.instagramSelectedCdnUrl;
+      item.instagramSelectedIsVideo = info.instagramSelectedIsVideo;
       // Pre-fill photographer
       if (meta?.authenticatedName) {
         item.photographer = { id: 0, name: meta.authenticatedName };
@@ -814,7 +837,12 @@ const MediaEdit = () => {
         {/* ── Add mode: dropzone + embed card ──────────────────────────── */}
         {isAddMode && (
           <Card>
-            <MediaDropzoneEmbed onFilesAdded={handleFilesAdded} onEmbedAdded={handleEmbedAdded} />
+            <MediaDropzoneEmbed
+              onFilesAdded={handleFilesAdded}
+              onEmbedAdded={handleEmbedAdded}
+              isSuperAdmin={meta?.isSuperAdmin}
+              getAccessToken={getAccessTokenSilently}
+            />
           </Card>
         )}
 
@@ -1184,13 +1212,19 @@ const UploadItemCard = ({
   }, [idx, onUpdate]);
 
   const isVideoItem = item.file?.type?.startsWith('video/') || !!item.embedVideoUrl;
+  const isInstagramVideo = item.instagramSelectedIsVideo === true;
 
   return (
     <Card>
       {/* Header with filename and remove button */}
       <div className='mb-3 flex items-center justify-between'>
         <span className='text-[13px] font-medium text-slate-400'>
-          {item.file?.name ?? (item.embedVideoUrl ? 'Embedded video' : `Item #${idx + 1}`)}
+          {item.file?.name ??
+            (item.instagramSelectedCdnUrl
+              ? 'Instagram video'
+              : item.embedVideoUrl
+                ? 'Embedded video'
+                : `Item #${idx + 1}`)}
         </span>
         <button
           type='button'
@@ -1213,8 +1247,8 @@ const UploadItemCard = ({
             connectionType={connectionType}
           />
 
-          {/* Thumbnail picker for videos (hidden for embedded videos) */}
-          {isVideoItem && !item.embedVideoUrl && (
+          {/* Thumbnail picker for videos (hidden for YouTube/Vimeo embeds, but shown for Instagram videos which are MP4s) */}
+          {isVideoItem && (!item.embedVideoUrl || isInstagramVideo) && (
             <div className='mt-3 space-y-1.5'>
               <div className='flex items-center gap-2'>
                 <Image size={14} className='text-slate-500' />
@@ -1261,6 +1295,15 @@ const UploadItemCard = ({
             <video
               ref={videoRef}
               src={item.preview}
+              className='w-full rounded-xl'
+              controls
+              onLoadedMetadata={handleVideoLoaded}
+            />
+          ) : item.embedVideoUrl && isInstagramVideo ? (
+            // Instagram videos are MP4s — show as <video>, not iframe
+            <video
+              ref={videoRef}
+              src={item.embedVideoUrl}
               className='w-full rounded-xl'
               controls
               onLoadedMetadata={handleVideoLoaded}

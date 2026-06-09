@@ -441,6 +441,48 @@ export function postMediaVideoEmbed(
 }
 
 /**
+ * Scrape Instagram URL metadata for frontend preview box.
+ * Sends a URL to POST /media/instagram-scrape and returns a list of InstagramMedia items.
+ */
+export function postMediaInstagramScrape(
+  accessToken: string | null,
+  url: string,
+): Promise<components['schemas']['InstagramMedia'][]> {
+  const apiUrl = `/media/instagram-scrape?url=${url}`;
+  return makeAuthenticatedRequest(accessToken, apiUrl, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+    },
+  }).then((response) => ensureOkJson(response, apiUrl, [] as components['schemas']['InstagramMedia'][]));
+}
+
+/**
+ * Commit verified Instagram media to application storage.
+ * Sends a Media payload to POST /media/instagram-save and returns the created Media.
+ * Headers X-Selected-Cdn-Url and X-Selected-Is-Video are passed to avoid re-scraping.
+ */
+export function postMediaInstagramSave(
+  accessToken: string | null,
+  media: components['schemas']['Media'],
+  selectedCdnUrl: string,
+  selectedIsVideo: boolean,
+): Promise<components['schemas']['Media']> {
+  const apiUrl = `/media/instagram-save`;
+  return makeAuthenticatedRequest(accessToken, apiUrl, {
+    method: 'POST',
+    body: JSON.stringify(media),
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      'X-Selected-Cdn-Url': selectedCdnUrl,
+      'X-Selected-Is-Video': String(selectedIsVideo),
+    },
+    ...invalidateQueriesAfter,
+  }).then((response) => ensureOkJson(response, apiUrl, {} as components['schemas']['Media']));
+}
+
+/**
  * Upload a file to a presigned S3 URL with the required x-amz-acl: public-read header.
  */
 export async function uploadToPresignedUrl(

@@ -743,6 +743,40 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/v2/media/instagram-save": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Commit verified Instagram media to application storage */
+        post: operations["postMediaInstagramSave"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/media/instagram-scrape": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Scrape Instagram URL metadata for frontend preview box */
+        post: operations["postMediaInstagramScrape"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/media/svg": {
         parameters: {
             query?: never;
@@ -1684,7 +1718,6 @@ export type components = {
         Profile: {
             identity?: components["schemas"]["ProfileIdentity"];
             kpis?: components["schemas"]["ProfileKpis"];
-            gradeDistribution?: components["schemas"]["ProfileGradeDistribution"][];
             disciplines?: components["schemas"]["ProfileDiscipline"][];
         };
         ProfileDiscipline: {
@@ -1699,16 +1732,6 @@ export type components = {
             fa?: number;
             /** Format: int32 */
             tick?: number;
-        };
-        ProfileGradeDistribution: {
-            grade?: string;
-            color?: string;
-            /** Format: int32 */
-            fa?: number;
-            /** Format: int32 */
-            tick?: number;
-            /** Format: int32 */
-            repeat?: number;
         };
         ProfileIdentity: {
             /** Format: int32 */
@@ -2179,8 +2202,8 @@ export type components = {
             parameters?: {
                 [key: string]: string;
             };
-            wildcardType?: boolean;
             wildcardSubtype?: boolean;
+            wildcardType?: boolean;
         };
         MessageBodyWorkers: Record<string, never>;
         MultiPart: {
@@ -2219,6 +2242,12 @@ export type components = {
             };
         };
         Providers: Record<string, never>;
+        InstagramMedia: {
+            cdnUrl?: string;
+            isVideo?: boolean;
+            /** Format: int32 */
+            mediaIndex?: number;
+        };
         VideoInitResponse: {
             /** Format: int32 */
             id?: number;
@@ -4211,6 +4240,109 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Media"];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    postMediaInstagramSave: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-Selected-Cdn-Url"?: string;
+                "X-Selected-Is-Video"?: boolean;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["Media"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Media"];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    postMediaInstagramScrape: {
+        parameters: {
+            query?: {
+                url?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InstagramMedia"][];
                 };
             };
             /** @description Invalid request parameters. */

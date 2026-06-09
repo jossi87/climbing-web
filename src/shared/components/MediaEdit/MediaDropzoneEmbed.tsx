@@ -2,7 +2,7 @@ import { useState, useCallback, type ReactNode } from 'react';
 import { useDropzone, ErrorCode, type FileRejection } from 'react-dropzone';
 import { Upload, Loader2, AlertCircle, X } from 'lucide-react';
 import { cn } from '../../../lib/utils';
-import VideoEmbedder from './VideoEmbedder';
+import MediaEmbedder from './MediaEmbedder';
 
 const MAX_IMAGE_SIZE_MB = 100;
 const MAX_VIDEO_SIZE_MB = 800;
@@ -41,12 +41,20 @@ type Props = {
     embedVideoUrl: string | undefined;
     embedThumbnailUrl: string | undefined;
     embedMilliseconds?: number;
+    /** Instagram-specific: the selected CDN URL to pass as header on save */
+    instagramSelectedCdnUrl?: string;
+    /** Instagram-specific: whether the selected media is a video */
+    instagramSelectedIsVideo?: boolean;
   }) => void;
   /** Optional extra content rendered below the dropzone/embed area */
   children?: ReactNode;
+  /** Whether the current user is a superadmin (shows Instagram support) */
+  isSuperAdmin?: boolean;
+  /** Access token for authenticated API calls (needed for Instagram scraping) */
+  getAccessToken?: () => Promise<string>;
 };
 
-export const MediaDropzoneEmbed = ({ onFilesAdded, onEmbedAdded, children }: Props) => {
+export const MediaDropzoneEmbed = ({ onFilesAdded, onEmbedAdded, children, isSuperAdmin, getAccessToken }: Props) => {
   const [isConverting, setIsConverting] = useState(false);
   const [rejections, setRejections] = useState<FileRejection[]>([]);
 
@@ -139,7 +147,7 @@ export const MediaDropzoneEmbed = ({ onFilesAdded, onEmbedAdded, children }: Pro
         </div>
 
         {/* Embed — input on top, Add button below */}
-        <VideoEmbedder addMedia={onEmbedAdded} stack />
+        <MediaEmbedder addMedia={onEmbedAdded} stack isSuperAdmin={isSuperAdmin} getAccessToken={getAccessToken} />
       </div>
 
       {/* Rejection alerts */}

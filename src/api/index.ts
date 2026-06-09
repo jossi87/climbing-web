@@ -16,6 +16,8 @@ export {
   postMediaVideoInitiate,
   postMediaVideoComplete,
   postMediaVideoEmbed,
+  postMediaInstagramScrape,
+  postMediaInstagramSave,
   uploadToPresignedUrl,
   putMedia,
   putMediaJpegRotate,
