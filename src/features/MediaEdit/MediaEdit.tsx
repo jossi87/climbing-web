@@ -1300,6 +1300,25 @@ const UploadItemCard = ({
           {/* Connected stuff in left column (unless it needs full width for timestamps) */}
           {!showConnectedFullWidth && (
             <div className='mt-4'>
+              {/* Add button for problems — on the same line as the section title */}
+              {connectionType === 'problem' && (
+                <div className='mb-3 flex items-center gap-3'>
+                  <span className='text-sm font-medium whitespace-nowrap text-slate-400'>Connected to problem(s)</span>
+                  <button
+                    type='button'
+                    onClick={() => {
+                      const newProblems = [
+                        ...metadata.problems,
+                        { problemId: 0, problemName: '', problemGrade: '', milliseconds: 0 },
+                      ];
+                      callbacks.onProblemsChange(newProblems);
+                    }}
+                    className='bg-surface-raised hover:bg-surface-raised-hover inline-flex items-center gap-1 rounded-lg border border-white/12 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:border-white/22'
+                  >
+                    <Plus size={12} /> Add
+                  </button>
+                </div>
+              )}
               <MediaMetadataCard
                 variant='connected'
                 metadata={metadata}
@@ -1364,6 +1383,23 @@ const UploadItemCard = ({
       {/* Full-width connected problems with timestamps (only for video + problem) */}
       {showConnectedFullWidth && (
         <div className='mt-4'>
+          {/* Add button for problems */}
+          <div className='mb-3 flex items-center gap-3'>
+            <span className='text-sm font-medium whitespace-nowrap text-slate-400'>Connected to problem(s)</span>
+            <button
+              type='button'
+              onClick={() => {
+                const newProblems = [
+                  ...metadata.problems,
+                  { problemId: 0, problemName: '', problemGrade: '', milliseconds: 0 },
+                ];
+                callbacks.onProblemsChange(newProblems);
+              }}
+              className='bg-surface-raised hover:bg-surface-raised-hover inline-flex items-center gap-1 rounded-lg border border-white/12 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:border-white/22'
+            >
+              <Plus size={12} /> Add
+            </button>
+          </div>
           <MediaMetadataCard
             variant='connected'
             metadata={metadata}
