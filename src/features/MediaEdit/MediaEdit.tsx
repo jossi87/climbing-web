@@ -866,7 +866,8 @@ const MediaEdit = () => {
         {/* ── Add mode: one card per upload item ──────────────────────── */}
         {isAddMode &&
           uploadItems.map((item, idx) => {
-            const isVideoItem = item.file?.type?.startsWith('video/') || !!item.embedVideoUrl;
+            const isVideoItem =
+              item.file?.type?.startsWith('video/') || item.instagramSelectedIsVideo === true || !!item.embedVideoUrl;
             const showConnectedFullWidth = isVideoItem && connectionType === 'problem';
             return (
               <UploadItemCard
@@ -1228,8 +1229,10 @@ const UploadItemCard = ({
     onUpdate(idx, { thumbnailSeconds: target });
   }, [idx, onUpdate]);
 
-  const isVideoItem = item.file?.type?.startsWith('video/') || !!item.embedVideoUrl;
+  const isVideoItem =
+    item.file?.type?.startsWith('video/') || item.instagramSelectedIsVideo === true || !!item.embedVideoUrl;
   const isInstagramVideo = item.instagramSelectedIsVideo === true;
+  const isInstagramImage = !!item.instagramSelectedCdnUrl && !isInstagramVideo;
 
   return (
     <Card>
@@ -1238,7 +1241,9 @@ const UploadItemCard = ({
         <span className='text-[13px] font-medium text-slate-400'>
           {item.file?.name ??
             (item.instagramSelectedCdnUrl
-              ? 'Instagram video'
+              ? item.instagramSelectedIsVideo
+                ? 'Instagram video'
+                : 'Instagram image'
               : item.embedVideoUrl
                 ? 'Embedded video'
                 : `Item #${idx + 1}`)}
@@ -1315,6 +1320,14 @@ const UploadItemCard = ({
               className='w-full rounded-xl'
               controls
               onLoadedMetadata={handleVideoLoaded}
+            />
+          ) : isInstagramImage ? (
+            // Instagram images — show as <img> using the CDN URL, not as iframe
+            <img
+              src={item.instagramSelectedCdnUrl}
+              alt={item.description ?? ''}
+              className='w-full rounded-xl'
+              referrerPolicy='no-referrer'
             />
           ) : item.embedVideoUrl && isInstagramVideo ? (
             // Instagram videos are MP4s — show as <video>, not iframe

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Film, Plus, Loader2, Image } from 'lucide-react';
+import { Film, Plus, Loader2, Image, Check } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 import { postMediaInstagramScrape } from '../../../api';
@@ -76,6 +76,8 @@ const MediaEmbedder = ({ addMedia, stack, isSuperAdmin, getAccessToken }: Props)
   const [loading, setLoading] = useState(false);
   const [instagramItems, setInstagramItems] = useState<InstagramMedia[] | null>(null);
   const [instagramError, setInstagramError] = useState<string | null>(null);
+  /** Track which carousel items have been added (by mediaIndex) so they can be visually dimmed */
+  const [selectedIndices, setSelectedIndices] = useState<Set<number>>(new Set());
 
   const handleAdd = useCallback(async () => {
     if (!url.trim()) return;
@@ -162,12 +164,14 @@ const MediaEmbedder = ({ addMedia, stack, isSuperAdmin, getAccessToken }: Props)
   const handleSelectInstagram = useCallback(
     (item: InstagramMedia) => {
       if (!item.cdnUrl) return;
+      const mediaIndex = item.mediaIndex ?? 0;
+      // Mark this item as selected so it gets visually dimmed
+      setSelectedIndices((prev) => new Set(prev).add(mediaIndex));
       // embedVideoUrl should be the original Instagram link (with index for carousel posts),
       // not the CDN URL. The CDN URL is passed via instagramSelectedCdnUrl so the server
       // can download the media. The thumbnail uses the CDN URL for preview.
       // The mediaIndex from the API is 0-based; convert to 1-based for the URL fragment
       // to match Instagram's convention (e.g. #1, #2, #3).
-      const mediaIndex = item.mediaIndex ?? 0;
       // Always append 1-based index as URL fragment for carousel posts
       const embedUrl = url.trim() + '#' + (mediaIndex + 1);
       addMedia({
@@ -212,6 +216,7 @@ const MediaEmbedder = ({ addMedia, stack, isSuperAdmin, getAccessToken }: Props)
             setUrl(e.target.value);
             setInstagramError(null);
             setInstagramItems(null);
+            setSelectedIndices(new Set());
           }}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
@@ -242,35 +247,48 @@ const MediaEmbedder = ({ addMedia, stack, isSuperAdmin, getAccessToken }: Props)
             Select Instagram post(s) to add
           </div>
           <div className='flex flex-wrap gap-3'>
-            {instagramItems.map((item, idx) => (
-              <div key={idx} className='flex flex-col items-center gap-2'>
-                {item.cdnUrl &&
-                  (item.isVideo ? (
-                    <video
-                      src={item.cdnUrl}
-                      className='h-24 w-24 rounded-lg object-cover'
-                      controls
-                      crossOrigin='anonymous'
-                      {...({ referrerPolicy: 'no-referrer' } as React.HTMLAttributes<HTMLVideoElement>)}
-                    />
-                  ) : (
-                    <img
-                      src={item.cdnUrl}
-                      alt={`Instagram post ${idx + 1}`}
-                      className='h-24 w-24 rounded-lg object-cover'
-                      referrerPolicy='no-referrer'
-                    />
-                  ))}
-                <button
-                  type='button'
-                  onClick={() => handleSelectInstagram(item)}
-                  className='inline-flex items-center gap-1 rounded-lg bg-emerald-400 px-3 py-1.5 text-xs font-semibold text-slate-950 transition-colors hover:bg-emerald-300'
+            {instagramItems.map((item, idx) => {
+              const mediaIndex = item.mediaIndex ?? 0;
+              const isSelected = selectedIndices.has(mediaIndex);
+              return (
+                <div
+                  key={idx}
+                  className={cn('flex flex-col items-center gap-2 transition-opacity', isSelected && 'opacity-40')}
                 >
-                  <Plus size={12} />
-                  Add
-                </button>
-              </div>
-            ))}
+                  {item.cdnUrl &&
+                    (item.isVideo ? (
+                      <video
+                        src={item.cdnUrl}
+                        className='h-24 w-24 rounded-lg object-cover'
+                        controls
+                        crossOrigin='anonymous'
+                        {...({ referrerPolicy: 'no-referrer' } as React.HTMLAttributes<HTMLVideoElement>)}
+                      />
+                    ) : (
+                      <img
+                        src={item.cdnUrl}
+                        alt={`Instagram post ${idx + 1}`}
+                        className='h-24 w-24 rounded-lg object-cover'
+                        referrerPolicy='no-referrer'
+                      />
+                    ))}
+                  <button
+                    type='button'
+                    onClick={() => handleSelectInstagram(item)}
+                    disabled={isSelected}
+                    className={cn(
+                      'inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors',
+                      isSelected
+                        ? 'bg-surface-raised cursor-not-allowed text-slate-500'
+                        : 'bg-emerald-400 text-slate-950 hover:bg-emerald-300',
+                    )}
+                  >
+                    {isSelected ? <Check size={12} /> : <Plus size={12} />}
+                    {isSelected ? 'Added' : 'Add'}
+                  </button>
+                </div>
+              );
+            })}
           </div>
           <button
             type='button'
