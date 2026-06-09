@@ -1311,6 +1311,8 @@ const UploadItemCard = ({
               src={item.embedVideoUrl}
               className='w-full rounded-xl'
               controls
+              crossOrigin='anonymous'
+              {...({ referrerPolicy: 'no-referrer' } as React.HTMLAttributes<HTMLVideoElement>)}
               onLoadedMetadata={handleVideoLoaded}
             />
           ) : item.embedVideoUrl ? (

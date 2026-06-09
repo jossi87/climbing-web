@@ -239,12 +239,19 @@ const MediaEmbedder = ({ addMedia, stack, isSuperAdmin, getAccessToken }: Props)
               <div key={idx} className='flex flex-col items-center gap-2'>
                 {item.cdnUrl &&
                   (item.isVideo ? (
-                    <video src={item.cdnUrl} className='h-24 w-24 rounded-lg object-cover' controls />
+                    <video
+                      src={item.cdnUrl}
+                      className='h-24 w-24 rounded-lg object-cover'
+                      controls
+                      crossOrigin='anonymous'
+                      {...({ referrerPolicy: 'no-referrer' } as React.HTMLAttributes<HTMLVideoElement>)}
+                    />
                   ) : (
                     <img
                       src={item.cdnUrl}
                       alt={`Instagram post ${idx + 1}`}
                       className='h-24 w-24 rounded-lg object-cover'
+                      referrerPolicy='no-referrer'
                     />
                   ))}
                 <button
