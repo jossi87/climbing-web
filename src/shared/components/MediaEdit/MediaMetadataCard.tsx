@@ -340,6 +340,7 @@ export const MediaMetadataCard = ({
                     onPitchChange={(pitch) => updateProblemPitch(i, pitch)}
                     onTriviaChange={(trivia) => updateProblemTrivia(i, trivia)}
                     onRemove={() => removeProblem(i)}
+                    autoFocus={i === metadata.problems.length - 1 && !p.problemId}
                   />
                 ))}
               </div>
