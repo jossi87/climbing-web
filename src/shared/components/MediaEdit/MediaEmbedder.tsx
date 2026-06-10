@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
-import { Film, Plus, Loader2, Image, Check } from 'lucide-react';
+import { Link, Plus, Loader2, Image, Check } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 import { postMediaInstagramScrape } from '../../../api';
@@ -219,7 +219,7 @@ const MediaEmbedder = ({ addMedia, stack, getAccessToken }: Props) => {
       )}
     >
       <div className='flex items-center gap-2'>
-        <Film size={16} className='shrink-0 text-slate-400' aria-hidden />
+        <Link size={16} className='shrink-0 text-slate-400' aria-hidden />
         <input
           type='text'
           placeholder={placeholder}
@@ -254,6 +254,14 @@ const MediaEmbedder = ({ addMedia, stack, getAccessToken }: Props) => {
           Add
         </button>
       </div>
+
+      {/* Loading indicator for Instagram scraping (can take 30-40 seconds) */}
+      {loading && isInstagramUrl(url) && !instagramItems && (
+        <div className='mt-2 flex items-center gap-2 text-xs text-slate-400'>
+          <Loader2 size={14} className='animate-spin' />
+          <span>Scraping Instagram post… this may take up to a minute</span>
+        </div>
+      )}
 
       {/* Instagram items list — user selects which post(s) to add */}
       {instagramItems && instagramItems.length > 0 && (
