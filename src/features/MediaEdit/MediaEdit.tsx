@@ -444,7 +444,15 @@ const MediaEdit = () => {
     // Build task list for progress dialog (add mode only, when there are actual uploads)
     if (isAddMode) {
       const tasks: UploadTask[] = uploadItems.map((item, i) => {
-        const label = item.file ? item.file.name : item.embedVideoUrl ? 'Embedded video' : `Media #${i + 1}`;
+        const label = item.file
+          ? item.file.name
+          : item.instagramSelectedCdnUrl
+            ? item.instagramSelectedIsVideo
+              ? 'Instagram video'
+              : 'Instagram image'
+            : item.embedVideoUrl
+              ? 'Embedded video'
+              : `Media #${i + 1}`;
         return { label, state: 'pending' as const };
       });
       setUploadTasks(tasks);
@@ -518,7 +526,7 @@ const MediaEdit = () => {
           } else {
             // Embed-only (no file)
             // Check if this is an Instagram embed (has instagramSelectedCdnUrl)
-            if (item.instagramSelectedCdnUrl && meta?.isSuperAdmin) {
+            if (item.instagramSelectedCdnUrl) {
               // Include thumbnailSeconds for Instagram videos
               if (item.instagramSelectedIsVideo) {
                 body.thumbnailSeconds = Math.floor(item.thumbnailSeconds);
@@ -862,7 +870,6 @@ const MediaEdit = () => {
             <MediaDropzoneEmbed
               onFilesAdded={handleFilesAdded}
               onEmbedAdded={handleEmbedAdded}
-              isSuperAdmin={meta?.isSuperAdmin}
               getAccessToken={getAccessTokenSilently}
             />
           </Card>
@@ -871,8 +878,14 @@ const MediaEdit = () => {
         {/* ── Add mode: one card per upload item ──────────────────────── */}
         {isAddMode &&
           uploadItems.map((item, idx) => {
+            // An item is a video if:
+            // - It's a file upload with video MIME type, OR
+            // - It's an Instagram item explicitly marked as video, OR
+            // - It's a YouTube/Vimeo embed (has embedVideoUrl but no instagramSelectedCdnUrl)
             const isVideoItem =
-              item.file?.type?.startsWith('video/') || item.instagramSelectedIsVideo === true || !!item.embedVideoUrl;
+              item.file?.type?.startsWith('video/') ||
+              item.instagramSelectedIsVideo === true ||
+              (!!item.embedVideoUrl && !item.instagramSelectedCdnUrl);
             const showConnectedFullWidth = isVideoItem && connectionType === 'problem';
             return (
               <UploadItemCard
@@ -1234,8 +1247,14 @@ const UploadItemCard = ({
     onUpdate(idx, { thumbnailSeconds: target });
   }, [idx, onUpdate]);
 
+  // An item is a video if:
+  // - It's a file upload with video MIME type, OR
+  // - It's an Instagram item explicitly marked as video, OR
+  // - It's a YouTube/Vimeo embed (has embedVideoUrl but no instagramSelectedCdnUrl)
   const isVideoItem =
-    item.file?.type?.startsWith('video/') || item.instagramSelectedIsVideo === true || !!item.embedVideoUrl;
+    item.file?.type?.startsWith('video/') ||
+    item.instagramSelectedIsVideo === true ||
+    (!!item.embedVideoUrl && !item.instagramSelectedCdnUrl);
   const isInstagramVideo = item.instagramSelectedIsVideo === true;
   const isInstagramImage = !!item.instagramSelectedCdnUrl && !isInstagramVideo;
 

@@ -20,8 +20,6 @@ type Props = {
     instagramSelectedMediaIndex?: number;
   }) => void;
   stack?: boolean;
-  /** Whether the current user is a superadmin (shows Instagram support) */
-  isSuperAdmin?: boolean;
   /** Access token for authenticated API calls (needed for Instagram scraping) */
   getAccessToken?: () => Promise<string>;
 };
@@ -86,7 +84,7 @@ function stripInstagramUrlParams(url: string): string {
   }
 }
 
-const MediaEmbedder = ({ addMedia, stack, isSuperAdmin, getAccessToken }: Props) => {
+const MediaEmbedder = ({ addMedia, stack, getAccessToken }: Props) => {
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [instagramItems, setInstagramItems] = useState<InstagramMedia[] | null>(null);
@@ -103,8 +101,8 @@ const MediaEmbedder = ({ addMedia, stack, isSuperAdmin, getAccessToken }: Props)
     setInstagramItems(null);
 
     try {
-      // Instagram URL handling for superadmins
-      if (isSuperAdmin && isInstagramUrl(url) && getAccessToken) {
+      // Instagram URL handling (available to all authenticated users)
+      if (isInstagramUrl(url) && getAccessToken) {
         const token = await getAccessToken();
         const results = await postMediaInstagramScrape(token, url.trim());
         if (results.length === 0) {
@@ -178,7 +176,7 @@ const MediaEmbedder = ({ addMedia, stack, isSuperAdmin, getAccessToken }: Props)
     } finally {
       setLoading(false);
     }
-  }, [url, addMedia, isSuperAdmin, getAccessToken]);
+  }, [url, addMedia, getAccessToken]);
 
   const handleSelectInstagram = useCallback(
     (item: InstagramMedia) => {
@@ -211,7 +209,7 @@ const MediaEmbedder = ({ addMedia, stack, isSuperAdmin, getAccessToken }: Props)
     setInstagramError(null);
   }, []);
 
-  const placeholder = isSuperAdmin ? 'YouTube / Vimeo / Instagram URL…' : 'YouTube / Vimeo URL…';
+  const placeholder = 'YouTube / Vimeo / Instagram URL…';
 
   return (
     <div

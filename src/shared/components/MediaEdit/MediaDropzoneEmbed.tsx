@@ -50,13 +50,11 @@ type Props = {
   }) => void;
   /** Optional extra content rendered below the dropzone/embed area */
   children?: ReactNode;
-  /** Whether the current user is a superadmin (shows Instagram support) */
-  isSuperAdmin?: boolean;
   /** Access token for authenticated API calls (needed for Instagram scraping) */
   getAccessToken?: () => Promise<string>;
 };
 
-export const MediaDropzoneEmbed = ({ onFilesAdded, onEmbedAdded, children, isSuperAdmin, getAccessToken }: Props) => {
+export const MediaDropzoneEmbed = ({ onFilesAdded, onEmbedAdded, children, getAccessToken }: Props) => {
   const [isConverting, setIsConverting] = useState(false);
   const [rejections, setRejections] = useState<FileRejection[]>([]);
 
@@ -149,7 +147,7 @@ export const MediaDropzoneEmbed = ({ onFilesAdded, onEmbedAdded, children, isSup
         </div>
 
         {/* Embed — input on top, Add button below */}
-        <MediaEmbedder addMedia={onEmbedAdded} stack isSuperAdmin={isSuperAdmin} getAccessToken={getAccessToken} />
+        <MediaEmbedder addMedia={onEmbedAdded} stack getAccessToken={getAccessToken} />
       </div>
 
       {/* Rejection alerts */}
