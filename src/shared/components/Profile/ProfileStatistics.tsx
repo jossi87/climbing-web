@@ -146,7 +146,10 @@ const ProfileOverview = ({ disciplines }: { disciplines: components['schemas']['
         const totalAscents = gradeDist.reduce((sum, g) => sum + (g.fa ?? 0) + (g.tick ?? 0), 0);
         const totalFas = gradeDist.reduce((sum, g) => sum + (g.fa ?? 0), 0);
         const totalTicks = gradeDist.reduce((sum, g) => sum + (g.tick ?? 0), 0);
-        const isCurrentPage = d.url && d.url === currentUrl;
+        // Normalize both URLs by stripping trailing slash and known tab segments (/overview, /ascents, etc.)
+        // so that /user/1 and /user/1/overview are treated as the same page.
+        const normalizeUrl = (url: string) => url.replace(/\/?(overview|ascents|todo|media|captured|map)?\/?$/, '');
+        const isCurrentPage = !!d.url && normalizeUrl(d.url) === normalizeUrl(currentUrl);
 
         return (
           <div key={d.discipline ?? 'unknown'} className='overflow-hidden'>
