@@ -228,10 +228,14 @@ const Media = ({
       action: () => executeMediaAction((token) => deleteMedia(token, mediaIdentityId(m.identity))),
     });
   };
-  // Strip invalid media segment from URL when the media ID doesn't match any item in the list
-  // (e.g. deleted image). Must be in an effect to avoid calling navigate() during render.
+  // When the URL contains a media segment that doesn't match any item in the list
+  // (e.g. deleted image), strip the invalid segment so subsequent clicks do not
+  // produce a double-segment URL. Only runs when media data first loads.
+  const mediaLoadedRef = useRef(false);
   useEffect(() => {
-    if (!mediaId || !media) return;
+    if (!media || mediaLoadedRef.current) return;
+    mediaLoadedRef.current = true;
+    if (!mediaId) return;
     const found = media.find((x) => mediaIdentityId(x.identity) === mediaId);
     if (found) return;
     const basePath = stripTabSegmentFromPath(location.pathname);
@@ -240,7 +244,7 @@ const Media = ({
     if (last === String(mediaId)) {
       navigate(basePath.slice(0, lastSlash), { replace: true });
     }
-  }, [mediaId, media, location.pathname, navigate]);
+  }, [media, mediaId, location.pathname, navigate]);
 
   if (isLoading) return <Loading />;
   if (mediaId && media) {
