@@ -35,9 +35,14 @@ type Props = Pick<ComponentProps<typeof MediaModal>, 'optProblemId'> & {
   /** Denser grid than `compactTiles` (trivia on area/sector/problem). */
   triviaTiles?: boolean;
 };
+/** Tab path segments on `/area`, `/problem`, and `/sector` share the same URL slot as numeric media ids. */
+const AREA_PROBLEM_SECTOR_TAB_SEGMENTS = new Set(['overview', 'map', 'distribution', 'top', 'todo', 'activity']);
+
 const useIds = () => {
   const { mediaId, pitch, segment } = useParams();
-  const raw = segment ?? mediaId;
+  // segment can be either a media ID (numeric, from /problem/:id/:mediaId) or a tab name (from /sector/:id/:tab/:mediaId).
+  // When segment is numeric, use it as the media ID. Otherwise fall back to the mediaId param.
+  const raw = segment && /^\d+$/.test(segment) ? segment : mediaId;
   const mediaIdNum = raw && /^\d+$/.test(String(raw)) ? +raw : 0;
   return { mediaId: mediaIdNum, pitch: pitch ? +pitch : 0 };
 };
@@ -137,19 +142,33 @@ const Media = ({
       const segments = pathname.split('/').filter(Boolean);
       const lastSegment = segments.length > 0 ? segments[segments.length - 1] : '';
       const lastIsNumeric = /^\d+$/.test(lastSegment);
-      // Determine if the URL already has a media ID in it.
-      // A numeric last segment is a media ID only when there are 3+ segments
-      // (e.g. /problem/5162/21682, /user/1/media/38926).
-      // With 2 segments (e.g. /problem/5162) the numeric segment is the entity ID, not a media ID.
-      // If the last segment is a known tab/page name (e.g. "media", "overview"),
-      // append the new media ID after it.
-      // If the last segment is numeric AND there are 3+ segments (a media ID), replace it.
-      // Otherwise append the new media ID.
-      const hasMediaSegment = segments.length >= 3 && lastIsNumeric;
-      const url =
-        hasMediaSegment || prevMediaId
-          ? `/${segments.slice(0, -1).join('/')}/${mediaIdentityId(newM.identity)}`
-          : `${pathname}/${mediaIdentityId(newM.identity)}`;
+      const lastIsTab = AREA_PROBLEM_SECTOR_TAB_SEGMENTS.has(lastSegment);
+      // Determine the URL for the media modal.
+      // On /problem/, /sector/, /area/ paths:
+      //   - If the last segment is a known tab name (e.g. "map", "overview"), strip it and replace with the media ID.
+      //     This way /sector/3541/map → /sector/3541/42371, and closing goes back to /sector/3541/map via navigate(-1).
+      //   - If the last segment is numeric (a media ID), replace it (swipe between images).
+      //   - Otherwise append the media ID.
+      // On /user/ paths: always append the media ID after the page name.
+      //   /user/1/media → /user/1/media/38926
+      const isAreaProblemSector =
+        pathname.startsWith('/problem/') || pathname.startsWith('/sector/') || pathname.startsWith('/area/');
+      let url: string;
+      if (isAreaProblemSector && lastIsTab) {
+        // Strip the tab name (e.g. "map", "overview") and replace with the media ID.
+        // /sector/3541/map → /sector/3541/42371
+        url = `/${segments.slice(0, -1).join('/')}/${mediaIdentityId(newM.identity)}`;
+      } else if (lastIsNumeric && segments.length >= 3) {
+        // The last segment is a numeric media ID (3+ segments), replace it.
+        // /problem/5162/21682 → /problem/5162/21683
+        url = `/${segments.slice(0, -1).join('/')}/${mediaIdentityId(newM.identity)}`;
+      } else if (prevMediaId) {
+        // Carousel swipe: replace the last segment (which is the previous media ID)
+        url = `/${segments.slice(0, -1).join('/')}/${mediaIdentityId(newM.identity)}`;
+      } else {
+        // Append the media ID
+        url = `${pathname}/${mediaIdentityId(newM.identity)}`;
+      }
       setM(newM);
       /** Push on first open so browser Back closes the modal; replace when swapping media so swipes do not stack history. */
       const isCarousel = !!prevMediaId;
