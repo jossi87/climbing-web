@@ -146,13 +146,36 @@ const Media = ({
     }
   }, [mediaId]);
 
+  // When the URL contains a numeric segment that doesn't match any item in the media list
+  // (e.g. deleted image or invalid media ID), strip the invalid segment.
+  useEffect(() => {
+    if (!media || !mediaId) return;
+    const found = media.find((x) => mediaIdentityId(x.identity) === mediaId);
+    if (found) return;
+    const basePath = stripTabSegmentFromPath(location.pathname);
+    const segments = basePath.split('/').filter(Boolean);
+    if (segments.length >= 3) {
+      navigate(`/${segments.slice(0, -1).join('/')}`, { replace: true });
+    }
+  }, [media, mediaId, location.pathname, navigate]);
+
   const openModal = useCallback(
     (newM: MediaItem) => {
       const prevMediaId = m ? mediaIdentityId(m.identity) : 0;
       const basePath = stripTabSegmentFromPath(location.pathname);
-      const url = prevMediaId
-        ? location.pathname.replace(prevMediaId.toString(), String(mediaIdentityId(newM.identity)))
-        : `${basePath}/${mediaIdentityId(newM.identity)}`;
+      // Count path segments to determine if a media ID is already present.
+      // /problem/5162       → segments: ['problem', '5162']           → no media segment
+      // /problem/5162/21682 → segments: ['problem', '5162', '21682'] → has media segment
+      // /sector/123/456     → segments: ['sector', '123', '456']     → has media segment
+      // /area/123/456       → segments: ['area', '123', '456']       → has media segment
+      const segments = basePath.split('/').filter(Boolean);
+      const hasMediaSegment = segments.length >= 3;
+      // When a media ID is already in the URL (either from a previous modal open or a stale/deleted media segment),
+      // replace the last segment. Otherwise append the new media ID.
+      const url =
+        hasMediaSegment || prevMediaId
+          ? `/${segments.slice(0, -1).join('/')}/${mediaIdentityId(newM.identity)}`
+          : `${basePath}/${mediaIdentityId(newM.identity)}`;
       setM(newM);
       /** Push on first open so browser Back closes the modal; replace when swapping media so swipes do not stack history. */
       const isCarousel = !!prevMediaId;
@@ -228,23 +251,6 @@ const Media = ({
       action: () => executeMediaAction((token) => deleteMedia(token, mediaIdentityId(m.identity))),
     });
   };
-  // When the URL contains a media segment that doesn't match any item in the list
-  // (e.g. deleted image), strip the invalid segment so subsequent clicks do not
-  // produce a double-segment URL. Only runs when media data first loads.
-  const mediaLoadedRef = useRef(false);
-  useEffect(() => {
-    if (!media || mediaLoadedRef.current) return;
-    mediaLoadedRef.current = true;
-    if (!mediaId) return;
-    const found = media.find((x) => mediaIdentityId(x.identity) === mediaId);
-    if (found) return;
-    const basePath = stripTabSegmentFromPath(location.pathname);
-    const lastSlash = basePath.lastIndexOf('/');
-    const last = lastSlash > 0 ? basePath.slice(lastSlash + 1) : '';
-    if (last === String(mediaId)) {
-      navigate(basePath.slice(0, lastSlash), { replace: true });
-    }
-  }, [media, mediaId, location.pathname, navigate]);
 
   if (isLoading) return <Loading />;
   if (mediaId && media) {
