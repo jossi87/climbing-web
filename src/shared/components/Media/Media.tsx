@@ -228,6 +228,20 @@ const Media = ({
       action: () => executeMediaAction((token) => deleteMedia(token, mediaIdentityId(m.identity))),
     });
   };
+  // Strip invalid media segment from URL when the media ID doesn't match any item in the list
+  // (e.g. deleted image). Must be in an effect to avoid calling navigate() during render.
+  useEffect(() => {
+    if (!mediaId || !media) return;
+    const found = media.find((x) => mediaIdentityId(x.identity) === mediaId);
+    if (found) return;
+    const basePath = stripTabSegmentFromPath(location.pathname);
+    const lastSlash = basePath.lastIndexOf('/');
+    const last = lastSlash > 0 ? basePath.slice(lastSlash + 1) : '';
+    if (last === String(mediaId)) {
+      navigate(basePath.slice(0, lastSlash), { replace: true });
+    }
+  }, [mediaId, media, location.pathname, navigate]);
+
   if (isLoading) return <Loading />;
   if (mediaId && media) {
     const found = media.find((x) => mediaIdentityId(x.identity) === mediaId);
