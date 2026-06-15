@@ -146,19 +146,6 @@ const Media = ({
     }
   }, [mediaId]);
 
-  // When the URL contains a numeric segment that doesn't match any item in the media list
-  // (e.g. deleted image or invalid media ID), strip the invalid segment.
-  useEffect(() => {
-    if (!media || !mediaId) return;
-    const found = media.find((x) => mediaIdentityId(x.identity) === mediaId);
-    if (found) return;
-    const basePath = stripTabSegmentFromPath(location.pathname);
-    const segments = basePath.split('/').filter(Boolean);
-    if (segments.length >= 3) {
-      navigate(`/${segments.slice(0, -1).join('/')}`, { replace: true });
-    }
-  }, [media, mediaId, location.pathname, navigate]);
-
   const openModal = useCallback(
     (newM: MediaItem) => {
       const prevMediaId = m ? mediaIdentityId(m.identity) : 0;
