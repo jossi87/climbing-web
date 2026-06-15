@@ -313,7 +313,7 @@ export function useMediaSvg(idMedia: number, enabled?: boolean) {
 
 export function useProblem(id: number, showHiddenMedia: boolean) {
   const client = useQueryClient();
-  const problem = useData<Success<'getProblem'>>(`/problems?id=${id}&showHiddenMedia=${showHiddenMedia}`, {
+  const problem = useData<Success<'getProblems'>>(`/problems?id=${id}&showHiddenMedia=${showHiddenMedia}`, {
     enabled: id > 0,
     queryKey: [`/problems`, { id, showHiddenMedia }],
     select(data) {
@@ -340,7 +340,7 @@ export function useProblem(id: number, showHiddenMedia: boolean) {
         });
       }
       client.refetchQueries({
-        queryKey: [`/profile/todo`],
+        queryKey: [`/profiles/todo`],
       });
     },
     fetchOptions: {
@@ -354,8 +354,8 @@ export function useProblem(id: number, showHiddenMedia: boolean) {
 export function useProfile(userId: number) {
   const client = useQueryClient();
   const { isAuthenticated } = useAuth0();
-  const profile = useData<components['schemas']['Profile']>(`/profile?id=${userId}`, {
-    queryKey: [`/profile`, { id: userId }],
+  const profile = useData<components['schemas']['Profile']>(`/profiles?id=${userId}`, {
+    queryKey: [`/profiles`, { id: userId }],
     enabled: userId > 0 && (userId > 0 || isAuthenticated),
   });
 
@@ -364,7 +364,7 @@ export function useProfile(userId: number) {
     lastname: string;
     emailVisibleToAll: boolean;
     themePreference?: string;
-  }>(`/profile/identity`, {
+  }>(`/profiles/identity`, {
     createBody({ firstname, lastname, emailVisibleToAll, themePreference }) {
       return JSON.stringify({
         id: userId,
@@ -381,12 +381,12 @@ export function useProfile(userId: number) {
     },
     onSuccess: () => {
       client.invalidateQueries({
-        queryKey: [`/profile`, { id: userId, isAuthenticated }],
+        queryKey: [`/profiles`, { id: userId, isAuthenticated }],
       });
     },
     onError: () => {
       client.invalidateQueries({
-        queryKey: [`/profile`, { id: userId, isAuthenticated }],
+        queryKey: [`/profiles`, { id: userId, isAuthenticated }],
       });
     },
     onSettled: () => {
@@ -396,24 +396,24 @@ export function useProfile(userId: number) {
     },
   });
 
-  const addRegion = usePostData<number>(`/user/regions`, {
-    createUrl: (regionId) => `/user/regions?regionId=${regionId}&delete=${false}`,
+  const addRegion = usePostData<number>(`/users/regions`, {
+    createUrl: (regionId) => `/users/regions?regionId=${regionId}&delete=${false}`,
   });
 
-  const removeRegion = usePostData<number>(`/user/regions`, {
-    createUrl: (regionId) => `/user/regions?regionId=${regionId}&delete=${true}`,
+  const removeRegion = usePostData<number>(`/users/regions`, {
+    createUrl: (regionId) => `/users/regions?regionId=${regionId}&delete=${true}`,
   });
 
   const setRegion = usePostData<{
     region: components['schemas']['UserRegion'];
     del: boolean;
-  }>(`/user/regions`, {
-    createUrl: ({ region: { id }, del }) => `/user/regions?regionId=${id}&delete=${del}`,
+  }>(`/users/regions`, {
+    createUrl: ({ region: { id }, del }) => `/users/regions?regionId=${id}&delete=${del}`,
     fetchOptions: {
       consistencyAction: 'nop',
     },
     onMutate: ({ region, del }) => {
-      client.setQueryData<components['schemas']['Profile']>([`/profile`, { id: userId, isAuthenticated }], (old) => {
+      client.setQueryData<components['schemas']['Profile']>([`/profiles`, { id: userId, isAuthenticated }], (old) => {
         if (old && typeof old === 'object') {
           const identity = old.identity;
           if (!identity) return old;
@@ -439,7 +439,7 @@ export function useProfile(userId: number) {
     },
     onError: () => {
       client.refetchQueries({
-        queryKey: [`/profile`, { id: -1 }],
+        queryKey: [`/profiles`, { id: -1 }],
       });
     },
     onSettled: () => {
@@ -455,13 +455,13 @@ export function useProfile(userId: number) {
     },
   });
 
-  const setThemePreference = usePostData<string>(`/profile/theme`, {
-    createUrl: (themePreference) => `/profile/theme?themePreference=${encodeURIComponent(themePreference)}`,
+  const setThemePreference = usePostData<string>(`/profiles/theme`, {
+    createUrl: (themePreference) => `/profiles/theme?themePreference=${encodeURIComponent(themePreference)}`,
     fetchOptions: {
       consistencyAction: 'nop',
     },
     onMutate: (themePreference) => {
-      client.setQueryData<components['schemas']['Profile']>([`/profile`, { id: userId, isAuthenticated }], (old) => {
+      client.setQueryData<components['schemas']['Profile']>([`/profiles`, { id: userId, isAuthenticated }], (old) => {
         if (old && typeof old === 'object') {
           const identity = old.identity;
           if (!identity) return old;
@@ -472,7 +472,7 @@ export function useProfile(userId: number) {
     },
     onError: () => {
       client.refetchQueries({
-        queryKey: [`/profile`, { id: -1 }],
+        queryKey: [`/profiles`, { id: -1 }],
       });
     },
   });
@@ -493,8 +493,8 @@ export function useProfile(userId: number) {
  * without triggering a `/profile` API call.
  */
 export function useSetThemePreference() {
-  return usePostData<string>(`/profile/theme`, {
-    createUrl: (themePreference) => `/profile/theme?themePreference=${encodeURIComponent(themePreference)}`,
+  return usePostData<string>(`/profiles/theme`, {
+    createUrl: (themePreference) => `/profiles/theme?themePreference=${encodeURIComponent(themePreference)}`,
     fetchOptions: {
       consistencyAction: 'nop',
     },
@@ -502,21 +502,21 @@ export function useSetThemePreference() {
 }
 
 export function useProfileAscents(id: number) {
-  return useData<Success<'getProfileAscents'>>(`/profile/ascents?id=${id}`, {
-    queryKey: [`/profile/ascents`, { id }],
+  return useData<Success<'getProfilesAscents'>>(`/profiles/ascents?id=${id}`, {
+    queryKey: [`/profiles/ascents`, { id }],
     enabled: id > 0,
   });
 }
 
 export function useProfileMedia({ userId, captured }: { userId: number; captured: boolean }) {
-  return useData<Success<'getProfileMedia'>>(`/profile/media?id=${userId}&captured=${captured}`, {
-    queryKey: [`/profile/media`, { id: userId, captured }],
+  return useData<Success<'getProfilesMedia'>>(`/profiles/media?id=${userId}&captured=${captured}`, {
+    queryKey: [`/profiles/media`, { id: userId, captured }],
   });
 }
 
 export function useProfileTodo(id: number) {
-  return useData<Success<'getProfileTodo'>>(`/profile/todo?id=${id}`, {
-    queryKey: [`/profile/todo`, { id }],
+  return useData<Success<'getProfilesTodo'>>(`/profiles/todo?id=${id}`, {
+    queryKey: [`/profiles/todo`, { id }],
   });
 }
 
@@ -673,7 +673,7 @@ export function useUserSearch(value: string) {
 }
 
 export function useProblemSearch(value: string) {
-  return useData<Success<'getProblemSearch'>>(`/problems/search?value=${value}`, {
+  return useData<Success<'getProblemsSearch'>>(`/problems/search?value=${value}`, {
     queryKey: [`/problems/search`, { value }],
     enabled: !!value,
   });
