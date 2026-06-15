@@ -44,17 +44,10 @@ export function deleteMedia(accessToken: string | null, id: number): Promise<Suc
   }).then((response) => ensureOkResponse(response, url));
 }
 
-export function moveMedia(
-  accessToken: string | null,
-  id: number,
-  left: boolean,
-  toIdArea: number,
-  toIdSector: number,
-  toIdProblem: number,
-): Promise<Response> {
-  const url = `/media/location?id=${id}&left=${left}&toIdArea=${toIdArea}&toIdSector=${toIdSector}&toIdProblem=${toIdProblem}`;
+export function moveMedia(accessToken: string | null, id: number, left: boolean, right: boolean): Promise<Response> {
+  const url = `/media/order?id=${id}&left=${left}&right=${right}`;
   return makeAuthenticatedRequest(accessToken, url, {
-    method: 'PUT',
+    method: 'PATCH',
     ...invalidateQueriesAfter,
   }).then((response) => ensureOkResponse(response, url));
 }

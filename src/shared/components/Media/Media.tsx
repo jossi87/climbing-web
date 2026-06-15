@@ -359,10 +359,10 @@ const Media = ({
               executeMediaAction((token) => putMediaJpegRotate(token, mediaIdentityId(m.identity), deg))
             }
             onMoveImageLeft={() =>
-              executeMediaAction((token) => moveMedia(token, mediaIdentityId(m.identity), true, 0, 0, 0))
+              executeMediaAction((token) => moveMedia(token, mediaIdentityId(m.identity), true, false))
             }
             onMoveImageRight={() =>
-              executeMediaAction((token) => moveMedia(token, mediaIdentityId(m.identity), false, 0, 0, 0))
+              executeMediaAction((token) => moveMedia(token, mediaIdentityId(m.identity), false, true))
             }
             orderableMedia={orderableMedia ?? []}
             carouselIndex={
