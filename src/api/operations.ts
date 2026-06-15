@@ -136,7 +136,7 @@ export function postProblem(
   aspect: string,
   lengthMeter: number,
   descent: string,
-): Promise<Success<'postProblems'>> {
+): Promise<Success<'postProblem'>> {
   const url = `/problems`;
   const newMedia = media.map((m) => {
     return {
@@ -188,7 +188,7 @@ export function postProblem(
     consistencyAction: 'nop',
     invalidateActivityFeed: true,
   })
-    .then((response) => ensureOkJson(response, url, {} as Success<'postProblems'>))
+    .then((response) => ensureOkJson(response, url, {} as Success<'postProblem'>))
     .catch((error) => {
       console.warn(error);
       throw error;
@@ -207,7 +207,7 @@ export function postProblemSvg(
   anchors: string,
   tradBelayStations: string,
   texts: string,
-): Promise<Success<'postProblemsSvg'>> {
+): Promise<Success<'postProblemSvg'>> {
   const url = `/problems/svg?problemId=${problemId}&pitch=${pitch}&mediaId=${mediaId}`;
   return makeAuthenticatedRequest(accessToken, url, {
     method: 'POST',

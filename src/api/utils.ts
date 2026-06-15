@@ -76,7 +76,7 @@ export function getBaseUrl(): string {
 }
 
 export function getUrl(urlSuffix: string): string {
-  return encodeURI(`${getBaseUrl()}/com.buldreinfo.jersey.jaxb/v2${urlSuffix}`);
+  return encodeURI(`${getBaseUrl()}/com.buldreinfo.jersey.jaxb${urlSuffix}`);
 }
 
 export function useAccessToken() {

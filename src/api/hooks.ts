@@ -43,7 +43,7 @@ export function invalidateProblemQueries(client: QueryClient, problemId: number)
   return client.invalidateQueries({
     predicate: (q) => {
       const key = q.queryKey;
-      if (!Array.isArray(key) || key[0] !== '/problem') return false;
+      if (!Array.isArray(key) || key[0] !== '/problems') return false;
       const meta = key[1];
       if (meta == null || typeof meta !== 'object') return false;
       return 'id' in meta && (meta as { id: number }).id === problemId;
@@ -56,7 +56,7 @@ export function invalidateProblemQueries(client: QueryClient, problemId: number)
  * `svgs[]`, so per-id {@link invalidateProblemQueries} misses the problems that embed this image).
  */
 export function invalidateAllProblemQueries(client: QueryClient) {
-  return client.invalidateQueries({ queryKey: ['/problem'] });
+  return client.invalidateQueries({ queryKey: ['/problems'] });
 }
 
 /** After topo/SVG edits on a shared image — `useMedia` / modals refetch. Query key matches {@link useMediaSvg}. */
@@ -313,9 +313,9 @@ export function useMediaSvg(idMedia: number, enabled?: boolean) {
 
 export function useProblem(id: number, showHiddenMedia: boolean) {
   const client = useQueryClient();
-  const problem = useData<Success<'getProblem'>>(`/problem?id=${id}&showHiddenMedia=${showHiddenMedia}`, {
+  const problem = useData<Success<'getProblem'>>(`/problems?id=${id}&showHiddenMedia=${showHiddenMedia}`, {
     enabled: id > 0,
-    queryKey: [`/problem`, { id, showHiddenMedia }],
+    queryKey: [`/problems`, { id, showHiddenMedia }],
     select(data) {
       applyEntityRedirectUrl(data);
       return data;
@@ -673,7 +673,7 @@ export function useUserSearch(value: string) {
 }
 
 export function useProblemSearch(value: string) {
-  return useData<Success<'getProblemsSearch'>>(`/problems/search?value=${value}`, {
+  return useData<Success<'getProblemSearch'>>(`/problems/search?value=${value}`, {
     queryKey: [`/problems/search`, { value }],
     enabled: !!value,
   });
