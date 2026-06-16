@@ -38,32 +38,33 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/webcams": {
+    "/areas": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get webcams */
-        get: operations["getCameras"];
+        /** Get areas */
+        get: operations["getAreas"];
         put?: never;
-        post?: never;
+        /** Update area */
+        post: operations["postAreas"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/dangerous": {
+    "/areas/pdf": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get boulders/routes marked as dangerous */
-        get: operations["getDangerous"];
+        /** Get area PDF by id */
+        get: operations["getAreasPdf"];
         put?: never;
         post?: never;
         delete?: never;
@@ -89,66 +90,15 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/frontpage": {
+    "/dangerous": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get frontpage */
-        get: operations["getFrontpage"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/grade/distribution": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get grade distribution by Area Id or Sector Id */
-        get: operations["getGradeDistribution"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/graph": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get graph (number of boulders/routes grouped by grade) */
-        get: operations["getGraph"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/meta": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get metadata */
-        get: operations["getMeta"];
+        /** Get boulders/routes marked as dangerous */
+        get: operations["getDangerous"];
         put?: never;
         post?: never;
         delete?: never;
@@ -192,40 +142,6 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/robots.txt": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get robots.txt */
-        get: operations["getRobotsTxt"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/sitemap.txt": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get sitemap.txt */
-        get: operations["getSitemapTxt"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/ticks": {
         parameters: {
             query?: never;
@@ -238,40 +154,6 @@ export type paths = {
         put?: never;
         /** Update tick (public ascent) */
         post: operations["postTicks"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/toc": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get table of contents (all problems) */
-        get: operations["getToc"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/toc/xlsx": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get table of contents (all problems) as Excel (xlsx) */
-        get: operations["getTocXlsx"];
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -376,41 +258,6 @@ export type paths = {
         put?: never;
         /** Upsert trails */
         post: operations["postTrails"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/areas": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get areas */
-        get: operations["getAreas"];
-        put?: never;
-        /** Update area */
-        post: operations["postAreas"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/areas/pdf": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get area PDF by id */
-        get: operations["getAreasPdf"];
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -599,6 +446,142 @@ export type paths = {
         get?: never;
         /** Update media rotation (allowed for administrators + user who uploaded specific image) */
         put: operations["putMediaJpegRotate"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/frontpage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get frontpage */
+        get: operations["getFrontpage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/grade/distribution": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get grade distribution by Area Id or Sector Id */
+        get: operations["getGradeDistribution"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/graph": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get graph (number of boulders/routes grouped by grade) */
+        get: operations["getGraph"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/meta": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get metadata */
+        get: operations["getMeta"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/robots.txt": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get robots.txt */
+        get: operations["getRobotsTxt"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sitemap.txt": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get sitemap.txt */
+        get: operations["getSitemapTxt"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/toc": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get table of contents (all problems) */
+        get: operations["getToc"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/toc/xlsx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get table of contents (all problems) as Excel (xlsx) */
+        get: operations["getTocXlsx"];
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -863,7 +846,24 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/without-js/without-js": {
+    "/webcams": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get webcams */
+        get: operations["getCameras"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/without-js": {
         parameters: {
             query?: never;
             header?: never;
@@ -1038,22 +1038,295 @@ export type components = {
             randomMedia?: components["schemas"]["MediaIdentity"];
             lastLogin?: string;
         };
-        Webcam: {
-            id?: string;
-            lastUpdated?: string;
+        Area: {
+            redirectUrl?: string;
+            regionName?: string;
+            /** Format: int32 */
+            id?: number;
+            trash?: boolean;
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
+            forDevelopers?: boolean;
+            accessInfo?: string;
+            accessClosed?: string;
+            noDogsAllowed?: boolean;
+            /** Format: int32 */
+            sunFromHour?: number;
+            /** Format: int32 */
+            sunToHour?: number;
             name?: string;
-            urlStillImage?: string;
-            urlYr?: string;
-            urlOther?: string;
-            /** Format: double */
-            lat?: number;
-            /** Format: double */
-            lng?: number;
+            comment?: string;
+            coordinates?: components["schemas"]["Coordinates"];
+            /** Format: int32 */
+            numSectors?: number;
+            /** Format: int32 */
+            numProblems?: number;
+            sectors?: components["schemas"]["AreaSector"][];
+            sectorOrder?: components["schemas"]["AreaSectorOrder"][];
+            media?: components["schemas"]["Media"][];
+            triviaMedia?: components["schemas"]["Media"][];
+            externalLinks?: components["schemas"]["ExternalLink"][];
+            pageViews?: string;
+        };
+        AreaSector: {
+            areaName?: string;
+            /** Format: int32 */
+            id?: number;
+            /** Format: int32 */
+            sorting?: number;
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
+            name?: string;
+            comment?: string;
+            accessInfo?: string;
+            accessClosed?: string;
+            /** Format: int32 */
+            sunFromHour?: number;
+            /** Format: int32 */
+            sunToHour?: number;
+            parking?: components["schemas"]["Coordinates"];
+            outline?: components["schemas"]["Coordinates"][];
+            wallDirectionCalculated?: components["schemas"]["CompassDirection"];
+            wallDirectionManual?: components["schemas"]["CompassDirection"];
+            trails?: components["schemas"]["Trail"][];
+            randomMedia?: components["schemas"]["MediaIdentity"];
+            problems?: components["schemas"]["SectorProblem"][];
+            /** Format: int32 */
+            progress?: number;
+            gradeCounts?: components["schemas"]["GradeCount"][];
+        };
+        AreaSectorOrder: {
+            /** Format: int32 */
+            id?: number;
+            name?: string;
+            /** Format: int32 */
+            sorting?: number;
         };
         CompassDirection: {
             /** Format: int32 */
             id?: number;
             direction?: string;
+        };
+        Coordinates: {
+            /** Format: int32 */
+            id?: number;
+            /** Format: double */
+            latitude?: number;
+            /** Format: double */
+            longitude?: number;
+            /** Format: double */
+            elevation?: number;
+            elevationSource?: string;
+            /** Format: double */
+            distance?: number;
+        };
+        ExternalLink: {
+            /** Format: int32 */
+            id?: number;
+            url?: string;
+            title?: string;
+            inherited?: boolean;
+        };
+        GradeCount: {
+            grade?: string;
+            color?: string;
+            /** Format: int32 */
+            num?: number;
+        };
+        Media: {
+            identity?: components["schemas"]["MediaIdentity"];
+            uploadedByMe?: boolean;
+            /** Format: int32 */
+            width?: number;
+            /** Format: int32 */
+            height?: number;
+            isMovie?: boolean;
+            is360?: boolean;
+            dateCreated?: string;
+            dateTaken?: string;
+            photographer?: components["schemas"]["User"];
+            tagged?: components["schemas"]["User"][];
+            description?: string;
+            mediaSvgs?: components["schemas"]["MediaSvgElement"][];
+            /** Format: int32 */
+            svgProblemId?: number;
+            svgs?: components["schemas"]["Svg"][];
+            embedUrl?: string;
+            /** Format: int32 */
+            thumbnailSeconds?: number;
+            inherited?: boolean;
+            areas?: components["schemas"]["MediaArea"][];
+            sectors?: components["schemas"]["MediaSector"][];
+            problems?: components["schemas"]["MediaProblem"][];
+            trails?: components["schemas"]["MediaTrail"][];
+            /** Format: int32 */
+            guestbookId?: number;
+            /** Format: int32 */
+            userAvatarId?: number;
+        };
+        MediaArea: {
+            /** Format: int32 */
+            areaId?: number;
+            areaName?: string;
+            trivia?: boolean;
+        };
+        MediaProblem: {
+            /** Format: int32 */
+            problemId?: number;
+            problemName?: string;
+            problemGrade?: string;
+            /** Format: int32 */
+            problemPitch?: number;
+            /** Format: int32 */
+            problemNumPitches?: number;
+            /** Format: int64 */
+            milliseconds?: number;
+            /** Format: int32 */
+            areaId?: number;
+            areaName?: string;
+            /** Format: int32 */
+            sectorId?: number;
+            sectorName?: string;
+            trivia?: boolean;
+        };
+        MediaSector: {
+            /** Format: int32 */
+            areaId?: number;
+            areaName?: string;
+            /** Format: int32 */
+            sectorId?: number;
+            sectorName?: string;
+            trivia?: boolean;
+        };
+        MediaSvgElement: {
+            /** @enum {string} */
+            t?: "PATH" | "RAPPEL_BOLTED" | "RAPPEL_NOT_BOLTED";
+            /** Format: int32 */
+            id?: number;
+            path?: string;
+            /** Format: int32 */
+            rappelX?: number;
+            /** Format: int32 */
+            rappelY?: number;
+        };
+        MediaTrail: {
+            /** Format: int32 */
+            trailId?: number;
+            trailTitle?: string;
+            sectors?: components["schemas"]["MediaTrailSector"][];
+        };
+        MediaTrailSector: {
+            /** Format: int32 */
+            areaId?: number;
+            areaName?: string;
+            /** Format: int32 */
+            sectorId?: number;
+            sectorName?: string;
+        };
+        SectorProblem: {
+            /** Format: int32 */
+            id?: number;
+            broken?: string;
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
+            /** Format: int32 */
+            nr?: number;
+            name?: string;
+            rock?: string;
+            comment?: string;
+            /** Format: int32 */
+            gradeWeight?: number;
+            grade?: string;
+            faUser?: string;
+            /** Format: int32 */
+            faYear?: number;
+            ffaUser?: string;
+            /** Format: int32 */
+            ffaYear?: number;
+            /** Format: int32 */
+            lengthMeter?: number;
+            /** Format: int32 */
+            numPitches?: number;
+            hasImages?: boolean;
+            hasMovies?: boolean;
+            hasTopo?: boolean;
+            coordinates?: components["schemas"]["Coordinates"];
+            /** Format: int32 */
+            numTicks?: number;
+            /** Format: double */
+            stars?: number;
+            ticked?: boolean;
+            todo?: boolean;
+            t?: components["schemas"]["Type"];
+            danger?: boolean;
+        };
+        Svg: {
+            delete?: boolean;
+            /** Format: int32 */
+            id?: number;
+            /** Format: int32 */
+            problemId?: number;
+            problemName?: string;
+            problemGrade?: string;
+            problemGradeColor?: string;
+            problemSubtype?: string;
+            /** Format: int32 */
+            nr?: number;
+            /** Format: int32 */
+            pitch?: number;
+            path?: string;
+            hasAnchor?: boolean;
+            texts?: string;
+            anchors?: string;
+            tradBelayStations?: string;
+            primary?: boolean;
+            ticked?: boolean;
+            todo?: boolean;
+            dangerous?: boolean;
+        };
+        Trail: {
+            /** Format: int32 */
+            id?: number;
+            isDescent?: boolean;
+            delete?: boolean;
+            title?: string;
+            description?: string;
+            path?: components["schemas"]["Coordinates"][];
+            markers?: components["schemas"]["TrailMarker"][];
+            media?: components["schemas"]["Media"][];
+            sectors?: components["schemas"]["TrailSector"][];
+            /** Format: double */
+            calculatedDurationInMinutes?: number;
+            /** Format: int64 */
+            distance?: number;
+            /** Format: int64 */
+            elevationGain?: number;
+            /** Format: int64 */
+            elevationLoss?: number;
+        };
+        TrailMarker: {
+            coordinates?: components["schemas"]["Coordinates"];
+            label?: string;
+        };
+        TrailSector: {
+            /** Format: int32 */
+            sectorId?: number;
+            areaName?: string;
+            sectorName?: string;
+        };
+        Type: {
+            /** Format: int32 */
+            id?: number;
+            type?: string;
+            subType?: string;
+        };
+        Redirect: {
+            /** Format: int32 */
+            idArea?: number;
+            /** Format: int32 */
+            idSector?: number;
+            redirectUrl?: string;
+            destination?: string;
         };
         DangerousArea: {
             /** Format: int32 */
@@ -1094,6 +1367,329 @@ export type components = {
             /** Format: int32 */
             sunToHour?: number;
             problems?: components["schemas"]["DangerousProblem"][];
+        };
+        PermissionUser: {
+            /** Format: int32 */
+            userId?: number;
+            name?: string;
+            mediaIdentity?: components["schemas"]["MediaIdentity"];
+            lastLogin?: string;
+            adminRead?: boolean;
+            adminWrite?: boolean;
+            superadminRead?: boolean;
+            superadminWrite?: boolean;
+            readOnly?: boolean;
+        };
+        RestrictionsArea: {
+            /** Format: int32 */
+            id?: number;
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
+            name?: string;
+            accessClosed?: string;
+            accessInfo?: string;
+            sectors?: components["schemas"]["RestrictionsSector"][];
+        };
+        RestrictionsRegion: {
+            /** Format: int32 */
+            id?: number;
+            name?: string;
+            areas?: components["schemas"]["RestrictionsArea"][];
+        };
+        RestrictionsSector: {
+            /** Format: int32 */
+            id?: number;
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
+            name?: string;
+            accessClosed?: string;
+            accessInfo?: string;
+        };
+        PublicAscent: {
+            /** Format: int32 */
+            areaId?: number;
+            areaName?: string;
+            areaLockedAdmin?: boolean;
+            areaLockedSuperadmin?: boolean;
+            /** Format: int32 */
+            sectorId?: number;
+            sectorName?: string;
+            sectorLockedAdmin?: boolean;
+            sectorLockedSuperadmin?: boolean;
+            /** Format: int32 */
+            problemId?: number;
+            problemGrade?: string;
+            problemName?: string;
+            problemLockedAdmin?: boolean;
+            problemLockedSuperadmin?: boolean;
+            date?: string;
+            name?: string;
+        };
+        Ticks: {
+            ticks?: components["schemas"]["PublicAscent"][];
+            /** Format: int32 */
+            currPage?: number;
+            /** Format: int32 */
+            numPages?: number;
+        };
+        Todo: {
+            sectors?: components["schemas"]["TodoSector"][];
+        };
+        TodoProblem: {
+            /** Format: int32 */
+            id?: number;
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
+            /** Format: int32 */
+            nr?: number;
+            name?: string;
+            grade?: string;
+            partners?: components["schemas"]["User"][];
+        };
+        TodoSector: {
+            /** Format: int32 */
+            id?: number;
+            name?: string;
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
+            problems?: components["schemas"]["TodoProblem"][];
+        };
+        Top: {
+            rows?: components["schemas"]["TopRank"][];
+            /** Format: int32 */
+            numUsers?: number;
+        };
+        TopRank: {
+            /** Format: int32 */
+            rank?: number;
+            /** Format: double */
+            percentage?: number;
+            users?: components["schemas"]["TopUser"][];
+        };
+        TopUser: {
+            /** Format: int32 */
+            userId?: number;
+            name?: string;
+            mediaIdentity?: components["schemas"]["MediaIdentity"];
+            mine?: boolean;
+        };
+        Trash: {
+            /** Format: int32 */
+            idArea?: number;
+            /** Format: int32 */
+            idSector?: number;
+            /** Format: int32 */
+            idProblem?: number;
+            /** Format: int32 */
+            idMedia?: number;
+            name?: string;
+            when?: string;
+            by?: string;
+        };
+        Comment: {
+            /** Format: int32 */
+            id?: number;
+            /** Format: int32 */
+            idProblem?: number;
+            comment?: string;
+            danger?: boolean;
+            resolved?: boolean;
+            delete?: boolean;
+        };
+        Search: {
+            title?: string;
+            subTitle?: string;
+            breadcrumb?: string;
+            url?: string;
+            externalUrl?: string;
+            mediaIdentity?: components["schemas"]["MediaIdentity"];
+            /** Format: int64 */
+            hits?: number;
+            pageViews?: string;
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
+        };
+        SearchRequest: {
+            value?: string;
+        };
+        Tick: {
+            delete?: boolean;
+            /** Format: int32 */
+            id?: number;
+            /** Format: int32 */
+            idProblem?: number;
+            comment?: string;
+            date?: string;
+            /** Format: double */
+            stars?: number;
+            grade?: string;
+            repeats?: components["schemas"]["TickRepeat"][];
+        };
+        TickRepeat: {
+            /** Format: int32 */
+            id?: number;
+            /** Format: int32 */
+            tickId?: number;
+            comment?: string;
+            date?: string;
+        };
+        BodyPart: {
+            contentDisposition?: components["schemas"]["ContentDisposition"];
+            entity?: Record<string, never>;
+            headers?: {
+                empty?: boolean;
+            } & {
+                [key: string]: string[];
+            };
+            mediaType?: components["schemas"]["MediaType"];
+            messageBodyWorkers?: components["schemas"]["MessageBodyWorkers"];
+            parent?: components["schemas"]["MultiPart"];
+            providers?: components["schemas"]["Providers"];
+            parameterizedHeaders?: {
+                empty?: boolean;
+            } & {
+                [key: string]: components["schemas"]["ParameterizedHeader"][];
+            };
+        };
+        ContentDisposition: {
+            type?: string;
+            parameters?: {
+                [key: string]: string;
+            };
+            fileName?: string;
+            /** Format: date-time */
+            creationDate?: string;
+            /** Format: date-time */
+            modificationDate?: string;
+            /** Format: date-time */
+            readDate?: string;
+            /** Format: int64 */
+            size?: number;
+        };
+        FormDataBodyPart: {
+            contentDisposition?: components["schemas"]["ContentDisposition"];
+            entity?: Record<string, never>;
+            headers?: {
+                empty?: boolean;
+            } & {
+                [key: string]: string[];
+            };
+            mediaType?: components["schemas"]["MediaType"];
+            messageBodyWorkers?: components["schemas"]["MessageBodyWorkers"];
+            parent?: components["schemas"]["MultiPart"];
+            providers?: components["schemas"]["Providers"];
+            name?: string;
+            value?: string;
+            content?: Record<string, never>;
+            fileName?: string;
+            simple?: boolean;
+            formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
+            parameterizedHeaders?: {
+                empty?: boolean;
+            } & {
+                [key: string]: components["schemas"]["ParameterizedHeader"][];
+            };
+        };
+        FormDataContentDisposition: {
+            type?: string;
+            parameters?: {
+                [key: string]: string;
+            };
+            fileName?: string;
+            /** Format: date-time */
+            creationDate?: string;
+            /** Format: date-time */
+            modificationDate?: string;
+            /** Format: date-time */
+            readDate?: string;
+            /** Format: int64 */
+            size?: number;
+            name?: string;
+        };
+        FormDataMultiPart: {
+            contentDisposition?: components["schemas"]["ContentDisposition"];
+            entity?: Record<string, never>;
+            headers?: {
+                empty?: boolean;
+            } & {
+                [key: string]: string[];
+            };
+            mediaType?: components["schemas"]["MediaType"];
+            messageBodyWorkers?: components["schemas"]["MessageBodyWorkers"];
+            parent?: components["schemas"]["MultiPart"];
+            providers?: components["schemas"]["Providers"];
+            bodyParts?: components["schemas"]["BodyPart"][];
+            fields?: {
+                [key: string]: components["schemas"]["FormDataBodyPart"][];
+            };
+            parameterizedHeaders?: {
+                empty?: boolean;
+            } & {
+                [key: string]: components["schemas"]["ParameterizedHeader"][];
+            };
+        };
+        MediaType: {
+            type?: string;
+            subtype?: string;
+            parameters?: {
+                [key: string]: string;
+            };
+            wildcardType?: boolean;
+            wildcardSubtype?: boolean;
+        };
+        MessageBodyWorkers: Record<string, never>;
+        MultiPart: {
+            contentDisposition?: components["schemas"]["ContentDisposition"];
+            entity?: Record<string, never>;
+            headers?: {
+                empty?: boolean;
+            } & {
+                [key: string]: string[];
+            };
+            mediaType?: components["schemas"]["MediaType"];
+            messageBodyWorkers?: components["schemas"]["MessageBodyWorkers"];
+            parent?: components["schemas"]["MultiPart"];
+            providers?: components["schemas"]["Providers"];
+            bodyParts?: components["schemas"]["BodyPart"][];
+            parameterizedHeaders?: {
+                empty?: boolean;
+            } & {
+                [key: string]: components["schemas"]["ParameterizedHeader"][];
+            };
+        };
+        MultivaluedMapStringParameterizedHeader: {
+            empty?: boolean;
+        } & {
+            [key: string]: components["schemas"]["ParameterizedHeader"][];
+        };
+        MultivaluedMapStringString: {
+            empty?: boolean;
+        } & {
+            [key: string]: string[];
+        };
+        ParameterizedHeader: {
+            value?: string;
+            parameters?: {
+                [key: string]: string;
+            };
+        };
+        Providers: Record<string, never>;
+        InstagramMedia: {
+            cdnUrl?: string;
+            isVideo?: boolean;
+            /** Format: int32 */
+            mediaIndex?: number;
+        };
+        VideoInitResponse: {
+            /** Format: int32 */
+            id?: number;
+            presignedUrl?: string;
+        };
+        VideoInitPayload: {
+            media?: components["schemas"]["Media"];
+            /** Format: int64 */
+            fileSize?: number;
+            contentType?: string;
         };
         Frontpage: {
             stats?: components["schemas"]["FrontpageStats"];
@@ -1215,19 +1811,6 @@ export type components = {
             /** Format: int32 */
             numIce?: number;
         };
-        Coordinates: {
-            /** Format: int32 */
-            id?: number;
-            /** Format: double */
-            latitude?: number;
-            /** Format: double */
-            longitude?: number;
-            /** Format: double */
-            elevation?: number;
-            elevationSource?: string;
-            /** Format: double */
-            distance?: number;
-        };
         Grade: {
             /** Format: int32 */
             id?: number;
@@ -1270,76 +1853,6 @@ export type components = {
             url?: string;
             active?: boolean;
             outline?: components["schemas"]["Coordinates"][];
-        };
-        Type: {
-            /** Format: int32 */
-            id?: number;
-            type?: string;
-            subType?: string;
-        };
-        PermissionUser: {
-            /** Format: int32 */
-            userId?: number;
-            name?: string;
-            mediaIdentity?: components["schemas"]["MediaIdentity"];
-            lastLogin?: string;
-            adminRead?: boolean;
-            adminWrite?: boolean;
-            superadminRead?: boolean;
-            superadminWrite?: boolean;
-            readOnly?: boolean;
-        };
-        RestrictionsArea: {
-            /** Format: int32 */
-            id?: number;
-            lockedAdmin?: boolean;
-            lockedSuperadmin?: boolean;
-            name?: string;
-            accessClosed?: string;
-            accessInfo?: string;
-            sectors?: components["schemas"]["RestrictionsSector"][];
-        };
-        RestrictionsRegion: {
-            /** Format: int32 */
-            id?: number;
-            name?: string;
-            areas?: components["schemas"]["RestrictionsArea"][];
-        };
-        RestrictionsSector: {
-            /** Format: int32 */
-            id?: number;
-            lockedAdmin?: boolean;
-            lockedSuperadmin?: boolean;
-            name?: string;
-            accessClosed?: string;
-            accessInfo?: string;
-        };
-        PublicAscent: {
-            /** Format: int32 */
-            areaId?: number;
-            areaName?: string;
-            areaLockedAdmin?: boolean;
-            areaLockedSuperadmin?: boolean;
-            /** Format: int32 */
-            sectorId?: number;
-            sectorName?: string;
-            sectorLockedAdmin?: boolean;
-            sectorLockedSuperadmin?: boolean;
-            /** Format: int32 */
-            problemId?: number;
-            problemGrade?: string;
-            problemName?: string;
-            problemLockedAdmin?: boolean;
-            problemLockedSuperadmin?: boolean;
-            date?: string;
-            name?: string;
-        };
-        Ticks: {
-            ticks?: components["schemas"]["PublicAscent"][];
-            /** Format: int32 */
-            currPage?: number;
-            /** Format: int32 */
-            numPages?: number;
         };
         Toc: {
             /** Format: int32 */
@@ -1423,531 +1936,6 @@ export type components = {
             /** Format: int32 */
             sunToHour?: number;
             problems?: components["schemas"]["TocProblem"][];
-        };
-        Todo: {
-            sectors?: components["schemas"]["TodoSector"][];
-        };
-        TodoProblem: {
-            /** Format: int32 */
-            id?: number;
-            lockedAdmin?: boolean;
-            lockedSuperadmin?: boolean;
-            /** Format: int32 */
-            nr?: number;
-            name?: string;
-            grade?: string;
-            partners?: components["schemas"]["User"][];
-        };
-        TodoSector: {
-            /** Format: int32 */
-            id?: number;
-            name?: string;
-            lockedAdmin?: boolean;
-            lockedSuperadmin?: boolean;
-            problems?: components["schemas"]["TodoProblem"][];
-        };
-        Top: {
-            rows?: components["schemas"]["TopRank"][];
-            /** Format: int32 */
-            numUsers?: number;
-        };
-        TopRank: {
-            /** Format: int32 */
-            rank?: number;
-            /** Format: double */
-            percentage?: number;
-            users?: components["schemas"]["TopUser"][];
-        };
-        TopUser: {
-            /** Format: int32 */
-            userId?: number;
-            name?: string;
-            mediaIdentity?: components["schemas"]["MediaIdentity"];
-            mine?: boolean;
-        };
-        Trash: {
-            /** Format: int32 */
-            idArea?: number;
-            /** Format: int32 */
-            idSector?: number;
-            /** Format: int32 */
-            idProblem?: number;
-            /** Format: int32 */
-            idMedia?: number;
-            name?: string;
-            when?: string;
-            by?: string;
-        };
-        Comment: {
-            /** Format: int32 */
-            id?: number;
-            /** Format: int32 */
-            idProblem?: number;
-            comment?: string;
-            danger?: boolean;
-            resolved?: boolean;
-            delete?: boolean;
-        };
-        Search: {
-            title?: string;
-            subTitle?: string;
-            breadcrumb?: string;
-            url?: string;
-            externalUrl?: string;
-            mediaIdentity?: components["schemas"]["MediaIdentity"];
-            /** Format: int64 */
-            hits?: number;
-            pageViews?: string;
-            lockedAdmin?: boolean;
-            lockedSuperadmin?: boolean;
-        };
-        SearchRequest: {
-            value?: string;
-        };
-        Tick: {
-            delete?: boolean;
-            /** Format: int32 */
-            id?: number;
-            /** Format: int32 */
-            idProblem?: number;
-            comment?: string;
-            date?: string;
-            /** Format: double */
-            stars?: number;
-            grade?: string;
-            repeats?: components["schemas"]["TickRepeat"][];
-        };
-        TickRepeat: {
-            /** Format: int32 */
-            id?: number;
-            /** Format: int32 */
-            tickId?: number;
-            comment?: string;
-            date?: string;
-        };
-        Media: {
-            identity?: components["schemas"]["MediaIdentity"];
-            uploadedByMe?: boolean;
-            /** Format: int32 */
-            width?: number;
-            /** Format: int32 */
-            height?: number;
-            isMovie?: boolean;
-            is360?: boolean;
-            dateCreated?: string;
-            dateTaken?: string;
-            photographer?: components["schemas"]["User"];
-            tagged?: components["schemas"]["User"][];
-            description?: string;
-            mediaSvgs?: components["schemas"]["MediaSvgElement"][];
-            /** Format: int32 */
-            svgProblemId?: number;
-            svgs?: components["schemas"]["Svg"][];
-            embedUrl?: string;
-            /** Format: int32 */
-            thumbnailSeconds?: number;
-            inherited?: boolean;
-            areas?: components["schemas"]["MediaArea"][];
-            sectors?: components["schemas"]["MediaSector"][];
-            problems?: components["schemas"]["MediaProblem"][];
-            trails?: components["schemas"]["MediaTrail"][];
-            /** Format: int32 */
-            guestbookId?: number;
-            /** Format: int32 */
-            userAvatarId?: number;
-        };
-        MediaArea: {
-            /** Format: int32 */
-            areaId?: number;
-            areaName?: string;
-            trivia?: boolean;
-        };
-        MediaProblem: {
-            /** Format: int32 */
-            problemId?: number;
-            problemName?: string;
-            problemGrade?: string;
-            /** Format: int32 */
-            problemPitch?: number;
-            /** Format: int32 */
-            problemNumPitches?: number;
-            /** Format: int64 */
-            milliseconds?: number;
-            /** Format: int32 */
-            areaId?: number;
-            areaName?: string;
-            /** Format: int32 */
-            sectorId?: number;
-            sectorName?: string;
-            trivia?: boolean;
-        };
-        MediaSector: {
-            /** Format: int32 */
-            areaId?: number;
-            areaName?: string;
-            /** Format: int32 */
-            sectorId?: number;
-            sectorName?: string;
-            trivia?: boolean;
-        };
-        MediaSvgElement: {
-            /** @enum {string} */
-            t?: "PATH" | "RAPPEL_BOLTED" | "RAPPEL_NOT_BOLTED";
-            /** Format: int32 */
-            id?: number;
-            path?: string;
-            /** Format: int32 */
-            rappelX?: number;
-            /** Format: int32 */
-            rappelY?: number;
-        };
-        MediaTrail: {
-            /** Format: int32 */
-            trailId?: number;
-            trailTitle?: string;
-            sectors?: components["schemas"]["MediaTrailSector"][];
-        };
-        MediaTrailSector: {
-            /** Format: int32 */
-            areaId?: number;
-            areaName?: string;
-            /** Format: int32 */
-            sectorId?: number;
-            sectorName?: string;
-        };
-        Svg: {
-            delete?: boolean;
-            /** Format: int32 */
-            id?: number;
-            /** Format: int32 */
-            problemId?: number;
-            problemName?: string;
-            problemGrade?: string;
-            problemGradeColor?: string;
-            problemSubtype?: string;
-            /** Format: int32 */
-            nr?: number;
-            /** Format: int32 */
-            pitch?: number;
-            path?: string;
-            hasAnchor?: boolean;
-            texts?: string;
-            anchors?: string;
-            tradBelayStations?: string;
-            primary?: boolean;
-            ticked?: boolean;
-            todo?: boolean;
-            dangerous?: boolean;
-        };
-        Trail: {
-            /** Format: int32 */
-            id?: number;
-            isDescent?: boolean;
-            delete?: boolean;
-            title?: string;
-            description?: string;
-            path?: components["schemas"]["Coordinates"][];
-            markers?: components["schemas"]["TrailMarker"][];
-            media?: components["schemas"]["Media"][];
-            sectors?: components["schemas"]["TrailSector"][];
-            /** Format: double */
-            calculatedDurationInMinutes?: number;
-            /** Format: int64 */
-            distance?: number;
-            /** Format: int64 */
-            elevationGain?: number;
-            /** Format: int64 */
-            elevationLoss?: number;
-        };
-        TrailMarker: {
-            coordinates?: components["schemas"]["Coordinates"];
-            label?: string;
-        };
-        TrailSector: {
-            /** Format: int32 */
-            sectorId?: number;
-            areaName?: string;
-            sectorName?: string;
-        };
-        Area: {
-            redirectUrl?: string;
-            regionName?: string;
-            /** Format: int32 */
-            id?: number;
-            trash?: boolean;
-            lockedAdmin?: boolean;
-            lockedSuperadmin?: boolean;
-            forDevelopers?: boolean;
-            accessInfo?: string;
-            accessClosed?: string;
-            noDogsAllowed?: boolean;
-            /** Format: int32 */
-            sunFromHour?: number;
-            /** Format: int32 */
-            sunToHour?: number;
-            name?: string;
-            comment?: string;
-            coordinates?: components["schemas"]["Coordinates"];
-            /** Format: int32 */
-            numSectors?: number;
-            /** Format: int32 */
-            numProblems?: number;
-            sectors?: components["schemas"]["AreaSector"][];
-            sectorOrder?: components["schemas"]["AreaSectorOrder"][];
-            media?: components["schemas"]["Media"][];
-            triviaMedia?: components["schemas"]["Media"][];
-            externalLinks?: components["schemas"]["ExternalLink"][];
-            pageViews?: string;
-        };
-        AreaSector: {
-            areaName?: string;
-            /** Format: int32 */
-            id?: number;
-            /** Format: int32 */
-            sorting?: number;
-            lockedAdmin?: boolean;
-            lockedSuperadmin?: boolean;
-            name?: string;
-            comment?: string;
-            accessInfo?: string;
-            accessClosed?: string;
-            /** Format: int32 */
-            sunFromHour?: number;
-            /** Format: int32 */
-            sunToHour?: number;
-            parking?: components["schemas"]["Coordinates"];
-            outline?: components["schemas"]["Coordinates"][];
-            wallDirectionCalculated?: components["schemas"]["CompassDirection"];
-            wallDirectionManual?: components["schemas"]["CompassDirection"];
-            trails?: components["schemas"]["Trail"][];
-            randomMedia?: components["schemas"]["MediaIdentity"];
-            problems?: components["schemas"]["SectorProblem"][];
-            /** Format: int32 */
-            progress?: number;
-            gradeCounts?: components["schemas"]["GradeCount"][];
-        };
-        AreaSectorOrder: {
-            /** Format: int32 */
-            id?: number;
-            name?: string;
-            /** Format: int32 */
-            sorting?: number;
-        };
-        ExternalLink: {
-            /** Format: int32 */
-            id?: number;
-            url?: string;
-            title?: string;
-            inherited?: boolean;
-        };
-        GradeCount: {
-            grade?: string;
-            color?: string;
-            /** Format: int32 */
-            num?: number;
-        };
-        SectorProblem: {
-            /** Format: int32 */
-            id?: number;
-            broken?: string;
-            lockedAdmin?: boolean;
-            lockedSuperadmin?: boolean;
-            /** Format: int32 */
-            nr?: number;
-            name?: string;
-            rock?: string;
-            comment?: string;
-            /** Format: int32 */
-            gradeWeight?: number;
-            grade?: string;
-            faUser?: string;
-            /** Format: int32 */
-            faYear?: number;
-            ffaUser?: string;
-            /** Format: int32 */
-            ffaYear?: number;
-            /** Format: int32 */
-            lengthMeter?: number;
-            /** Format: int32 */
-            numPitches?: number;
-            hasImages?: boolean;
-            hasMovies?: boolean;
-            hasTopo?: boolean;
-            coordinates?: components["schemas"]["Coordinates"];
-            /** Format: int32 */
-            numTicks?: number;
-            /** Format: double */
-            stars?: number;
-            ticked?: boolean;
-            todo?: boolean;
-            t?: components["schemas"]["Type"];
-            danger?: boolean;
-        };
-        Redirect: {
-            /** Format: int32 */
-            idArea?: number;
-            /** Format: int32 */
-            idSector?: number;
-            redirectUrl?: string;
-            destination?: string;
-        };
-        BodyPart: {
-            contentDisposition?: components["schemas"]["ContentDisposition"];
-            entity?: Record<string, never>;
-            headers?: {
-                empty?: boolean;
-            } & {
-                [key: string]: string[];
-            };
-            mediaType?: components["schemas"]["MediaType"];
-            messageBodyWorkers?: components["schemas"]["MessageBodyWorkers"];
-            parent?: components["schemas"]["MultiPart"];
-            providers?: components["schemas"]["Providers"];
-            parameterizedHeaders?: {
-                empty?: boolean;
-            } & {
-                [key: string]: components["schemas"]["ParameterizedHeader"][];
-            };
-        };
-        ContentDisposition: {
-            type?: string;
-            parameters?: {
-                [key: string]: string;
-            };
-            fileName?: string;
-            /** Format: date-time */
-            creationDate?: string;
-            /** Format: date-time */
-            modificationDate?: string;
-            /** Format: date-time */
-            readDate?: string;
-            /** Format: int64 */
-            size?: number;
-        };
-        FormDataBodyPart: {
-            contentDisposition?: components["schemas"]["ContentDisposition"];
-            entity?: Record<string, never>;
-            headers?: {
-                empty?: boolean;
-            } & {
-                [key: string]: string[];
-            };
-            mediaType?: components["schemas"]["MediaType"];
-            messageBodyWorkers?: components["schemas"]["MessageBodyWorkers"];
-            parent?: components["schemas"]["MultiPart"];
-            providers?: components["schemas"]["Providers"];
-            name?: string;
-            value?: string;
-            content?: Record<string, never>;
-            fileName?: string;
-            formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
-            simple?: boolean;
-            parameterizedHeaders?: {
-                empty?: boolean;
-            } & {
-                [key: string]: components["schemas"]["ParameterizedHeader"][];
-            };
-        };
-        FormDataContentDisposition: {
-            type?: string;
-            parameters?: {
-                [key: string]: string;
-            };
-            fileName?: string;
-            /** Format: date-time */
-            creationDate?: string;
-            /** Format: date-time */
-            modificationDate?: string;
-            /** Format: date-time */
-            readDate?: string;
-            /** Format: int64 */
-            size?: number;
-            name?: string;
-        };
-        FormDataMultiPart: {
-            contentDisposition?: components["schemas"]["ContentDisposition"];
-            entity?: Record<string, never>;
-            headers?: {
-                empty?: boolean;
-            } & {
-                [key: string]: string[];
-            };
-            mediaType?: components["schemas"]["MediaType"];
-            messageBodyWorkers?: components["schemas"]["MessageBodyWorkers"];
-            parent?: components["schemas"]["MultiPart"];
-            providers?: components["schemas"]["Providers"];
-            bodyParts?: components["schemas"]["BodyPart"][];
-            fields?: {
-                [key: string]: components["schemas"]["FormDataBodyPart"][];
-            };
-            parameterizedHeaders?: {
-                empty?: boolean;
-            } & {
-                [key: string]: components["schemas"]["ParameterizedHeader"][];
-            };
-        };
-        MediaType: {
-            type?: string;
-            subtype?: string;
-            parameters?: {
-                [key: string]: string;
-            };
-            wildcardType?: boolean;
-            wildcardSubtype?: boolean;
-        };
-        MessageBodyWorkers: Record<string, never>;
-        MultiPart: {
-            contentDisposition?: components["schemas"]["ContentDisposition"];
-            entity?: Record<string, never>;
-            headers?: {
-                empty?: boolean;
-            } & {
-                [key: string]: string[];
-            };
-            mediaType?: components["schemas"]["MediaType"];
-            messageBodyWorkers?: components["schemas"]["MessageBodyWorkers"];
-            parent?: components["schemas"]["MultiPart"];
-            providers?: components["schemas"]["Providers"];
-            bodyParts?: components["schemas"]["BodyPart"][];
-            parameterizedHeaders?: {
-                empty?: boolean;
-            } & {
-                [key: string]: components["schemas"]["ParameterizedHeader"][];
-            };
-        };
-        MultivaluedMapStringParameterizedHeader: {
-            empty?: boolean;
-        } & {
-            [key: string]: components["schemas"]["ParameterizedHeader"][];
-        };
-        MultivaluedMapStringString: {
-            empty?: boolean;
-        } & {
-            [key: string]: string[];
-        };
-        ParameterizedHeader: {
-            value?: string;
-            parameters?: {
-                [key: string]: string;
-            };
-        };
-        Providers: Record<string, never>;
-        InstagramMedia: {
-            cdnUrl?: string;
-            isVideo?: boolean;
-            /** Format: int32 */
-            mediaIndex?: number;
-        };
-        VideoInitResponse: {
-            /** Format: int32 */
-            id?: number;
-            presignedUrl?: string;
-        };
-        VideoInitPayload: {
-            media?: components["schemas"]["Media"];
-            /** Format: int64 */
-            fileSize?: number;
-            contentType?: string;
         };
         FaAid: {
             /** Format: int32 */
@@ -2272,6 +2260,18 @@ export type components = {
             /** Format: int32 */
             nr?: number;
         };
+        Webcam: {
+            id?: string;
+            lastUpdated?: string;
+            name?: string;
+            urlStillImage?: string;
+            urlYr?: string;
+            urlOther?: string;
+            /** Format: double */
+            lat?: number;
+            /** Format: double */
+            lng?: number;
+        };
     };
     responses: never;
     parameters: never;
@@ -2359,9 +2359,12 @@ export interface operations {
             };
         };
     };
-    getCameras: {
+    getAreas: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Area id */
+                id?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -2374,8 +2377,22 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Webcam"][];
+                    "application/json": components["schemas"]["Area"][];
                 };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The requested resource could not be found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description An unexpected error occurred */
             500: {
@@ -2386,9 +2403,64 @@ export interface operations {
             };
         };
     };
-    getDangerous: {
+    postAreas: {
         parameters: {
             query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "*/*": components["schemas"]["Area"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Redirect"];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getAreasPdf: {
+        parameters: {
+            query: {
+                /** @description Area id */
+                id: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -2401,11 +2473,18 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["DangerousArea"][];
+                    "application/pdf": string[];
                 };
             };
             /** @description Invalid request parameters. */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The requested resource could not be found. */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2464,7 +2543,7 @@ export interface operations {
             };
         };
     };
-    getFrontpage: {
+    getDangerous: {
         parameters: {
             query?: never;
             header?: never;
@@ -2479,114 +2558,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Frontpage"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getGradeDistribution: {
-        parameters: {
-            query: {
-                /** @description Area id (can be 0 if idSector>0) */
-                idArea: number;
-                /** @description Sector id (can be 0 if idArea>0) */
-                idSector: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GradeDistribution"][];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getGraph: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GradeDistribution"][];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getMeta: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Meta"];
+                    "application/json": components["schemas"]["DangerousArea"][];
                 };
             };
             /** @description Invalid request parameters. */
@@ -2723,60 +2695,6 @@ export interface operations {
             };
         };
     };
-    getRobotsTxt: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getSitemapTxt: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     getTicks: {
         parameters: {
             query?: {
@@ -2843,74 +2761,6 @@ export interface operations {
             };
             /** @description Authentication required. */
             401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getToc: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Toc"][];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getTocXlsx: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string[];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3254,146 +3104,6 @@ export interface operations {
             };
             /** @description Insufficient permissions. */
             403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getAreas: {
-        parameters: {
-            query?: {
-                /** @description Area id */
-                id?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Area"][];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    postAreas: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "*/*": components["schemas"]["Area"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Redirect"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getAreasPdf: {
-        parameters: {
-            query: {
-                /** @description Area id */
-                id: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/pdf": string[];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description The requested resource could not be found. */
-            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4054,6 +3764,269 @@ export interface operations {
             };
             /** @description Insufficient permissions. */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getFrontpage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Frontpage"];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getGradeDistribution: {
+        parameters: {
+            query: {
+                /** @description Area id (can be 0 if idSector>0) */
+                idArea: number;
+                /** @description Sector id (can be 0 if idArea>0) */
+                idSector: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GradeDistribution"][];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getGraph: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GradeDistribution"][];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getMeta: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Meta"];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getRobotsTxt: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getSitemapTxt: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getToc: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Toc"][];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getTocXlsx: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string[];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4805,6 +4778,33 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getCameras: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Webcam"][];
+                };
             };
             /** @description An unexpected error occurred */
             500: {
