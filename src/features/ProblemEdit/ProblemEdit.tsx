@@ -160,7 +160,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
 
       if (data.trash) {
         client.removeQueries({
-          queryKey: [`/problem`, { id: data.id }],
+          queryKey: [`/problems`, { id: data.id }],
         });
       }
 
@@ -203,7 +203,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
             const tag = key[0];
             const params = key[1] as { id?: number } | undefined;
             if (tag === '/sectors' && params?.id === sectorId) return true;
-            if (tag === '/problem' && problemId > 0 && params?.id === problemId) return true;
+            if (tag === '/problems' && problemId > 0 && params?.id === problemId) return true;
             return false;
           },
         });
