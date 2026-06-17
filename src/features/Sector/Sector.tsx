@@ -1016,13 +1016,13 @@ const Sector = () => {
             effectiveTab !== 'map' && 'hidden',
           )}
         >
-          <div className='grid min-w-0 grid-cols-1 items-stretch gap-3 sm:grid-cols-2 sm:gap-4'>
+          <div className='columns-1 gap-3 sm:columns-2 sm:gap-4 [&>div]:break-inside-avoid'>
             {(() => {
               let descentIdx = 0;
               return (data.trails ?? []).map((t) => {
                 const di = t.isDescent ? descentIdx++ : -1;
                 return (
-                  <div key={t.id ?? t.title} className='w-full min-w-0'>
+                  <div key={t.id ?? t.title} className='mb-3 w-full min-w-0 sm:mb-4'>
                     <TrailProfile
                       compact
                       isDescent={!!t.isDescent}
