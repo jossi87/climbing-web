@@ -303,8 +303,8 @@ const ProblemEdit = ({ problem, sector }: Props) => {
    */
   const gradeMissing = !data.originalGrade;
   const typeMissing = meta.types.length > 1 && !data.t?.id;
-  const faDateWithoutUsers = !!data.faDate && (!data.fa || data.fa.length === 0);
-  const canSave = !!data.name && !gradeMissing && !typeMissing && !faDateWithoutUsers && !saving;
+  const faDateWithoutGradeOrUsers = data.originalGrade === 'n/a' && !!data.faDate && (!data.fa || data.fa.length === 0);
+  const canSave = !!data.name && !gradeMissing && !typeMissing && !faDateWithoutGradeOrUsers && !saving;
 
   const inputClasses =
     'problem-edit-field w-full bg-surface-nav border border-surface-border rounded-lg px-3 py-2.5 text-sm text-white transition-colors focus:border-brand-border focus:outline-none focus:ring-0 focus-visible:ring-0';
@@ -451,7 +451,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                 <div className='relative'>
                   <DatePicker
                     wrapperClassName='w-full'
-                    className={cn(inputClasses, 'pr-3 pl-10', faDateWithoutUsers && 'border-red-500/50')}
+                    className={cn(inputClasses, 'pr-3 pl-10', faDateWithoutGradeOrUsers && 'border-red-500/50')}
                     dateFormat='dd-MM-yyyy'
                     selected={data.faDate ? convertFromStringToDate(data.faDate) : undefined}
                     onChange={(date: Date | null) => onFaDateChanged(date ?? undefined)}
@@ -461,8 +461,10 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                     className='pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-500'
                   />
                 </div>
-                {faDateWithoutUsers && (
-                  <p className='ml-1 text-[11px] font-bold text-red-500'>Add FA user(s) or clear the FA date</p>
+                {faDateWithoutGradeOrUsers && (
+                  <p className='ml-1 text-[11px] font-bold text-red-500'>
+                    Add FA user(s), change grade, or remove the FA date
+                  </p>
                 )}
               </div>
 
