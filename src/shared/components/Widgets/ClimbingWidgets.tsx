@@ -1,4 +1,4 @@
-import SunCalc from 'suncalc';
+import * as SunCalc from 'suncalc';
 import { Compass, Sun, Sunrise, type LucideIcon } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
@@ -66,7 +66,7 @@ const sunriseSunsetTitle = 'Sunrise and sunset today (local times)';
 
 export const SunriseSunset = ({ lat, lng, date, variant = 'chip', className }: SunriseSunsetProps) => {
   const { sunrise, sunset } = SunCalc.getTimes(date ?? new Date(), lat, lng);
-  if (isNaN(sunrise.getTime()) || isNaN(sunset.getTime())) return null;
+  if (!sunset || !sunrise || isNaN(sunrise.getTime()) || isNaN(sunset.getTime())) return null;
   const format = (d: Date) => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
   const times = (
     <>
