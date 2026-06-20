@@ -4,16 +4,17 @@
  */
 
 export type paths = {
-    "/activity": {
+    "/trash": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get activity feed */
-        get: operations["getActivity"];
-        put?: never;
+        /** Get trash */
+        get: operations["getTrash"];
+        /** Move Area/Sector/Problem/Media to trash (only one of the arguments must be different from 0) */
+        put: operations["putTrash"];
         post?: never;
         delete?: never;
         options?: never;
@@ -21,17 +22,363 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/administrators": {
+    "/media": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get administrators */
-        get: operations["getAdministrators"];
-        put?: never;
+        /** Get Media by id */
+        get: operations["getMedia"];
+        /** Update media */
+        put: operations["putMedia"];
         post?: never;
+        /** Move media to trash */
+        delete: operations["deleteMedia"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/media/jpeg/rotate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update media rotation (allowed for administrators + user who uploaded specific image) */
+        put: operations["putMediaJpegRotate"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/regions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Update visible regions */
+        post: operations["postUserRegions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/trails": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upsert trails */
+        post: operations["postTrails"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/todo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get todo on Area/Sector */
+        get: operations["getTodo"];
+        put?: never;
+        /** Update todo */
+        post: operations["postTodo"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ticks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get ticks (public ascents) */
+        get: operations["getTicks"];
+        put?: never;
+        /** Update tick (public ascent) */
+        post: operations["postTicks"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sectors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get sector by id */
+        get: operations["getSectors"];
+        put?: never;
+        /** Update sector */
+        post: operations["postSectors"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Search for area/sector/problem/user */
+        post: operations["postSearch"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/profiles/theme": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Update theme preference (light/dark) */
+        post: operations["postProfilesTheme"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/profiles/identity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Update profile identity */
+        post: operations["postProfilesIdentity"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/problems": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get problem by id */
+        get: operations["getProblems"];
+        put?: never;
+        /** Update problem */
+        post: operations["postProblems"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/problems/svg": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["postProblemsSvg"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/permissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get permissions */
+        get: operations["getPermissions"];
+        put?: never;
+        /** Update user privileges */
+        post: operations["postPermissions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/media/video/{id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Signal direct video upload completion and trigger async background processing */
+        post: operations["postMediaVideoComplete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/media/video/initiate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Initiate video upload to get a presigned storage URL */
+        post: operations["postMediaVideoInitiate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/media/video/embed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add embedded external video (YouTube/Vimeo) */
+        post: operations["postMediaVideoEmbed"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/media/svg": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Update Media SVG */
+        post: operations["postMediaSvg"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/media/instagram-scrape": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Scrape Instagram URL metadata for frontend preview box */
+        post: operations["postMediaInstagramScrape"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/media/instagram-save": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Commit verified Instagram media to application storage */
+        post: operations["postMediaInstagramSave"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/media/image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add single image media item */
+        post: operations["postMediaImage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/comments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Update comment */
+        post: operations["postComments"];
         delete?: never;
         options?: never;
         head?: never;
@@ -56,15 +403,483 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/areas/pdf": {
+    "/media/order": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get area PDF by id */
-        get: operations["getAreasPdf"];
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Reorder media */
+        patch: operations["patchMediaOrder"];
+        trace?: never;
+    };
+    "/without-js": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Frontpage without JavaScript */
+        get: operations["getWithoutJs"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/without-js/sector/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get sector by id without JavaScript (for embedding on e.g. Facebook) */
+        get: operations["getWithoutJsSector"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/without-js/problem/{id}/{mediaId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get problem details without JavaScript
+         * @description Returns an HTML representation of a problem, suitable for embedding on platforms like Facebook. Supports optional media and pitch parameters.
+         */
+        get: operations["getWithoutJsProblem"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/without-js/problem/{id}/{mediaId}/{pitch}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get problem details without JavaScript
+         * @description Returns an HTML representation of a problem, suitable for embedding on platforms like Facebook. Supports optional media and pitch parameters.
+         */
+        get: operations["getWithoutJsProblem_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/without-js/problem/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get problem details without JavaScript
+         * @description Returns an HTML representation of a problem, suitable for embedding on platforms like Facebook. Supports optional media and pitch parameters.
+         */
+        get: operations["getWithoutJsProblem_2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/without-js/area/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get area by id without JavaScript (for embedding on e.g. Facebook) */
+        get: operations["getWithoutJsArea"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/webcams": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get webcams */
+        get: operations["getCameras"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/ticks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get ticks (public ascents) on logged in user as Excel file (xlsx) */
+        get: operations["getUsersTicks"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search for user */
+        get: operations["getUsersSearch"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/top": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get top on Area/Sector */
+        get: operations["getTop"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/toc": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get table of contents (all problems) */
+        get: operations["getToc"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/toc/xlsx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get table of contents as Excel (xlsx) */
+        get: operations["getTocXlsx"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sitemap.txt": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get sitemap.txt */
+        get: operations["getSitemapTxt"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sectors/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get sector PDF by id */
+        get: operations["getSectorsPdf"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/robots.txt": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get robots.txt */
+        get: operations["getRobotsTxt"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/restrictions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get areas and sectors with restrictions */
+        get: operations["getRestrictions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/profiles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get profile by id */
+        get: operations["getProfiles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/profiles/todo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get profile todo */
+        get: operations["getProfilesTodo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/profiles/media": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get profile media by user id */
+        get: operations["getProfilesMedia"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/profiles/ascents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get profile ascents */
+        get: operations["getProfilesAscents"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/problems/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search for problem */
+        get: operations["getProblemsSearch"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/problems/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get problem PDF by id */
+        get: operations["getProblemsPdf"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/meta": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get metadata */
+        get: operations["getMeta"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/media/file": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get media file by id */
+        get: operations["getMediaFile"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/graph": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get graph (number of boulders/routes grouped by grade) */
+        get: operations["getGraph"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/grade/distribution": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get grade distribution by Area Id or Sector Id */
+        get: operations["getGradeDistribution"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/frontpage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get frontpage */
+        get: operations["getFrontpage"];
         put?: never;
         post?: never;
         delete?: never;
@@ -107,33 +922,15 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/permissions": {
+    "/areas/pdf": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get permissions */
-        get: operations["getPermissions"];
-        put?: never;
-        /** Update user privileges */
-        post: operations["postPermissions"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/restrictions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get areas and sectors with restrictions */
-        get: operations["getRestrictions"];
+        /** Get area PDF by id */
+        get: operations["getAreasPdf"];
         put?: never;
         post?: never;
         delete?: never;
@@ -142,51 +939,15 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/ticks": {
+    "/administrators": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get ticks (public ascents) */
-        get: operations["getTicks"];
-        put?: never;
-        /** Update tick (public ascent) */
-        post: operations["postTicks"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/todo": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get todo on Area/Sector */
-        get: operations["getTodo"];
-        put?: never;
-        /** Update todo */
-        post: operations["postTodo"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/top": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get top on Area/Sector */
-        get: operations["getTop"];
+        /** Get administrators */
+        get: operations["getAdministrators"];
         put?: never;
         post?: never;
         delete?: never;
@@ -195,768 +956,15 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/trash": {
+    "/activity": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get trash */
-        get: operations["getTrash"];
-        /** Move Area/Sector/Problem/Media to trash (only one of the arguments must be different from 0) */
-        put: operations["putTrash"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/comments": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Update comment */
-        post: operations["postComments"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/search": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Search for area/sector/problem/user */
-        post: operations["postSearch"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/trails": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Upsert trails */
-        post: operations["postTrails"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/media": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Media by id */
-        get: operations["getMedia"];
-        /** Update media */
-        put: operations["putMedia"];
-        post?: never;
-        /** Move media to trash */
-        delete: operations["deleteMedia"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/media/file": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get media file by id */
-        get: operations["getMediaFile"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/media/order": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Reorder media */
-        patch: operations["patchMediaOrder"];
-        trace?: never;
-    };
-    "/media/image": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Add single image media item */
-        post: operations["postMediaImage"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/media/instagram-save": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Commit verified Instagram media to application storage */
-        post: operations["postMediaInstagramSave"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/media/instagram-scrape": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Scrape Instagram URL metadata for frontend preview box */
-        post: operations["postMediaInstagramScrape"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/media/svg": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Update Media SVG */
-        post: operations["postMediaSvg"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/media/video/{id}/complete": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Signal direct video upload completion and trigger async background processing */
-        post: operations["postMediaVideoComplete"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/media/video/embed": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Add embedded external video (YouTube/Vimeo) */
-        post: operations["postMediaVideoEmbed"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/media/video/initiate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Initiate video upload to get a presigned storage URL */
-        post: operations["postMediaVideoInitiate"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/media/jpeg/rotate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Update media rotation (allowed for administrators + user who uploaded specific image) */
-        put: operations["putMediaJpegRotate"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/frontpage": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get frontpage */
-        get: operations["getFrontpage"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/grade/distribution": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get grade distribution by Area Id or Sector Id */
-        get: operations["getGradeDistribution"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/graph": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get graph (number of boulders/routes grouped by grade) */
-        get: operations["getGraph"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/meta": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get metadata */
-        get: operations["getMeta"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/robots.txt": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get robots.txt */
-        get: operations["getRobotsTxt"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/sitemap.txt": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get sitemap.txt */
-        get: operations["getSitemapTxt"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/toc": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get table of contents (all problems) */
-        get: operations["getToc"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/toc/xlsx": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get table of contents (all problems) as Excel (xlsx) */
-        get: operations["getTocXlsx"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/problems": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get problem by id */
-        get: operations["getProblems"];
-        put?: never;
-        /** Update problem */
-        post: operations["postProblems"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/problems/pdf": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get problem PDF by id */
-        get: operations["getProblemsPdf"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/problems/search": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Search for problem */
-        get: operations["getProblemsSearch"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/problems/svg": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Update topo line on route/boulder (SVG on sector/problem-image) */
-        post: operations["postProblemsSvg"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/profiles": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get profile by id */
-        get: operations["getProfiles"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/profiles/ascents": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get profile ascents */
-        get: operations["getProfilesAscents"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/profiles/media": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get profile media by user id */
-        get: operations["getProfilesMedia"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/profiles/todo": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get profile todo */
-        get: operations["getProfilesTodo"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/profiles/identity": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Update profile identity */
-        post: operations["postProfilesIdentity"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/profiles/theme": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Update theme preference (light/dark) */
-        post: operations["postProfilesTheme"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/sectors": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get sector by id */
-        get: operations["getSectors"];
-        put?: never;
-        /** Update sector */
-        post: operations["postSectors"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/sectors/pdf": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get sector PDF by id */
-        get: operations["getSectorsPdf"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/search": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Search for problem */
-        get: operations["getUsersSearch"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/ticks": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get ticks (public ascents) on logged in user as Excel file (xlsx) */
-        get: operations["getUsersTicks"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/regions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Update visible regions */
-        post: operations["postUserRegions"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/webcams": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get webcams */
-        get: operations["getCameras"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/without-js": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Frontpage without JavaScript (for embedding on e.g. Facebook) */
-        get: operations["getWithoutJs"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/without-js/area/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get area by id without JavaScript (for embedding on e.g. Facebook) */
-        get: operations["getWithoutJsArea"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/without-js/problem/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get problem by id without JavaScript (for embedding on e.g. Facebook) */
-        get: operations["getWithoutJsProblem"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/without-js/problem/{id}/{mediaId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get problem by id and idMedia without JavaScript (for embedding on e.g. Facebook) */
-        get: operations["getWithoutJsProblemMedia"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/without-js/problem/{id}/{mediaId}/{pitch}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get problem by id, idMedia and pitch without JavaScript (for embedding on e.g. Facebook) */
-        get: operations["getWithoutJsProblemMediaPitch"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/without-js/sector/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get sector by id without JavaScript (for embedding on e.g. Facebook) */
-        get: operations["getWithoutJsSector"];
+        /** Get activity feed */
+        get: operations["getActivity"];
         put?: never;
         post?: never;
         delete?: never;
@@ -969,170 +977,6 @@ export type paths = {
 export type webhooks = Record<string, never>;
 export type components = {
     schemas: {
-        Activity: {
-            activityIds?: number[];
-            activityThumbnails?: components["schemas"]["ActivityThumbnail"][];
-            timeAgo?: string;
-            /** Format: int32 */
-            areaId?: number;
-            areaName?: string;
-            areaLockedAdmin?: boolean;
-            areaLockedSuperadmin?: boolean;
-            /** Format: int32 */
-            sectorId?: number;
-            sectorName?: string;
-            sectorLockedAdmin?: boolean;
-            sectorLockedSuperadmin?: boolean;
-            /** Format: int32 */
-            problemId?: number;
-            problemLockedAdmin?: boolean;
-            problemLockedSuperadmin?: boolean;
-            problemName?: string;
-            problemSubtype?: string;
-            grade?: string;
-            media?: components["schemas"]["ActivityMedia"][];
-            /** Format: int32 */
-            stars?: number;
-            repeat?: boolean;
-            /** Format: int32 */
-            id?: number;
-            name?: string;
-            description?: string;
-            message?: string;
-            users?: components["schemas"]["User"][];
-        };
-        ActivityMedia: {
-            identity?: components["schemas"]["MediaIdentity"];
-            movie?: boolean;
-            is360?: boolean;
-            embedUrl?: string;
-        };
-        ActivityThumbnail: {
-            identity?: components["schemas"]["MediaIdentity"];
-            /** Format: int32 */
-            userId?: number;
-            name?: string;
-        };
-        MediaIdentity: {
-            /** Format: int32 */
-            id?: number;
-            /** Format: int64 */
-            versionStamp?: number;
-            /** Format: int32 */
-            focusX?: number;
-            /** Format: int32 */
-            focusY?: number;
-            primaryColorHex?: string;
-        };
-        User: {
-            /** Format: int32 */
-            id?: number;
-            name?: string;
-            mediaIdentity?: components["schemas"]["MediaIdentity"];
-        };
-        Administrator: {
-            /** Format: int32 */
-            userId?: number;
-            name?: string;
-            emails?: string[];
-            randomMedia?: components["schemas"]["MediaIdentity"];
-            lastLogin?: string;
-        };
-        Area: {
-            redirectUrl?: string;
-            regionName?: string;
-            /** Format: int32 */
-            id?: number;
-            trash?: boolean;
-            lockedAdmin?: boolean;
-            lockedSuperadmin?: boolean;
-            forDevelopers?: boolean;
-            accessInfo?: string;
-            accessClosed?: string;
-            noDogsAllowed?: boolean;
-            /** Format: int32 */
-            sunFromHour?: number;
-            /** Format: int32 */
-            sunToHour?: number;
-            name?: string;
-            comment?: string;
-            coordinates?: components["schemas"]["Coordinates"];
-            /** Format: int32 */
-            numSectors?: number;
-            /** Format: int32 */
-            numProblems?: number;
-            sectors?: components["schemas"]["AreaSector"][];
-            sectorOrder?: components["schemas"]["AreaSectorOrder"][];
-            media?: components["schemas"]["Media"][];
-            triviaMedia?: components["schemas"]["Media"][];
-            externalLinks?: components["schemas"]["ExternalLink"][];
-            pageViews?: string;
-        };
-        AreaSector: {
-            areaName?: string;
-            /** Format: int32 */
-            id?: number;
-            /** Format: int32 */
-            sorting?: number;
-            lockedAdmin?: boolean;
-            lockedSuperadmin?: boolean;
-            name?: string;
-            comment?: string;
-            accessInfo?: string;
-            accessClosed?: string;
-            /** Format: int32 */
-            sunFromHour?: number;
-            /** Format: int32 */
-            sunToHour?: number;
-            parking?: components["schemas"]["Coordinates"];
-            outline?: components["schemas"]["Coordinates"][];
-            wallDirectionCalculated?: components["schemas"]["CompassDirection"];
-            wallDirectionManual?: components["schemas"]["CompassDirection"];
-            trails?: components["schemas"]["Trail"][];
-            randomMedia?: components["schemas"]["MediaIdentity"];
-            problems?: components["schemas"]["SectorProblem"][];
-            /** Format: int32 */
-            progress?: number;
-            gradeCounts?: components["schemas"]["GradeCount"][];
-        };
-        AreaSectorOrder: {
-            /** Format: int32 */
-            id?: number;
-            name?: string;
-            /** Format: int32 */
-            sorting?: number;
-        };
-        CompassDirection: {
-            /** Format: int32 */
-            id?: number;
-            direction?: string;
-        };
-        Coordinates: {
-            /** Format: int32 */
-            id?: number;
-            /** Format: double */
-            latitude?: number;
-            /** Format: double */
-            longitude?: number;
-            /** Format: double */
-            elevation?: number;
-            elevationSource?: string;
-            /** Format: double */
-            distance?: number;
-        };
-        ExternalLink: {
-            /** Format: int32 */
-            id?: number;
-            url?: string;
-            title?: string;
-            inherited?: boolean;
-        };
-        GradeCount: {
-            grade?: string;
-            color?: string;
-            /** Format: int32 */
-            num?: number;
-        };
         Media: {
             identity?: components["schemas"]["MediaIdentity"];
             uploadedByMe?: boolean;
@@ -1169,6 +1013,17 @@ export type components = {
             areaId?: number;
             areaName?: string;
             trivia?: boolean;
+        };
+        MediaIdentity: {
+            /** Format: int32 */
+            id?: number;
+            /** Format: int64 */
+            versionStamp?: number;
+            /** Format: int32 */
+            focusX?: number;
+            /** Format: int32 */
+            focusY?: number;
+            primaryColorHex?: string;
         };
         MediaProblem: {
             /** Format: int32 */
@@ -1223,6 +1078,170 @@ export type components = {
             sectorId?: number;
             sectorName?: string;
         };
+        Svg: {
+            delete?: boolean;
+            /** Format: int32 */
+            id?: number;
+            /** Format: int32 */
+            problemId?: number;
+            problemName?: string;
+            problemGrade?: string;
+            problemGradeColor?: string;
+            problemSubtype?: string;
+            /** Format: int32 */
+            nr?: number;
+            /** Format: int32 */
+            pitch?: number;
+            path?: string;
+            hasAnchor?: boolean;
+            texts?: string;
+            anchors?: string;
+            tradBelayStations?: string;
+            primary?: boolean;
+            ticked?: boolean;
+            todo?: boolean;
+            dangerous?: boolean;
+        };
+        User: {
+            /** Format: int32 */
+            id?: number;
+            name?: string;
+            mediaIdentity?: components["schemas"]["MediaIdentity"];
+        };
+        Coordinates: {
+            /** Format: int32 */
+            id?: number;
+            /** Format: double */
+            latitude?: number;
+            /** Format: double */
+            longitude?: number;
+            /** Format: double */
+            elevation?: number;
+            elevationSource?: string;
+            /** Format: double */
+            distance?: number;
+        };
+        Trail: {
+            /** Format: int32 */
+            id?: number;
+            isDescent?: boolean;
+            delete?: boolean;
+            title?: string;
+            description?: string;
+            path?: components["schemas"]["Coordinates"][];
+            markers?: components["schemas"]["TrailMarker"][];
+            media?: components["schemas"]["Media"][];
+            sectors?: components["schemas"]["TrailSector"][];
+            /** Format: double */
+            calculatedDurationInMinutes?: number;
+            /** Format: int64 */
+            distance?: number;
+            /** Format: int64 */
+            elevationGain?: number;
+            /** Format: int64 */
+            elevationLoss?: number;
+        };
+        TrailMarker: {
+            coordinates?: components["schemas"]["Coordinates"];
+            label?: string;
+        };
+        TrailSector: {
+            /** Format: int32 */
+            sectorId?: number;
+            areaName?: string;
+            sectorName?: string;
+        };
+        Tick: {
+            delete?: boolean;
+            /** Format: int32 */
+            id?: number;
+            /** Format: int32 */
+            idProblem?: number;
+            comment?: string;
+            date?: string;
+            /** Format: double */
+            stars?: number;
+            grade?: string;
+            repeats?: components["schemas"]["TickRepeat"][];
+        };
+        TickRepeat: {
+            /** Format: int32 */
+            id?: number;
+            /** Format: int32 */
+            tickId?: number;
+            comment?: string;
+            date?: string;
+        };
+        Redirect: {
+            /** Format: int32 */
+            idArea?: number;
+            /** Format: int32 */
+            idSector?: number;
+            redirectUrl?: string;
+            destination?: string;
+        };
+        CompassDirection: {
+            /** Format: int32 */
+            id?: number;
+            direction?: string;
+        };
+        ExternalLink: {
+            /** Format: int32 */
+            id?: number;
+            url?: string;
+            title?: string;
+            inherited?: boolean;
+        };
+        Sector: {
+            redirectUrl?: string;
+            orderByGrade?: boolean;
+            /** Format: int32 */
+            areaId?: number;
+            areaLockedAdmin?: boolean;
+            areaLockedSuperadmin?: boolean;
+            areaAccessInfo?: string;
+            areaAccessClosed?: string;
+            areaNoDogsAllowed?: boolean;
+            /** Format: int32 */
+            areaSunFromHour?: number;
+            /** Format: int32 */
+            areaSunToHour?: number;
+            areaName?: string;
+            /** Format: int32 */
+            id?: number;
+            trash?: boolean;
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
+            name?: string;
+            comment?: string;
+            accessInfo?: string;
+            accessClosed?: string;
+            /** Format: int32 */
+            sunFromHour?: number;
+            /** Format: int32 */
+            sunToHour?: number;
+            parking?: components["schemas"]["Coordinates"];
+            outline?: components["schemas"]["Coordinates"][];
+            wallDirectionCalculated?: components["schemas"]["CompassDirection"];
+            wallDirectionManual?: components["schemas"]["CompassDirection"];
+            trails?: components["schemas"]["Trail"][];
+            media?: components["schemas"]["Media"][];
+            triviaMedia?: components["schemas"]["Media"][];
+            sectors?: components["schemas"]["SectorJump"][];
+            problems?: components["schemas"]["SectorProblem"][];
+            problemOrder?: components["schemas"]["SectorProblemOrder"][];
+            externalLinks?: components["schemas"]["ExternalLink"][];
+            pageViews?: string;
+        };
+        SectorJump: {
+            /** Format: int32 */
+            id?: number;
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
+            name?: string;
+            /** Format: int32 */
+            sorting?: number;
+        };
         SectorProblem: {
             /** Format: int32 */
             id?: number;
@@ -1260,241 +1279,18 @@ export type components = {
             t?: components["schemas"]["Type"];
             danger?: boolean;
         };
-        Svg: {
-            delete?: boolean;
+        SectorProblemOrder: {
             /** Format: int32 */
             id?: number;
-            /** Format: int32 */
-            problemId?: number;
-            problemName?: string;
-            problemGrade?: string;
-            problemGradeColor?: string;
-            problemSubtype?: string;
+            name?: string;
             /** Format: int32 */
             nr?: number;
-            /** Format: int32 */
-            pitch?: number;
-            path?: string;
-            hasAnchor?: boolean;
-            texts?: string;
-            anchors?: string;
-            tradBelayStations?: string;
-            primary?: boolean;
-            ticked?: boolean;
-            todo?: boolean;
-            dangerous?: boolean;
-        };
-        Trail: {
-            /** Format: int32 */
-            id?: number;
-            isDescent?: boolean;
-            delete?: boolean;
-            title?: string;
-            description?: string;
-            path?: components["schemas"]["Coordinates"][];
-            markers?: components["schemas"]["TrailMarker"][];
-            media?: components["schemas"]["Media"][];
-            sectors?: components["schemas"]["TrailSector"][];
-            /** Format: double */
-            calculatedDurationInMinutes?: number;
-            /** Format: int64 */
-            distance?: number;
-            /** Format: int64 */
-            elevationGain?: number;
-            /** Format: int64 */
-            elevationLoss?: number;
-        };
-        TrailMarker: {
-            coordinates?: components["schemas"]["Coordinates"];
-            label?: string;
-        };
-        TrailSector: {
-            /** Format: int32 */
-            sectorId?: number;
-            areaName?: string;
-            sectorName?: string;
         };
         Type: {
             /** Format: int32 */
             id?: number;
             type?: string;
             subType?: string;
-        };
-        Redirect: {
-            /** Format: int32 */
-            idArea?: number;
-            /** Format: int32 */
-            idSector?: number;
-            redirectUrl?: string;
-            destination?: string;
-        };
-        DangerousArea: {
-            /** Format: int32 */
-            id?: number;
-            name?: string;
-            lockedAdmin?: boolean;
-            lockedSuperadmin?: boolean;
-            /** Format: int32 */
-            sunFromHour?: number;
-            /** Format: int32 */
-            sunToHour?: number;
-            sectors?: components["schemas"]["DangerousSector"][];
-        };
-        DangerousProblem: {
-            /** Format: int32 */
-            id?: number;
-            broken?: string;
-            lockedAdmin?: boolean;
-            lockedSuperadmin?: boolean;
-            /** Format: int32 */
-            nr?: number;
-            name?: string;
-            grade?: string;
-            postBy?: string;
-            postWhen?: string;
-            postTxt?: string;
-        };
-        DangerousSector: {
-            /** Format: int32 */
-            id?: number;
-            name?: string;
-            wallDirectionCalculated?: components["schemas"]["CompassDirection"];
-            wallDirectionManual?: components["schemas"]["CompassDirection"];
-            lockedAdmin?: boolean;
-            lockedSuperadmin?: boolean;
-            /** Format: int32 */
-            sunFromHour?: number;
-            /** Format: int32 */
-            sunToHour?: number;
-            problems?: components["schemas"]["DangerousProblem"][];
-        };
-        PermissionUser: {
-            /** Format: int32 */
-            userId?: number;
-            name?: string;
-            mediaIdentity?: components["schemas"]["MediaIdentity"];
-            lastLogin?: string;
-            adminRead?: boolean;
-            adminWrite?: boolean;
-            superadminRead?: boolean;
-            superadminWrite?: boolean;
-            readOnly?: boolean;
-        };
-        RestrictionsArea: {
-            /** Format: int32 */
-            id?: number;
-            lockedAdmin?: boolean;
-            lockedSuperadmin?: boolean;
-            name?: string;
-            accessClosed?: string;
-            accessInfo?: string;
-            sectors?: components["schemas"]["RestrictionsSector"][];
-        };
-        RestrictionsRegion: {
-            /** Format: int32 */
-            id?: number;
-            name?: string;
-            areas?: components["schemas"]["RestrictionsArea"][];
-        };
-        RestrictionsSector: {
-            /** Format: int32 */
-            id?: number;
-            lockedAdmin?: boolean;
-            lockedSuperadmin?: boolean;
-            name?: string;
-            accessClosed?: string;
-            accessInfo?: string;
-        };
-        PublicAscent: {
-            /** Format: int32 */
-            areaId?: number;
-            areaName?: string;
-            areaLockedAdmin?: boolean;
-            areaLockedSuperadmin?: boolean;
-            /** Format: int32 */
-            sectorId?: number;
-            sectorName?: string;
-            sectorLockedAdmin?: boolean;
-            sectorLockedSuperadmin?: boolean;
-            /** Format: int32 */
-            problemId?: number;
-            problemGrade?: string;
-            problemName?: string;
-            problemLockedAdmin?: boolean;
-            problemLockedSuperadmin?: boolean;
-            date?: string;
-            name?: string;
-        };
-        Ticks: {
-            ticks?: components["schemas"]["PublicAscent"][];
-            /** Format: int32 */
-            currPage?: number;
-            /** Format: int32 */
-            numPages?: number;
-        };
-        Todo: {
-            sectors?: components["schemas"]["TodoSector"][];
-        };
-        TodoProblem: {
-            /** Format: int32 */
-            id?: number;
-            lockedAdmin?: boolean;
-            lockedSuperadmin?: boolean;
-            /** Format: int32 */
-            nr?: number;
-            name?: string;
-            grade?: string;
-            partners?: components["schemas"]["User"][];
-        };
-        TodoSector: {
-            /** Format: int32 */
-            id?: number;
-            name?: string;
-            lockedAdmin?: boolean;
-            lockedSuperadmin?: boolean;
-            problems?: components["schemas"]["TodoProblem"][];
-        };
-        Top: {
-            rows?: components["schemas"]["TopRank"][];
-            /** Format: int32 */
-            numUsers?: number;
-        };
-        TopRank: {
-            /** Format: int32 */
-            rank?: number;
-            /** Format: double */
-            percentage?: number;
-            users?: components["schemas"]["TopUser"][];
-        };
-        TopUser: {
-            /** Format: int32 */
-            userId?: number;
-            name?: string;
-            mediaIdentity?: components["schemas"]["MediaIdentity"];
-            mine?: boolean;
-        };
-        Trash: {
-            /** Format: int32 */
-            idArea?: number;
-            /** Format: int32 */
-            idSector?: number;
-            /** Format: int32 */
-            idProblem?: number;
-            /** Format: int32 */
-            idMedia?: number;
-            name?: string;
-            when?: string;
-            by?: string;
-        };
-        Comment: {
-            /** Format: int32 */
-            id?: number;
-            /** Format: int32 */
-            idProblem?: number;
-            comment?: string;
-            danger?: boolean;
-            resolved?: boolean;
-            delete?: boolean;
         };
         Search: {
             title?: string;
@@ -1512,430 +1308,26 @@ export type components = {
         SearchRequest: {
             value?: string;
         };
-        Tick: {
-            delete?: boolean;
+        ProfileIdentity: {
             /** Format: int32 */
             id?: number;
-            /** Format: int32 */
-            idProblem?: number;
-            comment?: string;
-            date?: string;
-            /** Format: double */
-            stars?: number;
-            grade?: string;
-            repeats?: components["schemas"]["TickRepeat"][];
-        };
-        TickRepeat: {
-            /** Format: int32 */
-            id?: number;
-            /** Format: int32 */
-            tickId?: number;
-            comment?: string;
-            date?: string;
-        };
-        BodyPart: {
-            contentDisposition?: components["schemas"]["ContentDisposition"];
-            entity?: Record<string, never>;
-            headers?: {
-                empty?: boolean;
-            } & {
-                [key: string]: string[];
-            };
-            mediaType?: components["schemas"]["MediaType"];
-            messageBodyWorkers?: components["schemas"]["MessageBodyWorkers"];
-            parent?: components["schemas"]["MultiPart"];
-            providers?: components["schemas"]["Providers"];
-            parameterizedHeaders?: {
-                empty?: boolean;
-            } & {
-                [key: string]: components["schemas"]["ParameterizedHeader"][];
-            };
-        };
-        ContentDisposition: {
-            type?: string;
-            parameters?: {
-                [key: string]: string;
-            };
-            fileName?: string;
-            /** Format: date-time */
-            creationDate?: string;
-            /** Format: date-time */
-            modificationDate?: string;
-            /** Format: date-time */
-            readDate?: string;
-            /** Format: int64 */
-            size?: number;
-        };
-        FormDataBodyPart: {
-            contentDisposition?: components["schemas"]["ContentDisposition"];
-            entity?: Record<string, never>;
-            headers?: {
-                empty?: boolean;
-            } & {
-                [key: string]: string[];
-            };
-            mediaType?: components["schemas"]["MediaType"];
-            messageBodyWorkers?: components["schemas"]["MessageBodyWorkers"];
-            parent?: components["schemas"]["MultiPart"];
-            providers?: components["schemas"]["Providers"];
-            name?: string;
-            value?: string;
-            content?: Record<string, never>;
-            fileName?: string;
-            simple?: boolean;
-            formDataContentDisposition?: components["schemas"]["FormDataContentDisposition"];
-            parameterizedHeaders?: {
-                empty?: boolean;
-            } & {
-                [key: string]: components["schemas"]["ParameterizedHeader"][];
-            };
-        };
-        FormDataContentDisposition: {
-            type?: string;
-            parameters?: {
-                [key: string]: string;
-            };
-            fileName?: string;
-            /** Format: date-time */
-            creationDate?: string;
-            /** Format: date-time */
-            modificationDate?: string;
-            /** Format: date-time */
-            readDate?: string;
-            /** Format: int64 */
-            size?: number;
-            name?: string;
-        };
-        FormDataMultiPart: {
-            contentDisposition?: components["schemas"]["ContentDisposition"];
-            entity?: Record<string, never>;
-            headers?: {
-                empty?: boolean;
-            } & {
-                [key: string]: string[];
-            };
-            mediaType?: components["schemas"]["MediaType"];
-            messageBodyWorkers?: components["schemas"]["MessageBodyWorkers"];
-            parent?: components["schemas"]["MultiPart"];
-            providers?: components["schemas"]["Providers"];
-            bodyParts?: components["schemas"]["BodyPart"][];
-            fields?: {
-                [key: string]: components["schemas"]["FormDataBodyPart"][];
-            };
-            parameterizedHeaders?: {
-                empty?: boolean;
-            } & {
-                [key: string]: components["schemas"]["ParameterizedHeader"][];
-            };
-        };
-        MediaType: {
-            type?: string;
-            subtype?: string;
-            parameters?: {
-                [key: string]: string;
-            };
-            wildcardType?: boolean;
-            wildcardSubtype?: boolean;
-        };
-        MessageBodyWorkers: Record<string, never>;
-        MultiPart: {
-            contentDisposition?: components["schemas"]["ContentDisposition"];
-            entity?: Record<string, never>;
-            headers?: {
-                empty?: boolean;
-            } & {
-                [key: string]: string[];
-            };
-            mediaType?: components["schemas"]["MediaType"];
-            messageBodyWorkers?: components["schemas"]["MessageBodyWorkers"];
-            parent?: components["schemas"]["MultiPart"];
-            providers?: components["schemas"]["Providers"];
-            bodyParts?: components["schemas"]["BodyPart"][];
-            parameterizedHeaders?: {
-                empty?: boolean;
-            } & {
-                [key: string]: components["schemas"]["ParameterizedHeader"][];
-            };
-        };
-        MultivaluedMapStringParameterizedHeader: {
-            empty?: boolean;
-        } & {
-            [key: string]: components["schemas"]["ParameterizedHeader"][];
-        };
-        MultivaluedMapStringString: {
-            empty?: boolean;
-        } & {
-            [key: string]: string[];
-        };
-        ParameterizedHeader: {
-            value?: string;
-            parameters?: {
-                [key: string]: string;
-            };
-        };
-        Providers: Record<string, never>;
-        InstagramMedia: {
-            cdnUrl?: string;
-            isVideo?: boolean;
-            /** Format: int32 */
-            mediaIndex?: number;
-        };
-        VideoInitResponse: {
-            /** Format: int32 */
-            id?: number;
-            presignedUrl?: string;
-        };
-        VideoInitPayload: {
-            media?: components["schemas"]["Media"];
-            /** Format: int64 */
-            fileSize?: number;
-            contentType?: string;
-        };
-        Frontpage: {
-            stats?: components["schemas"]["FrontpageStats"];
-            randomMedia?: components["schemas"]["FrontpageRandomMedia"][];
-            firstAscents?: components["schemas"]["FrontpageFirstAscent"][];
-            recentAscents?: components["schemas"]["FrontpageRecentAscent"][];
-            newestMedia?: components["schemas"]["FrontpageNewestMedia"][];
-            lastComments?: components["schemas"]["FrontpageLastComment"][];
-        };
-        FrontpageFirstAscent: {
-            timeAgo?: string;
-            /** Format: int32 */
-            areaId?: number;
-            areaName?: string;
-            /** Format: int32 */
-            problemId?: number;
-            problemLockedAdmin?: boolean;
-            problemLockedSuperadmin?: boolean;
-            problemName?: string;
-            problemSubtype?: string;
-            grade?: string;
-            users?: components["schemas"]["User"][];
-        };
-        FrontpageLastComment: {
-            timeAgo?: string;
-            /** Format: int32 */
-            areaId?: number;
-            areaName?: string;
-            /** Format: int32 */
-            problemId?: number;
-            problemLockedAdmin?: boolean;
-            problemLockedSuperadmin?: boolean;
-            problemName?: string;
-            u?: components["schemas"]["User"];
-            comment?: string;
-        };
-        FrontpageNewestMedia: {
-            identity?: components["schemas"]["MediaIdentity"];
-            isMovie?: boolean;
-            is360?: boolean;
-            /** Format: int32 */
-            problemId?: number;
-            problemLockedAdmin?: boolean;
-            problemLockedSuperadmin?: boolean;
-            problemName?: string;
-            grade?: string;
-        };
-        FrontpageRandomMedia: {
-            identity?: components["schemas"]["MediaIdentity"];
-            /** Format: int32 */
-            width?: number;
-            /** Format: int32 */
-            height?: number;
-            /** Format: int32 */
-            idArea?: number;
-            area?: string;
-            /** Format: int32 */
-            idSector?: number;
-            sector?: string;
-            /** Format: int32 */
-            idProblem?: number;
-            problem?: string;
-            grade?: string;
-            photographer?: components["schemas"]["User"];
-            tagged?: components["schemas"]["User"][];
-        };
-        FrontpageRecentAscent: {
-            timeAgo?: string;
-            /** Format: int32 */
-            areaId?: number;
-            areaName?: string;
-            /** Format: int32 */
-            problemId?: number;
-            problemLockedAdmin?: boolean;
-            problemLockedSuperadmin?: boolean;
-            problemName?: string;
-            problemSubtype?: string;
-            grade?: string;
-            u?: components["schemas"]["User"];
-            repeat?: boolean;
-        };
-        FrontpageStats: {
-            /** Format: int32 */
-            areas?: number;
-            /** Format: int32 */
-            problems?: number;
-            /** Format: int32 */
-            ticks?: number;
-        };
-        GradeDistribution: {
-            grade?: string;
-            color?: string;
-            /** Format: int32 */
-            num?: number;
-            /** Format: int32 */
-            prim?: number;
-            /** Format: int32 */
-            sec?: number;
-            rows?: components["schemas"]["GradeDistributionRow"][];
-        };
-        GradeDistributionRow: {
-            /** Format: int32 */
-            id?: number;
-            name?: string;
-            /** Format: int32 */
-            numBoulder?: number;
-            /** Format: int32 */
-            numSport?: number;
-            /** Format: int32 */
-            numTrad?: number;
-            /** Format: int32 */
-            numMixed?: number;
-            /** Format: int32 */
-            numTopRope?: number;
-            /** Format: int32 */
-            numAid?: number;
-            /** Format: int32 */
-            numAidTrad?: number;
-            /** Format: int32 */
-            numIce?: number;
-        };
-        Grade: {
-            /** Format: int32 */
-            id?: number;
-            grade?: string;
-            labelCompact?: string;
-            color?: string;
-        };
-        LatLng: {
-            /** Format: double */
-            lat?: number;
-            /** Format: double */
-            lng?: number;
-        };
-        Meta: {
-            title?: string;
-            isAuthenticated?: boolean;
-            isAdmin?: boolean;
-            isSuperAdmin?: boolean;
-            /** Format: int32 */
-            userId?: number;
-            authenticatedName?: string;
+            firstname?: string;
+            lastname?: string;
+            emailVisibleToAll?: boolean;
             themePreference?: string;
             mediaIdentity?: components["schemas"]["MediaIdentity"];
-            grades?: components["schemas"]["Grade"][];
-            faYears?: number[];
-            /** Format: int32 */
-            defaultZoom?: number;
-            defaultCenter?: components["schemas"]["LatLng"];
-            isBouldering?: boolean;
-            isClimbing?: boolean;
-            isIce?: boolean;
-            url?: string;
-            types?: components["schemas"]["Type"][];
-            regions?: components["schemas"]["Region"][];
-            compassDirections?: components["schemas"]["CompassDirection"][];
+            emails?: string[];
+            userRegions?: components["schemas"]["UserRegion"][];
+            lastActivity?: string;
         };
-        Region: {
-            group?: string;
-            name?: string;
-            url?: string;
-            active?: boolean;
-            outline?: components["schemas"]["Coordinates"][];
-        };
-        Toc: {
-            /** Format: int32 */
-            numRegions?: number;
-            /** Format: int32 */
-            numAreas?: number;
-            /** Format: int32 */
-            numSectors?: number;
-            /** Format: int32 */
-            numProblems?: number;
-            regions?: components["schemas"]["TocRegion"][];
-        };
-        TocArea: {
-            /** Format: int32 */
-            id?: number;
-            url?: string;
-            name?: string;
-            coordinates?: components["schemas"]["Coordinates"];
-            lockedAdmin?: boolean;
-            lockedSuperadmin?: boolean;
-            /** Format: int32 */
-            sunFromHour?: number;
-            /** Format: int32 */
-            sunToHour?: number;
-            sectors?: components["schemas"]["TocSector"][];
-        };
-        TocProblem: {
-            /** Format: int32 */
-            id?: number;
-            url?: string;
-            broken?: string;
-            lockedAdmin?: boolean;
-            lockedSuperadmin?: boolean;
-            /** Format: int32 */
-            nr?: number;
-            name?: string;
-            description?: string;
-            /** Format: int32 */
-            lengthMeter?: number;
-            /** Format: int32 */
-            startingAltitude?: number;
-            coordinates?: components["schemas"]["Coordinates"];
-            grade?: string;
-            faUser?: string;
-            /** Format: int32 */
-            faYear?: number;
-            ffaUser?: string;
-            /** Format: int32 */
-            ffaYear?: number;
-            /** Format: int32 */
-            numTicks?: number;
-            /** Format: double */
-            stars?: number;
-            ticked?: boolean;
-            todo?: boolean;
-            t?: components["schemas"]["Type"];
-            /** Format: int32 */
-            numPitches?: number;
-        };
-        TocRegion: {
+        UserRegion: {
             /** Format: int32 */
             id?: number;
             name?: string;
-            areas?: components["schemas"]["TocArea"][];
-        };
-        TocSector: {
-            /** Format: int32 */
-            id?: number;
-            url?: string;
-            name?: string;
-            /** Format: int32 */
-            sorting?: number;
-            parking?: components["schemas"]["Coordinates"];
-            outline?: components["schemas"]["Coordinates"][];
-            wallDirectionCalculated?: components["schemas"]["CompassDirection"];
-            wallDirectionManual?: components["schemas"]["CompassDirection"];
-            lockedAdmin?: boolean;
-            lockedSuperadmin?: boolean;
-            /** Format: int32 */
-            sunFromHour?: number;
-            /** Format: int32 */
-            sunToHour?: number;
-            problems?: components["schemas"]["TocProblem"][];
+            role?: string;
+            enabled?: boolean;
+            readOnly?: boolean;
+            activity?: boolean;
         };
         FaAid: {
             /** Format: int32 */
@@ -2071,15 +1463,316 @@ export type components = {
             mediaIdentity?: components["schemas"]["MediaIdentity"];
             name?: string;
         };
-        ProblemSearchResult: {
+        PermissionUser: {
+            /** Format: int32 */
+            userId?: number;
+            name?: string;
+            mediaIdentity?: components["schemas"]["MediaIdentity"];
+            lastLogin?: string;
+            adminRead?: boolean;
+            adminWrite?: boolean;
+            superadminRead?: boolean;
+            superadminWrite?: boolean;
+            readOnly?: boolean;
+        };
+        VideoInitResponse: {
             /** Format: int32 */
             id?: number;
+            presignedUrl?: string;
+        };
+        VideoInitPayload: {
+            media?: components["schemas"]["Media"];
+            /** Format: int64 */
+            fileSize?: number;
+            contentType?: string;
+        };
+        InstagramMedia: {
+            cdnUrl?: string;
+            isVideo?: boolean;
+            /** Format: int32 */
+            mediaIndex?: number;
+        };
+        Comment: {
+            /** Format: int32 */
+            id?: number;
+            /** Format: int32 */
+            idProblem?: number;
+            comment?: string;
+            danger?: boolean;
+            resolved?: boolean;
+            delete?: boolean;
+        };
+        Area: {
+            redirectUrl?: string;
+            regionName?: string;
+            /** Format: int32 */
+            id?: number;
+            trash?: boolean;
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
+            forDevelopers?: boolean;
+            accessInfo?: string;
+            accessClosed?: string;
+            noDogsAllowed?: boolean;
+            /** Format: int32 */
+            sunFromHour?: number;
+            /** Format: int32 */
+            sunToHour?: number;
+            name?: string;
+            comment?: string;
+            coordinates?: components["schemas"]["Coordinates"];
+            /** Format: int32 */
+            numSectors?: number;
+            /** Format: int32 */
+            numProblems?: number;
+            sectors?: components["schemas"]["AreaSector"][];
+            sectorOrder?: components["schemas"]["AreaSectorOrder"][];
+            media?: components["schemas"]["Media"][];
+            triviaMedia?: components["schemas"]["Media"][];
+            externalLinks?: components["schemas"]["ExternalLink"][];
+            pageViews?: string;
+        };
+        AreaSector: {
             areaName?: string;
-            sectorName?: string;
-            problemName?: string;
+            /** Format: int32 */
+            id?: number;
+            /** Format: int32 */
+            sorting?: number;
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
+            name?: string;
+            comment?: string;
+            accessInfo?: string;
+            accessClosed?: string;
+            /** Format: int32 */
+            sunFromHour?: number;
+            /** Format: int32 */
+            sunToHour?: number;
+            parking?: components["schemas"]["Coordinates"];
+            outline?: components["schemas"]["Coordinates"][];
+            wallDirectionCalculated?: components["schemas"]["CompassDirection"];
+            wallDirectionManual?: components["schemas"]["CompassDirection"];
+            trails?: components["schemas"]["Trail"][];
+            randomMedia?: components["schemas"]["MediaIdentity"];
+            problems?: components["schemas"]["SectorProblem"][];
+            /** Format: int32 */
+            progress?: number;
+            gradeCounts?: components["schemas"]["GradeCount"][];
+        };
+        AreaSectorOrder: {
+            /** Format: int32 */
+            id?: number;
+            name?: string;
+            /** Format: int32 */
+            sorting?: number;
+        };
+        GradeCount: {
             grade?: string;
+            color?: string;
+            /** Format: int32 */
+            num?: number;
+        };
+        Webcam: {
+            id?: string;
+            lastUpdated?: string;
+            name?: string;
+            urlStillImage?: string;
+            urlYr?: string;
+            urlOther?: string;
+            /** Format: double */
+            lat?: number;
+            /** Format: double */
+            lng?: number;
+        };
+        Trash: {
+            /** Format: int32 */
+            idArea?: number;
+            /** Format: int32 */
+            idSector?: number;
+            /** Format: int32 */
+            idProblem?: number;
+            /** Format: int32 */
+            idMedia?: number;
+            name?: string;
+            when?: string;
+            by?: string;
+        };
+        Top: {
+            rows?: components["schemas"]["TopRank"][];
+            /** Format: int32 */
+            numUsers?: number;
+        };
+        TopRank: {
+            /** Format: int32 */
+            rank?: number;
+            /** Format: double */
+            percentage?: number;
+            users?: components["schemas"]["TopUser"][];
+        };
+        TopUser: {
+            /** Format: int32 */
+            userId?: number;
+            name?: string;
+            mediaIdentity?: components["schemas"]["MediaIdentity"];
+            mine?: boolean;
+        };
+        Todo: {
+            sectors?: components["schemas"]["TodoSector"][];
+        };
+        TodoProblem: {
+            /** Format: int32 */
+            id?: number;
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
+            /** Format: int32 */
+            nr?: number;
+            name?: string;
+            grade?: string;
+            partners?: components["schemas"]["User"][];
+        };
+        TodoSector: {
+            /** Format: int32 */
+            id?: number;
+            name?: string;
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
+            problems?: components["schemas"]["TodoProblem"][];
+        };
+        Toc: {
+            /** Format: int32 */
+            numRegions?: number;
+            /** Format: int32 */
+            numAreas?: number;
+            /** Format: int32 */
+            numSectors?: number;
+            /** Format: int32 */
+            numProblems?: number;
+            regions?: components["schemas"]["TocRegion"][];
+        };
+        TocArea: {
+            /** Format: int32 */
+            id?: number;
+            url?: string;
+            name?: string;
+            coordinates?: components["schemas"]["Coordinates"];
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
+            /** Format: int32 */
+            sunFromHour?: number;
+            /** Format: int32 */
+            sunToHour?: number;
+            sectors?: components["schemas"]["TocSector"][];
+        };
+        TocProblem: {
+            /** Format: int32 */
+            id?: number;
+            url?: string;
+            broken?: string;
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
+            /** Format: int32 */
+            nr?: number;
+            name?: string;
+            description?: string;
+            /** Format: int32 */
+            lengthMeter?: number;
+            /** Format: int32 */
+            startingAltitude?: number;
+            coordinates?: components["schemas"]["Coordinates"];
+            grade?: string;
+            faUser?: string;
+            /** Format: int32 */
+            faYear?: number;
+            ffaUser?: string;
+            /** Format: int32 */
+            ffaYear?: number;
+            /** Format: int32 */
+            numTicks?: number;
+            /** Format: double */
+            stars?: number;
+            ticked?: boolean;
+            todo?: boolean;
+            t?: components["schemas"]["Type"];
             /** Format: int32 */
             numPitches?: number;
+        };
+        TocRegion: {
+            /** Format: int32 */
+            id?: number;
+            name?: string;
+            areas?: components["schemas"]["TocArea"][];
+        };
+        TocSector: {
+            /** Format: int32 */
+            id?: number;
+            url?: string;
+            name?: string;
+            /** Format: int32 */
+            sorting?: number;
+            parking?: components["schemas"]["Coordinates"];
+            outline?: components["schemas"]["Coordinates"][];
+            wallDirectionCalculated?: components["schemas"]["CompassDirection"];
+            wallDirectionManual?: components["schemas"]["CompassDirection"];
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
+            /** Format: int32 */
+            sunFromHour?: number;
+            /** Format: int32 */
+            sunToHour?: number;
+            problems?: components["schemas"]["TocProblem"][];
+        };
+        PublicAscent: {
+            /** Format: int32 */
+            areaId?: number;
+            areaName?: string;
+            areaLockedAdmin?: boolean;
+            areaLockedSuperadmin?: boolean;
+            /** Format: int32 */
+            sectorId?: number;
+            sectorName?: string;
+            sectorLockedAdmin?: boolean;
+            sectorLockedSuperadmin?: boolean;
+            /** Format: int32 */
+            problemId?: number;
+            problemGrade?: string;
+            problemName?: string;
+            problemLockedAdmin?: boolean;
+            problemLockedSuperadmin?: boolean;
+            date?: string;
+            name?: string;
+        };
+        Ticks: {
+            ticks?: components["schemas"]["PublicAscent"][];
+            /** Format: int32 */
+            currPage?: number;
+            /** Format: int32 */
+            numPages?: number;
+        };
+        StreamingResponseBody: Record<string, never>;
+        RestrictionsArea: {
+            /** Format: int32 */
+            id?: number;
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
+            name?: string;
+            accessClosed?: string;
+            accessInfo?: string;
+            sectors?: components["schemas"]["RestrictionsSector"][];
+        };
+        RestrictionsRegion: {
+            /** Format: int32 */
+            id?: number;
+            name?: string;
+            areas?: components["schemas"]["RestrictionsArea"][];
+        };
+        RestrictionsSector: {
+            /** Format: int32 */
+            id?: number;
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
+            name?: string;
+            accessClosed?: string;
+            accessInfo?: string;
         };
         Profile: {
             identity?: components["schemas"]["ProfileIdentity"];
@@ -2099,18 +1792,6 @@ export type components = {
             /** Format: int32 */
             tick?: number;
         };
-        ProfileIdentity: {
-            /** Format: int32 */
-            id?: number;
-            firstname?: string;
-            lastname?: string;
-            emailVisibleToAll?: boolean;
-            themePreference?: string;
-            mediaIdentity?: components["schemas"]["MediaIdentity"];
-            emails?: string[];
-            userRegions?: components["schemas"]["UserRegion"][];
-            lastActivity?: string;
-        };
         ProfileKpis: {
             /** Format: int32 */
             numImagesCreated?: number;
@@ -2121,14 +1802,38 @@ export type components = {
             /** Format: int32 */
             numVideoTags?: number;
         };
-        UserRegion: {
+        ProfileTodo: {
+            areas?: components["schemas"]["ProfileTodoArea"][];
+        };
+        ProfileTodoArea: {
             /** Format: int32 */
             id?: number;
             name?: string;
-            role?: string;
-            enabled?: boolean;
-            readOnly?: boolean;
-            activity?: boolean;
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
+            sectors?: components["schemas"]["ProfileTodoSector"][];
+        };
+        ProfileTodoProblem: {
+            /** Format: int32 */
+            todoId?: number;
+            /** Format: int32 */
+            id?: number;
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
+            /** Format: int32 */
+            nr?: number;
+            name?: string;
+            grade?: string;
+            coordinates?: components["schemas"]["Coordinates"];
+            partners?: components["schemas"]["User"][];
+        };
+        ProfileTodoSector: {
+            /** Format: int32 */
+            id?: number;
+            name?: string;
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
+            problems?: components["schemas"]["ProfileTodoProblem"][];
         };
         ProfileAscent: {
             regionName?: string;
@@ -2170,107 +1875,270 @@ export type components = {
             noPersonalGrade?: boolean;
             coordinates?: components["schemas"]["Coordinates"];
         };
-        ProfileTodo: {
-            areas?: components["schemas"]["ProfileTodoArea"][];
+        ProblemSearchResult: {
+            /** Format: int32 */
+            id?: number;
+            areaName?: string;
+            sectorName?: string;
+            problemName?: string;
+            grade?: string;
+            /** Format: int32 */
+            numPitches?: number;
         };
-        ProfileTodoArea: {
+        Grade: {
+            /** Format: int32 */
+            id?: number;
+            grade?: string;
+            labelCompact?: string;
+            color?: string;
+        };
+        LatLng: {
+            /** Format: double */
+            lat?: number;
+            /** Format: double */
+            lng?: number;
+        };
+        Meta: {
+            title?: string;
+            isAuthenticated?: boolean;
+            isAdmin?: boolean;
+            isSuperAdmin?: boolean;
+            /** Format: int32 */
+            userId?: number;
+            authenticatedName?: string;
+            themePreference?: string;
+            mediaIdentity?: components["schemas"]["MediaIdentity"];
+            grades?: components["schemas"]["Grade"][];
+            faYears?: number[];
+            /** Format: int32 */
+            defaultZoom?: number;
+            defaultCenter?: components["schemas"]["LatLng"];
+            isBouldering?: boolean;
+            isClimbing?: boolean;
+            isIce?: boolean;
+            url?: string;
+            types?: components["schemas"]["Type"][];
+            regions?: components["schemas"]["Region"][];
+            compassDirections?: components["schemas"]["CompassDirection"][];
+        };
+        Region: {
+            group?: string;
+            name?: string;
+            url?: string;
+            active?: boolean;
+            outline?: components["schemas"]["Coordinates"][];
+        };
+        GradeDistribution: {
+            grade?: string;
+            color?: string;
+            /** Format: int32 */
+            num?: number;
+            /** Format: int32 */
+            prim?: number;
+            /** Format: int32 */
+            sec?: number;
+            rows?: components["schemas"]["GradeDistributionRow"][];
+        };
+        GradeDistributionRow: {
+            /** Format: int32 */
+            id?: number;
+            name?: string;
+            /** Format: int32 */
+            numBoulder?: number;
+            /** Format: int32 */
+            numSport?: number;
+            /** Format: int32 */
+            numTrad?: number;
+            /** Format: int32 */
+            numMixed?: number;
+            /** Format: int32 */
+            numTopRope?: number;
+            /** Format: int32 */
+            numAid?: number;
+            /** Format: int32 */
+            numAidTrad?: number;
+            /** Format: int32 */
+            numIce?: number;
+        };
+        Frontpage: {
+            stats?: components["schemas"]["FrontpageStats"];
+            randomMedia?: components["schemas"]["FrontpageRandomMedia"][];
+            firstAscents?: components["schemas"]["FrontpageFirstAscent"][];
+            recentAscents?: components["schemas"]["FrontpageRecentAscent"][];
+            newestMedia?: components["schemas"]["FrontpageNewestMedia"][];
+            lastComments?: components["schemas"]["FrontpageLastComment"][];
+        };
+        FrontpageFirstAscent: {
+            timeAgo?: string;
+            /** Format: int32 */
+            areaId?: number;
+            areaName?: string;
+            /** Format: int32 */
+            problemId?: number;
+            problemLockedAdmin?: boolean;
+            problemLockedSuperadmin?: boolean;
+            problemName?: string;
+            problemSubtype?: string;
+            grade?: string;
+            users?: components["schemas"]["User"][];
+        };
+        FrontpageLastComment: {
+            timeAgo?: string;
+            /** Format: int32 */
+            areaId?: number;
+            areaName?: string;
+            /** Format: int32 */
+            problemId?: number;
+            problemLockedAdmin?: boolean;
+            problemLockedSuperadmin?: boolean;
+            problemName?: string;
+            u?: components["schemas"]["User"];
+            comment?: string;
+        };
+        FrontpageNewestMedia: {
+            identity?: components["schemas"]["MediaIdentity"];
+            isMovie?: boolean;
+            is360?: boolean;
+            /** Format: int32 */
+            problemId?: number;
+            problemLockedAdmin?: boolean;
+            problemLockedSuperadmin?: boolean;
+            problemName?: string;
+            grade?: string;
+        };
+        FrontpageRandomMedia: {
+            identity?: components["schemas"]["MediaIdentity"];
+            /** Format: int32 */
+            width?: number;
+            /** Format: int32 */
+            height?: number;
+            /** Format: int32 */
+            idArea?: number;
+            area?: string;
+            /** Format: int32 */
+            idSector?: number;
+            sector?: string;
+            /** Format: int32 */
+            idProblem?: number;
+            problem?: string;
+            grade?: string;
+            photographer?: components["schemas"]["User"];
+            tagged?: components["schemas"]["User"][];
+        };
+        FrontpageRecentAscent: {
+            timeAgo?: string;
+            /** Format: int32 */
+            areaId?: number;
+            areaName?: string;
+            /** Format: int32 */
+            problemId?: number;
+            problemLockedAdmin?: boolean;
+            problemLockedSuperadmin?: boolean;
+            problemName?: string;
+            problemSubtype?: string;
+            grade?: string;
+            u?: components["schemas"]["User"];
+            repeat?: boolean;
+        };
+        FrontpageStats: {
+            /** Format: int32 */
+            areas?: number;
+            /** Format: int32 */
+            problems?: number;
+            /** Format: int32 */
+            ticks?: number;
+        };
+        DangerousArea: {
             /** Format: int32 */
             id?: number;
             name?: string;
             lockedAdmin?: boolean;
             lockedSuperadmin?: boolean;
-            sectors?: components["schemas"]["ProfileTodoSector"][];
-        };
-        ProfileTodoProblem: {
             /** Format: int32 */
-            todoId?: number;
+            sunFromHour?: number;
+            /** Format: int32 */
+            sunToHour?: number;
+            sectors?: components["schemas"]["DangerousSector"][];
+        };
+        DangerousProblem: {
             /** Format: int32 */
             id?: number;
+            broken?: string;
             lockedAdmin?: boolean;
             lockedSuperadmin?: boolean;
             /** Format: int32 */
             nr?: number;
             name?: string;
             grade?: string;
-            coordinates?: components["schemas"]["Coordinates"];
-            partners?: components["schemas"]["User"][];
+            postBy?: string;
+            postWhen?: string;
+            postTxt?: string;
         };
-        ProfileTodoSector: {
+        DangerousSector: {
             /** Format: int32 */
             id?: number;
             name?: string;
+            wallDirectionCalculated?: components["schemas"]["CompassDirection"];
+            wallDirectionManual?: components["schemas"]["CompassDirection"];
             lockedAdmin?: boolean;
             lockedSuperadmin?: boolean;
-            problems?: components["schemas"]["ProfileTodoProblem"][];
-        };
-        Sector: {
-            redirectUrl?: string;
-            orderByGrade?: boolean;
-            /** Format: int32 */
-            areaId?: number;
-            areaLockedAdmin?: boolean;
-            areaLockedSuperadmin?: boolean;
-            areaAccessInfo?: string;
-            areaAccessClosed?: string;
-            areaNoDogsAllowed?: boolean;
-            /** Format: int32 */
-            areaSunFromHour?: number;
-            /** Format: int32 */
-            areaSunToHour?: number;
-            areaName?: string;
-            /** Format: int32 */
-            id?: number;
-            trash?: boolean;
-            lockedAdmin?: boolean;
-            lockedSuperadmin?: boolean;
-            name?: string;
-            comment?: string;
-            accessInfo?: string;
-            accessClosed?: string;
             /** Format: int32 */
             sunFromHour?: number;
             /** Format: int32 */
             sunToHour?: number;
-            parking?: components["schemas"]["Coordinates"];
-            outline?: components["schemas"]["Coordinates"][];
-            wallDirectionCalculated?: components["schemas"]["CompassDirection"];
-            wallDirectionManual?: components["schemas"]["CompassDirection"];
-            trails?: components["schemas"]["Trail"][];
-            media?: components["schemas"]["Media"][];
-            triviaMedia?: components["schemas"]["Media"][];
-            sectors?: components["schemas"]["SectorJump"][];
-            problems?: components["schemas"]["SectorProblem"][];
-            problemOrder?: components["schemas"]["SectorProblemOrder"][];
-            externalLinks?: components["schemas"]["ExternalLink"][];
-            pageViews?: string;
+            problems?: components["schemas"]["DangerousProblem"][];
         };
-        SectorJump: {
+        Administrator: {
+            /** Format: int32 */
+            userId?: number;
+            name?: string;
+            emails?: string[];
+            randomMedia?: components["schemas"]["MediaIdentity"];
+            lastLogin?: string;
+        };
+        Activity: {
+            activityIds?: number[];
+            activityThumbnails?: components["schemas"]["ActivityThumbnail"][];
+            timeAgo?: string;
+            /** Format: int32 */
+            areaId?: number;
+            areaName?: string;
+            areaLockedAdmin?: boolean;
+            areaLockedSuperadmin?: boolean;
+            /** Format: int32 */
+            sectorId?: number;
+            sectorName?: string;
+            sectorLockedAdmin?: boolean;
+            sectorLockedSuperadmin?: boolean;
+            /** Format: int32 */
+            problemId?: number;
+            problemLockedAdmin?: boolean;
+            problemLockedSuperadmin?: boolean;
+            problemName?: string;
+            problemSubtype?: string;
+            grade?: string;
+            media?: components["schemas"]["ActivityMedia"][];
+            /** Format: int32 */
+            stars?: number;
+            repeat?: boolean;
             /** Format: int32 */
             id?: number;
-            lockedAdmin?: boolean;
-            lockedSuperadmin?: boolean;
             name?: string;
-            /** Format: int32 */
-            sorting?: number;
+            description?: string;
+            message?: string;
+            users?: components["schemas"]["User"][];
         };
-        SectorProblemOrder: {
-            /** Format: int32 */
-            id?: number;
-            name?: string;
-            /** Format: int32 */
-            nr?: number;
+        ActivityMedia: {
+            identity?: components["schemas"]["MediaIdentity"];
+            movie?: boolean;
+            is360?: boolean;
+            embedUrl?: string;
         };
-        Webcam: {
-            id?: string;
-            lastUpdated?: string;
+        ActivityThumbnail: {
+            identity?: components["schemas"]["MediaIdentity"];
+            /** Format: int32 */
+            userId?: number;
             name?: string;
-            urlStillImage?: string;
-            urlYr?: string;
-            urlOther?: string;
-            /** Format: double */
-            lat?: number;
-            /** Format: double */
-            lng?: number;
         };
     };
     responses: never;
@@ -2281,6 +2149,3024 @@ export type components = {
 };
 export type $defs = Record<string, never>;
 export interface operations {
+    getTrash: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Trash"][];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    putTrash: {
+        parameters: {
+            query?: {
+                idArea?: number;
+                idSector?: number;
+                idProblem?: number;
+                idMedia?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    getMedia: {
+        parameters: {
+            query: {
+                idMedia: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Media"];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description The requested resource could not be found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    putMedia: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Media"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    deleteMedia: {
+        parameters: {
+            query: {
+                id: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    putMediaJpegRotate: {
+        parameters: {
+            query: {
+                idMedia: number;
+                degrees: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    postUserRegions: {
+        parameters: {
+            query: {
+                /** @description Region id */
+                regionId: number;
+                /** @description Delete (TRUE=hide, FALSE=show) */
+                delete: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    postTrails: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Trail"][];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    getTodo: {
+        parameters: {
+            query: {
+                /** @description Area id */
+                idArea: number;
+                /** @description Sector id */
+                idSector: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Todo"];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    postTodo: {
+        parameters: {
+            query: {
+                idProblem: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    getTicks: {
+        parameters: {
+            query?: {
+                /** @description Page (ticks ordered descending, 0 returns first page) */
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Ticks"];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    postTicks: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Tick"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    getSectors: {
+        parameters: {
+            query: {
+                /** @description Sector id */
+                id: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Sector"];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description The requested resource could not be found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    postSectors: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Sector"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Redirect"];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    postSearch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SearchRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Search"][];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    postProfilesTheme: {
+        parameters: {
+            query: {
+                /** @description Theme preference */
+                themePreference: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    postProfilesIdentity: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProfileIdentity"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    getProblems: {
+        parameters: {
+            query: {
+                /** @description Problem id */
+                id: number;
+                /** @description Include hidden media */
+                showHiddenMedia?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description The requested resource could not be found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    postProblems: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Problem"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Redirect"];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    postProblemsSvg: {
+        parameters: {
+            query: {
+                problemId: number;
+                pitch: number;
+                mediaId: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Svg"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    getPermissions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PermissionUser"][];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    postPermissions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PermissionUser"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    postMediaVideoComplete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    postMediaVideoInitiate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VideoInitPayload"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VideoInitResponse"];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    postMediaVideoEmbed: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Media"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Media"];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    postMediaSvg: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Media"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    postMediaInstagramScrape: {
+        parameters: {
+            query: {
+                url: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InstagramMedia"][];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    postMediaInstagramSave: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Selected-Cdn-Url": string;
+                "X-Selected-Is-Video": boolean;
+                "X-Selected-Media-Index": number;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Media"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Media"];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    postMediaImage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    json: string;
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Media"];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    postComments: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Comment"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    getAreas: {
+        parameters: {
+            query?: {
+                /** @description Area id */
+                id?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Area"][];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description The requested resource could not be found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    postAreas: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Area"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Redirect"];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    patchMediaOrder: {
+        parameters: {
+            query: {
+                id: number;
+                left?: boolean;
+                right?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Authentication required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description Insufficient permissions. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    getWithoutJs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+        };
+    };
+    getWithoutJsSector: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            /** @description The requested resource could not be found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+        };
+    };
+    getWithoutJsProblem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Problem id */
+                id: number;
+                /** @description Media id */
+                mediaId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            /** @description The requested resource could not be found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+        };
+    };
+    getWithoutJsProblem_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Problem id */
+                id: number;
+                /** @description Media id */
+                mediaId: number;
+                /** @description Pitch number */
+                pitch: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            /** @description The requested resource could not be found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+        };
+    };
+    getWithoutJsProblem_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Problem id */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            /** @description The requested resource could not be found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+        };
+    };
+    getWithoutJsArea: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            /** @description The requested resource could not be found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+        };
+    };
+    getCameras: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Webcam"][];
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Webcam"][];
+                };
+            };
+        };
+    };
+    getUsersTicks: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string[];
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+                };
+            };
+        };
+    };
+    getUsersSearch: {
+        parameters: {
+            query: {
+                /** @description Search keyword */
+                value: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["User"][];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    getTop: {
+        parameters: {
+            query: {
+                /** @description Area id */
+                idArea: number;
+                /** @description Sector id */
+                idSector: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Top"];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    getToc: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Toc"][];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    getTocXlsx: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string[];
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+                };
+            };
+        };
+    };
+    getSitemapTxt: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getSectorsPdf: {
+        parameters: {
+            query: {
+                /** @description Sector id */
+                id: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": unknown;
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": components["schemas"]["StreamingResponseBody"];
+                };
+            };
+            /** @description The requested resource could not be found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": components["schemas"]["StreamingResponseBody"];
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": components["schemas"]["StreamingResponseBody"];
+                };
+            };
+        };
+    };
+    getRobotsTxt: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getRestrictions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RestrictionsRegion"][];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    getProfiles: {
+        parameters: {
+            query: {
+                /** @description User id */
+                id: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Profile"];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description The requested resource could not be found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    getProfilesTodo: {
+        parameters: {
+            query: {
+                /** @description User id */
+                id: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileTodo"];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description The requested resource could not be found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    getProfilesMedia: {
+        parameters: {
+            query: {
+                /** @description User id */
+                id: number;
+                /** @description FALSE = tagged media, TRUE = captured media */
+                captured?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Media"][];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description The requested resource could not be found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    getProfilesAscents: {
+        parameters: {
+            query: {
+                /** @description User id */
+                id: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileAscent"][];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    getProblemsSearch: {
+        parameters: {
+            query: {
+                /** @description Search keyword */
+                value: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemSearchResult"][];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    getProblemsPdf: {
+        parameters: {
+            query: {
+                /** @description Problem id */
+                id: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": string[];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": components["schemas"]["StreamingResponseBody"];
+                };
+            };
+            /** @description The requested resource could not be found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": components["schemas"]["StreamingResponseBody"];
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": components["schemas"]["StreamingResponseBody"];
+                };
+            };
+        };
+    };
+    getMeta: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Meta"];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    getMediaFile: {
+        parameters: {
+            query: {
+                id: number;
+                isMovie: boolean;
+                versionStamp?: number;
+                original?: boolean;
+                targetWidth?: number;
+                minDimension?: number;
+                x?: number;
+                y?: number;
+                width?: number;
+                height?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The requested resource has resided temporarily under a different URI. */
+            302: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description The requested resource could not be found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    getGraph: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GradeDistribution"][];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    getGradeDistribution: {
+        parameters: {
+            query: {
+                /** @description Area id */
+                idArea: number;
+                /** @description Sector id */
+                idSector: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GradeDistribution"][];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    getFrontpage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Frontpage"];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    getElevation: {
+        parameters: {
+            query: {
+                /** @description Latitude (-90 to 90) */
+                latitude: number;
+                /** @description Longitude (-180 to 180) */
+                longitude: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": number;
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": Record<string, never>;
+                };
+            };
+            /** @description Forbidden: Authentication required */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": Record<string, never>;
+                };
+            };
+        };
+    };
+    getDangerous: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DangerousArea"][];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    getAreasPdf: {
+        parameters: {
+            query: {
+                /** @description Area id */
+                id: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": string[];
+                };
+            };
+            /** @description Invalid request parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": components["schemas"]["StreamingResponseBody"];
+                };
+            };
+            /** @description The requested resource could not be found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": components["schemas"]["StreamingResponseBody"];
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": components["schemas"]["StreamingResponseBody"];
+                };
+            };
+        };
+    };
+    getAdministrators: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Administrator"][];
+                };
+            };
+            /** @description An unexpected error occurred */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
     getActivity: {
         parameters: {
             query: {
@@ -2321,2715 +5207,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": Record<string, never>;
+                };
             };
             /** @description An unexpected error occurred */
             500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getAdministrators: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Administrator"][];
+                    "application/json": Record<string, never>;
                 };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getAreas: {
-        parameters: {
-            query?: {
-                /** @description Area id */
-                id?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Area"][];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    postAreas: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "*/*": components["schemas"]["Area"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Redirect"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getAreasPdf: {
-        parameters: {
-            query: {
-                /** @description Area id */
-                id: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/pdf": string[];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getElevation: {
-        parameters: {
-            query?: {
-                latitude?: number;
-                longitude?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": number;
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getDangerous: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DangerousArea"][];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getPermissions: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PermissionUser"][];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    postPermissions: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "*/*": components["schemas"]["PermissionUser"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getRestrictions: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RestrictionsRegion"][];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getTicks: {
-        parameters: {
-            query?: {
-                /** @description Page (ticks ordered descending, 0 returns first page) */
-                page?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Ticks"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    postTicks: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "*/*": components["schemas"]["Tick"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getTodo: {
-        parameters: {
-            query: {
-                /** @description Area id (can be 0 if idSector>0) */
-                idArea: number;
-                /** @description Sector id (can be 0 if idArea>0) */
-                idSector: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Todo"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    postTodo: {
-        parameters: {
-            query: {
-                /** @description Problem id */
-                idProblem: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getTop: {
-        parameters: {
-            query: {
-                /** @description Area id (can be 0 if idSector>0) */
-                idArea: number;
-                /** @description Sector id (can be 0 if idArea>0) */
-                idSector: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Top"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getTrash: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Trash"][];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    putTrash: {
-        parameters: {
-            query?: {
-                idArea?: number;
-                idSector?: number;
-                idProblem?: number;
-                idMedia?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    postComments: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "*/*": components["schemas"]["Comment"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    postSearch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "*/*": components["schemas"]["SearchRequest"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Search"][];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    postTrails: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "*/*": components["schemas"]["Trail"][];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getMedia: {
-        parameters: {
-            query: {
-                /** @description Media id */
-                idMedia: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Media"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    putMedia: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "*/*": components["schemas"]["Media"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    deleteMedia: {
-        parameters: {
-            query: {
-                /** @description Media id */
-                id: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getMediaFile: {
-        parameters: {
-            query: {
-                /** @description Media id */
-                id: number;
-                /** @description Is movie (true) or image (false) */
-                isMovie: boolean;
-                /** @description Version stamp (cache buster) */
-                versionStamp?: number;
-                /** @description Download original source */
-                original?: boolean;
-                /** @description Target Width */
-                targetWidth?: number;
-                /** @description Minimum Dimension */
-                minDimension?: number;
-                /** @description Region X */
-                x?: number;
-                /** @description Region Y */
-                y?: number;
-                /** @description Region Width */
-                width?: number;
-                /** @description Region Height */
-                height?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The requested resource has resided temporarily under a different URI. */
-            302: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    patchMediaOrder: {
-        parameters: {
-            query: {
-                /** @description Media id */
-                id: number;
-                /** @description Move left */
-                left?: boolean;
-                /** @description Move right */
-                right?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    postMediaImage: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "multipart/form-data": components["schemas"]["FormDataMultiPart"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Media"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    postMediaInstagramSave: {
-        parameters: {
-            query?: never;
-            header?: {
-                "X-Selected-Cdn-Url"?: string;
-                "X-Selected-Is-Video"?: boolean;
-                "X-Selected-Media-Index"?: number;
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": components["schemas"]["Media"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Media"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    postMediaInstagramScrape: {
-        parameters: {
-            query?: {
-                url?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["InstagramMedia"][];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    postMediaSvg: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "*/*": components["schemas"]["Media"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    postMediaVideoComplete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    postMediaVideoEmbed: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": components["schemas"]["Media"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Media"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    postMediaVideoInitiate: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": components["schemas"]["VideoInitPayload"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["VideoInitResponse"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    putMediaJpegRotate: {
-        parameters: {
-            query: {
-                /** @description Media id */
-                idMedia: number;
-                /** @description Degrees (90/180/270) */
-                degrees: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getFrontpage: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Frontpage"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getGradeDistribution: {
-        parameters: {
-            query: {
-                /** @description Area id (can be 0 if idSector>0) */
-                idArea: number;
-                /** @description Sector id (can be 0 if idArea>0) */
-                idSector: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GradeDistribution"][];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getGraph: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GradeDistribution"][];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getMeta: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Meta"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getRobotsTxt: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getSitemapTxt: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getToc: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Toc"][];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getTocXlsx: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string[];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getProblems: {
-        parameters: {
-            query: {
-                /** @description Problem id */
-                id: number;
-                /** @description Include hidden media (example: if a sector has multiple topo-images, the topo-images without this route will be hidden) */
-                showHiddenMedia?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Problem"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    postProblems: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "*/*": components["schemas"]["Problem"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Redirect"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getProblemsPdf: {
-        parameters: {
-            query: {
-                /** @description Problem id */
-                id: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/pdf": string[];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getProblemsSearch: {
-        parameters: {
-            query: {
-                /** @description Search keyword */
-                value: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProblemSearchResult"][];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    postProblemsSvg: {
-        parameters: {
-            query: {
-                /** @description Problem id */
-                problemId: number;
-                /** @description Problem section id */
-                pitch: number;
-                /** @description Media id */
-                mediaId: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "*/*": components["schemas"]["Svg"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getProfiles: {
-        parameters: {
-            query: {
-                /** @description User id */
-                id: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Profile"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getProfilesAscents: {
-        parameters: {
-            query: {
-                /** @description User id */
-                id: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProfileAscent"][];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getProfilesMedia: {
-        parameters: {
-            query: {
-                /** @description User id */
-                id: number;
-                /** @description FALSE = tagged media, TRUE = captured media */
-                captured?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Media"][];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getProfilesTodo: {
-        parameters: {
-            query: {
-                /** @description User id */
-                id: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProfileTodo"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    postProfilesIdentity: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "*/*": components["schemas"]["ProfileIdentity"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    postProfilesTheme: {
-        parameters: {
-            query: {
-                /** @description Theme preference (light or dark) */
-                themePreference: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getSectors: {
-        parameters: {
-            query: {
-                /** @description Sector id */
-                id: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Sector"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    postSectors: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "*/*": components["schemas"]["Sector"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Redirect"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getSectorsPdf: {
-        parameters: {
-            query: {
-                /** @description Sector id */
-                id: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/pdf": string[];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getUsersSearch: {
-        parameters: {
-            query: {
-                /** @description Search keyword */
-                value: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["User"][];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getUsersTicks: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string[];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    postUserRegions: {
-        parameters: {
-            query: {
-                /** @description Region id */
-                regionId: number;
-                /** @description Delete (TRUE=hide, FALSE=show) */
-                delete: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getCameras: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Webcam"][];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getWithoutJs: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/html": string;
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getWithoutJsArea: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Area id */
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/html": string;
-                };
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getWithoutJsProblem: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Problem id */
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/html": string;
-                };
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getWithoutJsProblemMedia: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Problem id */
-                id: number;
-                /** @description Media id */
-                mediaId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/html": string;
-                };
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getWithoutJsProblemMediaPitch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Problem id */
-                id: number;
-                /** @description Media id */
-                mediaId: number;
-                /** @description Pitch */
-                pitch: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/html": string;
-                };
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getWithoutJsSector: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Sector id */
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/html": string;
-                };
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };
