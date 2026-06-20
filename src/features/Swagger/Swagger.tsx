@@ -21,7 +21,7 @@ const Swagger = () => {
           <SectionHeader title='API Documentation' icon={FileJson} subheader='OpenAPI reference' />
         </div>
         <div className='overflow-hidden bg-white p-2 sm:p-3'>
-          <SwaggerUI url='https://brattelinjer.no/com.buldreinfo.jersey.jaxb/openapi.json' />
+          <SwaggerUI url='https://brattelinjer.no/api/v3/api-docs' />
         </div>
       </Card>
     </div>
