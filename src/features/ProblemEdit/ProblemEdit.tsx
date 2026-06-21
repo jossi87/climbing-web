@@ -113,7 +113,7 @@ type SectorProblem = NonNullable<components['schemas']['Sector']['problems']>[nu
 const isPlottableProblem = (
   problem: SectorProblem,
 ): problem is Required<Pick<SectorProblem, 'coordinates' | 'name'>> => {
-  return problem.coordinates !== undefined && problem.name !== undefined;
+  return problem.coordinates != null && problem.name !== undefined;
 };
 
 const ProblemEdit = ({ problem, sector }: Props) => {

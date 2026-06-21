@@ -8,7 +8,7 @@ import { captureSentryException } from '../../../utils/sentry';
 import { Navigation, ExternalLink, CloudSun } from 'lucide-react';
 
 type ParkingMarker = {
-  coordinates: components['schemas']['Coordinates'];
+  coordinates: components['schemas']['Coordinates'] | null | undefined;
   isParking: true;
 };
 
@@ -19,7 +19,7 @@ type CameraFeed = {
 };
 
 type CameraMarker = {
-  coordinates: components['schemas']['Coordinates'];
+  coordinates: components['schemas']['Coordinates'] | null | undefined;
   label: string;
   isCamera: true;
   name: string;
@@ -30,20 +30,20 @@ type CameraMarker = {
 
 type HtmlMarker = {
   id: number;
-  coordinates: components['schemas']['Coordinates'];
+  coordinates: components['schemas']['Coordinates'] | null | undefined;
   label: string;
   html: ReactNode;
   rock?: string;
 };
 
 type LabelMarker = {
-  coordinates: components['schemas']['Coordinates'];
+  coordinates: components['schemas']['Coordinates'] | null | undefined;
   label: string;
   url: string;
 };
 
 type GenericMarker = {
-  coordinates: components['schemas']['Coordinates'];
+  coordinates: components['schemas']['Coordinates'] | null | undefined;
   label?: string;
   url?: string;
   rock?: boolean | string | number | null;
@@ -60,7 +60,7 @@ type Props = {
 };
 
 const isCoordinateMarker = (m: MarkerDef): m is MarkerDef & Required<Pick<MarkerDef, 'coordinates'>> =>
-  !!(m.coordinates.latitude && m.coordinates.longitude);
+  !!(m.coordinates?.latitude && m.coordinates?.longitude);
 
 const isParkingMarker = (m: MarkerDef): m is ParkingMarker => isCoordinateMarker(m) && (m as ParkingMarker).isParking;
 
@@ -90,6 +90,7 @@ export default function Markers({ opacity, markers, addEventHandlers, flyToId, s
   if (!markers) return null;
 
   return markers.map((m) => {
+    if (!m.coordinates) return null;
     const lat = m.coordinates.latitude ?? 0;
     const lng = m.coordinates.longitude ?? 0;
     const position: [number, number] = [lat, lng];
