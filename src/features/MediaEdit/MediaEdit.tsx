@@ -625,7 +625,9 @@ const MediaEdit = () => {
               return 'idMedia' in meta && (meta as { idMedia: number }).idMedia === mediaIdNum;
             },
           }),
-          queryClient.refetchQueries({ queryKey: ['/problem'] }),
+          queryClient.invalidateQueries({ queryKey: ['/problem'] }),
+          queryClient.invalidateQueries({ queryKey: ['/areas'] }),
+          queryClient.invalidateQueries({ queryKey: ['/sectors'] }),
         ]);
         navigate(-1);
       }
