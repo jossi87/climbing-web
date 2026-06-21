@@ -25,7 +25,6 @@ const Sector = lazy(() => import('../features/Sector/Sector'), 'sector');
 const SectorEdit = lazy(() => import('../features/SectorEdit'), 'sector-edit');
 const Regions = lazy(() => import('../features/Regions/Regions'), 'regions');
 const SvgEdit = lazy(() => import('../features/SvgEdit'), 'svg-edit');
-const Swagger = lazy(() => import('../features/Swagger/Swagger'), 'swagger');
 const Ticks = lazy(() => import('../features/Ticks/Ticks'), 'ticks');
 const Trash = lazy(() => import('../features/Trash/Trash'), 'trash');
 const Webcams = lazy(() => import('../features/Webcams/Webcams'), 'webcams');
@@ -126,7 +125,6 @@ function AppRoutes() {
               }
             />
             <Route path='/ticks/:page' element={<Ticks />} />
-            <Route path='/swagger' element={<Swagger />} />
             <Route
               path='/settings'
               element={

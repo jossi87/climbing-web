@@ -55,7 +55,6 @@ export default defineConfig(({ mode }) => {
             'vendor-json-url',
             'vendor-select',
             'vendor-sentry',
-            'vendor-swagger',
             'vendor-utils',
             'vendor-video',
           ];
@@ -71,7 +70,6 @@ export default defineConfig(({ mode }) => {
         output: {
           manualChunks(id) {
             if (id.includes('node_modules')) {
-              if (id.includes('swagger-ui-react')) return 'vendor-swagger';
               if (id.includes('recharts')) return 'vendor-charts';
               if (id.includes('dashjs') || id.includes('hls.js')) return 'vendor-video';
               if (id.includes('leaflet')) return 'vendor-leaflet';

@@ -36,7 +36,7 @@
     "eslint-plugin-react-refresh": "^0.5.3",
     "globals": "^17.6.0",
     "husky": "^9.1.7",
-    "lint-staged": "^17.0.7",
+    "lint-staged": "^17.0.8",
     "openapi-typescript": "7.13.0",
     "postcss": "^8.5.15",
     "prettier": "^3.8.4",
@@ -81,7 +81,6 @@
     "suncalc": "^2.0.0",
     "svg-path-parser": "^1.1.0",
     "svg-path-properties": "^2.0.2",
-    "swagger-ui-react": "^5.32.6",
     "tailwind-merge": "^3.6.0"
   },
   "scripts": {

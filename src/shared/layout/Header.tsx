@@ -150,9 +150,15 @@ const Header = () => {
                   <DropdownItem to='/permissions' icon={Users} onClick={() => setIsAccountOpen(false)}>
                     Permissions
                   </DropdownItem>
-                  <DropdownItem to='/swagger' icon={Code} onClick={() => setIsAccountOpen(false)}>
-                    Swagger
-                  </DropdownItem>
+                  <a
+                    href='/api/swagger-ui/index.html'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    onClick={() => setIsAccountOpen(false)}
+                    className='hover:bg-surface-raised-hover mx-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] leading-snug font-medium text-slate-300 transition-colors hover:text-slate-50 sm:text-[14px]'
+                  >
+                    <Code size={16} strokeWidth={2} className='shrink-0 text-slate-400' /> Swagger
+                  </a>
                   <DropdownItem to='/trash' icon={Trash2} onClick={() => setIsAccountOpen(false)}>
                     Trash
                   </DropdownItem>
