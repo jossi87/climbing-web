@@ -150,7 +150,6 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
         controls
         width='100%'
         height='100%'
-        playing={undefined}
         playsInline
         onReady={handleReady}
         onDurationChange={handleDurationChange}
