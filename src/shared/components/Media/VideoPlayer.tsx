@@ -1,5 +1,4 @@
 import { useRef, useState, useEffect, type FC, type MouseEvent } from 'react';
-import ReactPlayer from 'react-player';
 import { List } from 'lucide-react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { getMediaFileUrl, mediaIdentityId, mediaIdentityVersionStamp } from '../../../api';
@@ -32,7 +31,6 @@ function formatMs(ms: number): string {
 }
 
 const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optProblemId }) => {
-  const [_isReady, setIsReady] = useState(false);
   const [currentTimeMs, setCurrentTimeMs] = useState(0);
   const [durationMs, setDurationMs] = useState(0);
   const [showChapters, setShowChapters] = useState(false);
@@ -51,17 +49,6 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
 
   // Only show chapter UI if there are multiple chapters, or a single chapter that doesn't start at 0
   const hasMeaningfulChapters = chapters.length > 1 || (chapters.length === 1 && (chapters[0].milliseconds ?? 0) > 0);
-
-  const handleReady = () => {
-    setIsReady(true);
-    // Auto-play once when ready, without using ReactPlayer's playing prop
-    // (which would break native pause button)
-    if (autoPlay && videoRef.current) {
-      videoRef.current.play().catch(() => {
-        // Browser may block autoplay, that's fine
-      });
-    }
-  };
 
   const handleDurationChange = () => {
     if (videoRef.current) {
@@ -142,20 +129,26 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
 
   return (
     <div className={cn('group relative', className)} style={style}>
-      <ReactPlayer
+      <video
         key={mediaIdentityId(media.identity)}
         ref={videoRef}
         className='h-full w-full'
         src={getMediaFileUrl(mediaIdentityId(media.identity), mediaIdentityVersionStamp(media.identity), true)}
         controls
-        width='100%'
-        height='100%'
+        autoPlay={autoPlay}
         playsInline
-        onReady={handleReady}
-        onDurationChange={handleDurationChange}
+        onLoadedMetadata={() => {
+          handleDurationChange();
+          // Attempt autoplay once metadata is loaded
+          if (autoPlay && videoRef.current) {
+            videoRef.current.play().catch(() => {
+              // Browser may block autoplay, that's fine
+            });
+          }
+        }}
         onTimeUpdate={handleTimeUpdate}
         onSeeked={handleSeeked}
-        onStart={handleStart}
+        onPlay={handleStart}
         onClick={(e: MouseEvent) => e.stopPropagation()}
       />
 
