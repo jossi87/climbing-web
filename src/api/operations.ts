@@ -363,7 +363,8 @@ export function postMediaImage(
 ): Promise<components['schemas']['Media']> {
   const url = `/media/image`;
   const formData = new FormData();
-  formData.append('json', JSON.stringify(media));
+  const jsonBlob = new Blob([JSON.stringify(media)], { type: 'application/json' });
+  formData.append('json', jsonBlob);
   formData.append('file', file);
   return makeAuthenticatedRequest(accessToken, url, {
     method: 'POST',
