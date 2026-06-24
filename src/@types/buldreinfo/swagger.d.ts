@@ -1109,17 +1109,17 @@ export type components = {
             mediaIdentity?: components["schemas"]["MediaIdentity"];
         };
         Coordinates: {
+            /** Format: double */
+            distance?: number;
+            /** Format: double */
+            elevation?: number;
+            elevationSource?: string;
             /** Format: int32 */
             id?: number;
             /** Format: double */
             latitude?: number;
             /** Format: double */
             longitude?: number;
-            /** Format: double */
-            elevation?: number;
-            elevationSource?: string;
-            /** Format: double */
-            distance?: number;
         };
         Trail: {
             /** Format: int32 */
@@ -1748,7 +1748,7 @@ export type components = {
             /** Format: int32 */
             numPages?: number;
         };
-        StreamingResponseBody: Record<string, never>;
+        StreamingResponseBody: unknown;
         RestrictionsArea: {
             /** Format: int32 */
             id?: number;
@@ -2173,7 +2173,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Trash"][];
                 };
             };
             /** @description An unexpected error occurred */
@@ -2182,7 +2182,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Trash"][];
                 };
             };
         };
@@ -2206,45 +2206,35 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Invalid request parameters. */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Authentication required. */
             401: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Insufficient permissions. */
             403: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description An unexpected error occurred */
             500: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
         };
     };
@@ -2274,7 +2264,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Media"];
                 };
             };
             /** @description The requested resource could not be found. */
@@ -2283,7 +2273,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Media"];
                 };
             };
             /** @description An unexpected error occurred */
@@ -2292,7 +2282,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Media"];
                 };
             };
         };
@@ -2315,45 +2305,35 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Invalid request parameters. */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Authentication required. */
             401: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Insufficient permissions. */
             403: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description An unexpected error occurred */
             500: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
         };
     };
@@ -2373,45 +2353,35 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Invalid request parameters. */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Authentication required. */
             401: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Insufficient permissions. */
             403: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description An unexpected error occurred */
             500: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
         };
     };
@@ -2432,45 +2402,35 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Invalid request parameters. */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Authentication required. */
             401: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Insufficient permissions. */
             403: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description An unexpected error occurred */
             500: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
         };
     };
@@ -2493,36 +2453,28 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Invalid request parameters. */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Authentication required. */
             401: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description An unexpected error occurred */
             500: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
         };
     };
@@ -2544,45 +2496,35 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Invalid request parameters. */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Authentication required. */
             401: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Insufficient permissions. */
             403: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description An unexpected error occurred */
             500: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": Record<string, never>;
-                };
+                content?: never;
             };
         };
     };
@@ -2615,7 +2557,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Todo"];
                 };
             };
             /** @description An unexpected error occurred */
@@ -2624,7 +2566,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Todo"];
                 };
             };
         };
@@ -2645,36 +2587,28 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Invalid request parameters. */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Authentication required. */
             401: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description An unexpected error occurred */
             500: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
         };
     };
@@ -2705,7 +2639,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Ticks"];
                 };
             };
             /** @description An unexpected error occurred */
@@ -2714,7 +2648,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Ticks"];
                 };
             };
         };
@@ -2737,36 +2671,28 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Invalid request parameters. */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Authentication required. */
             401: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description An unexpected error occurred */
             500: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
         };
     };
@@ -2797,7 +2723,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Sector"];
                 };
             };
             /** @description The requested resource could not be found. */
@@ -2806,7 +2732,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Sector"];
                 };
             };
             /** @description An unexpected error occurred */
@@ -2815,7 +2741,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Sector"];
                 };
             };
         };
@@ -2848,7 +2774,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Redirect"];
                 };
             };
             /** @description Authentication required. */
@@ -2857,7 +2783,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Redirect"];
                 };
             };
             /** @description Insufficient permissions. */
@@ -2866,7 +2792,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Redirect"];
                 };
             };
             /** @description An unexpected error occurred */
@@ -2875,7 +2801,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Redirect"];
                 };
             };
         };
@@ -2908,7 +2834,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Search"][];
                 };
             };
             /** @description An unexpected error occurred */
@@ -2917,7 +2843,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Search"][];
                 };
             };
         };
@@ -2939,36 +2865,28 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Invalid request parameters. */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Authentication required. */
             401: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description An unexpected error occurred */
             500: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
         };
     };
@@ -2990,36 +2908,28 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Invalid request parameters. */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Authentication required. */
             401: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description An unexpected error occurred */
             500: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
         };
     };
@@ -3052,7 +2962,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Problem"];
                 };
             };
             /** @description The requested resource could not be found. */
@@ -3061,7 +2971,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Problem"];
                 };
             };
             /** @description An unexpected error occurred */
@@ -3070,7 +2980,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Problem"];
                 };
             };
         };
@@ -3103,7 +3013,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Redirect"];
                 };
             };
             /** @description Authentication required. */
@@ -3112,7 +3022,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Redirect"];
                 };
             };
             /** @description Insufficient permissions. */
@@ -3121,7 +3031,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Redirect"];
                 };
             };
             /** @description An unexpected error occurred */
@@ -3130,7 +3040,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Redirect"];
                 };
             };
         };
@@ -3157,9 +3067,7 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
         };
     };
@@ -3187,7 +3095,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["PermissionUser"][];
                 };
             };
             /** @description An unexpected error occurred */
@@ -3196,7 +3104,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["PermissionUser"][];
                 };
             };
         };
@@ -3219,45 +3127,35 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Invalid request parameters. */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Authentication required. */
             401: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Insufficient permissions. */
             403: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description An unexpected error occurred */
             500: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
         };
     };
@@ -3277,45 +3175,35 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Invalid request parameters. */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Authentication required. */
             401: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Insufficient permissions. */
             403: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description An unexpected error occurred */
             500: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
         };
     };
@@ -3347,7 +3235,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["VideoInitResponse"];
                 };
             };
             /** @description Authentication required. */
@@ -3356,7 +3244,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["VideoInitResponse"];
                 };
             };
             /** @description Insufficient permissions. */
@@ -3365,7 +3253,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["VideoInitResponse"];
                 };
             };
             /** @description An unexpected error occurred */
@@ -3374,7 +3262,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["VideoInitResponse"];
                 };
             };
         };
@@ -3407,7 +3295,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["Media"];
                 };
             };
             /** @description Authentication required. */
@@ -3416,7 +3304,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["Media"];
                 };
             };
             /** @description Insufficient permissions. */
@@ -3425,7 +3313,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["Media"];
                 };
             };
             /** @description An unexpected error occurred */
@@ -3434,7 +3322,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["Media"];
                 };
             };
         };
@@ -3457,45 +3345,35 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Invalid request parameters. */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Authentication required. */
             401: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Insufficient permissions. */
             403: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description An unexpected error occurred */
             500: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
         };
     };
@@ -3525,7 +3403,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["InstagramMedia"][];
                 };
             };
             /** @description Authentication required. */
@@ -3534,7 +3412,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["InstagramMedia"][];
                 };
             };
             /** @description Insufficient permissions. */
@@ -3543,7 +3421,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["InstagramMedia"][];
                 };
             };
             /** @description An unexpected error occurred */
@@ -3552,7 +3430,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["InstagramMedia"][];
                 };
             };
         };
@@ -3589,7 +3467,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["Media"];
                 };
             };
             /** @description Authentication required. */
@@ -3598,7 +3476,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["Media"];
                 };
             };
             /** @description Insufficient permissions. */
@@ -3607,7 +3485,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["Media"];
                 };
             };
             /** @description An unexpected error occurred */
@@ -3616,7 +3494,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["Media"];
                 };
             };
         };
@@ -3653,7 +3531,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["Media"];
                 };
             };
             /** @description Authentication required. */
@@ -3662,7 +3540,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["Media"];
                 };
             };
             /** @description Insufficient permissions. */
@@ -3671,7 +3549,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["Media"];
                 };
             };
             /** @description An unexpected error occurred */
@@ -3680,7 +3558,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["Media"];
                 };
             };
         };
@@ -3704,7 +3582,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": number;
                 };
             };
             /** @description Invalid request parameters. */
@@ -3713,7 +3591,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": number;
                 };
             };
             /** @description Authentication required. */
@@ -3722,7 +3600,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": number;
                 };
             };
             /** @description Insufficient permissions. */
@@ -3731,7 +3609,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": number;
                 };
             };
             /** @description An unexpected error occurred */
@@ -3740,7 +3618,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": number;
                 };
             };
         };
@@ -3772,7 +3650,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Area"][];
                 };
             };
             /** @description The requested resource could not be found. */
@@ -3781,7 +3659,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Area"][];
                 };
             };
             /** @description An unexpected error occurred */
@@ -3790,7 +3668,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Area"][];
                 };
             };
         };
@@ -3823,7 +3701,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Redirect"];
                 };
             };
             /** @description Authentication required. */
@@ -3832,7 +3710,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Redirect"];
                 };
             };
             /** @description Insufficient permissions. */
@@ -3841,7 +3719,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Redirect"];
                 };
             };
             /** @description An unexpected error occurred */
@@ -3850,7 +3728,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Redirect"];
                 };
             };
         };
@@ -3873,45 +3751,35 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Invalid request parameters. */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Authentication required. */
             401: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description Insufficient permissions. */
             403: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description An unexpected error occurred */
             500: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
         };
     };
@@ -4256,7 +4124,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["User"][];
                 };
             };
             /** @description An unexpected error occurred */
@@ -4265,7 +4133,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["User"][];
                 };
             };
         };
@@ -4299,7 +4167,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Top"];
                 };
             };
             /** @description An unexpected error occurred */
@@ -4308,7 +4176,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Top"];
                 };
             };
         };
@@ -4337,7 +4205,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Toc"];
                 };
             };
             /** @description An unexpected error occurred */
@@ -4346,7 +4214,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Toc"];
                 };
             };
         };
@@ -4494,7 +4362,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["RestrictionsRegion"][];
                 };
             };
             /** @description An unexpected error occurred */
@@ -4503,7 +4371,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["RestrictionsRegion"][];
                 };
             };
         };
@@ -4535,7 +4403,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Profile"];
                 };
             };
             /** @description The requested resource could not be found. */
@@ -4544,7 +4412,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Profile"];
                 };
             };
             /** @description An unexpected error occurred */
@@ -4553,7 +4421,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Profile"];
                 };
             };
         };
@@ -4585,7 +4453,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["ProfileTodo"];
                 };
             };
             /** @description The requested resource could not be found. */
@@ -4594,7 +4462,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["ProfileTodo"];
                 };
             };
             /** @description An unexpected error occurred */
@@ -4603,7 +4471,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["ProfileTodo"];
                 };
             };
         };
@@ -4637,7 +4505,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Media"][];
                 };
             };
             /** @description The requested resource could not be found. */
@@ -4646,7 +4514,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Media"][];
                 };
             };
             /** @description An unexpected error occurred */
@@ -4655,7 +4523,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Media"][];
                 };
             };
         };
@@ -4687,7 +4555,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["ProfileAscent"][];
                 };
             };
             /** @description An unexpected error occurred */
@@ -4696,7 +4564,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["ProfileAscent"][];
                 };
             };
         };
@@ -4728,7 +4596,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["ProblemSearchResult"][];
                 };
             };
             /** @description An unexpected error occurred */
@@ -4737,7 +4605,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["ProblemSearchResult"][];
                 };
             };
         };
@@ -4816,7 +4684,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Meta"];
                 };
             };
             /** @description An unexpected error occurred */
@@ -4825,7 +4693,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Meta"];
                 };
             };
         };
@@ -4855,27 +4723,21 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description The requested resource could not be found. */
             404: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
             /** @description An unexpected error occurred */
             500: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": Record<string, never>;
-                };
+                content?: never;
             };
         };
     };
@@ -4903,7 +4765,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["GradeDistribution"][];
                 };
             };
             /** @description An unexpected error occurred */
@@ -4912,7 +4774,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["GradeDistribution"][];
                 };
             };
         };
@@ -4946,7 +4808,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["GradeDistribution"][];
                 };
             };
             /** @description An unexpected error occurred */
@@ -4955,7 +4817,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["GradeDistribution"][];
                 };
             };
         };
@@ -4984,7 +4846,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Frontpage"];
                 };
             };
             /** @description An unexpected error occurred */
@@ -4993,7 +4855,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Frontpage"];
                 };
             };
         };
@@ -5027,7 +4889,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "text/plain": Record<string, never>;
+                    "text/plain": string;
                 };
             };
             /** @description Forbidden: Authentication required */
@@ -5036,7 +4898,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "text/plain": Record<string, never>;
+                    "text/plain": string;
                 };
             };
             /** @description An unexpected error occurred */
@@ -5045,7 +4907,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "text/plain": Record<string, never>;
+                    "text/plain": string;
                 };
             };
         };
@@ -5074,7 +4936,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["DangerousArea"][];
                 };
             };
             /** @description An unexpected error occurred */
@@ -5083,7 +4945,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["DangerousArea"][];
                 };
             };
         };
@@ -5162,7 +5024,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Administrator"][];
                 };
             };
         };
@@ -5208,7 +5070,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Activity"][];
                 };
             };
             /** @description An unexpected error occurred */
@@ -5217,7 +5079,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": components["schemas"]["Activity"][];
                 };
             };
         };
