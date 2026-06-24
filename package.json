@@ -27,7 +27,7 @@
     "@types/suncalc": "^1.9.2",
     "@types/svg-path-parser": "^1.1.6",
     "@vitejs/plugin-react": "^6.0.3",
-    "autoprefixer": "^10.5.0",
+    "autoprefixer": "^10.5.1",
     "esbuild": "^0.28.1",
     "eslint": "^10.5.0",
     "eslint-config-prettier": "^10.1.8",
