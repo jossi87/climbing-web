@@ -4,7 +4,6 @@ import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
-import react from 'eslint-plugin-react';
 import prettierConfig from 'eslint-config-prettier';
 
 export default defineConfig([
@@ -28,14 +27,9 @@ export default defineConfig([
       },
     },
     plugins: {
-      react: react,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
       '@typescript-eslint': tseslint.plugin,
-    },
-
-    settings: {
-      react: { version: 'detect' },
     },
 
     rules: {
@@ -47,9 +41,6 @@ export default defineConfig([
           message: 'Use semantic .type-* classes instead of raw contrast classes.',
         },
       ],
-      'react/jsx-uses-react': 'off',
-      'react/react-in-jsx-scope': 'off',
-      'react/prop-types': 'off',
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
       'react-hooks/set-state-in-effect': 'error',
