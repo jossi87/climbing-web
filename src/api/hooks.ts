@@ -584,6 +584,7 @@ export function useTrash() {
     fetchOptions: {
       method: 'PUT',
       body: undefined,
+      consistencyAction: 'invalidate',
     },
     createUrl: ({ idArea, idProblem, idSector, idMedia }) =>
       `/trash?idArea=${idArea}&idSector=${idSector}&idProblem=${idProblem}&idMedia=${idMedia}`,
