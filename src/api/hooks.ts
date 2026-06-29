@@ -586,8 +586,19 @@ export function useTrash() {
       body: undefined,
       consistencyAction: 'invalidate',
     },
-    createUrl: ({ idArea, idProblem, idSector, idMedia }) =>
-      `/trash?idArea=${idArea}&idSector=${idSector}&idProblem=${idProblem}&idMedia=${idMedia}`,
+    createUrl: ({ idArea, idSector, idProblem, idMedia }) => {
+      const params = new URLSearchParams();
+      if (idMedia) {
+        params.set('idMedia', String(idMedia));
+      } else if (idProblem) {
+        params.set('idProblem', String(idProblem));
+      } else if (idSector) {
+        params.set('idSector', String(idSector));
+      } else if (idArea) {
+        params.set('idArea', String(idArea));
+      }
+      return `/trash?${params.toString()}`;
+    },
     select(_response, { idArea, idSector, idProblem, idMedia }) {
       let url = `/`;
       if (idArea) {
