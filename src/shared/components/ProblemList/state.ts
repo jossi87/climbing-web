@@ -7,14 +7,7 @@ import { getLocales } from '../../../api';
 import { useLocalStorage, useSessionStorage } from '../../../utils/use-local-storage';
 
 export type OrderOption =
-  | 'ascents'
-  | 'date'
-  | 'first-ascent'
-  | 'grade-asc'
-  | 'grade-desc'
-  | 'name'
-  | 'number'
-  | 'rating';
+  'ascents' | 'date' | 'first-ascent' | 'grade-asc' | 'grade-desc' | 'name' | 'number' | 'rating';
 
 export type GroupOption = 'area' | 'none' | 'rock' | 'sector' | 'type';
 
