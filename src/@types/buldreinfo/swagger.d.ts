@@ -224,6 +224,7 @@ export type paths = {
         };
         get?: never;
         put?: never;
+        /** Update SVG for problem media */
         post: operations["postProblemsSvg"];
         delete?: never;
         options?: never;
@@ -929,7 +930,7 @@ export type paths = {
             path?: never;
             cookie?: never;
         };
-        /** Get area PDF by id */
+        /** Get area as PDF */
         get: operations["getAreasPdf"];
         put?: never;
         post?: never;
@@ -985,6 +986,7 @@ export type components = {
             /** Format: int32 */
             height?: number;
             isMovie?: boolean;
+            suffix?: string;
             is360?: boolean;
             dateCreated?: string;
             dateTaken?: string;
@@ -1172,14 +1174,6 @@ export type components = {
             comment?: string;
             date?: string;
         };
-        Redirect: {
-            /** Format: int32 */
-            idArea?: number;
-            /** Format: int32 */
-            idSector?: number;
-            redirectUrl?: string;
-            destination?: string;
-        };
         CompassDirection: {
             /** Format: int32 */
             id?: number;
@@ -1292,6 +1286,17 @@ export type components = {
             type?: string;
             subType?: string;
         };
+        Redirect: {
+            /** Format: int32 */
+            idArea?: number;
+            /** Format: int32 */
+            idSector?: number;
+            redirectUrl?: string;
+            destination?: string;
+        };
+        SearchRequest: {
+            value?: string;
+        };
         Search: {
             title?: string;
             subTitle?: string;
@@ -1304,9 +1309,6 @@ export type components = {
             pageViews?: string;
             lockedAdmin?: boolean;
             lockedSuperadmin?: boolean;
-        };
-        SearchRequest: {
-            value?: string;
         };
         ProfileIdentity: {
             /** Format: int32 */
@@ -1475,16 +1477,16 @@ export type components = {
             superadminWrite?: boolean;
             readOnly?: boolean;
         };
-        VideoInitResponse: {
-            /** Format: int32 */
-            id?: number;
-            presignedUrl?: string;
-        };
         VideoInitPayload: {
             media?: components["schemas"]["Media"];
             /** Format: int64 */
             fileSize?: number;
             contentType?: string;
+        };
+        VideoInitResponse: {
+            /** Format: int32 */
+            id?: number;
+            presignedUrl?: string;
         };
         InstagramMedia: {
             cdnUrl?: string;
@@ -1922,6 +1924,8 @@ export type components = {
             compassDirections?: components["schemas"]["CompassDirection"][];
         };
         Region: {
+            /** Format: int32 */
+            id?: number;
             group?: string;
             name?: string;
             url?: string;
@@ -2167,24 +2171,6 @@ export interface operations {
                     "application/json": components["schemas"]["Trash"][];
                 };
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Trash"][];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Trash"][];
-                };
-            };
         };
     };
     putTrash: {
@@ -2208,34 +2194,6 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
         };
     };
     getMedia: {
@@ -2251,33 +2209,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Media"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Media"];
-                };
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Media"];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2307,34 +2238,6 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
         };
     };
     deleteMedia: {
@@ -2350,34 +2253,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2404,42 +2279,12 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
         };
     };
     postUserRegions: {
         parameters: {
             query: {
-                /** @description Region id */
                 regionId: number;
-                /** @description Delete (TRUE=hide, FALSE=show) */
                 delete: boolean;
             };
             header?: never;
@@ -2450,27 +2295,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2498,42 +2322,12 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
         };
     };
     getTodo: {
         parameters: {
             query: {
-                /** @description Area id */
                 idArea: number;
-                /** @description Sector id */
                 idSector: number;
             };
             header?: never;
@@ -2544,24 +2338,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Todo"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Todo"];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2589,33 +2365,11 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
         };
     };
     getTicks: {
         parameters: {
             query?: {
-                /** @description Page (ticks ordered descending, 0 returns first page) */
                 page?: number;
             };
             header?: never;
@@ -2626,24 +2380,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Ticks"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Ticks"];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2673,33 +2409,11 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
         };
     };
     getSectors: {
         parameters: {
             query: {
-                /** @description Sector id */
                 id: number;
             };
             header?: never;
@@ -2710,33 +2424,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Sector"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Sector"];
-                };
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Sector"];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2768,42 +2455,6 @@ export interface operations {
                     "application/json": components["schemas"]["Redirect"];
                 };
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Redirect"];
-                };
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Redirect"];
-                };
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Redirect"];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Redirect"];
-                };
-            };
         };
     };
     postSearch: {
@@ -2828,30 +2479,11 @@ export interface operations {
                     "application/json": components["schemas"]["Search"][];
                 };
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Search"][];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Search"][];
-                };
-            };
         };
     };
     postProfilesTheme: {
         parameters: {
             query: {
-                /** @description Theme preference */
                 themePreference: string;
             };
             header?: never;
@@ -2862,27 +2494,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2910,35 +2521,12 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
         };
     };
     getProblems: {
         parameters: {
             query: {
-                /** @description Problem id */
                 id: number;
-                /** @description Include hidden media */
                 showHiddenMedia?: boolean;
             };
             header?: never;
@@ -2949,33 +2537,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Problem"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Problem"];
-                };
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Problem"];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3000,42 +2561,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Redirect"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Redirect"];
-                };
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Redirect"];
-                };
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Redirect"];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3089,24 +2614,6 @@ export interface operations {
                     "application/json": components["schemas"]["PermissionUser"][];
                 };
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PermissionUser"][];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PermissionUser"][];
-                };
-            };
         };
     };
     postPermissions: {
@@ -3129,34 +2636,6 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
         };
     };
     postMediaVideoComplete: {
@@ -3172,34 +2651,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3226,42 +2677,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["VideoInitResponse"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["VideoInitResponse"];
-                };
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["VideoInitResponse"];
-                };
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["VideoInitResponse"];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
                     "*/*": components["schemas"]["VideoInitResponse"];
                 };
             };
@@ -3282,42 +2697,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Media"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["Media"];
-                };
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["Media"];
-                };
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["Media"];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3347,34 +2726,6 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
         };
     };
     postMediaInstagramScrape: {
@@ -3390,42 +2741,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["InstagramMedia"][];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["InstagramMedia"][];
-                };
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["InstagramMedia"][];
-                };
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["InstagramMedia"][];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3458,42 +2773,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Media"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["Media"];
-                };
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["Media"];
-                };
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["Media"];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
                     "*/*": components["schemas"]["Media"];
                 };
             };
@@ -3509,7 +2788,7 @@ export interface operations {
         requestBody?: {
             content: {
                 "multipart/form-data": {
-                    json: string;
+                    json: components["schemas"]["Media"];
                     /** Format: binary */
                     file: string;
                 };
@@ -3518,42 +2797,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Media"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["Media"];
-                };
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["Media"];
-                };
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["Media"];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3585,48 +2828,11 @@ export interface operations {
                     "application/json": number;
                 };
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": number;
-                };
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": number;
-                };
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": number;
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": number;
-                };
-            };
         };
     };
     getAreas: {
         parameters: {
             query?: {
-                /** @description Area id */
                 id?: number;
             };
             header?: never;
@@ -3637,33 +2843,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Area"][];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Area"][];
-                };
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Area"][];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3695,42 +2874,6 @@ export interface operations {
                     "application/json": components["schemas"]["Redirect"];
                 };
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Redirect"];
-                };
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Redirect"];
-                };
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Redirect"];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Redirect"];
-                };
-            };
         };
     };
     patchMediaOrder: {
@@ -3748,34 +2891,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Authentication required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Insufficient permissions. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3823,24 +2938,6 @@ export interface operations {
                     "text/html": string;
                 };
             };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/html": string;
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/html": string;
-                };
-            };
         };
     };
     getWithoutJsProblem: {
@@ -3848,9 +2945,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description Problem id */
                 id: number;
-                /** @description Media id */
                 mediaId: number;
             };
             cookie?: never;
@@ -3866,33 +2961,6 @@ export interface operations {
                     "text/html": string;
                 };
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/html": string;
-                };
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/html": string;
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/html": string;
-                };
-            };
         };
     };
     getWithoutJsProblem_1: {
@@ -3900,11 +2968,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description Problem id */
                 id: number;
-                /** @description Media id */
                 mediaId: number;
-                /** @description Pitch number */
                 pitch: number;
             };
             cookie?: never;
@@ -3920,33 +2985,6 @@ export interface operations {
                     "text/html": string;
                 };
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/html": string;
-                };
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/html": string;
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/html": string;
-                };
-            };
         };
     };
     getWithoutJsProblem_2: {
@@ -3954,7 +2992,6 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description Problem id */
                 id: number;
             };
             cookie?: never;
@@ -3963,33 +3000,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/html": string;
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/html": string;
-                };
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/html": string;
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4019,24 +3029,6 @@ export interface operations {
                     "text/html": string;
                 };
             };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/html": string;
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/html": string;
-                };
-            };
         };
     };
     getCameras: {
@@ -4050,15 +3042,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Webcam"][];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4083,15 +3066,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string[];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
                 };
             };
@@ -4100,7 +3074,6 @@ export interface operations {
     getUsersSearch: {
         parameters: {
             query: {
-                /** @description Search keyword */
                 value: string;
             };
             header?: never;
@@ -4118,32 +3091,12 @@ export interface operations {
                     "application/json": components["schemas"]["User"][];
                 };
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["User"][];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["User"][];
-                };
-            };
         };
     };
     getTop: {
         parameters: {
             query: {
-                /** @description Area id */
                 idArea: number;
-                /** @description Sector id */
                 idSector: number;
             };
             header?: never;
@@ -4154,24 +3107,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Top"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Top"];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4196,24 +3131,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Toc"][];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Toc"];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
                     "application/json": components["schemas"]["Toc"];
                 };
             };
@@ -4230,15 +3147,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string[];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4271,7 +3179,6 @@ export interface operations {
     getSectorsPdf: {
         parameters: {
             query: {
-                /** @description Sector id */
                 id: number;
             };
             header?: never;
@@ -4282,33 +3189,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/pdf": unknown;
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/pdf": components["schemas"]["StreamingResponseBody"];
-                };
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/pdf": components["schemas"]["StreamingResponseBody"];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4356,30 +3236,11 @@ export interface operations {
                     "application/json": components["schemas"]["RestrictionsRegion"][];
                 };
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RestrictionsRegion"][];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RestrictionsRegion"][];
-                };
-            };
         };
     };
     getProfiles: {
         parameters: {
             query: {
-                /** @description User id */
                 id: number;
             };
             header?: never;
@@ -4390,33 +3251,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Profile"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Profile"];
-                };
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Profile"];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4429,7 +3263,6 @@ export interface operations {
     getProfilesTodo: {
         parameters: {
             query: {
-                /** @description User id */
                 id: number;
             };
             header?: never;
@@ -4447,41 +3280,12 @@ export interface operations {
                     "application/json": components["schemas"]["ProfileTodo"];
                 };
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProfileTodo"];
-                };
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProfileTodo"];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProfileTodo"];
-                };
-            };
         };
     };
     getProfilesMedia: {
         parameters: {
             query: {
-                /** @description User id */
                 id: number;
-                /** @description FALSE = tagged media, TRUE = captured media */
                 captured?: boolean;
             };
             header?: never;
@@ -4499,39 +3303,11 @@ export interface operations {
                     "application/json": components["schemas"]["Media"][];
                 };
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Media"][];
-                };
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Media"][];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Media"][];
-                };
-            };
         };
     };
     getProfilesAscents: {
         parameters: {
             query: {
-                /** @description User id */
                 id: number;
             };
             header?: never;
@@ -4549,30 +3325,11 @@ export interface operations {
                     "application/json": components["schemas"]["ProfileAscent"][];
                 };
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProfileAscent"][];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProfileAscent"][];
-                };
-            };
         };
     };
     getProblemsSearch: {
         parameters: {
             query: {
-                /** @description Search keyword */
                 value: string;
             };
             header?: never;
@@ -4590,30 +3347,11 @@ export interface operations {
                     "application/json": components["schemas"]["ProblemSearchResult"][];
                 };
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProblemSearchResult"][];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProblemSearchResult"][];
-                };
-            };
         };
     };
     getProblemsPdf: {
         parameters: {
             query: {
-                /** @description Problem id */
                 id: number;
             };
             header?: never;
@@ -4624,33 +3362,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/pdf": string[];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/pdf": components["schemas"]["StreamingResponseBody"];
-                };
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/pdf": components["schemas"]["StreamingResponseBody"];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4671,24 +3382,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Meta"];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Meta"];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4718,22 +3411,8 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description The requested resource has resided temporarily under a different URI. */
-            302: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description An unexpected error occurred */
-            500: {
+            /** @description OK */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4759,32 +3438,12 @@ export interface operations {
                     "application/json": components["schemas"]["GradeDistribution"][];
                 };
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GradeDistribution"][];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GradeDistribution"][];
-                };
-            };
         };
     };
     getGradeDistribution: {
         parameters: {
             query: {
-                /** @description Area id */
                 idArea: number;
-                /** @description Sector id */
                 idSector: number;
             };
             header?: never;
@@ -4795,24 +3454,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GradeDistribution"][];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GradeDistribution"][];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4840,32 +3481,12 @@ export interface operations {
                     "application/json": components["schemas"]["Frontpage"];
                 };
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Frontpage"];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Frontpage"];
-                };
-            };
         };
     };
     getElevation: {
         parameters: {
             query: {
-                /** @description Latitude (-90 to 90) */
                 latitude: number;
-                /** @description Longitude (-180 to 180) */
                 longitude: number;
             };
             header?: never;
@@ -4881,33 +3502,6 @@ export interface operations {
                 };
                 content: {
                     "text/plain": number;
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Forbidden: Authentication required */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
                 };
             };
         };
@@ -4930,30 +3524,11 @@ export interface operations {
                     "application/json": components["schemas"]["DangerousArea"][];
                 };
             };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DangerousArea"][];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DangerousArea"][];
-                };
-            };
         };
     };
     getAreasPdf: {
         parameters: {
             query: {
-                /** @description Area id */
                 id: number;
             };
             header?: never;
@@ -4964,33 +3539,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/pdf": string[];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/pdf": components["schemas"]["StreamingResponseBody"];
-                };
-            };
-            /** @description The requested resource could not be found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/pdf": components["schemas"]["StreamingResponseBody"];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5018,35 +3566,18 @@ export interface operations {
                     "application/json": components["schemas"]["Administrator"][];
                 };
             };
-            /** @description An unexpected error occurred */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Administrator"][];
-                };
-            };
         };
     };
     getActivity: {
         parameters: {
             query: {
-                /** @description Area id (can be 0 if idSector>0) */
                 idArea: number;
-                /** @description Sector id (can be 0 if idArea>0) */
                 idSector: number;
-                /** @description Filter on lower grade */
                 lowerGrade?: number;
-                /** @description Include first ascents */
                 fa?: boolean;
-                /** @description Include comments */
                 comments?: boolean;
-                /** @description Include ticks (public ascents) */
                 ticks?: boolean;
-                /** @description Include new media */
                 media?: boolean;
-                /** @description Offset (see more) */
                 offset?: number;
             };
             header?: never;
@@ -5057,24 +3588,6 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Activity"][];
-                };
-            };
-            /** @description Invalid request parameters. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Activity"][];
-                };
-            };
-            /** @description An unexpected error occurred */
-            500: {
                 headers: {
                     [name: string]: unknown;
                 };
