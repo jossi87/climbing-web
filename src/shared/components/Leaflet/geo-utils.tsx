@@ -32,6 +32,7 @@ const convertGpxToCoordinates: CoordinateParser = (gpx) => {
         elevation = parseFloat(c.firstChild?.nodeValue ?? '0');
       }
     });
+    // First pass: remove consecutive points that are within 10m (deduplication)
     if (
       coords.length === 0 ||
       i === children.length - 1 ||
@@ -53,7 +54,8 @@ const convertGpxToCoordinates: CoordinateParser = (gpx) => {
   if (coords.length < 2) {
     return null;
   }
-  return coords;
+  // Second pass: Ramer-Douglas-Peucker simplification with 20m threshold
+  return simplifyRdp(coords, 20);
 };
 
 const convertTcxToCoordinates: CoordinateParser = (gpx: string) => {
@@ -103,13 +105,76 @@ const convertTcxToCoordinates: CoordinateParser = (gpx: string) => {
   if (coords.length < 2) {
     return null;
   }
-  return coords;
+  // Second pass: Ramer-Douglas-Peucker simplification with 20m threshold
+  return simplifyRdp(coords, 20);
 };
 
 export const parsers: Record<string, CoordinateParser> = {
   gpx: convertGpxToCoordinates,
   tcx: convertTcxToCoordinates,
 } as const;
+
+/**
+ * Ramer-Douglas-Peucker polyline simplification.
+ * Keeps points whose perpendicular distance from the simplified line exceeds `epsilonMeters`.
+ * Always keeps the first and last point.
+ */
+function simplifyRdp(coords: ParsedCoordinates, epsilonMeters: number): ParsedCoordinates {
+  if (coords.length <= 2) return coords;
+
+  // Find the point with the maximum perpendicular distance from the line segment (first, last)
+  let dMax = 0;
+  let index = 0;
+  const first = coords[0];
+  const last = coords[coords.length - 1];
+
+  for (let i = 1; i < coords.length - 1; i++) {
+    const d = perpendicularDistance(
+      coords[i].latitude,
+      coords[i].longitude,
+      first.latitude,
+      first.longitude,
+      last.latitude,
+      last.longitude,
+    );
+    if (d > dMax) {
+      index = i;
+      dMax = d;
+    }
+  }
+
+  // If max distance is greater than epsilon, recursively simplify
+  if (dMax > epsilonMeters) {
+    const left = simplifyRdp(coords.slice(0, index + 1), epsilonMeters);
+    const right = simplifyRdp(coords.slice(index), epsilonMeters);
+    // Concatenate, removing duplicate point at the join
+    return left.slice(0, -1).concat(right);
+  }
+
+  // All points between first and last are within epsilon → keep only endpoints
+  return [first, last];
+}
+
+/**
+ * Perpendicular distance of point p from the line through p1-p2.
+ * Uses the Haversine-equivalent planar approximation (valid for short distances).
+ */
+function perpendicularDistance(px: number, py: number, x1: number, y1: number, x2: number, y2: number): number {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const lengthSq = dx * dx + dy * dy;
+  if (lengthSq === 0) {
+    // p1 and p2 are the same point → distance from p to p1
+    return calculateDistanceBetweenCoordinates(px, py, x1, y1);
+  }
+  // Projection parameter t of p onto the line
+  const t = ((px - x1) * dx + (py - y1) * dy) / lengthSq;
+  // Clamp t to [0, 1] to get the closest point on the segment
+  const clampedT = Math.max(0, Math.min(1, t));
+  const closestLat = x1 + clampedT * dx;
+  const closestLng = y1 + clampedT * dy;
+  return calculateDistanceBetweenCoordinates(px, py, closestLat, closestLng);
+}
 
 export function calculateDistanceBetweenCoordinates(
   lat1: number | string,
