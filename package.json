@@ -75,7 +75,7 @@
     "react-router-dom": "^7.18.1",
     "react-select": "^5.10.2",
     "react-swipeable": "^7.0.2",
-    "recharts": "^3.9.1",
+    "recharts": "^3.9.2",
     "suncalc": "^2.0.0",
     "svg-path-parser": "^1.1.0",
     "svg-path-properties": "^2.0.2",
