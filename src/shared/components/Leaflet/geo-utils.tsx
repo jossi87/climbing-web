@@ -54,8 +54,8 @@ const convertGpxToCoordinates: CoordinateParser = (gpx) => {
   if (coords.length < 2) {
     return null;
   }
-  // Second pass: Ramer-Douglas-Peucker simplification with 20m threshold
-  return simplifyRdp(coords, 20);
+  // Second pass: Ramer-Douglas-Peucker simplification with 5m threshold
+  return simplifyRdp(coords, 5);
 };
 
 const convertTcxToCoordinates: CoordinateParser = (gpx: string) => {
@@ -105,8 +105,8 @@ const convertTcxToCoordinates: CoordinateParser = (gpx: string) => {
   if (coords.length < 2) {
     return null;
   }
-  // Second pass: Ramer-Douglas-Peucker simplification with 20m threshold
-  return simplifyRdp(coords, 20);
+  // Second pass: Ramer-Douglas-Peucker simplification with 5m threshold
+  return simplifyRdp(coords, 5);
 };
 
 export const parsers: Record<string, CoordinateParser> = {
