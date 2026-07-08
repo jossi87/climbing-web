@@ -469,11 +469,12 @@ export const SectorEdit = ({ sector, area }: Props) => {
   const addTrail = useCallback(
     (isDescent: boolean) => {
       setTrails((prev) => {
-        const newIndex = prev.length;
+        // The new trail's index in the active (non-deleted) list determines the tab index
+        const activeCount = prev.filter((t) => !t.delete).length;
         // Schedule auto-selection of the new trail tab after state update
         setTimeout(() => {
-          setLeafletMode(`TRAIL_PATH_${newIndex}`);
-          setEditingTrailPathIndex(newIndex);
+          setLeafletMode(`TRAIL_PATH_${activeCount}`);
+          setEditingTrailPathIndex(activeCount);
         }, 0);
         return [...prev, emptyTrail(isDescent, sector.id)];
       });
