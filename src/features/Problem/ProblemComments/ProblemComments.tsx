@@ -9,6 +9,7 @@ import type { components } from '../../../@types/buldreinfo/swagger';
 import { AlertTriangle, ShieldCheck, Edit2, Trash2, Flag } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
+import { formatUtcDateToOslo } from '../../../utils/formatDateToOslo';
 import {
   profileRowRootClass,
   tickCommentSmall,
@@ -113,7 +114,9 @@ export const ProblemComments = ({
                     <Link to={`/user/${c.idUser}`} className={isOwn ? tickOwnUserLink : tickProblemLink}>
                       {c.name}
                     </Link>
-                    <span className={cn(tickFlags, 'ml-1.5 inline text-slate-400 tabular-nums')}>{c.date}</span>
+                    <span className={cn(tickFlags, 'ml-1.5 inline text-slate-400 tabular-nums')}>
+                      {formatUtcDateToOslo(c.date)}
+                    </span>
                     {c.danger ? (
                       <span
                         className={cn(
