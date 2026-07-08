@@ -326,29 +326,39 @@ export const SectorEdit = ({ sector, area }: Props) => {
       });
       setData((prevState) => ({ ...prevState, outline }));
     } else if (leafletMode.startsWith('TRAIL_PATH_')) {
-      const trailIndex = parseInt(leafletMode.replace('TRAIL_PATH_', ''), 10);
-      if (!isNaN(trailIndex)) {
+      const activeIndex = parseInt(leafletMode.replace('TRAIL_PATH_', ''), 10);
+      if (!isNaN(activeIndex)) {
         if (trailMapMode === 'marker') {
           // Add a marker at the clicked location
           setTrails((prev) => {
+            // Map from activeTrails index to full trails array index
+            const active = prev.filter((t) => !t.delete);
+            const trail = active[activeIndex];
+            if (!trail) return prev;
+            const fullIndex = prev.indexOf(trail);
             const next = [...prev];
-            const trail = { ...next[trailIndex] };
-            const markers = [...(trail.markers ?? [])];
+            const updated = { ...trail };
+            const markers = [...(updated.markers ?? [])];
             markers.push({
               label: '',
               coordinates: { latitude: event.latlng.lat, longitude: event.latlng.lng },
             });
-            trail.markers = markers;
-            next[trailIndex] = trail;
+            updated.markers = markers;
+            next[fullIndex] = updated;
             return next;
           });
         } else {
           // Add a path point
           setTrails((prev) => {
+            // Map from activeTrails index to full trails array index
+            const active = prev.filter((t) => !t.delete);
+            const trail = active[activeIndex];
+            if (!trail) return prev;
+            const fullIndex = prev.indexOf(trail);
             const next = [...prev];
-            const trail = { ...next[trailIndex] };
-            trail.path = [...(trail.path ?? []), { latitude: event.latlng.lat, longitude: event.latlng.lng }];
-            next[trailIndex] = trail;
+            const updated = { ...trail };
+            updated.path = [...(updated.path ?? []), { latitude: event.latlng.lat, longitude: event.latlng.lng }];
+            next[fullIndex] = updated;
             return next;
           });
         }
