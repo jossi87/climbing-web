@@ -18,7 +18,8 @@ import type { FetchOptions } from './types';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { postPermissions } from './operations';
 import { captureSentryException } from '../utils/sentry';
-import { type MediaRegion, calculateMediaRegion, isPathVisible, scalePath } from '../utils/svg-scaler';
+import { type MediaRegion, calculateMediaRegion, isPathVisible, scaleCoordsJson, scalePath } from '../utils/svg-scaler';
+
 import { createHttpErrorFromResponse, isHttpError } from './httpError';
 import { applyEntityRedirectUrl } from './redirectResponse';
 
@@ -797,7 +798,8 @@ export function useSvgEdit(problemId: number, pitch: number, mediaId: number, me
   const anchors: { x: number; y: number }[] = [];
   if (svg?.anchors) {
     try {
-      const parsed = JSON.parse(svg.anchors);
+      const scaled = scaleCoordsJson(svg.anchors, mediaRegionLocal);
+      const parsed = JSON.parse(scaled);
       anchors.push(...parsed);
     } catch (ex) {
       captureSentryException(ex, { anchors: svg.anchors, problemId, mediaId, svgId: svg.id });
@@ -806,7 +808,8 @@ export function useSvgEdit(problemId: number, pitch: number, mediaId: number, me
   const tradBelayStations: { x: number; y: number }[] = [];
   if (svg?.tradBelayStations) {
     try {
-      const parsed = JSON.parse(svg.tradBelayStations);
+      const scaled = scaleCoordsJson(svg.tradBelayStations, mediaRegionLocal);
+      const parsed = JSON.parse(scaled);
       tradBelayStations.push(...parsed);
     } catch (ex) {
       captureSentryException(ex, { tradBelayStations: svg.tradBelayStations, problemId, mediaId, svgId: svg.id });
@@ -815,7 +818,8 @@ export function useSvgEdit(problemId: number, pitch: number, mediaId: number, me
   const texts: { txt: string; x: number; y: number }[] = [];
   if (svg?.texts) {
     try {
-      const parsed = JSON.parse(svg.texts);
+      const scaled = scaleCoordsJson(svg.texts, mediaRegionLocal);
+      const parsed = JSON.parse(scaled);
       texts.push(...parsed);
     } catch (ex) {
       captureSentryException(ex, { texts: svg.texts, problemId, mediaId, svgId: svg.id });
@@ -832,9 +836,11 @@ export function useSvgEdit(problemId: number, pitch: number, mediaId: number, me
         pitch: s.pitch ?? 0,
         hasAnchor: !!s.hasAnchor,
         path: (s.path && mediaRegionLocal ? scalePath(s.path, mediaRegionLocal) : s.path) ?? '',
-        anchors: s.anchors ? JSON.parse(s.anchors) : [],
-        tradBelayStations: s.tradBelayStations ? JSON.parse(s.tradBelayStations) : [],
-        texts: s.texts ? JSON.parse(s.texts) : [],
+        anchors: s.anchors ? JSON.parse(scaleCoordsJson(s.anchors, mediaRegionLocal)) : [],
+        tradBelayStations: s.tradBelayStations
+          ? JSON.parse(scaleCoordsJson(s.tradBelayStations, mediaRegionLocal))
+          : [],
+        texts: s.texts ? JSON.parse(scaleCoordsJson(s.texts, mediaRegionLocal)) : [],
         t: 'other',
       });
     }

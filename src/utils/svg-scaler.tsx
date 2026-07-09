@@ -137,3 +137,26 @@ export function scalePath(path: string, mediaRegion: MediaRegion | null): string
   }
   return newPathLst.join(' ');
 }
+
+/**
+ * Scale a JSON-encoded array of { x, y } coordinates from full-image space to
+ * cropped-region space by subtracting the media region offset.
+ * Used for texts, anchors, and tradBelayStations which are stored as JSON strings.
+ */
+export function scaleCoordsJson(json: string | undefined | null, mediaRegion: MediaRegion | null): string {
+  if (!mediaRegion || !json) {
+    return json ?? '[]';
+  }
+  try {
+    const items: { x: number; y: number }[] = JSON.parse(json);
+    return JSON.stringify(
+      items.map((item) => ({
+        ...item,
+        x: item.x - mediaRegion.x,
+        y: item.y - mediaRegion.y,
+      })),
+    );
+  } catch {
+    return json;
+  }
+}

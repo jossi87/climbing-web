@@ -6,10 +6,12 @@ import { type CSSProperties, type MouseEvent, useEffect, useMemo, useState } fro
 import {
   calculateMediaRegion,
   isPathVisible,
+  scaleCoordsJson,
   scalePath,
   scalePoint,
   type MediaRegion,
 } from '../../../utils/svg-scaler';
+
 import './SvgViewer.css';
 import { cn } from '../../../lib/utils';
 
@@ -73,7 +75,13 @@ export const SvgViewer = ({
 
       svgs = svgs
         .filter((x) => x === pitchSvg || (mediaRegion ? isPathVisible(x.path ?? '', regionForScale) : false))
-        .map((x) => ({ ...x, path: scalePath(x.path ?? '', regionForScale) }));
+        .map((x) => ({
+          ...x,
+          path: scalePath(x.path ?? '', regionForScale),
+          texts: scaleCoordsJson(x.texts, regionForScale),
+          anchors: scaleCoordsJson(x.anchors, regionForScale),
+          tradBelayStations: scaleCoordsJson(x.tradBelayStations, regionForScale),
+        }));
 
       if (mediaRegion) {
         imgW = mediaRegion.width;

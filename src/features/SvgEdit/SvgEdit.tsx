@@ -82,6 +82,26 @@ export const SvgEditLoader = () => {
       const correctPoints = parsePath(updated.path ?? '', data?.mediaRegion ?? undefined);
       const correctPathTxt = generatePath(correctPoints);
 
+      // Text, anchor, and trad belay station coordinates are captured relative to the
+      // cropped media region (when editing a pitch). Convert them back to full-image
+      // coordinates by adding the media region offset, matching how parsePath converts
+      // path coordinates.
+      const deltaX = data?.mediaRegion?.x ?? 0;
+      const deltaY = data?.mediaRegion?.y ?? 0;
+      const correctedTexts = updated.texts.map((t) => ({
+        ...t,
+        x: t.x + deltaX,
+        y: t.y + deltaY,
+      }));
+      const correctedAnchors = updated.anchors.map((a) => ({
+        x: a.x + deltaX,
+        y: a.y + deltaY,
+      }));
+      const correctedTradBelayStations = updated.tradBelayStations.map((t) => ({
+        x: t.x + deltaX,
+        y: t.y + deltaY,
+      }));
+
       return postProblemSvg(
         accessToken,
         problemId,
@@ -91,9 +111,9 @@ export const SvgEditLoader = () => {
         data?.svgId ?? 0,
         correctPathTxt,
         updated.hasAnchor,
-        JSON.stringify(updated.anchors),
-        JSON.stringify(updated.tradBelayStations),
-        JSON.stringify(updated.texts),
+        JSON.stringify(correctedAnchors),
+        JSON.stringify(correctedTradBelayStations),
+        JSON.stringify(correctedTexts),
       )
         .then(async () => {
           await invalidateProblemQueries(queryClient, problemId);
