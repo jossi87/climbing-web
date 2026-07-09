@@ -15,6 +15,7 @@ import Leaflet from '../../shared/components/Leaflet/Leaflet';
 import GetCenterFromDegrees from '../../utils/map-utils';
 
 import { googleMapsSearchUrl } from '../../utils/googleMaps';
+import { shareCoordinates } from '../../utils/shareCoordinates';
 import Media from '../../shared/components/Media/Media';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { LockSymbol } from '../../shared/ui/Indicators';
@@ -333,9 +334,9 @@ function ProblemLoaded({
         ]}
       />
       <ActionMenuChip
-        label='Google Maps'
+        label='Maps'
         icon={MapIcon}
-        title='Open in Google Maps'
+        title='Open in maps app'
         items={[
           ...(data.sectorParking
             ? [
@@ -344,6 +345,13 @@ function ProblemLoaded({
                   label: 'Parking',
                   href: googleMapsSearchUrl(data.sectorParking.latitude, data.sectorParking.longitude),
                   kind: 'link' as const,
+                },
+                {
+                  id: 'share-parking',
+                  label: 'Share parking',
+                  href: '#',
+                  onClick: () =>
+                    shareCoordinates(data.sectorParking!.latitude!, data.sectorParking!.longitude!, 'Parking'),
                 },
               ]
             : []),
@@ -354,6 +362,17 @@ function ProblemLoaded({
                   label: meta.isBouldering ? 'Boulder' : 'Route',
                   href: googleMapsSearchUrl(data.coordinates.latitude, data.coordinates.longitude),
                   kind: 'link' as const,
+                },
+                {
+                  id: 'share-problem',
+                  label: `Share ${meta.isBouldering ? 'boulder' : 'route'}`,
+                  href: '#',
+                  onClick: () =>
+                    shareCoordinates(
+                      data.coordinates!.latitude!,
+                      data.coordinates!.longitude!,
+                      `${data.name} · ${data.grade}`,
+                    ),
                 },
               ]
             : []),

@@ -1,6 +1,9 @@
-/** Google Maps place/search URL (lat,lng). Prefer over legacy `/maps/search/?api=1&query=` which can misbehave. */
+/**
+ * Returns a Google Maps directions URL that works on both desktop and mobile.
+ * On mobile devices, this opens the Google Maps app.
+ * On desktop, it opens the Google Maps website.
+ */
 export function googleMapsSearchUrl(lat: number | string | undefined, lng: number | string | undefined): string {
   if (lat == null || lng == null) return '#';
-  const q = `${lat},${lng}`;
-  return `https://www.google.com/maps?q=${encodeURIComponent(q)}`;
+  return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
 }

@@ -13,6 +13,7 @@ import Media from '../../shared/components/Media/Media';
 import Todo from '../../shared/components/Todo/Todo';
 import GetCenterFromDegrees from '../../utils/map-utils';
 import { googleMapsSearchUrl } from '../../utils/googleMaps';
+import { shareCoordinates } from '../../utils/shareCoordinates';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { Stars, LockSymbol } from '../../shared/ui/Indicators';
 import { ConditionLabels } from '../../shared/components/Widgets/ConditionLabels';
@@ -911,9 +912,9 @@ const Sector = () => {
                       ]}
                     />
                     <ActionMenuChip
-                      label='Google Maps'
+                      label='Maps'
                       icon={MapIcon}
-                      title='Open in Google Maps'
+                      title='Open in maps app'
                       items={[
                         ...(data.parking
                           ? [
@@ -922,6 +923,13 @@ const Sector = () => {
                                 label: 'Parking',
                                 href: googleMapsSearchUrl(data.parking.latitude, data.parking.longitude),
                                 kind: 'link' as const,
+                              },
+                              {
+                                id: 'share-parking',
+                                label: 'Share parking',
+                                href: '#',
+                                onClick: () =>
+                                  shareCoordinates(data.parking!.latitude!, data.parking!.longitude!, 'Parking'),
                               },
                             ]
                           : []),
@@ -935,6 +943,17 @@ const Sector = () => {
                                   (data.outline ?? [])[0]?.longitude,
                                 ),
                                 kind: 'link' as const,
+                              },
+                              {
+                                id: 'share-sector',
+                                label: 'Share sector',
+                                href: '#',
+                                onClick: () =>
+                                  shareCoordinates(
+                                    (data.outline ?? [])[0]!.latitude!,
+                                    (data.outline ?? [])[0]!.longitude!,
+                                    data.name ?? 'Sector',
+                                  ),
                               },
                             ]
                           : []),
