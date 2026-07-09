@@ -5,9 +5,8 @@ import { useNavigate } from 'react-router';
 import type { Marker as LeafletMarker } from 'leaflet';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { captureSentryException } from '../../../utils/sentry';
-import { Navigation, ExternalLink, CloudSun, Share2 } from 'lucide-react';
-import { shareCoordinates } from '../../../utils/shareCoordinates';
-import { googleMapsSearchUrl } from '../../../utils/googleMaps';
+import { Navigation, ExternalLink, CloudSun } from 'lucide-react';
+import { openMap } from '../../../utils/openMap';
 
 type ParkingMarker = {
   coordinates: components['schemas']['Coordinates'] | null | undefined;
@@ -102,22 +101,13 @@ export default function Markers({ opacity, markers, addEventHandlers, flyToId, s
         <Marker icon={parkingIcon} position={position} key={['parking', lat, lng].join('/')}>
           <Popup closeButton={false}>
             <div className='flex flex-col gap-1.5'>
-              <a
-                href={googleMapsSearchUrl(lat, lng)}
-                target='_blank'
-                rel='noopener noreferrer'
+              <button
+                type='button'
+                onClick={() => openMap(lat, lng, 'Parking')}
                 className='border-surface-border bg-surface-nav type-body inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[12px] leading-none font-semibold text-slate-200 no-underline transition-colors hover:border-white/15 hover:text-slate-100'
               >
                 <Navigation size={12} />
                 Navigate
-              </a>
-              <button
-                type='button'
-                onClick={() => shareCoordinates(lat, lng, 'Parking')}
-                className='border-surface-border bg-surface-nav type-body inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[12px] leading-none font-semibold text-slate-200 no-underline transition-colors hover:border-white/15 hover:text-slate-100'
-              >
-                <Share2 size={12} />
-                Share
               </button>
             </div>
           </Popup>

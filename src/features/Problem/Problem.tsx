@@ -14,8 +14,7 @@ import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
 import GetCenterFromDegrees from '../../utils/map-utils';
 
-import { googleMapsSearchUrl } from '../../utils/googleMaps';
-import { shareCoordinates } from '../../utils/shareCoordinates';
+import { openMap } from '../../utils/openMap';
 import Media from '../../shared/components/Media/Media';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { LockSymbol } from '../../shared/ui/Indicators';
@@ -333,51 +332,34 @@ function ProblemLoaded({
           { id: 'area-pdf', label: 'Area', href: `/areas/pdf?id=${data.areaId}`, kind: 'download' },
         ]}
       />
-      <ActionMenuChip
-        label='Maps'
-        icon={MapIcon}
-        title='Open in maps app'
-        items={[
-          ...(data.sectorParking
-            ? [
-                {
-                  id: 'maps-parking',
-                  label: 'Parking',
-                  href: googleMapsSearchUrl(data.sectorParking.latitude, data.sectorParking.longitude),
-                  kind: 'link' as const,
-                },
-                {
-                  id: 'share-parking',
-                  label: 'Share parking',
-                  href: '#',
-                  onClick: () =>
-                    shareCoordinates(data.sectorParking!.latitude!, data.sectorParking!.longitude!, 'Parking'),
-                },
-              ]
-            : []),
-          ...(data.coordinates
-            ? [
-                {
-                  id: 'maps-problem',
-                  label: meta.isBouldering ? 'Boulder' : 'Route',
-                  href: googleMapsSearchUrl(data.coordinates.latitude, data.coordinates.longitude),
-                  kind: 'link' as const,
-                },
-                {
-                  id: 'share-problem',
-                  label: `Share ${meta.isBouldering ? 'boulder' : 'route'}`,
-                  href: '#',
-                  onClick: () =>
-                    shareCoordinates(
-                      data.coordinates!.latitude!,
-                      data.coordinates!.longitude!,
-                      `${data.name} · ${data.grade}`,
-                    ),
-                },
-              ]
-            : []),
-        ]}
-      />
+      {data.sectorParking?.latitude != null && data.sectorParking?.longitude != null && (
+        <button
+          type='button'
+          onClick={() => openMap(data.sectorParking!.latitude!, data.sectorParking!.longitude!, 'Parking')}
+          className='border-surface-border bg-surface-nav type-body inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[12px] leading-none font-semibold text-slate-200 no-underline transition-colors hover:border-white/15 hover:text-slate-100'
+          title='Navigate to parking'
+        >
+          <MapIcon size={12} />
+          Parking
+        </button>
+      )}
+      {data.coordinates?.latitude != null && data.coordinates?.longitude != null && (
+        <button
+          type='button'
+          onClick={() =>
+            openMap(
+              data.coordinates!.latitude!,
+              data.coordinates!.longitude!,
+              data.name ?? (meta.isBouldering ? 'Boulder' : 'Route'),
+            )
+          }
+          className='border-surface-border bg-surface-nav type-body inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[12px] leading-none font-semibold text-slate-200 no-underline transition-colors hover:border-white/15 hover:text-slate-100'
+          title='Navigate to problem'
+        >
+          <MapIcon size={12} />
+          {meta.isBouldering ? 'Boulder' : 'Route'}
+        </button>
+      )}
       <ExternalLinkLabels externalLinks={data.externalLinks} />
     </div>
   );

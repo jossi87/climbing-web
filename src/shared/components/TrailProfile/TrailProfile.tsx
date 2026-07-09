@@ -1,18 +1,7 @@
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { AreaChart, Area, Tooltip, XAxis, YAxis } from 'recharts';
-import {
-  Download,
-  Clock,
-  ArrowUpRight,
-  ArrowDownRight,
-  Ruler,
-  MapPin,
-  ImageIcon,
-  Database,
-  Share2,
-} from 'lucide-react';
-import { shareCoordinates } from '../../../utils/shareCoordinates';
-import { googleMapsSearchUrl } from '../../../utils/googleMaps';
+import { Download, Clock, ArrowUpRight, ArrowDownRight, Ruler, MapPin, ImageIcon, Database } from 'lucide-react';
+import { openMap } from '../../../utils/openMap';
 import { useState, useLayoutEffect, useRef, useId } from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '../../../lib/utils';
@@ -208,7 +197,6 @@ export const TrailProfile = ({
                 const lat = m.coordinates?.latitude;
                 const lng = m.coordinates?.longitude;
                 const hasCoords = lat != null && lng != null;
-                const mapsUrl = hasCoords ? googleMapsSearchUrl(lat, lng) : null;
                 const markerColor = getTrailColor(!!isDescent, descentIndex ?? 0);
                 const coordStr = hasCoords
                   ? `(${lat!.toFixed(3)}${lat! >= 0 ? 'N' : 'S'},${lng!.toFixed(3)}${lng! >= 0 ? 'E' : 'W'})`
@@ -222,30 +210,19 @@ export const TrailProfile = ({
                 );
                 return (
                   <div key={i} className='inline-flex items-center gap-1'>
-                    {mapsUrl ? (
-                      <a
-                        href={mapsUrl}
-                        target='_blank'
-                        rel='noopener noreferrer'
+                    {hasCoords ? (
+                      <button
+                        type='button'
+                        onClick={() => openMap(lat!, lng!, m.label ?? 'Marker')}
                         className='type-on-accent hover:type-on-accent inline-flex items-center gap-1 rounded-lg border border-white/12 bg-white/6 px-1.5 py-0.5 text-[11px] transition-colors hover:border-white/22 hover:bg-white/12 max-sm:text-[10px]'
                         title='Open in maps app'
                       >
                         {inner}
-                      </a>
+                      </button>
                     ) : (
                       <div className='inline-flex items-center gap-1 rounded-lg px-1.5 py-0.5 text-[11px] text-slate-400 max-sm:text-[10px]'>
                         {inner}
                       </div>
-                    )}
-                    {hasCoords && (
-                      <button
-                        type='button'
-                        onClick={() => shareCoordinates(lat!, lng!, m.label ?? 'Marker')}
-                        className='type-on-accent hover:type-on-accent inline-flex items-center gap-1 rounded-lg border border-white/12 bg-white/6 px-1.5 py-0.5 text-[11px] transition-colors hover:border-white/22 hover:bg-white/12 max-sm:text-[10px]'
-                        title='Share coordinates'
-                      >
-                        <Share2 size={11} className='shrink-0' aria-hidden />
-                      </button>
                     )}
                   </div>
                 );

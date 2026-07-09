@@ -12,8 +12,7 @@ import Leaflet from '../../shared/components/Leaflet/Leaflet';
 import Media from '../../shared/components/Media/Media';
 import Todo from '../../shared/components/Todo/Todo';
 import GetCenterFromDegrees from '../../utils/map-utils';
-import { googleMapsSearchUrl } from '../../utils/googleMaps';
-import { shareCoordinates } from '../../utils/shareCoordinates';
+import { openMap } from '../../utils/openMap';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { Stars, LockSymbol } from '../../shared/ui/Indicators';
 import { ConditionLabels } from '../../shared/components/Widgets/ConditionLabels';
@@ -911,54 +910,33 @@ const Sector = () => {
                         { id: 'area-pdf', label: 'Area', href: `/areas/pdf?id=${data.areaId}`, kind: 'download' },
                       ]}
                     />
-                    <ActionMenuChip
-                      label='Maps'
-                      icon={MapIcon}
-                      title='Open in maps app'
-                      items={[
-                        ...(data.parking
-                          ? [
-                              {
-                                id: 'maps-parking',
-                                label: 'Parking',
-                                href: googleMapsSearchUrl(data.parking.latitude, data.parking.longitude),
-                                kind: 'link' as const,
-                              },
-                              {
-                                id: 'share-parking',
-                                label: 'Share parking',
-                                href: '#',
-                                onClick: () =>
-                                  shareCoordinates(data.parking!.latitude!, data.parking!.longitude!, 'Parking'),
-                              },
-                            ]
-                          : []),
-                        ...(meta.isClimbing && (data.outline ?? []).length > 0
-                          ? [
-                              {
-                                id: 'maps-sector',
-                                label: 'Sector',
-                                href: googleMapsSearchUrl(
-                                  (data.outline ?? [])[0]?.latitude,
-                                  (data.outline ?? [])[0]?.longitude,
-                                ),
-                                kind: 'link' as const,
-                              },
-                              {
-                                id: 'share-sector',
-                                label: 'Share sector',
-                                href: '#',
-                                onClick: () =>
-                                  shareCoordinates(
-                                    (data.outline ?? [])[0]!.latitude!,
-                                    (data.outline ?? [])[0]!.longitude!,
-                                    data.name ?? 'Sector',
-                                  ),
-                              },
-                            ]
-                          : []),
-                      ]}
-                    />
+                    {data.parking?.latitude != null && data.parking?.longitude != null && (
+                      <button
+                        type='button'
+                        onClick={() => openMap(data.parking!.latitude!, data.parking!.longitude!, 'Parking')}
+                        className='border-surface-border bg-surface-nav type-body inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[12px] leading-none font-semibold text-slate-200 no-underline transition-colors hover:border-white/15 hover:text-slate-100'
+                        title='Navigate to parking'
+                      >
+                        <MapIcon size={12} />
+                        Parking
+                      </button>
+                    )}
+                    {meta.isClimbing &&
+                      (data.outline ?? []).length > 0 &&
+                      data.outline![0]?.latitude != null &&
+                      data.outline![0]?.longitude != null && (
+                        <button
+                          type='button'
+                          onClick={() =>
+                            openMap(data.outline![0]!.latitude!, data.outline![0]!.longitude!, data.name ?? 'Sector')
+                          }
+                          className='border-surface-border bg-surface-nav type-body inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[12px] leading-none font-semibold text-slate-200 no-underline transition-colors hover:border-white/15 hover:text-slate-100'
+                          title='Navigate to sector'
+                        >
+                          <MapIcon size={12} />
+                          Sector
+                        </button>
+                      )}
                     <ExternalLinkLabels externalLinks={data.externalLinks} />
                   </div>
 

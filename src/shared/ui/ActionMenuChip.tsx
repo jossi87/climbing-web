@@ -11,8 +11,6 @@ export type ActionMenuChipItem = {
   href: string;
   title?: string;
   kind?: 'download' | 'link';
-  /** Callback invoked when the item is clicked (e.g. for share actions). When provided, `href` is ignored. */
-  onClick?: () => void;
 };
 
 type Props = {
@@ -36,7 +34,7 @@ export const ActionMenuChip = ({ label, title, icon: Icon = Download, items }: P
     minWidth: 0,
   });
 
-  const filteredItems = useMemo(() => items.filter((item) => item.onClick || item.href.trim().length > 0), [items]);
+  const filteredItems = useMemo(() => items.filter((item) => item.href.trim().length > 0), [items]);
 
   useEffect(() => {
     const onPointerDown = (event: MouseEvent) => {
@@ -130,22 +128,6 @@ export const ActionMenuChip = ({ label, title, icon: Icon = Download, items }: P
             {filteredItems.map((item) => {
               const isLoading = loadingId === item.id;
               const isDownload = (item.kind ?? 'download') === 'download';
-              if (item.onClick) {
-                return (
-                  <button
-                    key={item.id}
-                    type='button'
-                    onClick={() => {
-                      item.onClick!();
-                      setOpen(false);
-                    }}
-                    title={item.title}
-                    className='hover:bg-surface-raised-hover flex w-full items-center gap-2 px-3 py-2 text-left text-[12px] font-medium text-slate-200 transition-colors'
-                  >
-                    <span className='min-w-0 truncate'>{item.label}</span>
-                  </button>
-                );
-              }
               if (isDownload) {
                 return (
                   <button
