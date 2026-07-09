@@ -1,6 +1,6 @@
 import { useRef, useEffect, type ReactNode } from 'react';
 import { Marker, Tooltip, Popup, useMap } from 'react-leaflet';
-import { markerBlueIcon, markerRedIcon, parkingIcon, weatherIcon, rockIcon } from './icons';
+import { markerBlueIcon, markerRedIcon, parkingIcon, weatherIcon, weatherIconActive, rockIcon } from './icons';
 import { useNavigate } from 'react-router';
 import type { Marker as LeafletMarker } from 'leaflet';
 import type { components } from '../../../@types/buldreinfo/swagger';
@@ -58,6 +58,9 @@ type Props = {
   addEventHandlers: boolean;
   flyToId: number | undefined | null;
   showElevation?: boolean;
+  onMarkerClick?: (marker: MarkerDef) => void;
+  /** Coordinates [lat, lng] of the currently active/highlighted marker */
+  activeMarkerPosition?: [number, number] | null;
 };
 
 const isCoordinateMarker = (m: MarkerDef): m is MarkerDef & Required<Pick<MarkerDef, 'coordinates'>> =>
@@ -71,7 +74,15 @@ const isHtmlMarker = (m: MarkerDef): m is HtmlMarker => !!(m as HtmlMarker).html
 
 const isLabelMarker = (m: MarkerDef): m is LabelMarker => !!(m as LabelMarker).label;
 
-export default function Markers({ opacity, markers, addEventHandlers, flyToId, showElevation }: Props) {
+export default function Markers({
+  opacity,
+  markers,
+  addEventHandlers,
+  flyToId,
+  showElevation,
+  onMarkerClick,
+  activeMarkerPosition,
+}: Props) {
   const navigate = useNavigate();
   const map = useMap();
   const markerRefs = useRef<Record<number, LeafletMarker | null>>({});
@@ -122,6 +133,26 @@ export default function Markers({ opacity, markers, addEventHandlers, flyToId, s
     }
 
     if (isCameraMarker(m)) {
+      // Determine if this marker is the currently active/selected one
+      const isActive =
+        activeMarkerPosition != null &&
+        Math.abs(activeMarkerPosition[0] - lat) < 0.0001 &&
+        Math.abs(activeMarkerPosition[1] - lng) < 0.0001;
+
+      // When onMarkerClick is provided (e.g. from Webcams page), use external panel instead of popup
+      if (onMarkerClick) {
+        return (
+          <Marker
+            icon={isActive ? weatherIconActive : weatherIcon}
+            position={position}
+            key={['camera', lat, lng].join('/')}
+            eventHandlers={{
+              click: () => onMarkerClick(m),
+            }}
+          />
+        );
+      }
+
       return (
         <Marker icon={weatherIcon} position={position} key={['camera', lat, lng].join('/')}>
           <Popup closeButton={false} maxWidth={420}>

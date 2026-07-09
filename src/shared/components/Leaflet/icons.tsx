@@ -122,4 +122,30 @@ const parkingIcon = createParkingIcon();
 const rockIcon = createRockIcon();
 const weatherIcon = createLucideIcon(<Camera size={16} strokeWidth={2.4} />, '#0f172a');
 
-export { markerBlueIcon, markerRedIcon, parkingIcon, weatherIcon, rockIcon };
+/** Highlighted camera icon used when a webcam marker is the active selection */
+const weatherIconActive = createLucideIcon(<Camera size={16} strokeWidth={2.4} />, '#0f172a');
+
+// Override the active icon with a brand-colored border and glow
+weatherIconActive.options.html = renderToString(
+  <div
+    style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: '32px',
+      height: '32px',
+      backgroundColor: 'rgba(255, 255, 255, 0.08)',
+      color: '#0f172a',
+      borderRadius: '50%',
+      border: '2px solid #f59e0b',
+      backdropFilter: 'blur(4px)',
+      boxShadow: '0 0 0 3px rgba(245, 158, 11, 0.3), 0 4px 16px rgba(0,0,0,0.6)',
+    }}
+  >
+    <Camera size={16} strokeWidth={2.4} />
+  </div>,
+);
+weatherIconActive.options.iconSize = [32, 32];
+weatherIconActive.options.iconAnchor = [16, 16];
+
+export { markerBlueIcon, markerRedIcon, parkingIcon, weatherIcon, weatherIconActive, rockIcon };

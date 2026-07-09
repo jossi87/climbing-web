@@ -76,6 +76,9 @@ type Props = {
   flyToId?: number | null;
   height?: number | string;
   markers?: MarkerDef[] | null;
+  onMarkerClick?: (marker: MarkerDef) => void;
+  /** Coordinates [lat, lng] of the currently active/highlighted marker */
+  activeMarkerPosition?: [number, number] | null;
   onMouseClick?: LeafletMouseEventHandlerFn | null;
   onMouseMove?: LeafletMouseEventHandlerFn | null;
   outlines?:
@@ -137,6 +140,7 @@ const UpdateBounds = ({
 };
 
 const Leaflet = ({
+  activeMarkerPosition,
   autoZoom,
   clusterMarkers,
   defaultCenter,
@@ -144,6 +148,7 @@ const Leaflet = ({
   flyToId,
   height,
   markers = null,
+  onMarkerClick,
   outlines,
   trails = null,
   rocks = [],
@@ -213,6 +218,8 @@ const Leaflet = ({
         addEventHandlers={addEventHandlers}
         flyToId={flyToId}
         showElevation={showElevation}
+        onMarkerClick={onMarkerClick}
+        activeMarkerPosition={activeMarkerPosition}
       />
     );
   } else {
@@ -223,6 +230,8 @@ const Leaflet = ({
         addEventHandlers={addEventHandlers}
         flyToId={flyToId}
         showElevation={showElevation}
+        onMarkerClick={onMarkerClick}
+        activeMarkerPosition={activeMarkerPosition}
       />
     );
     if (clusterMarkers) {
