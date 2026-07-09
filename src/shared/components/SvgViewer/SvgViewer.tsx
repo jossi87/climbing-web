@@ -89,40 +89,44 @@ export const SvgViewer = ({
 
   const { imgW, imgH, mediaRegion, svgs, regionForScaleAll, scale } = processed;
 
-  const mediaSvgs = ((m.mediaSvgs ?? []) as components['schemas']['MediaSvgElement'][])
-    .filter((svg) => !svg.path || (mediaRegion ? isPathVisible(svg.path ?? '', regionForScaleAll) : true))
-    .map((svg, idx) => {
-      const keyPrefix = `${mediaFileNumericId}-${thumb}-${idx}`;
-      switch (svg.t) {
-        case 'PATH':
-          return (
-            <Descent
-              key={`${keyPrefix}-descent`}
-              path={scalePath(svg.path ?? '', regionForScaleAll)}
-              scale={scale}
-              thumb={thumb}
-            />
-          );
-        case 'RAPPEL_BOLTED':
-        case 'RAPPEL_NOT_BOLTED': {
-          const { x, y } = scalePoint(svg.rappelX ?? 0, svg.rappelY ?? 0, regionForScaleAll);
-          return (
-            <Rappel
-              key={`${keyPrefix}-rappel`}
-              x={x}
-              y={y}
-              bolted={svg.t === 'RAPPEL_BOLTED'}
-              scale={scale}
-              thumb={thumb}
-              backgroundColor='black'
-              color='white'
-            />
-          );
-        }
-        default:
-          return null;
-      }
-    });
+  const mediaSvgs = useMemo(
+    () =>
+      ((m.mediaSvgs ?? []) as components['schemas']['MediaSvgElement'][])
+        .filter((svg) => !svg.path || (mediaRegion ? isPathVisible(svg.path ?? '', regionForScaleAll) : true))
+        .map((svg, idx) => {
+          const keyPrefix = `${mediaFileNumericId}-${thumb}-${idx}`;
+          switch (svg.t) {
+            case 'PATH':
+              return (
+                <Descent
+                  key={`${keyPrefix}-descent`}
+                  path={scalePath(svg.path ?? '', regionForScaleAll)}
+                  scale={scale}
+                  thumb={thumb}
+                />
+              );
+            case 'RAPPEL_BOLTED':
+            case 'RAPPEL_NOT_BOLTED': {
+              const { x, y } = scalePoint(svg.rappelX ?? 0, svg.rappelY ?? 0, regionForScaleAll);
+              return (
+                <Rappel
+                  key={`${keyPrefix}-rappel`}
+                  x={x}
+                  y={y}
+                  bolted={svg.t === 'RAPPEL_BOLTED'}
+                  scale={scale}
+                  thumb={thumb}
+                  backgroundColor='black'
+                  color='white'
+                />
+              );
+            }
+            default:
+              return null;
+          }
+        }),
+    [m.mediaSvgs, mediaRegion, regionForScaleAll, scale, mediaFileNumericId, thumb],
+  );
 
   const routes = useMemo(() => {
     if (svgs.length === 0) return null;
@@ -206,7 +210,7 @@ export const SvgViewer = ({
           height='100%'
         />
         {routes && <g className={thumb ? undefined : 'buldreinfo-svg-sibling-fade'}>{routes}</g>}
-        {mediaSvgs}
+        {mediaSvgs && mediaSvgs.length > 0 && <g>{mediaSvgs}</g>}
       </svg>
     </div>
   );

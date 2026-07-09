@@ -70,12 +70,12 @@ export const ZoomableImage = ({ m, onExitZoom }: Props) => {
     return { imgW, imgH, mediaRegion, svgs: processedSvgs, regionForScaleAll, scale };
   }, [m, svgs, hasSvgs]);
 
-  // ── Render SVG topo overlay ───────────────────────────────────────────
-  const svgOverlay = useMemo(() => {
-    if (!processed) return null;
-    const { imgW, imgH, mediaRegion, svgs: processedSvgs, regionForScaleAll, scale } = processed;
+  const { mediaRegion, regionForScaleAll, scale } = processed ?? {};
 
-    const mediaSvgs = ((m.mediaSvgs ?? []) as components['schemas']['MediaSvgElement'][])
+  // ── Media SVG elements (descent paths, rappel anchors drawn on the image) ──
+  const mediaSvgs = useMemo(() => {
+    if (!regionForScaleAll || !scale) return [];
+    return ((m.mediaSvgs ?? []) as components['schemas']['MediaSvgElement'][])
       .filter((svg) => !svg.path || (mediaRegion ? isPathVisible(svg.path ?? '', regionForScaleAll) : true))
       .map((svg, idx) => {
         const keyPrefix = `${midId}-zoom-${idx}`;
@@ -109,8 +109,12 @@ export const ZoomableImage = ({ m, onExitZoom }: Props) => {
             return null;
         }
       });
+  }, [m.mediaSvgs, mediaRegion, regionForScaleAll, scale, midId]);
 
-    const routes = [...processedSvgs]
+  // ── Route SVG elements ────────────────────────────────────────────────
+  const routes = useMemo(() => {
+    if (!processed || processed.svgs.length === 0) return null;
+    return [...processed.svgs]
       .sort((a, b) => {
         if ((a.pitch ?? 0) !== (b.pitch ?? 0)) return (a.pitch ?? 0) - (b.pitch ?? 0);
         return (b.nr ?? 0) - (a.nr ?? 0);
@@ -120,17 +124,23 @@ export const ZoomableImage = ({ m, onExitZoom }: Props) => {
           key={`${midId}-${svg.problemId}-${svg.pitch}-zoom`}
           thumbnail={false}
           showText={false}
-          scale={scale}
+          scale={processed.scale}
           mobile={false}
           mediaId={midId}
-          mediaHeight={imgH}
-          mediaWidth={imgW}
+          mediaHeight={processed.imgH}
+          mediaWidth={processed.imgW}
           svg={svg}
           optProblemId={0}
           problemIdHovered={0}
           pitch={0}
         />
       ));
+  }, [processed, midId]);
+
+  // ── Render SVG topo overlay ───────────────────────────────────────────
+  const svgOverlay = useMemo(() => {
+    if (!processed) return null;
+    const { imgW, imgH, mediaRegion: mr } = processed;
 
     return (
       <svg
@@ -143,16 +153,16 @@ export const ZoomableImage = ({ m, onExitZoom }: Props) => {
       >
         <image
           xlinkHref={getMediaFileUrl(midId, stamp, false, {
-            mediaRegion: mediaRegion ?? undefined,
+            mediaRegion: mr ?? undefined,
           })}
           width='100%'
           height='100%'
         />
         {routes && <g>{routes}</g>}
-        {mediaSvgs}
+        {mediaSvgs.length > 0 && <g>{mediaSvgs}</g>}
       </svg>
     );
-  }, [processed, m.mediaSvgs, midId, stamp]);
+  }, [processed, midId, stamp, routes, mediaSvgs]);
 
   return (
     <div className='fixed inset-0 z-[300] flex items-start justify-center bg-black/95' onClick={onExitZoom}>
