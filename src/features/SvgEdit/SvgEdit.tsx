@@ -120,7 +120,8 @@ export const SvgEditLoader = () => {
   if (!problem || !data) return <Loading />;
 
   const mediaForTopo = problem.media?.find((x) => (x.identity?.id ?? 0) === mediaId);
-  const maxPitchInSvgs = Math.max(0, ...(mediaForTopo?.svgs?.map((s) => s.pitch ?? 0) ?? [0]));
+  const svgsForThisProblem = mediaForTopo?.svgs?.filter((s) => s.problemId === problemId) ?? [];
+  const maxPitchInSvgs = Math.max(0, ...svgsForThisProblem.map((s) => s.pitch ?? 0));
   const pitchStripCount = Math.max(problem.sections?.length ?? 0, maxPitchInSvgs);
 
   return (
