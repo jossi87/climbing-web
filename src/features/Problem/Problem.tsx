@@ -332,34 +332,40 @@ function ProblemLoaded({
           { id: 'area-pdf', label: 'Area', href: `/areas/pdf?id=${data.areaId}`, kind: 'download' },
         ]}
       />
-      {data.sectorParking?.latitude != null && data.sectorParking?.longitude != null && (
-        <button
-          type='button'
-          onClick={() => openMap(data.sectorParking!.latitude!, data.sectorParking!.longitude!, 'Parking')}
-          className='border-surface-border bg-surface-nav type-body inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[12px] leading-none font-semibold text-slate-200 no-underline transition-colors hover:border-white/15 hover:text-slate-100'
-          title='Navigate to parking'
-        >
-          <MapIcon size={12} />
-          Parking
-        </button>
-      )}
-      {data.coordinates?.latitude != null && data.coordinates?.longitude != null && (
-        <button
-          type='button'
-          onClick={() =>
-            openMap(
-              data.coordinates!.latitude!,
-              data.coordinates!.longitude!,
-              data.name ?? (meta.isBouldering ? 'Boulder' : 'Route'),
-            )
-          }
-          className='border-surface-border bg-surface-nav type-body inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[12px] leading-none font-semibold text-slate-200 no-underline transition-colors hover:border-white/15 hover:text-slate-100'
-          title='Navigate to problem'
-        >
-          <MapIcon size={12} />
-          {meta.isBouldering ? 'Boulder' : 'Route'}
-        </button>
-      )}
+      <ActionMenuChip
+        label='Maps'
+        icon={MapIcon}
+        title='Open in maps app'
+        items={[
+          ...(data.sectorParking?.latitude != null && data.sectorParking?.longitude != null
+            ? [
+                {
+                  id: 'maps-parking',
+                  label: 'Parking',
+                  href: '',
+                  kind: 'link' as const,
+                  onClick: () => openMap(data.sectorParking!.latitude!, data.sectorParking!.longitude!, 'Parking'),
+                },
+              ]
+            : []),
+          ...(data.coordinates?.latitude != null && data.coordinates?.longitude != null
+            ? [
+                {
+                  id: 'maps-problem',
+                  label: meta.isBouldering ? 'Boulder' : 'Route',
+                  href: '',
+                  kind: 'link' as const,
+                  onClick: () =>
+                    openMap(
+                      data.coordinates!.latitude!,
+                      data.coordinates!.longitude!,
+                      data.name ?? (meta.isBouldering ? 'Boulder' : 'Route'),
+                    ),
+                },
+              ]
+            : []),
+        ]}
+      />
       <ExternalLinkLabels externalLinks={data.externalLinks} />
     </div>
   );

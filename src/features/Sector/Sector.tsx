@@ -910,33 +910,43 @@ const Sector = () => {
                         { id: 'area-pdf', label: 'Area', href: `/areas/pdf?id=${data.areaId}`, kind: 'download' },
                       ]}
                     />
-                    {data.parking?.latitude != null && data.parking?.longitude != null && (
-                      <button
-                        type='button'
-                        onClick={() => openMap(data.parking!.latitude!, data.parking!.longitude!, 'Parking')}
-                        className='border-surface-border bg-surface-nav type-body inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[12px] leading-none font-semibold text-slate-200 no-underline transition-colors hover:border-white/15 hover:text-slate-100'
-                        title='Navigate to parking'
-                      >
-                        <MapIcon size={12} />
-                        Parking
-                      </button>
-                    )}
-                    {meta.isClimbing &&
-                      (data.outline ?? []).length > 0 &&
-                      data.outline![0]?.latitude != null &&
-                      data.outline![0]?.longitude != null && (
-                        <button
-                          type='button'
-                          onClick={() =>
-                            openMap(data.outline![0]!.latitude!, data.outline![0]!.longitude!, data.name ?? 'Sector')
-                          }
-                          className='border-surface-border bg-surface-nav type-body inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[12px] leading-none font-semibold text-slate-200 no-underline transition-colors hover:border-white/15 hover:text-slate-100'
-                          title='Navigate to sector'
-                        >
-                          <MapIcon size={12} />
-                          Sector
-                        </button>
-                      )}
+                    <ActionMenuChip
+                      label='Maps'
+                      icon={MapIcon}
+                      title='Open in maps app'
+                      items={[
+                        ...(data.parking?.latitude != null && data.parking?.longitude != null
+                          ? [
+                              {
+                                id: 'maps-parking',
+                                label: 'Parking',
+                                href: '',
+                                kind: 'link' as const,
+                                onClick: () => openMap(data.parking!.latitude!, data.parking!.longitude!, 'Parking'),
+                              },
+                            ]
+                          : []),
+                        ...(meta.isClimbing &&
+                        (data.outline ?? []).length > 0 &&
+                        data.outline![0]?.latitude != null &&
+                        data.outline![0]?.longitude != null
+                          ? [
+                              {
+                                id: 'maps-sector',
+                                label: 'Sector',
+                                href: '',
+                                kind: 'link' as const,
+                                onClick: () =>
+                                  openMap(
+                                    data.outline![0]!.latitude!,
+                                    data.outline![0]!.longitude!,
+                                    data.name ?? 'Sector',
+                                  ),
+                              },
+                            ]
+                          : []),
+                      ]}
+                    />
                     <ExternalLinkLabels externalLinks={data.externalLinks} />
                   </div>
 
