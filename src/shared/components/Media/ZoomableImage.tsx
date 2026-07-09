@@ -148,8 +148,8 @@ export const ZoomableImage = ({ m, onExitZoom }: Props) => {
           width='100%'
           height='100%'
         />
-        {mediaSvgs}
         {routes && <g>{routes}</g>}
+        {mediaSvgs}
       </svg>
     );
   }, [processed, m.mediaSvgs, midId, stamp]);

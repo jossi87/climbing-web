@@ -205,8 +205,8 @@ export const SvgViewer = ({
           width='100%'
           height='100%'
         />
-        {mediaSvgs}
         {routes && <g className={thumb ? undefined : 'buldreinfo-svg-sibling-fade'}>{routes}</g>}
+        {mediaSvgs}
       </svg>
     </div>
   );
