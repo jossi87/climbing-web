@@ -5,6 +5,6 @@ export function openMap(lat: number, lng: number, label: string): void {
   if (isMobile) {
     window.location.href = `geo:${coords}?q=${coords}(${encodeURIComponent(label)})`;
   } else {
-    window.open(`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=18/${lat}/${lng}`, '_blank');
+    window.open(`https://www.google.com/maps?q=${coords}`, '_blank');
   }
 }
