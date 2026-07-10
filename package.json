@@ -42,9 +42,9 @@
     "prettier-plugin-tailwindcss": "^0.8.0",
     "rollup-plugin-visualizer": "^7.0.1",
     "tailwindcss": "^4.3.1",
-    "typescript": "^6.0.3",
+    "typescript": "^7.0.2",
     "typescript-eslint": "^8.63.0",
-    "vite": "^8.1.3",
+    "vite": "^8.1.4",
     "vite-tsconfig-paths": "^6.1.1"
   },
   "dependencies": {
@@ -62,7 +62,7 @@
     "leaflet.markercluster": "^1.5.3",
     "linkify-react": "^4.3.3",
     "linkifyjs": "^4.3.3",
-    "lucide-react": "^1.23.0",
+    "lucide-react": "^1.24.0",
     "pannellum": "^2.5.7",
     "react": "^19.2.7",
     "react-datepicker": "^9.1.0",
