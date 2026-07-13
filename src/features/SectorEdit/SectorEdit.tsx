@@ -1043,7 +1043,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
                     }
                   />
 
-                  {/* Path / Marker toggle */}
+                  {/* Path / Marker toggle / Reverse */}
                   <div className='flex items-center gap-2'>
                     <button
                       type='button'
@@ -1066,6 +1066,20 @@ export const SectorEdit = ({ sector, area }: Props) => {
                       )}
                     >
                       <Crosshair size={12} /> Marker
+                    </button>
+                    <div className='bg-surface-border/40 mx-1 w-px self-stretch' />
+                    <button
+                      type='button'
+                      onClick={() => {
+                        const trail = activeTrails[editingTrailPathIndex];
+                        if (!trail) return;
+                        const reversed = [...(trail.path ?? [])].reverse();
+                        updateTrail(trails.indexOf(trail), { path: reversed });
+                      }}
+                      className='inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-semibold text-slate-400 transition-colors hover:bg-amber-500/15 hover:text-amber-400'
+                      title='Reverse trail direction'
+                    >
+                      <RotateCcw size={12} /> Reverse
                     </button>
                     <span className='text-[11px] text-slate-500'>
                       {trailMapMode === 'path' ? 'Click map to add path points' : 'Click map to place a marker'}
