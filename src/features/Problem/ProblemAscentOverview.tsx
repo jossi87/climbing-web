@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, ExternalLink, Ruler, Tag } from 'lucide-react';
+import { Calendar, Ruler, Tag } from 'lucide-react';
 import { Avatar } from '../../shared/ui/Avatar/Avatar';
 import Media from '../../shared/components/Media/Media';
 import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
@@ -19,7 +19,6 @@ type Props = {
   meta: Meta;
   orderableMedia: MediaItem[];
   carouselMedia: MediaItem[];
-  hasTrails?: boolean;
 };
 
 const rowClass = cn(
@@ -106,7 +105,7 @@ function todoUserList(todos: ProblemTodo[], key?: string) {
 }
 
 /** Inline ascent rows — no nested panels; dates use the calendar icon. */
-export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedia, hasTrails }: Props) {
+export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedia }: Props) {
   const faAid = data.faAid;
   const aidDesc = (faAid?.description ?? '').trim();
   const aidUsers = faAid?.users ?? [];
@@ -220,23 +219,6 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
           {routeParts.join(' · ')}
         </p>
       ) : null}
-
-      {hasTrails && (
-        <div className={rowClass}>
-          <span className={leadClass}>Trails:</span>
-          <span className='inline-flex w-full min-w-0 flex-wrap content-start items-start gap-x-2 gap-y-1 sm:flex-1'>
-            <Link
-              to={`/problem/${data.id}/map`}
-              className={cn(
-                'bg-surface-raised hover:bg-surface-raised-hover inline-flex max-w-full items-center gap-1 rounded-md px-2 py-0.5 text-[12px] leading-snug font-medium text-slate-300 ring-1 ring-white/10 transition-colors duration-150 hover:text-slate-100 hover:ring-white/20 sm:text-[13px]',
-              )}
-            >
-              <span className='min-w-0 normal-case'>{(data.trails ?? []).map((t) => t.title).join(', ')}</span>
-              <ExternalLink size={12} strokeWidth={2} className='shrink-0 text-slate-400' />
-            </Link>
-          </span>
-        </div>
-      )}
 
       {showTriviaBlock && (
         <div className={triviaRowClass}>
