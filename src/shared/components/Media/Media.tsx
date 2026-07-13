@@ -195,34 +195,40 @@ const Media = ({
       navigate(url, { replace: true });
     }
   }, [location.pathname, pitch, navigate]);
+  const carouselMediaRef = useRef(carouselMedia);
+  carouselMediaRef.current = carouselMedia;
+  const mRef = useRef(m);
+  mRef.current = m;
+
   const gotoPrev = useCallback(() => {
-    if (m && carouselMedia && carouselMedia.length > 1) {
+    const cur = mRef.current;
+    const arr = carouselMediaRef.current;
+    if (cur && arr && arr.length > 1) {
       const ix =
-        (carouselMedia.findIndex((x) => mediaIdentityId(x.identity) === mediaIdentityId(m.identity)) -
-          1 +
-          carouselMedia.length) %
-        carouselMedia.length;
-      openModal(carouselMedia[ix]);
+        (arr.findIndex((x) => mediaIdentityId(x.identity) === mediaIdentityId(cur.identity)) - 1 + arr.length) %
+        arr.length;
+      openModal(arr[ix]);
     }
-  }, [m, carouselMedia, openModal]);
+  }, [openModal]);
   const gotoNext = useCallback(() => {
-    if (m && carouselMedia && carouselMedia.length > 1) {
-      const ix =
-        (carouselMedia.findIndex((x) => mediaIdentityId(x.identity) === mediaIdentityId(m.identity)) + 1) %
-        carouselMedia.length;
-      openModal(carouselMedia[ix]);
+    const cur = mRef.current;
+    const arr = carouselMediaRef.current;
+    if (cur && arr && arr.length > 1) {
+      const ix = (arr.findIndex((x) => mediaIdentityId(x.identity) === mediaIdentityId(cur.identity)) + 1) % arr.length;
+      openModal(arr[ix]);
     }
-  }, [m, carouselMedia, openModal]);
+  }, [openModal]);
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (!m) return;
+      const cur = mRef.current;
+      if (!cur) return;
       if (e.key === 'Escape') closeModal();
       if (e.key === 'ArrowLeft') gotoPrev();
       if (e.key === 'ArrowRight') gotoNext();
     };
     document.addEventListener('keydown', handleKeyPress);
     return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [m, closeModal, gotoNext, gotoPrev]);
+  }, [closeModal, gotoNext, gotoPrev]);
   const executeMediaAction = (action: MediaAction) => {
     setIsSaving(true);
     getAccessTokenSilently()
