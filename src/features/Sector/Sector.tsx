@@ -49,7 +49,7 @@ import {
   BarChart2,
   Trophy,
   Clock,
-  Sparkles,
+  Info,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
@@ -860,7 +860,7 @@ const Sector = () => {
                       {t.label}
                       {t.hasMedia && (
                         <span title='Contains trail with description or media'>
-                          <Sparkles size={10} strokeWidth={2.5} className='text-brand ml-0.5 inline-block' />
+                          <Info size={10} strokeWidth={2.5} className='text-brand ml-0.5 inline-block' />
                         </span>
                       )}
                     </span>
@@ -951,10 +951,12 @@ const Sector = () => {
                       <Link
                         to={`/sector/${data.id}/map`}
                         className={cn(
-                          'bg-surface-raised hover:bg-surface-raised-hover inline-flex max-w-full items-center gap-1 rounded-md px-2 py-0.5 text-[12px] leading-snug font-medium text-slate-300 ring-1 ring-white/10 transition-colors duration-150 hover:text-slate-100 hover:ring-white/20 sm:text-[13px]',
+                          'inline-flex max-w-full items-center gap-1 rounded-md px-2 py-0.5 text-[12px] leading-snug font-medium sm:text-[13px]',
+                          'bg-brand/10 text-brand ring-brand/30 hover:bg-brand/15 hover:text-brand hover:ring-brand/50',
+                          'ring-1 transition-colors duration-150',
                         )}
                       >
-                        <Sparkles size={12} strokeWidth={2} className='text-brand shrink-0' />
+                        <Info size={12} strokeWidth={2} className='shrink-0' />
                         <span className='min-w-0 normal-case'>
                           Trails: {(data.trails ?? []).map((t) => t.title).join(' + ')}
                         </span>
