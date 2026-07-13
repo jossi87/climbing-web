@@ -37,6 +37,7 @@ import {
   ChevronDown,
   ChevronRight,
   Edit,
+  ExternalLink,
   Plus,
   Film,
   Image as ImageIcon,
@@ -951,6 +952,32 @@ const Sector = () => {
                   </div>
 
                   {(data.comment ?? '').trim().length > 0 && <Markdown content={data.comment ?? ''} />}
+
+                  {hasTrails && (
+                    <div
+                      className={cn(
+                        designContract.typography.body,
+                        'flex min-w-0 flex-col gap-1 text-[14px] leading-normal text-slate-300 sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-2 sm:gap-y-1 sm:text-sm',
+                      )}
+                    >
+                      <span className='block text-[15px] leading-snug font-medium tracking-tight text-slate-50 sm:inline-flex sm:shrink-0 sm:items-baseline sm:text-sm'>
+                        Trails:
+                      </span>
+                      <span className='inline-flex w-full min-w-0 flex-wrap content-start items-start gap-x-2 gap-y-1 sm:flex-1'>
+                        <Link
+                          to={`/sector/${data.id}/map`}
+                          className={cn(
+                            'bg-surface-raised hover:bg-surface-raised-hover inline-flex max-w-full items-center gap-1 rounded-md px-2 py-0.5 text-[12px] leading-snug font-medium text-slate-300 ring-1 ring-white/10 transition-colors duration-150 hover:text-slate-100 hover:ring-white/20 sm:text-[13px]',
+                          )}
+                        >
+                          <span className='min-w-0 normal-case'>
+                            {(data.trails ?? []).map((t) => t.title).join(', ')}
+                          </span>
+                          <ExternalLink size={12} strokeWidth={2} className='shrink-0 text-slate-400' />
+                        </Link>
+                      </span>
+                    </div>
+                  )}
 
                   {(data.triviaMedia?.length ?? 0) > 0 && (
                     <div className='pt-1'>

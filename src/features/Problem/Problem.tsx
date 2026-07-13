@@ -428,6 +428,7 @@ function ProblemLoaded({
           meta={{ isClimbing: meta.isClimbing, isIce: meta.isIce, isBouldering: meta.isBouldering }}
           orderableMedia={orderableMedia}
           carouselMedia={carouselMedia}
+          hasTrails={hasTrails}
         />
       </div>
       {overviewChipsRow}
