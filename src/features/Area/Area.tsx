@@ -562,16 +562,17 @@ const Area = () => {
   const trails: ComponentProps<typeof Leaflet>['trails'] = useMemo(() => {
     if (!data?.sectors) return [];
     const seen = new Set<number | undefined>();
+    let ascentCount = 0;
     let descentCount = 0;
     const result: NonNullable<ComponentProps<typeof Leaflet>['trails']> = [];
     for (const s of data.sectors) {
       for (const t of s.trails ?? []) {
         if (t.id != null && seen.has(t.id)) continue;
         seen.add(t.id);
-        const descentIndex = t.isDescent ? descentCount++ : -1;
+        const index = t.isDescent ? descentCount++ : ascentCount++;
         result.push({
           trail: t,
-          backgroundColor: getTrailColor(!!t.isDescent, descentIndex),
+          backgroundColor: getTrailColor(!!t.isDescent, index),
         });
       }
     }

@@ -78,14 +78,7 @@ function haversineDistance(a: [number, number], b: [number, number]): number {
  * spacing is. Short trails get ~3 arrows, long trails get up to ~6.
  * Only rendered for non-background trails.
  */
-function DirectionArrows({
-  positions,
-  background,
-}: {
-  positions: [number, number][];
-  color?: string;
-  background?: boolean;
-}) {
+function DirectionArrows({ positions, background }: { positions: [number, number][]; background?: boolean }) {
   if (background || positions.length < 2) return null;
 
   // Calculate cumulative distances along the trail
