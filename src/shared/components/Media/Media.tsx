@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type ComponentProps, useCallback } from 'react';
+import { useState, useEffect, useRef, useMemo, type ComponentProps, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useInView } from 'react-intersection-observer';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -122,12 +122,26 @@ const Media = ({
   const location = useLocation();
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
-  const [m, setM] = useState<MediaItem | null>(null);
   const [autoPlayVideo, setAutoPlayVideo] = useState(false);
   const { isLoading, getAccessTokenSilently } = useAuth0();
   const [confirmation, setConfirmation] = useState<{ message: string; action: () => void } | null>(null);
   /** True after we opened the viewer with a history push from this page; close with pop so we do not duplicate the base URL. */
   const mediaModalPushedRef = useRef(false);
+  /**
+   * Tracks the media item the user manually selected via tile click / carousel navigation.
+   * When set, this takes precedence over the URL-derived value.
+   * Cleared when the URL mediaId changes (back/forward navigation) so the URL takes over.
+   */
+  const [userM, setUserM] = useState<MediaItem | null>(null);
+  const prevMediaIdRef = useRef(mediaId);
+
+  // Detect URL mediaId changes (back/forward navigation) and clear user override.
+  if (prevMediaIdRef.current !== mediaId) {
+    prevMediaIdRef.current = mediaId;
+    if (userM) {
+      setUserM(null);
+    }
+  }
 
   useEffect(() => {
     if (!mediaId) {
@@ -135,58 +149,66 @@ const Media = ({
     }
   }, [mediaId]);
 
+  /**
+   * Derive the modal media item from the URL mediaId param during render.
+   * When the user has manually opened a modal (userM is set), that takes precedence.
+   * This approach avoids any setState calls inside effects, complying with react-hooks/set-state-in-effect.
+   */
+  const m = useMemo<MediaItem | null>(() => {
+    if (userM) {
+      return userM;
+    }
+    if (mediaId && media) {
+      return media.find((x) => mediaIdentityId(x.identity) === mediaId) ?? null;
+    }
+    return null;
+  }, [userM, mediaId, media]);
+
+  const carouselMediaRef = useRef(carouselMedia);
+  carouselMediaRef.current = carouselMedia;
+  const mRef = useRef(m);
+  mRef.current = m;
+  const locationRef = useRef(location);
+  locationRef.current = location;
+
   const openModal = useCallback(
     (newM: MediaItem) => {
-      const prevMediaId = m ? mediaIdentityId(m.identity) : 0;
-      const pathname = location.pathname;
+      const curM = mRef.current;
+      const prevMediaId = curM ? mediaIdentityId(curM.identity) : 0;
+      const pathname = locationRef.current.pathname;
       const segments = pathname.split('/').filter(Boolean);
       const lastSegment = segments.length > 0 ? segments[segments.length - 1] : '';
       const lastIsNumeric = /^\d+$/.test(lastSegment);
       const lastIsTab = AREA_PROBLEM_SECTOR_TAB_SEGMENTS.has(lastSegment);
-      // Determine the URL for the media modal.
-      // On /problem/, /sector/, /area/ paths:
-      //   - If the last segment is a known tab name (e.g. "map", "overview"), strip it and replace with the media ID.
-      //     This way /sector/3541/map → /sector/3541/42371, and closing goes back to /sector/3541/map via navigate(-1).
-      //   - If the last segment is numeric (a media ID), replace it (swipe between images).
-      //   - Otherwise append the media ID.
-      // On /user/ paths: always append the media ID after the page name.
-      //   /user/1/media → /user/1/media/38926
       const isAreaProblemSector =
         pathname.startsWith('/problem/') || pathname.startsWith('/sector/') || pathname.startsWith('/area/');
       let url: string;
       if (isAreaProblemSector && lastIsTab) {
-        // Strip the tab name (e.g. "map", "overview") and replace with the media ID.
-        // /sector/3541/map → /sector/3541/42371
         url = `/${segments.slice(0, -1).join('/')}/${mediaIdentityId(newM.identity)}`;
       } else if (lastIsNumeric && segments.length >= 3) {
-        // The last segment is a numeric media ID (3+ segments), replace it.
-        // /problem/5162/21682 → /problem/5162/21683
         url = `/${segments.slice(0, -1).join('/')}/${mediaIdentityId(newM.identity)}`;
       } else if (prevMediaId) {
-        // Carousel swipe: replace the last segment (which is the previous media ID)
         url = `/${segments.slice(0, -1).join('/')}/${mediaIdentityId(newM.identity)}`;
       } else {
-        // Append the media ID
         url = `${pathname}/${mediaIdentityId(newM.identity)}`;
       }
-      setM(newM);
-      /** Push on first open so browser Back closes the modal; replace when swapping media so swipes do not stack history. */
+      setUserM(newM);
       const isCarousel = !!prevMediaId;
       if (!isCarousel) {
         mediaModalPushedRef.current = true;
       }
-      /** Replace when pitch changes so browser Back goes to the base problem URL, not the previous pitch. */
       const prevPitch = pitch;
       const newPitch = newM.problems?.find((p) => p.problemId === optProblemId)?.problemPitch ?? 0;
       const pitchChanged = !!prevPitch && !!newPitch && prevPitch !== newPitch;
       navigate(url, { replace: isCarousel || pitchChanged });
     },
-    [m, location.pathname, navigate, pitch, optProblemId],
+    [navigate, pitch, optProblemId],
   );
   const closeModal = useCallback(() => {
-    const lastSlashIndex = location.pathname.lastIndexOf('/');
-    const url = location.pathname.substring(0, lastSlashIndex);
-    if (!pitch) setM(null);
+    const pathname = locationRef.current.pathname;
+    const lastSlashIndex = pathname.lastIndexOf('/');
+    const url = pathname.substring(0, lastSlashIndex);
+    if (!pitch) setUserM(null);
     setAutoPlayVideo(false);
     if (mediaModalPushedRef.current) {
       mediaModalPushedRef.current = false;
@@ -194,11 +216,7 @@ const Media = ({
     } else {
       navigate(url, { replace: true });
     }
-  }, [location.pathname, pitch, navigate]);
-  const carouselMediaRef = useRef(carouselMedia);
-  carouselMediaRef.current = carouselMedia;
-  const mRef = useRef(m);
-  mRef.current = m;
+  }, [pitch, navigate]);
 
   const gotoPrev = useCallback(() => {
     const cur = mRef.current;
@@ -218,6 +236,7 @@ const Media = ({
       openModal(arr[ix]);
     }
   }, [openModal]);
+
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       const cur = mRef.current;
@@ -252,22 +271,7 @@ const Media = ({
   };
 
   if (isLoading) return <Loading />;
-  if (mediaId && media) {
-    const found = media.find((x) => mediaIdentityId(x.identity) === mediaId);
-    if (
-      found &&
-      (!m ||
-        mediaIdentityId(m.identity) !== mediaIdentityId(found.identity) ||
-        mediaIdentityVersionStamp(m.identity) !== mediaIdentityVersionStamp(found.identity) ||
-        m.mediaSvgs !== found.mediaSvgs ||
-        m.description !== found.description ||
-        m.photographer !== found.photographer)
-    ) {
-      setM(found);
-    }
-  } else if (!mediaId && !pitch && m) {
-    setM(null);
-  }
+
   const tileCompact = compactTiles || triviaTiles;
   const tileSizes = mediaTileSizes(!!compactTiles, !!triviaTiles);
 
