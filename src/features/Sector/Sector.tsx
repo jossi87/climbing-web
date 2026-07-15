@@ -438,8 +438,6 @@ const Sector = () => {
     };
   }, [sectorPickerOpen]);
 
-  const [showProblemsOnMap, setShowProblemsOnMap] = useState(false);
-
   const parkingMarkers = useMemo((): NonNullable<ComponentProps<typeof Leaflet>['markers']> => {
     if (!data?.parking) return [];
     return [{ coordinates: data.parking, isParking: true }];
@@ -463,9 +461,8 @@ const Sector = () => {
   }, [data]);
 
   const markers = useMemo((): NonNullable<ComponentProps<typeof Leaflet>['markers']> => {
-    if (showProblemsOnMap) return problemMarkers;
-    return parkingMarkers;
-  }, [showProblemsOnMap, parkingMarkers, problemMarkers]);
+    return [...parkingMarkers, ...problemMarkers];
+  }, [parkingMarkers, problemMarkers]);
 
   const tabs = useMemo(() => {
     if (!data) return [] as { id: string; label: string; icon: LucideIcon; hasMedia?: boolean }[];
@@ -995,50 +992,20 @@ const Sector = () => {
               {effectiveTab === 'map' && (
                 <div className='relative z-0 -mx-px h-[35vh] min-h-[220px] w-[calc(100%+2px)] overflow-hidden sm:mx-0 sm:h-[50vh] sm:w-full'>
                   <Leaflet
-                    key={'sector=' + data.id + (showProblemsOnMap ? '-problems' : '-overview')}
+                    key={'sector=' + data.id}
                     autoZoom={true}
                     height='100%'
                     markers={markers}
-                    outlines={showProblemsOnMap ? undefined : outlines}
-                    trails={showProblemsOnMap ? undefined : trails}
+                    outlines={outlines}
+                    trails={trails}
                     defaultCenter={defaultCenter}
                     defaultZoom={defaultZoom}
                     onMouseClick={undefined}
                     onMouseMove={undefined}
                     showSatelliteImage={isBouldering}
-                    clusterMarkers={showProblemsOnMap}
-                    rocks={showProblemsOnMap ? uniqueRocks : undefined}
+                    clusterMarkers={true}
+                    rocks={uniqueRocks.length > 0 ? uniqueRocks : undefined}
                     flyToId={null}
-                    mapOverlay={
-                      problemMarkers.length > 0 ? (
-                        <div className='flex items-center gap-1.5 rounded-lg bg-black/60 px-2.5 py-1.5 backdrop-blur-sm'>
-                          <button
-                            type='button'
-                            onClick={() => setShowProblemsOnMap(false)}
-                            className={cn(
-                              'rounded-md px-2 py-1 text-[11px] leading-none font-semibold transition-colors',
-                              !showProblemsOnMap
-                                ? 'bg-brand text-slate-950 shadow-sm'
-                                : 'light:!text-[rgb(203_213_225)] light:hover:!text-[rgb(255_255_255)] text-slate-400 hover:text-slate-200',
-                            )}
-                          >
-                            Overview
-                          </button>
-                          <button
-                            type='button'
-                            onClick={() => setShowProblemsOnMap(true)}
-                            className={cn(
-                              'rounded-md px-2 py-1 text-[11px] leading-none font-semibold transition-colors',
-                              showProblemsOnMap
-                                ? 'bg-brand text-slate-950 shadow-sm'
-                                : 'light:!text-[rgb(203_213_225)] light:hover:!text-[rgb(255_255_255)] text-slate-400 hover:text-slate-200',
-                            )}
-                          >
-                            {meta.isBouldering ? 'Problems' : 'Routes'}
-                          </button>
-                        </div>
-                      ) : undefined
-                    }
                   />
                 </div>
               )}
