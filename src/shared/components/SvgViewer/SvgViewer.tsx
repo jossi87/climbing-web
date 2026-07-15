@@ -24,6 +24,7 @@ type SvgProps = {
   thumb: boolean;
   optProblemId?: number | null;
   showText: boolean;
+  showSvg?: boolean;
   problemIdHovered?: number | null;
   setProblemIdHovered?: (problemId: number | null) => void;
 };
@@ -37,6 +38,7 @@ export const SvgViewer = ({
   thumb,
   optProblemId,
   showText,
+  showSvg = true,
   problemIdHovered,
   setProblemIdHovered,
 }: SvgProps) => {
@@ -217,8 +219,8 @@ export const SvgViewer = ({
           width='100%'
           height='100%'
         />
-        {routes && <g className={thumb ? undefined : 'buldreinfo-svg-sibling-fade'}>{routes}</g>}
-        {mediaSvgs && mediaSvgs.length > 0 && <g>{mediaSvgs}</g>}
+        {showSvg && routes && <g className={thumb ? undefined : 'buldreinfo-svg-sibling-fade'}>{routes}</g>}
+        {showSvg && mediaSvgs && mediaSvgs.length > 0 && <g>{mediaSvgs}</g>}
       </svg>
     </div>
   );

@@ -27,6 +27,8 @@ import {
   Maximize2,
   ZoomIn,
   Link as LinkIcon,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 
 import { useLocalStorage } from '../../../utils/use-local-storage';
@@ -246,6 +248,7 @@ const MediaModal = ({
   const [showHelp, setShowHelp] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [zoomMode, setZoomMode] = useState(false);
+  const [showSvg, setShowSvg] = useState(true);
 
   const [problemIdHovered, setProblemIdHovered] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -572,6 +575,23 @@ const MediaModal = ({
               </button>
             )}
 
+            {hasAnySvgs && (
+              <button
+                type='button'
+                onClick={() => setShowSvg((prev) => !prev)}
+                title={showSvg ? 'Hide SVG elements' : 'Show SVG elements'}
+                aria-label={showSvg ? 'Hide SVG elements' : 'Show SVG elements'}
+                className={cn(
+                  'flex h-9 w-9 shrink-0 items-center justify-center rounded-full shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all active:scale-95 sm:h-11 sm:w-11',
+                  showSvg
+                    ? 'ring-surface-border/50 bg-slate-900 text-[#e2e8f0] hover:bg-slate-800 hover:text-[#f1f5f9]'
+                    : 'btn-brand-solid ring-1 ring-black/20',
+                )}
+              >
+                {showSvg ? <Eye size={17} strokeWidth={2} /> : <EyeOff size={17} strokeWidth={2} />}
+              </button>
+            )}
+
             {(isImage || (isVideo && (!m.embedUrl || isInstagramEmbed))) && !(hasAnySvgs && pitch > 0) && (
               <button
                 type='button'
@@ -738,6 +758,7 @@ const MediaModal = ({
                     close={closeSidebarOrModal}
                     optProblemId={optProblemId}
                     showText={canShowSidebar && !showSidebar}
+                    showSvg={showSvg}
                     problemIdHovered={problemIdHovered}
                     setProblemIdHovered={setProblemIdHovered}
                     className='h-full w-full object-contain'
