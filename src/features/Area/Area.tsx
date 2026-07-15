@@ -507,7 +507,9 @@ const Area = () => {
 
   const { data, error, redirectUi } = useArea(+areaId);
 
-  const markers = useMemo(() => {
+  const [showProblemsOnMap, setShowProblemsOnMap] = useState(false);
+
+  const parkingMarkers = useMemo(() => {
     if (!data?.sectors) return [];
 
     type SectorParkingMarker = Pick<SectorWithParking['parking'], 'latitude' | 'longitude'> & {
@@ -536,6 +538,41 @@ const Area = () => {
     }));
   }, [data?.sectors]);
 
+  const problemMarkers = useMemo(() => {
+    if (!data?.sectors) return [];
+    return data.sectors.flatMap((sector) =>
+      (sector.problems ?? [])
+        .filter(
+          (p): p is NonNullable<typeof p> & Required<NonNullable<Pick<typeof p, 'coordinates'>>> =>
+            !!(p.coordinates && p.coordinates.latitude && p.coordinates.longitude),
+        )
+        .map((p) => ({
+          coordinates: p.coordinates,
+          label: `${p.nr} · ${p.name} · ${p.grade}`,
+          url: '/problem/' + p.id,
+          rock: p.rock,
+        })),
+    );
+  }, [data?.sectors]);
+
+  const markers = useMemo(() => {
+    if (showProblemsOnMap) return problemMarkers;
+    return parkingMarkers;
+  }, [showProblemsOnMap, parkingMarkers, problemMarkers]);
+
+  const uniqueRocks = useMemo(() => {
+    if (!data?.sectors) return [];
+    return Array.from(
+      new Set(
+        data.sectors
+          .flatMap((s) => s.problems ?? [])
+          .filter((p) => p.rock)
+          .map((p) => p.rock)
+          .filter((p): p is string => !!p),
+      ),
+    ).sort();
+  }, [data?.sectors]);
+
   const outlines = useMemo(() => {
     const nextOutlines: NonNullable<ComponentProps<typeof Leaflet>['outlines']> = [];
     if (!data?.sectors) return nextOutlines;
@@ -561,14 +598,16 @@ const Area = () => {
 
   const trails: ComponentProps<typeof Leaflet>['trails'] = useMemo(() => {
     if (!data?.sectors) return [];
-    const seen = new Set<number | undefined>();
+    const seen = new Set<string>();
     let ascentCount = 0;
     let descentCount = 0;
     const result: NonNullable<ComponentProps<typeof Leaflet>['trails']> = [];
     for (const s of data.sectors) {
       for (const t of s.trails ?? []) {
-        if (t.id != null && seen.has(t.id)) continue;
-        seen.add(t.id);
+        const path = t.path ?? [];
+        const key = path.map((c) => `${c.latitude},${c.longitude}`).join('|');
+        if (key && seen.has(key)) continue;
+        seen.add(key);
         const index = t.isDescent ? descentCount++ : ascentCount++;
         result.push({
           trail: t,
@@ -885,12 +924,13 @@ const Area = () => {
               {effectiveTab === 'map' && (
                 <div className='relative z-0 -mx-px h-[35vh] min-h-[220px] w-[calc(100%+2px)] overflow-hidden sm:mx-0 sm:h-[40vh] sm:w-full'>
                   <Leaflet
-                    key={'area=' + data.id}
+                    key={'area=' + data.id + (showProblemsOnMap ? '-problems' : '-sectors')}
                     autoZoom={true}
                     height='100%'
                     markers={markers}
-                    outlines={outlines}
-                    trails={trails}
+                    outlines={showProblemsOnMap ? undefined : outlines}
+                    trails={showProblemsOnMap ? undefined : trails}
+                    rocks={showProblemsOnMap ? uniqueRocks : undefined}
                     defaultCenter={
                       data.coordinates?.latitude && data.coordinates?.longitude
                         ? { lat: data.coordinates.latitude, lng: data.coordinates.longitude }
@@ -898,11 +938,42 @@ const Area = () => {
                     }
                     defaultZoom={data.coordinates ? 14 : meta.defaultZoom}
                     showSatelliteImage={false}
-                    clusterMarkers={false}
+                    clusterMarkers={showProblemsOnMap}
                     flyToId={null}
+                    mapOverlay={
+                      problemMarkers.length > 0 ? (
+                        <div className='flex items-center gap-1.5 rounded-lg bg-black/60 px-2.5 py-1.5 backdrop-blur-sm'>
+                          <button
+                            type='button'
+                            onClick={() => setShowProblemsOnMap(false)}
+                            className={cn(
+                              'rounded-md px-2 py-1 text-[11px] leading-none font-semibold transition-colors',
+                              !showProblemsOnMap
+                                ? 'bg-brand text-slate-950 shadow-sm'
+                                : 'text-slate-400 hover:text-slate-200',
+                            )}
+                          >
+                            Sectors
+                          </button>
+                          <button
+                            type='button'
+                            onClick={() => setShowProblemsOnMap(true)}
+                            className={cn(
+                              'rounded-md px-2 py-1 text-[11px] leading-none font-semibold transition-colors',
+                              showProblemsOnMap
+                                ? 'bg-brand text-slate-950 shadow-sm'
+                                : 'text-slate-400 hover:text-slate-200',
+                            )}
+                          >
+                            {meta.isBouldering ? 'Problems' : 'Routes'}
+                          </button>
+                        </div>
+                      ) : undefined
+                    }
                   />
                 </div>
               )}
+
               {effectiveTab === 'distribution' && (
                 <div className='p-4 sm:p-5'>
                   <ChartGradeDistribution idArea={data.id ?? 0} embedded />

@@ -438,9 +438,16 @@ const Sector = () => {
     };
   }, [sectorPickerOpen]);
 
-  const markers = useMemo((): NonNullable<ComponentProps<typeof Leaflet>['markers']> => {
+  const [showProblemsOnMap, setShowProblemsOnMap] = useState(false);
+
+  const parkingMarkers = useMemo((): NonNullable<ComponentProps<typeof Leaflet>['markers']> => {
+    if (!data?.parking) return [];
+    return [{ coordinates: data.parking, isParking: true }];
+  }, [data?.parking]);
+
+  const problemMarkers = useMemo((): NonNullable<ComponentProps<typeof Leaflet>['markers']> => {
     if (!data) return [];
-    const list: NonNullable<ComponentProps<typeof Leaflet>['markers']> =
+    return (
       data.problems
         ?.filter(
           (p): p is NonNullable<ProblemType> & Required<NonNullable<Pick<ProblemType, 'coordinates'>>> =>
@@ -451,12 +458,14 @@ const Sector = () => {
           label: `${p.nr} · ${p.name} · ${p.grade}`,
           url: '/problem/' + p.id,
           rock: p.rock,
-        })) ?? [];
-    if (data.parking) {
-      list.push({ coordinates: data.parking, isParking: true });
-    }
-    return list;
+        })) ?? []
+    );
   }, [data]);
+
+  const markers = useMemo((): NonNullable<ComponentProps<typeof Leaflet>['markers']> => {
+    if (showProblemsOnMap) return problemMarkers;
+    return parkingMarkers;
+  }, [showProblemsOnMap, parkingMarkers, problemMarkers]);
 
   const tabs = useMemo(() => {
     if (!data) return [] as { id: string; label: string; icon: LucideIcon; hasMedia?: boolean }[];
@@ -986,23 +995,54 @@ const Sector = () => {
               {effectiveTab === 'map' && (
                 <div className='relative z-0 -mx-px h-[35vh] min-h-[220px] w-[calc(100%+2px)] overflow-hidden sm:mx-0 sm:h-[50vh] sm:w-full'>
                   <Leaflet
-                    key={'sector=' + data.id}
+                    key={'sector=' + data.id + (showProblemsOnMap ? '-problems' : '-overview')}
                     autoZoom={true}
                     height='100%'
                     markers={markers}
-                    outlines={outlines}
-                    trails={trails}
+                    outlines={showProblemsOnMap ? undefined : outlines}
+                    trails={showProblemsOnMap ? undefined : trails}
                     defaultCenter={defaultCenter}
                     defaultZoom={defaultZoom}
                     onMouseClick={undefined}
                     onMouseMove={undefined}
                     showSatelliteImage={isBouldering}
-                    clusterMarkers={true}
-                    rocks={uniqueRocks}
+                    clusterMarkers={showProblemsOnMap}
+                    rocks={showProblemsOnMap ? uniqueRocks : undefined}
                     flyToId={null}
+                    mapOverlay={
+                      problemMarkers.length > 0 ? (
+                        <div className='flex items-center gap-1.5 rounded-lg bg-black/60 px-2.5 py-1.5 backdrop-blur-sm'>
+                          <button
+                            type='button'
+                            onClick={() => setShowProblemsOnMap(false)}
+                            className={cn(
+                              'rounded-md px-2 py-1 text-[11px] leading-none font-semibold transition-colors',
+                              !showProblemsOnMap
+                                ? 'bg-brand text-slate-950 shadow-sm'
+                                : 'text-slate-400 hover:text-slate-200',
+                            )}
+                          >
+                            Overview
+                          </button>
+                          <button
+                            type='button'
+                            onClick={() => setShowProblemsOnMap(true)}
+                            className={cn(
+                              'rounded-md px-2 py-1 text-[11px] leading-none font-semibold transition-colors',
+                              showProblemsOnMap
+                                ? 'bg-brand text-slate-950 shadow-sm'
+                                : 'text-slate-400 hover:text-slate-200',
+                            )}
+                          >
+                            {meta.isBouldering ? 'Problems' : 'Routes'}
+                          </button>
+                        </div>
+                      ) : undefined
+                    }
                   />
                 </div>
               )}
+
               {effectiveTab === 'distribution' && (
                 <div className='p-4 sm:p-5'>
                   <ChartGradeDistribution idSector={data.id ?? 0} embedded />

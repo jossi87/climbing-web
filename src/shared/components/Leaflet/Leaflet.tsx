@@ -94,6 +94,8 @@ type Props = {
   showSatelliteImage?: boolean;
   /** Bottom-right elevation labels toggle; hide on embedded TOC maps so it is not mistaken for page chrome. */
   showElevationControl?: boolean;
+  /** Overlay rendered in the bottom-right corner, above the elevation button. */
+  mapOverlay?: ReactNode;
   children?: ReactNode | ((state: { showElevation: boolean }) => ReactNode);
 };
 
@@ -154,6 +156,7 @@ const Leaflet = ({
   rocks = [],
   showSatelliteImage,
   showElevationControl = true,
+  mapOverlay,
   children,
   onMouseClick = undefined,
   onMouseMove = undefined,
@@ -272,6 +275,7 @@ const Leaflet = ({
           </div>
         </UseControlWrapper>
       )}
+      {mapOverlay && <UseControlWrapper position='bottomright'>{mapOverlay}</UseControlWrapper>}
       {showElevationControl && ((outlines?.length ?? 0) > 0 || (markers?.length ?? 0) > 0) && (
         <UseControlWrapper position='bottomright'>
           <button

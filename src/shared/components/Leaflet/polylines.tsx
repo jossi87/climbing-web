@@ -72,13 +72,39 @@ function haversineDistance(a: [number, number], b: [number, number]): number {
 }
 
 /**
+ * Build a segment key from two consecutive coordinates.
+ * Direction is normalized (sorted) so A→B and B→A produce the same key.
+ */
+function segmentKey(
+  a: { latitude?: number | null; longitude?: number | null },
+  b: { latitude?: number | null; longitude?: number | null },
+): string | null {
+  if (a.latitude == null || a.longitude == null || b.latitude == null || b.longitude == null) return null;
+  return [a.latitude, a.longitude, b.latitude, b.longitude]
+    .map((v) => v.toFixed(6))
+    .sort()
+    .join(',');
+}
+
+/**
  * Place direction arrows along a polyline to indicate travel direction.
  * Arrows are placed at evenly-spaced **distance** intervals along the trail,
  * so they are always well-distributed regardless of how uneven the coordinate
  * spacing is. Short trails get ~3 arrows, long trails get up to ~6.
  * Only rendered for non-background trails.
+ *
+ * `arrowedSegments` is a set of segment keys that have already had arrows
+ * rendered by a previous trail. Segments in this set will not get arrows again.
  */
-function DirectionArrows({ positions, background }: { positions: [number, number][]; background?: boolean }) {
+function DirectionArrows({
+  positions,
+  background,
+  arrowedSegments,
+}: {
+  positions: [number, number][];
+  background?: boolean;
+  arrowedSegments: Set<string>;
+}) {
   if (background || positions.length < 2) return null;
 
   // Calculate cumulative distances along the trail
@@ -106,6 +132,11 @@ function DirectionArrows({ positions, background }: { positions: [number, number
 
     const from = positions[segIdx - 1];
     const to = positions[segIdx];
+
+    // Skip this arrow if the segment has already been arrowed by another trail
+    const key = segmentKey({ latitude: from[0], longitude: from[1] }, { latitude: to[0], longitude: to[1] });
+    if (key && arrowedSegments.has(key)) continue;
+
     const angle = bearing(from, to);
     arrows.push({ position: to, angle });
   }
@@ -124,69 +155,111 @@ function DirectionArrows({ positions, background }: { positions: [number, number
   );
 }
 
-function renderTrail(trailDef: TrailDef, _opacity: number) {
-  const a = trailDef;
-  const coords = (a.trail.path ?? []).map((c) => ({
-    lat: c.latitude ?? 0,
-    lng: c.longitude ?? 0,
-    id: c.id,
-    elevation: c.elevation ?? 0,
-  }));
-  if (coords.length === 1) {
-    return <Circle color={a.backgroundColor} key={coords[0].id} center={[coords[0].lat, coords[0].lng]} radius={0.5} />;
+export default function Polylines({ opacity: _opacity, trails }: Props) {
+  if (!trails) return null;
+
+  // Build a set of all segment keys that appear in MORE THAN ONE trail.
+  // These are the segments shared between sectors — we only want arrows
+  // on the FIRST trail that covers them.
+  const segmentCount = new Map<string, number>();
+  for (const t of trails) {
+    const path = t.trail.path ?? [];
+    for (let i = 1; i < path.length; i++) {
+      const sk = segmentKey(path[i - 1], path[i]);
+      if (sk) segmentCount.set(sk, (segmentCount.get(sk) ?? 0) + 1);
+    }
   }
-  let color = a.backgroundColor;
-  let weight = 3;
-  if (a.background) {
-    color = 'red';
-    weight = 1;
+  const sharedSegments = new Set<string>();
+  for (const [key, count] of segmentCount) {
+    if (count > 1) sharedSegments.add(key);
   }
-  const positions = coords.map((c) => [c.lat, c.lng] as [number, number]);
-  const key = a.trail.id ?? positions.map((p) => p[0] + ',' + p[1]).join(' -> ');
-  const distanceLabel = getDistanceWithUnit(a.trail);
-  const hasMedia = (a.trail.media ?? []).length > 0;
-  const tooltipLabel = a.label && distanceLabel ? `${a.label} · ${distanceLabel}` : a.label || '';
+
+  // Track which shared segments have already had arrows rendered by a PREVIOUS trail.
+  // We populate this set AFTER rendering each trail's arrows, so the current trail's
+  // own arrows are not affected.
+  const alreadyArrowed = new Set<string>();
+
   return (
-    <Polyline key={'trail-' + key} color={color} weight={weight} positions={positions}>
-      {tooltipLabel && (
-        <Tooltip permanent className='buldreinfo-tooltip-compact buldreinfo-tooltip-semi'>
-          {tooltipLabel}
-          {hasMedia ? ' 📷' : ''}
-        </Tooltip>
-      )}
-      {/* Direction arrows along the trail */}
-      <DirectionArrows positions={positions} background={a.background} />
-      {/* Render trail markers (only for non-background trails, e.g. sector/problem pages) */}
-      {!a.background &&
-        (a.trail.markers ?? []).map((m, idx) => {
-          if (!m.coordinates?.latitude || !m.coordinates?.longitude) return null;
-          const markerIcon = divIcon({
-            className: 'trail-marker-icon',
-            html: `<div style="background:${color};width:10px;height:10px;border-radius:50%;border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,0.5)"></div>`,
-            iconSize: [10, 10],
-            iconAnchor: [5, 5],
-          });
+    <>
+      {trails.map((a) => {
+        const coords = (a.trail.path ?? []).map((c) => ({
+          lat: c.latitude ?? 0,
+          lng: c.longitude ?? 0,
+          id: c.id,
+          elevation: c.elevation ?? 0,
+        }));
+        if (coords.length === 1) {
           return (
-            <Marker
-              key={'marker-' + idx}
-              position={[m.coordinates.latitude, m.coordinates.longitude]}
-              icon={markerIcon}
-            >
-              {m.label && (
-                <Tooltip permanent className='buldreinfo-tooltip-compact buldreinfo-tooltip-semi'>
-                  {m.label}
-                </Tooltip>
-              )}
-            </Marker>
+            <Circle key={coords[0].id} color={a.backgroundColor} center={[coords[0].lat, coords[0].lng]} radius={0.5} />
           );
-        })}
-    </Polyline>
+        }
+        const color = a.background ? 'red' : a.backgroundColor;
+        const weight = a.background ? 1 : 3;
+        const positions = coords.map((c) => [c.lat, c.lng] as [number, number]);
+        const key = a.trail.id ?? positions.map((p) => p[0] + ',' + p[1]).join(' -> ');
+        const distanceLabel = getDistanceWithUnit(a.trail);
+        const hasMedia = (a.trail.media ?? []).length > 0;
+        const tooltipLabel = a.label && distanceLabel ? `${a.label} · ${distanceLabel}` : a.label || '';
+
+        // Register this trail's shared segments AFTER rendering arrows,
+        // so subsequent trails know they're already arrowed.
+        // We use a ref-like pattern: push to a queue, process after render.
+        const path = a.trail.path ?? [];
+        const segmentsToRegister: string[] = [];
+        for (let i = 1; i < path.length; i++) {
+          const sk = segmentKey(path[i - 1], path[i]);
+          if (sk && sharedSegments.has(sk)) segmentsToRegister.push(sk);
+        }
+
+        return (
+          <Polyline key={'trail-' + key} color={color} weight={weight} positions={positions}>
+            {tooltipLabel && (
+              <Tooltip permanent className='buldreinfo-tooltip-compact buldreinfo-tooltip-semi'>
+                {tooltipLabel}
+                {hasMedia ? ' 📷' : ''}
+              </Tooltip>
+            )}
+            {/* Direction arrows — skips shared segments already arrowed by PREVIOUS trails */}
+            <DirectionArrows positions={positions} background={a.background} arrowedSegments={alreadyArrowed} />
+            {/* Render trail markers (only for non-background trails, e.g. sector/problem pages) */}
+            {!a.background &&
+              (a.trail.markers ?? []).map((m, idx) => {
+                if (!m.coordinates?.latitude || !m.coordinates?.longitude) return null;
+                const markerIcon = divIcon({
+                  className: 'trail-marker-icon',
+                  html: `<div style="background:${color};width:10px;height:10px;border-radius:50%;border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,0.5)"></div>`,
+                  iconSize: [10, 10],
+                  iconAnchor: [5, 5],
+                });
+                return (
+                  <Marker
+                    key={'marker-' + idx}
+                    position={[m.coordinates.latitude, m.coordinates.longitude]}
+                    icon={markerIcon}
+                  >
+                    {m.label && (
+                      <Tooltip permanent className='buldreinfo-tooltip-compact buldreinfo-tooltip-semi'>
+                        {m.label}
+                      </Tooltip>
+                    )}
+                  </Marker>
+                );
+              })}
+            {/* Register segments after rendering so they affect only SUBSEQUENT trails */}
+            <RegisterSegments segments={segmentsToRegister} target={alreadyArrowed} />
+          </Polyline>
+        );
+      })}
+    </>
   );
 }
 
-export default function Polylines({ opacity, trails }: Props) {
-  if (!trails) {
-    return null;
-  }
-  return <>{(trails ?? []).map((a) => renderTrail(a, opacity))}</>;
+/**
+ * A component that, when rendered, adds its segments to the target set.
+ * This is used to register shared trail segments AFTER the current trail's
+ * arrows have been rendered, so only subsequent trails are affected.
+ */
+function RegisterSegments({ segments, target }: { segments: string[]; target: Set<string> }) {
+  for (const s of segments) target.add(s);
+  return null;
 }
