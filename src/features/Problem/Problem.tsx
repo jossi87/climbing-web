@@ -237,11 +237,12 @@ function ProblemLoaded({
   })();
 
   let descentCount = 0;
+  let ascentCount = 0;
   const trails: ComponentProps<typeof Leaflet>['trails'] = (data.trails ?? []).map((t) => {
-    const descentIndex = t.isDescent ? descentCount++ : -1;
+    const index = t.isDescent ? descentCount++ : ascentCount++;
     return {
       trail: t,
-      backgroundColor: getTrailColor(!!t.isDescent, descentIndex),
+      backgroundColor: getTrailColor(!!t.isDescent, index),
       label: t.title || undefined,
     };
   });
@@ -737,14 +738,15 @@ function ProblemLoaded({
           <div className='columns-1 gap-3 sm:columns-2 sm:gap-4 [&>div]:break-inside-avoid'>
             {(() => {
               let descentIdx = 0;
+              let ascentIdx = 0;
               return (data.trails ?? []).map((t) => {
-                const di = t.isDescent ? descentIdx++ : -1;
+                const idx = t.isDescent ? descentIdx++ : ascentIdx++;
                 return (
                   <div key={t.id ?? t.title} className='mb-3 w-full min-w-0 sm:mb-4'>
                     <TrailProfile
                       compact
                       isDescent={!!t.isDescent}
-                      descentIndex={di}
+                      descentIndex={idx}
                       className='w-full min-w-0'
                       areaName={data.areaName ?? ''}
                       sectorName={data.sectorName ?? ''}
