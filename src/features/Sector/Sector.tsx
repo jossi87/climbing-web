@@ -1019,7 +1019,7 @@ const Sector = () => {
                               'rounded-md px-2 py-1 text-[11px] leading-none font-semibold transition-colors',
                               !showProblemsOnMap
                                 ? 'bg-brand text-slate-950 shadow-sm'
-                                : 'text-slate-400 hover:text-slate-200',
+                                : 'light:!text-[rgb(203_213_225)] light:hover:!text-[rgb(255_255_255)] text-slate-400 hover:text-slate-200',
                             )}
                           >
                             Overview
@@ -1031,7 +1031,7 @@ const Sector = () => {
                               'rounded-md px-2 py-1 text-[11px] leading-none font-semibold transition-colors',
                               showProblemsOnMap
                                 ? 'bg-brand text-slate-950 shadow-sm'
-                                : 'text-slate-400 hover:text-slate-200',
+                                : 'light:!text-[rgb(203_213_225)] light:hover:!text-[rgb(255_255_255)] text-slate-400 hover:text-slate-200',
                             )}
                           >
                             {meta.isBouldering ? 'Problems' : 'Routes'}

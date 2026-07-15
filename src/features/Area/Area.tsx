@@ -922,7 +922,10 @@ const Area = () => {
                 </div>
               )}
               {effectiveTab === 'map' && (
-                <div className='relative z-0 -mx-px h-[35vh] min-h-[220px] w-[calc(100%+2px)] overflow-hidden sm:mx-0 sm:h-[40vh] sm:w-full'>
+                <div
+                  className='relative z-0 -mx-px w-[calc(100%+2px)] overflow-hidden sm:mx-0 sm:w-full'
+                  style={{ height: 'calc(100vh - 14rem)' }}
+                >
                   <Leaflet
                     key={'area=' + data.id + (showProblemsOnMap ? '-problems' : '-sectors')}
                     autoZoom={true}
@@ -950,7 +953,7 @@ const Area = () => {
                               'rounded-md px-2 py-1 text-[11px] leading-none font-semibold transition-colors',
                               !showProblemsOnMap
                                 ? 'bg-brand text-slate-950 shadow-sm'
-                                : 'text-slate-400 hover:text-slate-200',
+                                : 'light:!text-[rgb(203_213_225)] light:hover:!text-[rgb(255_255_255)] text-slate-400 hover:text-slate-200',
                             )}
                           >
                             Sectors
@@ -962,7 +965,7 @@ const Area = () => {
                               'rounded-md px-2 py-1 text-[11px] leading-none font-semibold transition-colors',
                               showProblemsOnMap
                                 ? 'bg-brand text-slate-950 shadow-sm'
-                                : 'text-slate-400 hover:text-slate-200',
+                                : 'light:!text-[rgb(203_213_225)] light:hover:!text-[rgb(255_255_255)] text-slate-400 hover:text-slate-200',
                             )}
                           >
                             {meta.isBouldering ? 'Problems' : 'Routes'}
