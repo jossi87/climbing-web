@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { X, Loader2 } from 'lucide-react';
+import { X, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useScrollLock } from '../../utils/scroll-lock';
 import { getMediaFileUrl, getMediaFileUrlSrcSet, mediaIdentityId, mediaIdentityVersionStamp } from '../../../api';
 import { SvgRoute } from '../SvgViewer/SvgRoute';
@@ -16,10 +16,12 @@ import type { components } from '../../../@types/buldreinfo/swagger';
  */
 type Props = {
   m: components['schemas']['Media'];
+  showSvg: boolean;
+  onToggleSvg: () => void;
   onExitZoom: () => void;
 };
 
-export const ZoomableImage = ({ m, onExitZoom }: Props) => {
+export const ZoomableImage = ({ m, showSvg, onToggleSvg, onExitZoom }: Props) => {
   const [loaded, setLoaded] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -147,7 +149,7 @@ export const ZoomableImage = ({ m, onExitZoom }: Props) => {
         xmlns='http://www.w3.org/2000/svg'
         overflow='visible'
         className='pointer-events-none block select-none'
-        style={{ width: 'min(1920px, 150vw)', height: 'auto' }}
+        style={{ width: '100%', height: 'auto' }}
         viewBox={`0 0 ${imgW} ${imgH}`}
         preserveAspectRatio='xMidYMid meet'
       >
@@ -158,26 +160,42 @@ export const ZoomableImage = ({ m, onExitZoom }: Props) => {
           width='100%'
           height='100%'
         />
-        {routes && <g>{routes}</g>}
-        {mediaSvgs.length > 0 && <g>{mediaSvgs}</g>}
+        {showSvg && routes && <g>{routes}</g>}
+        {showSvg && mediaSvgs.length > 0 && <g>{mediaSvgs}</g>}
       </svg>
     );
-  }, [processed, midId, stamp, routes, mediaSvgs]);
+  }, [processed, midId, stamp, routes, mediaSvgs, showSvg]);
 
   return (
     <div className='fixed inset-0 z-[300] flex items-start justify-center bg-black/95' onClick={onExitZoom}>
-      {/* Close button */}
-      <button
-        type='button'
-        onClick={(e) => {
-          e.stopPropagation();
-          onExitZoom();
-        }}
-        className='absolute top-4 right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-slate-900/80 text-[#f8fafc] shadow-lg ring-1 ring-white/20 transition-all hover:bg-red-700 active:scale-95'
-        aria-label='Exit zoom'
-      >
-        <X size={20} strokeWidth={2} />
-      </button>
+      {/* Top-right toolbar */}
+      <div className='absolute top-4 right-4 z-10 flex items-center gap-2'>
+        {hasSvgs && (
+          <button
+            type='button'
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleSvg();
+            }}
+            title={showSvg ? 'Hide SVG elements' : 'Show SVG elements'}
+            aria-label={showSvg ? 'Hide SVG elements' : 'Show SVG elements'}
+            className='flex h-10 w-10 items-center justify-center rounded-full bg-slate-900/80 text-[#f8fafc] shadow-lg ring-1 ring-white/20 transition-all hover:bg-slate-700 active:scale-95'
+          >
+            {showSvg ? <Eye size={18} strokeWidth={2} /> : <EyeOff size={18} strokeWidth={2} />}
+          </button>
+        )}
+        <button
+          type='button'
+          onClick={(e) => {
+            e.stopPropagation();
+            onExitZoom();
+          }}
+          className='flex h-10 w-10 items-center justify-center rounded-full bg-slate-900/80 text-[#f8fafc] shadow-lg ring-1 ring-white/20 transition-all hover:bg-red-700 active:scale-95'
+          aria-label='Exit zoom'
+        >
+          <X size={20} strokeWidth={2} />
+        </button>
+      </div>
 
       {/* Loading indicator */}
       {!loaded && (
@@ -189,7 +207,20 @@ export const ZoomableImage = ({ m, onExitZoom }: Props) => {
       {/* Full-size content with native scroll; centered when smaller than viewport */}
       <div ref={scrollRef} className='flex h-full w-full flex-col overflow-auto' onClick={(e) => e.stopPropagation()}>
         {hasSvgs && svgOverlay ? (
-          <>
+          <div
+            style={{
+              width: m.width ? `${m.width}px` : 'auto',
+              height: 'auto',
+              maxWidth: 'none',
+              maxHeight: 'none',
+              marginTop: 'auto',
+              marginBottom: 'auto',
+              marginLeft: 'auto',
+              marginRight: 'auto',
+              opacity: loaded ? 1 : 0,
+              transition: 'opacity 0.2s',
+            }}
+          >
             {/* Hidden img to preload the high-res image and signal when loaded */}
             <img
               src={src}
@@ -198,21 +229,8 @@ export const ZoomableImage = ({ m, onExitZoom }: Props) => {
               className='pointer-events-none absolute opacity-0'
               onLoad={() => setLoaded(true)}
             />
-            <div
-              style={{
-                width: 'min(1920px, 150vw)',
-                height: 'auto',
-                marginTop: 'auto',
-                marginBottom: 'auto',
-                marginLeft: 'auto',
-                marginRight: 'auto',
-                opacity: loaded ? 1 : 0,
-                transition: 'opacity 0.2s',
-              }}
-            >
-              {svgOverlay}
-            </div>
-          </>
+            {svgOverlay}
+          </div>
         ) : (
           <img
             src={src}

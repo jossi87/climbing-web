@@ -1279,7 +1279,14 @@ const MediaModal = ({
         </div>
       )}
 
-      {zoomMode && <ZoomableImage m={m} onExitZoom={() => setZoomMode(false)} />}
+      {zoomMode && (
+        <ZoomableImage
+          m={m}
+          showSvg={showSvg}
+          onToggleSvg={() => setShowSvg((prev) => !prev)}
+          onExitZoom={() => setZoomMode(false)}
+        />
+      )}
 
       {showHelp && (
         <div
