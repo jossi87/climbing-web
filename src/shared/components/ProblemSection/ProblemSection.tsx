@@ -1,7 +1,7 @@
-import { useCallback, useState, type ChangeEvent } from 'react';
+import { useCallback, useRef, useState, type ChangeEvent } from 'react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { useMeta } from '../Meta';
-import { Hash, Info, ChevronDown } from 'lucide-react';
+import { Hash, ChevronDown } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 
 type ProblemSections = components['schemas']['ProblemSection'][];
@@ -14,6 +14,13 @@ type Props = {
 const ProblemSection = ({ sections: initSections, onSectionsUpdated }: Props) => {
   const { grades } = useMeta();
   const [sections, setSections] = useState(initSections);
+  const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
+
+  const autoGrow = useCallback((el: HTMLTextAreaElement | null) => {
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${el.scrollHeight}px`;
+  }, []);
 
   const onNumberOfSectionsChange = useCallback(
     (e: ChangeEvent<HTMLSelectElement>) => {
@@ -64,8 +71,8 @@ const ProblemSection = ({ sections: initSections, onSectionsUpdated }: Props) =>
     'w-full bg-surface-nav border border-surface-border rounded-lg py-1.5 text-xs text-white transition-colors focus:border-brand-border focus:outline-none focus:ring-0 focus-visible:ring-0';
   /** Nr: max two digits — tight column, icon on the left. */
   const nrInputClasses = cn(fieldBase, 'pl-7 pr-2 text-center tabular-nums sm:text-left');
-  /** Comment / info — most width; icon + comfortable padding. */
-  const commentInputClasses = cn(fieldBase, 'px-9');
+  /** Description — full width, auto-grows vertically to fit content. */
+  const commentInputClasses = cn(fieldBase, 'px-3 py-1.5 resize-none overflow-hidden');
   const selectClasses = cn(fieldBase, 'cursor-pointer appearance-none px-3 pr-8');
 
   return (
@@ -91,13 +98,16 @@ const ProblemSection = ({ sections: initSections, onSectionsUpdated }: Props) =>
       {sections && sections.length > 1 && (
         <div className='space-y-3'>
           {sections.map((s, index) => (
-            <div key={index} className='grid grid-cols-1 gap-y-3 sm:grid-cols-12 sm:items-start sm:gap-x-3 sm:gap-y-0'>
+            <div
+              key={index}
+              className='grid grid-cols-1 gap-y-3 sm:grid-cols-[4.5rem_9rem_1fr] sm:items-start sm:gap-x-3 sm:gap-y-0'
+            >
               {/*
                 Mobile: pitch # + grade on one row; description full width below.
-                sm+: 1 + 2 + 9 cols — nr fits ≤99, grade stays compact, comment uses the rest.
+                sm+: fixed-width nr + fixed-width grade + remaining space for description.
               */}
               <div className='grid min-w-0 grid-cols-[minmax(0,3.5rem)_minmax(0,11rem)] gap-2 sm:contents'>
-                <div className='relative min-w-0 sm:col-span-1'>
+                <div className='relative min-w-0'>
                   <Hash className='absolute top-1/2 left-3 -translate-y-1/2 text-slate-500' size={14} />
                   <input
                     type='number'
@@ -106,11 +116,11 @@ const ProblemSection = ({ sections: initSections, onSectionsUpdated }: Props) =>
                     placeholder='Nr'
                     className={nrInputClasses}
                     value={s.nr ?? ''}
-                    onChange={(e) => updateSection(index, 'nr', parseInt(e.target.value, 10))}
+                    readOnly
                   />
                 </div>
 
-                <div className='relative min-w-0 sm:col-span-2 sm:max-w-[10rem] sm:justify-self-start'>
+                <div className='relative min-w-0'>
                   <select
                     className={selectClasses}
                     value={s.grade ?? 'n/a'}
@@ -129,14 +139,20 @@ const ProblemSection = ({ sections: initSections, onSectionsUpdated }: Props) =>
                 </div>
               </div>
 
-              <div className='relative min-w-0 sm:col-span-9'>
-                <Info className='absolute top-1/2 left-3 -translate-y-1/2 text-slate-500' size={14} />
-                <input
-                  type='text'
+              <div className='relative min-w-0'>
+                <textarea
                   placeholder='Description'
                   className={commentInputClasses}
+                  rows={1}
                   value={s.description || ''}
-                  onChange={(e) => updateSection(index, 'description', e.target.value)}
+                  ref={(el) => {
+                    textareaRefs.current[index] = el;
+                    autoGrow(el);
+                  }}
+                  onChange={(e) => {
+                    updateSection(index, 'description', e.target.value);
+                    autoGrow(e.target);
+                  }}
                 />
               </div>
             </div>
