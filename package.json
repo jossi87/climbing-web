@@ -48,7 +48,7 @@
     "vite-tsconfig-paths": "^6.1.1"
   },
   "dependencies": {
-    "@auth0/auth0-react": "^2.21.0",
+    "@auth0/auth0-react": "^2.22.0",
     "@react-leaflet/core": "^3.0.0",
     "@sentry/react": "^10.66.0",
     "@tanstack/react-query": "^5.101.2",
@@ -62,7 +62,7 @@
     "leaflet.markercluster": "^1.5.3",
     "linkify-react": "^4.3.3",
     "linkifyjs": "^4.3.3",
-    "lucide-react": "^1.24.0",
+    "lucide-react": "^1.25.0",
     "pannellum": "^2.5.7",
     "react": "^19.2.7",
     "react-datepicker": "^9.1.0",
