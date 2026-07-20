@@ -85,8 +85,10 @@ const AreaPanel = ({
   area: NonNullable<ReturnType<typeof useArea>['data']>;
   onClose: () => void;
 }) => {
+  const meta = useMeta();
   // Count problems and sectors
   const sectorCount = area.sectors?.length ?? 0;
+  const problemCount = (area.sectors ?? []).reduce((acc, s) => acc + (s.problems?.length ?? 0), 0);
   const tickSum = (area.sectors ?? []).reduce(
     (acc, s) => acc + (s.problems ?? []).reduce((m, p) => m + (p.numTicks ?? 0), 0),
     0,
@@ -204,20 +206,31 @@ const AreaPanel = ({
           <span>
             {sectorCount} sector{sectorCount !== 1 ? 's' : ''}
           </span>
-          {problemBreakdown.single && (
+          {meta.isBouldering ? (
             <>
               <span className='text-slate-600'>·</span>
               <span>
-                {problemBreakdown.single.total} Single-pitch ({problemBreakdown.single.details})
+                {problemCount} problem{problemCount !== 1 ? 's' : ''}
               </span>
             </>
-          )}
-          {problemBreakdown.multi && (
+          ) : (
             <>
-              <span className='text-slate-600'>·</span>
-              <span>
-                {problemBreakdown.multi.total} Multi-pitch ({problemBreakdown.multi.details})
-              </span>
+              {problemBreakdown.single && (
+                <>
+                  <span className='text-slate-600'>·</span>
+                  <span>
+                    {problemBreakdown.single.total} Single-pitch ({problemBreakdown.single.details})
+                  </span>
+                </>
+              )}
+              {problemBreakdown.multi && (
+                <>
+                  <span className='text-slate-600'>·</span>
+                  <span>
+                    {problemBreakdown.multi.total} Multi-pitch ({problemBreakdown.multi.details})
+                  </span>
+                </>
+              )}
             </>
           )}
           {lengthRange && (
