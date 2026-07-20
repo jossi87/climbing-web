@@ -11,6 +11,7 @@ import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 import { Card, SectionHeader } from '../../shared/ui';
 import { NoDogsAllowed } from '../../shared/components/Widgets/NoDogsAllowed';
+import { SunOnWall } from '../../shared/components/Widgets/ClimbingWidgets';
 import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
 import type { MarkerDef } from '../../shared/components/Leaflet/markers';
 
@@ -175,6 +176,9 @@ const AreaPanel = ({
           >
             <ExternalLink size={14} />
           </a>
+          {area.sunFromHour != null && area.sunToHour != null && (
+            <SunOnWall sunFromHour={area.sunFromHour} sunToHour={area.sunToHour} variant='inline' />
+          )}
         </div>
         <button
           type='button'
@@ -213,7 +217,7 @@ const AreaPanel = ({
             <>
               <span className='text-slate-600'>·</span>
               <span>
-                {lengthRange.min}-{lengthRange.max} m
+                {lengthRange.min === lengthRange.max ? `${lengthRange.min}m` : `${lengthRange.min}-${lengthRange.max}m`}
               </span>
             </>
           )}

@@ -1540,10 +1540,6 @@ export type components = {
             name?: string;
             comment?: string;
             coordinates?: components["schemas"]["Coordinates"];
-            /** Format: int32 */
-            numSectors?: number;
-            /** Format: int32 */
-            numProblems?: number;
             sectors?: components["schemas"]["AreaSector"][];
             sectorOrder?: components["schemas"]["AreaSectorOrder"][];
             media?: components["schemas"]["Media"][];
@@ -2118,7 +2114,6 @@ export type components = {
             forDevelopers?: boolean;
             name?: string;
             coordinates?: components["schemas"]["Coordinates"];
-            pageViews?: string;
         };
         Administrator: {
             /** Format: int32 */

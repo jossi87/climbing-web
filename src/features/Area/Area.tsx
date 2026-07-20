@@ -480,10 +480,8 @@ const isSectorWithParking = (s: AreaSectorType): s is SectorWithParking => {
   return !!(s.parking && s.parking.latitude && s.parking.longitude);
 };
 
-/** Problems in area — prefer server count when present. */
+/** Problems in area. */
 function countAreaProblems(area: components['schemas']['Area']): number {
-  const n = area.numProblems;
-  if (n != null && n > 0) return n;
   return (area.sectors ?? []).reduce((acc, s) => acc + (s.problems?.length ?? 0), 0);
 }
 
