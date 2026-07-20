@@ -99,17 +99,24 @@ export default function Markers({
     if (map && flyToId && markerRefs.current[flyToId]) {
       const marker = markerRefs.current[flyToId];
       if (marker) {
-        // Delay flyTo to allow layout changes (e.g. split panel opening) to take effect first,
-        // so the marker is centered in the map container, not the full screen.
         setTimeout(() => {
           map.invalidateSize();
-          const currentZoom = map.getZoom();
-          if (currentZoom < 10) {
-            map.flyTo(marker.getLatLng(), 13, { animate: false });
+          const latlng = marker.getLatLng();
+          const isVisible = map.getBounds().contains(latlng);
+          const isClustered = !(marker as unknown as { _icon: unknown })._icon;
+
+          if (isVisible && !isClustered) {
+            // Marker is already visible and not clustered — leave the map alone
+            marker.openPopup();
+          } else if (isClustered) {
+            // Marker is hidden behind a cluster — fly to it to uncluster
+            map.flyTo(latlng, 11, { animate: false });
+            marker.openPopup();
           } else {
-            map.panTo(marker.getLatLng(), { animate: false });
+            // Marker is outside the visible bounds — pan to it, keep zoom
+            map.panTo(latlng, { animate: false });
+            marker.openPopup();
           }
-          marker.openPopup();
         }, 100);
       } else {
         captureSentryException('Missing marker ref', { flyToId, refs: Object.keys(markerRefs.current ?? {}) });
