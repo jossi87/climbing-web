@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
 import { Loading } from '../../shared/ui/StatusWidgets';
@@ -12,7 +12,7 @@ import { designContract } from '../../design/contract';
 import { Card, SectionHeader } from '../../shared/ui';
 import { NoDogsAllowed } from '../../shared/components/Widgets/NoDogsAllowed';
 import { SunOnWall } from '../../shared/components/Widgets/ClimbingWidgets';
-import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
+import { Markdown } from '../../shared/components/Markdown/Markdown';
 import type { MarkerDef } from '../../shared/components/Leaflet/markers';
 
 /** Full-width horizontal grade distribution bars for area panel, using grade colours from the API. */
@@ -24,7 +24,14 @@ const AreaPanelGradeDistribution = ({
   className?: string;
 }) => {
   const maxValue = Math.max(1, ...data.map((d) => d.num ?? 0));
-  const BAR_MAX_HEIGHT = 133;
+  const [barMaxHeight, setBarMaxHeight] = useState(125);
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 640px)');
+    const update = () => setBarMaxHeight(mq.matches ? 125 : 80);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
   return (
     <div className={cn('flex w-full items-end gap-[2px]', className)}>
       {data.map((g, i) => {
@@ -48,7 +55,7 @@ const AreaPanelGradeDistribution = ({
               return `rgba(${r}, ${g2}, ${b}, 0.55)`;
             })()
           : undefined;
-        const barHeight = Math.max(Math.round(pct * BAR_MAX_HEIGHT), 2);
+        const barHeight = Math.max(Math.round(pct * barMaxHeight), 2);
         return (
           <div key={i} className='flex min-w-0 flex-1 flex-col items-center gap-0.5'>
             {total > 0 && (
@@ -258,7 +265,9 @@ const AreaPanel = ({
 
         {/* Comment */}
         {(area.comment ?? '').trim().length > 0 && (
-          <ExpandableMarkdown content={area.comment ?? ''} contentClassName='max-w-none text-[13px] text-slate-300' />
+          <div className='text-[13px] leading-relaxed text-slate-300'>
+            <Markdown content={area.comment ?? ''} />
+          </div>
         )}
       </div>
     </div>
