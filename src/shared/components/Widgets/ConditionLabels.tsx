@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { MousePointerClick, Video, ExternalLink } from 'lucide-react';
-import { Badge, SunOnWall, SunriseSunset, WallDirection } from './ClimbingWidgets';
+import { Badge, SunOnWall, SunriseSunset, Orientation } from './ClimbingWidgets';
 import { YrLink } from './WeatherWidgets';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
@@ -29,8 +29,8 @@ type ConditionLabelsProps = {
   lat?: number | null;
   lng?: number | null;
   label: string;
-  wallDirectionCalculated?: Sector['wallDirectionCalculated'];
-  wallDirectionManual?: Sector['wallDirectionManual'];
+  orientationCalculated?: Sector['orientationCalculated'];
+  orientationManual?: Sector['orientationManual'];
   sunFromHour: number;
   sunToHour: number;
   /** Page views chip, placed after wall direction and before sun-on-wall */
@@ -44,8 +44,8 @@ export function ConditionLabels({
   lat,
   lng,
   label,
-  wallDirectionCalculated,
-  wallDirectionManual,
+  orientationCalculated,
+  orientationManual,
   sunFromHour,
   sunToHour,
   pageViews,
@@ -84,10 +84,10 @@ export function ConditionLabels({
     const flowNodes: ReactNode[] = [];
     if (hasCoords) {
       flowNodes.push(
-        <WallDirection
+        <Orientation
           key='wd'
-          wallDirectionCalculated={wallDirectionCalculated}
-          wallDirectionManual={wallDirectionManual}
+          orientationCalculated={orientationCalculated}
+          orientationManual={orientationManual}
           variant='inline'
         />,
       );
@@ -150,7 +150,7 @@ export function ConditionLabels({
 
   return (
     <>
-      <WallDirection wallDirectionCalculated={wallDirectionCalculated} wallDirectionManual={wallDirectionManual} />
+      <Orientation orientationCalculated={orientationCalculated} orientationManual={orientationManual} />
       {viewsChip}
       <SunOnWall sunFromHour={sunFromHour} sunToHour={sunToHour} />
       <SunriseSunset lat={lat} lng={lng} />

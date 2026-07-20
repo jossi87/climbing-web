@@ -1,7 +1,7 @@
 import { useRef, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { LockSymbol, Stars } from '../../ui/Indicators';
-import { SunOnWall, WallDirection } from '../Widgets/ClimbingWidgets';
+import { SunOnWall, Orientation } from '../Widgets/ClimbingWidgets';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { ArrowUpCircle, Compass, Sun } from 'lucide-react';
 import { cn } from '../../../lib/utils';
@@ -39,8 +39,8 @@ export type Props = {
         | 'name'
         | 'lockedAdmin'
         | 'lockedSuperadmin'
-        | 'wallDirectionCalculated'
-        | 'wallDirectionManual'
+        | 'orientationCalculated'
+        | 'orientationManual'
         | 'sunFromHour'
         | 'sunToHour'
       >
@@ -70,8 +70,8 @@ const getSunLabel = (fromHour?: number, toHour?: number) => {
   return `${String(fromHour).padStart(2, '0')}:00-${String(toHour).padStart(2, '0')}:00`;
 };
 
-const getWallLabel = (wallDirectionManual?: { direction?: string }, wallDirectionCalculated?: { direction?: string }) =>
-  wallDirectionManual?.direction ?? wallDirectionCalculated?.direction ?? null;
+const getWallLabel = (orientationManual?: { direction?: string }, orientationCalculated?: { direction?: string }) =>
+  orientationManual?.direction ?? orientationCalculated?.direction ?? null;
 
 export const TableOfContents = ({
   areas,
@@ -181,10 +181,10 @@ export const TableOfContents = ({
                       <LockSymbol lockedAdmin={sector.lockedAdmin} lockedSuperadmin={sector.lockedSuperadmin} />
                       {compact && showSunWallMeta ? (
                         <>
-                          {getWallLabel(sector.wallDirectionManual, sector.wallDirectionCalculated) ? (
+                          {getWallLabel(sector.orientationManual, sector.orientationCalculated) ? (
                             <span className='type-micro bg-surface-raised inline-flex items-center gap-1 rounded-full border border-white/12 px-2 py-0.5 text-slate-200'>
                               <Compass size={10} className='text-slate-300/90' />
-                              {getWallLabel(sector.wallDirectionManual, sector.wallDirectionCalculated)}
+                              {getWallLabel(sector.orientationManual, sector.orientationCalculated)}
                             </span>
                           ) : null}
                           {getSunLabel(sector.sunFromHour, sector.sunToHour) ? (
@@ -198,9 +198,9 @@ export const TableOfContents = ({
                     </div>
                     {!compact && showSunWallMeta ? (
                       <div className='flex items-center gap-2'>
-                        <WallDirection
-                          wallDirectionCalculated={sector.wallDirectionCalculated}
-                          wallDirectionManual={sector.wallDirectionManual}
+                        <Orientation
+                          orientationCalculated={sector.orientationCalculated}
+                          orientationManual={sector.orientationManual}
                         />
                         <SunOnWall sunFromHour={sector.sunFromHour} sunToHour={sector.sunToHour} />
                       </div>

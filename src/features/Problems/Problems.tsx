@@ -51,8 +51,8 @@ type FilterSector = Pick<components['schemas']['TocSector'], 'outline'> & {
   lockedAdmin: boolean;
   lockedSuperadmin: boolean;
   name: string;
-  wallDirectionCalculated: components['schemas']['CompassDirection'];
-  wallDirectionManual: components['schemas']['CompassDirection'];
+  orientationCalculated: components['schemas']['CompassDirection'];
+  orientationManual: components['schemas']['CompassDirection'];
   sunFromHour: number;
   sunToHour: number;
   lat?: number;
@@ -134,8 +134,8 @@ export const Problems = ({ filterOpen }: Props) => {
                       lat: sector.parking?.latitude,
                       lng: sector.parking?.longitude,
                       outline: sector.outline,
-                      wallDirectionCalculated: sector.wallDirectionCalculated ?? {},
-                      wallDirectionManual: sector.wallDirectionManual ?? {},
+                      orientationCalculated: sector.orientationCalculated ?? {},
+                      orientationManual: sector.orientationManual ?? {},
                       sunFromHour: sector.sunFromHour ?? 0,
                       sunToHour: sector.sunToHour ?? 0,
                       problems:

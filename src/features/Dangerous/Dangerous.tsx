@@ -39,8 +39,8 @@ const Dangerous = () => {
       lockedAdmin: !!sector.lockedAdmin,
       lockedSuperadmin: !!sector.lockedSuperadmin,
       polygonCoords: '',
-      wallDirectionCalculated: sector.wallDirectionCalculated ?? ({} as components['schemas']['CompassDirection']),
-      wallDirectionManual: sector.wallDirectionManual ?? ({} as components['schemas']['CompassDirection']),
+      orientationCalculated: sector.orientationCalculated ?? ({} as components['schemas']['CompassDirection']),
+      orientationManual: sector.orientationManual ?? ({} as components['schemas']['CompassDirection']),
       name: sector.name ?? '',
       sunFromHour: sector.sunFromHour ?? 0,
       sunToHour: sector.sunToHour ?? 0,
@@ -96,9 +96,9 @@ const Dangerous = () => {
                 lat: sector.parking?.latitude,
                 lng: sector.parking?.longitude,
                 outline: sector.outline,
-                wallDirectionCalculated:
-                  sector.wallDirectionCalculated ?? ({} as components['schemas']['CompassDirection']),
-                wallDirectionManual: sector.wallDirectionManual ?? ({} as components['schemas']['CompassDirection']),
+                orientationCalculated:
+                  sector.orientationCalculated ?? ({} as components['schemas']['CompassDirection']),
+                orientationManual: sector.orientationManual ?? ({} as components['schemas']['CompassDirection']),
                 sunFromHour: sector.sunFromHour ?? 0,
                 sunToHour: sector.sunToHour ?? 0,
                 problems: (sector.problems ?? [])

@@ -99,22 +99,22 @@ export const SunriseSunset = ({ lat, lng, date, variant = 'chip', className }: S
   );
 };
 
-type WallDirectionProps = {
-  wallDirectionCalculated?: { direction?: string };
-  wallDirectionManual?: { direction?: string };
+type OrientationProps = {
+  orientationCalculated?: { direction?: string };
+  orientationManual?: { direction?: string };
   variant?: 'chip' | 'inline';
   className?: string;
 };
 
-export const WallDirection = ({
-  wallDirectionCalculated,
-  wallDirectionManual,
+export const Orientation = ({
+  orientationCalculated,
+  orientationManual,
   variant = 'chip',
   className,
-}: WallDirectionProps) => {
-  const direction = wallDirectionManual?.direction ?? wallDirectionCalculated?.direction;
+}: OrientationProps) => {
+  const direction = orientationManual?.direction ?? orientationCalculated?.direction;
   if (!direction) return null;
-  const title = wallDirectionManual ? 'Wall direction (manual)' : 'Wall direction (calculated)';
+  const title = orientationManual ? 'Orientation (manual)' : 'Orientation (calculated)';
   if (variant === 'inline') {
     return (
       <span

@@ -307,8 +307,8 @@ function ProblemLoaded({
         lat={conditionLat > 0 ? conditionLat : undefined}
         lng={conditionLng > 0 ? conditionLng : undefined}
         label={data.name ?? ''}
-        wallDirectionCalculated={data.sectorWallDirectionCalculated}
-        wallDirectionManual={data.sectorWallDirectionManual}
+        orientationCalculated={data.sectorOrientationCalculated}
+        orientationManual={data.sectorOrientationManual}
         sunFromHour={data.sectorSunFromHour ?? data.areaSunFromHour ?? 0}
         sunToHour={data.sectorSunToHour ?? data.areaSunToHour ?? 0}
         pageViews={data.pageViews}

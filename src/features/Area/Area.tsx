@@ -877,8 +877,8 @@ const Area = () => {
                       lat={data.coordinates?.latitude}
                       lng={data.coordinates?.longitude}
                       label={data.name ?? ''}
-                      wallDirectionCalculated={undefined}
-                      wallDirectionManual={undefined}
+                      orientationCalculated={undefined}
+                      orientationManual={undefined}
                       sunFromHour={data.sunFromHour ?? 0}
                       sunToHour={data.sunToHour ?? 0}
                       pageViews={data.pageViews}

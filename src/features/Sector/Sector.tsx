@@ -897,8 +897,8 @@ const Sector = () => {
                       lat={conditionLat > 0 ? conditionLat : undefined}
                       lng={conditionLng > 0 ? conditionLng : undefined}
                       label={data.name ?? ''}
-                      wallDirectionCalculated={data.wallDirectionCalculated}
-                      wallDirectionManual={data.wallDirectionManual}
+                      orientationCalculated={data.orientationCalculated}
+                      orientationManual={data.orientationManual}
                       sunFromHour={data.sunFromHour ?? data.areaSunFromHour ?? 0}
                       sunToHour={data.sunToHour ?? data.areaSunToHour ?? 0}
                       pageViews={data.pageViews}

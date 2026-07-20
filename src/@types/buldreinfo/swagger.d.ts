@@ -1111,17 +1111,17 @@ export type components = {
             mediaIdentity?: components["schemas"]["MediaIdentity"];
         };
         Coordinates: {
-            /** Format: double */
-            distance?: number;
-            /** Format: double */
-            elevation?: number;
-            elevationSource?: string;
             /** Format: int32 */
             id?: number;
             /** Format: double */
             latitude?: number;
             /** Format: double */
             longitude?: number;
+            /** Format: double */
+            elevation?: number;
+            elevationSource?: string;
+            /** Format: double */
+            distance?: number;
         };
         Trail: {
             /** Format: int32 */
@@ -1216,8 +1216,8 @@ export type components = {
             sunToHour?: number;
             parking?: components["schemas"]["Coordinates"];
             outline?: components["schemas"]["Coordinates"][];
-            wallDirectionCalculated?: components["schemas"]["CompassDirection"];
-            wallDirectionManual?: components["schemas"]["CompassDirection"];
+            orientationCalculated?: components["schemas"]["CompassDirection"];
+            orientationManual?: components["schemas"]["CompassDirection"];
             trails?: components["schemas"]["Trail"][];
             media?: components["schemas"]["Media"][];
             triviaMedia?: components["schemas"]["Media"][];
@@ -1376,8 +1376,8 @@ export type components = {
             sectorSunToHour?: number;
             sectorParking?: components["schemas"]["Coordinates"];
             sectorOutline?: components["schemas"]["Coordinates"][];
-            sectorWallDirectionCalculated?: components["schemas"]["CompassDirection"];
-            sectorWallDirectionManual?: components["schemas"]["CompassDirection"];
+            sectorOrientationCalculated?: components["schemas"]["CompassDirection"];
+            sectorOrientationManual?: components["schemas"]["CompassDirection"];
             trails?: components["schemas"]["Trail"][];
             neighbours?: components["schemas"]["Neighbour"][];
             /** Format: int32 */
@@ -1552,8 +1552,8 @@ export type components = {
             sunToHour?: number;
             parking?: components["schemas"]["Coordinates"];
             outline?: components["schemas"]["Coordinates"][];
-            wallDirectionCalculated?: components["schemas"]["CompassDirection"];
-            wallDirectionManual?: components["schemas"]["CompassDirection"];
+            orientationCalculated?: components["schemas"]["CompassDirection"];
+            orientationManual?: components["schemas"]["CompassDirection"];
             trails?: components["schemas"]["Trail"][];
             randomMedia?: components["schemas"]["MediaIdentity"];
             problems?: components["schemas"]["SectorProblem"][];
@@ -1713,8 +1713,8 @@ export type components = {
             sorting?: number;
             parking?: components["schemas"]["Coordinates"];
             outline?: components["schemas"]["Coordinates"][];
-            wallDirectionCalculated?: components["schemas"]["CompassDirection"];
-            wallDirectionManual?: components["schemas"]["CompassDirection"];
+            orientationCalculated?: components["schemas"]["CompassDirection"];
+            orientationManual?: components["schemas"]["CompassDirection"];
             lockedAdmin?: boolean;
             lockedSuperadmin?: boolean;
             /** Format: int32 */
@@ -2082,8 +2082,8 @@ export type components = {
             /** Format: int32 */
             id?: number;
             name?: string;
-            wallDirectionCalculated?: components["schemas"]["CompassDirection"];
-            wallDirectionManual?: components["schemas"]["CompassDirection"];
+            orientationCalculated?: components["schemas"]["CompassDirection"];
+            orientationManual?: components["schemas"]["CompassDirection"];
             lockedAdmin?: boolean;
             lockedSuperadmin?: boolean;
             /** Format: int32 */
@@ -3411,8 +3411,8 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
-            200: {
+            /** @description Redirects to the generated or cached static asset URL hosted on S3 Storage */
+            302: {
                 headers: {
                     [name: string]: unknown;
                 };

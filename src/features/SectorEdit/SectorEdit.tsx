@@ -177,12 +177,12 @@ export const SectorEdit = ({ sector, area }: Props) => {
     setData((prevState) => ({ ...prevState, name: value as string }));
   }, []);
 
-  const onWallDirectionManualIdChanged = useCallback(
+  const onOrientationManualIdChanged = useCallback(
     (_: unknown, { value }: OnChangeParams) => {
       const compassDirectionId = +(value ?? 0);
-      const wallDirectionManual =
+      const orientationManual =
         compassDirectionId === 0 ? undefined : meta.compassDirections.find((cd) => cd.id === compassDirectionId);
-      setData((prevState) => ({ ...prevState, wallDirectionManual }));
+      setData((prevState) => ({ ...prevState, orientationManual }));
     },
     [meta.compassDirections],
   );
@@ -268,7 +268,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
         data.sunToHour ?? 0,
         data.parking ?? ({} as components['schemas']['Coordinates']),
         data.outline ?? [],
-        data.wallDirectionManual ?? ({} as components['schemas']['CompassDirection']),
+        data.orientationManual ?? ({} as components['schemas']['CompassDirection']),
         [], // trails are saved separately via postTrail
         data.externalLinks ?? [],
         [],
@@ -594,15 +594,15 @@ export const SectorEdit = ({ sector, area }: Props) => {
 
               {meta.isClimbing && (
                 <div className='space-y-2'>
-                  <label className={labelClasses}>Wall Direction</label>
+                  <label className={labelClasses}>Orientation</label>
                   <select
                     className={inputClasses}
-                    value={data.wallDirectionManual?.id || 0}
-                    onChange={(e) => onWallDirectionManualIdChanged(dummyEvent, { value: e.target.value })}
+                    value={data.orientationManual?.id || 0}
+                    onChange={(e) => onOrientationManualIdChanged(dummyEvent, { value: e.target.value })}
                   >
                     <option value={0}>
-                      {data.wallDirectionCalculated
-                        ? `${data.wallDirectionCalculated.direction} (calculated)`
+                      {data.orientationCalculated
+                        ? `${data.orientationCalculated.direction} (calculated)`
                         : '<calculate from outline>'}
                     </option>
                     {meta.compassDirections.map((cd) => (

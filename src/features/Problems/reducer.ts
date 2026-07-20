@@ -22,7 +22,7 @@ type FilterInputs = {
   filterAreaIds: Record<number, true>;
   filterOnlySunOnWallAt: number;
   filterOnlyShadeOnWallAt: number;
-  filterSectorWallDirections: Record<number, boolean>;
+  filterSectorOrientations: Record<number, boolean>;
   filterGradeLow: string | undefined;
   filterGradeHigh: string | undefined;
   filterFaYearLow: number;
@@ -58,7 +58,7 @@ const DEFAULT_INITIAL_FILTER: FilterInputs = {
   filterOnlySuperAdmin: false,
   filterOnlySunOnWallAt: 0,
   filterOnlyShadeOnWallAt: 0,
-  filterSectorWallDirections: {},
+  filterSectorOrientations: {},
 } as const;
 
 const FLAT_FILTER: Readonly<Record<string, unknown>> = flatten(DEFAULT_INITIAL_FILTER);
@@ -89,7 +89,7 @@ export type ResetField =
   | 'areas'
   | 'fa-year'
   | 'options'
-  | 'wall-directions'
+  | 'orientations'
   | 'conditions'
   | 'pitches'
   | 'types'
@@ -113,8 +113,8 @@ export type Update =
   | { action: 'set-only-sun-on-wall-at'; hour: number }
   | { action: 'set-only-shade-on-wall-at'; hour: number }
   | {
-      action: 'toggle-sector-wall-directions';
-      option: keyof State['filterSectorWallDirections'];
+      action: 'toggle-sector-orientations';
+      option: keyof State['filterSectorOrientations'];
       checked: boolean;
     }
   | {
@@ -143,7 +143,7 @@ const filter = (state: State): State => {
     filterAreaIds,
     filterOnlySunOnWallAt,
     filterOnlyShadeOnWallAt,
-    filterSectorWallDirections,
+    filterSectorOrientations,
     filterGradeHigh,
     filterGradeLow,
     filterFaYearHigh,
@@ -223,9 +223,9 @@ const filter = (state: State): State => {
                           }
                         }
 
-                        if (filterSectorWallDirections && Object.values(filterSectorWallDirections).some((v) => !!v)) {
-                          const wallDirectionId = sector.wallDirectionManual?.id || sector.wallDirectionCalculated?.id;
-                          if (!wallDirectionId || !filterSectorWallDirections[wallDirectionId]) {
+                        if (filterSectorOrientations && Object.values(filterSectorOrientations).some((v) => !!v)) {
+                          const orientationId = sector.orientationManual?.id || sector.orientationCalculated?.id;
+                          if (!orientationId || !filterSectorOrientations[orientationId]) {
                             filteredOut.problems += 1;
                             return false;
                           }
@@ -460,12 +460,12 @@ const reducer = (state: State, update: Update): State => {
       };
     }
 
-    case 'toggle-sector-wall-directions': {
+    case 'toggle-sector-orientations': {
       const { checked, option } = update;
       return {
         ...state,
-        filterSectorWallDirections: {
-          ...state.filterSectorWallDirections,
+        filterSectorOrientations: {
+          ...state.filterSectorOrientations,
           [option]: checked,
         },
       };
@@ -620,10 +620,10 @@ const reducer = (state: State, update: Update): State => {
             filterOnlyShadeOnWallAt: DEFAULT_INITIAL_FILTER.filterOnlyShadeOnWallAt,
           };
         }
-        case 'wall-directions': {
+        case 'orientations': {
           return {
             ...state,
-            filterSectorWallDirections: DEFAULT_INITIAL_FILTER.filterSectorWallDirections,
+            filterSectorOrientations: DEFAULT_INITIAL_FILTER.filterSectorOrientations,
           };
         }
         case 'pitches': {
@@ -684,10 +684,7 @@ const storageItems = {
   areaIds: itemLocalStorage('filter/area-ids', DEFAULT_INITIAL_FILTER.filterAreaIds),
   onlySunOnWallAt: itemLocalStorage('filter/only-sun-on-wall-at', DEFAULT_INITIAL_FILTER.filterOnlySunOnWallAt),
   onlyShadeOnWallAt: itemLocalStorage('filter/only-shade-on-wall-at', DEFAULT_INITIAL_FILTER.filterOnlyShadeOnWallAt),
-  sectorWallDirections: itemLocalStorage(
-    'filter/sector-wall-directions',
-    DEFAULT_INITIAL_FILTER.filterSectorWallDirections,
-  ),
+  sectorOrientations: itemLocalStorage('filter/sector-orientations', DEFAULT_INITIAL_FILTER.filterSectorOrientations),
   gradeHigh: itemLocalStorage('filter/grades/high', DEFAULT_INITIAL_FILTER.filterGradeHigh),
   gradeLow: itemLocalStorage('filter/grades/low', DEFAULT_INITIAL_FILTER.filterGradeLow),
   faYearHigh: itemLocalStorage('filter/fa-year/high', DEFAULT_INITIAL_FILTER.filterFaYearHigh),
@@ -714,7 +711,7 @@ const wrappedReducer: typeof reducer = (state, update) => {
   storageItems.areaIds.set(reduced.filterAreaIds);
   storageItems.onlySunOnWallAt.set(reduced.filterOnlySunOnWallAt);
   storageItems.onlyShadeOnWallAt.set(reduced.filterOnlyShadeOnWallAt);
-  storageItems.sectorWallDirections.set(reduced.filterSectorWallDirections);
+  storageItems.sectorOrientations.set(reduced.filterSectorOrientations);
   storageItems.gradeHigh.set(reduced.filterGradeHigh);
   storageItems.gradeLow.set(reduced.filterGradeLow);
   storageItems.faYearHigh.set(reduced.filterFaYearHigh);
@@ -848,7 +845,7 @@ export const useFilterState = (init?: Partial<UiState>) => {
       filterAreaIds: storageItems.areaIds.get(),
       filterOnlySunOnWallAt: storageItems.onlySunOnWallAt.get(),
       filterOnlyShadeOnWallAt: storageItems.onlyShadeOnWallAt.get(),
-      filterSectorWallDirections: storageItems.sectorWallDirections.get(),
+      filterSectorOrientations: storageItems.sectorOrientations.get(),
       filterGradeHigh: storageItems.gradeHigh.get(),
       filterGradeLow: storageItems.gradeLow.get(),
       filterFaYearHigh: storageItems.faYearHigh.get(),

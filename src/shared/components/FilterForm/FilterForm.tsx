@@ -145,7 +145,7 @@ export const FilterForm = () => {
     filterOnlyShadeOnWallAt,
     filterGradeHigh,
     filterGradeLow,
-    filterSectorWallDirections,
+    filterSectorOrientations,
     filterOnlyAdmin,
     filterOnlySuperAdmin,
     filterHideTicked,
@@ -317,16 +317,16 @@ export const FilterForm = () => {
         {meta.isClimbing && (
           <div className='space-y-6'>
             <div>
-              <GroupHeader title='Wall direction' reset='wall-directions' />
+              <GroupHeader title='Orientation' reset='orientations' />
               <div className='flex flex-wrap gap-4 px-1'>
                 {compassDirectionOptions.map((option) => (
                   <CheckboxLabel
                     key={option.key}
                     label={option.text}
-                    checked={!!filterSectorWallDirections?.[option.value ?? 0]}
+                    checked={!!filterSectorOrientations?.[option.value ?? 0]}
                     onChange={(e) => {
                       dispatch?.({
-                        action: 'toggle-sector-wall-directions',
+                        action: 'toggle-sector-orientations',
                         option: option.value ?? 0,
                         checked: !!e.target.checked,
                       });
