@@ -1,6 +1,14 @@
 import { useRef, useEffect, type ReactNode } from 'react';
 import { Marker, Tooltip, Popup, useMap } from 'react-leaflet';
-import { markerBlueIcon, markerRedIcon, parkingIcon, weatherIcon, weatherIconActive, rockIcon } from './icons';
+import {
+  markerBlueIcon,
+  markerBlueIconActive,
+  markerRedIcon,
+  parkingIcon,
+  weatherIcon,
+  weatherIconActive,
+  rockIcon,
+} from './icons';
 import { useNavigate } from 'react-router';
 import type { Marker as LeafletMarker } from 'leaflet';
 import type { components } from '../../../@types/buldreinfo/swagger';
@@ -91,8 +99,18 @@ export default function Markers({
     if (map && flyToId && markerRefs.current[flyToId]) {
       const marker = markerRefs.current[flyToId];
       if (marker) {
-        map.flyTo(marker.getLatLng(), 13, { animate: false });
-        marker.openPopup();
+        // Delay flyTo to allow layout changes (e.g. split panel opening) to take effect first,
+        // so the marker is centered in the map container, not the full screen.
+        setTimeout(() => {
+          map.invalidateSize();
+          const currentZoom = map.getZoom();
+          if (currentZoom < 10) {
+            map.flyTo(marker.getLatLng(), 13, { animate: false });
+          } else {
+            map.panTo(marker.getLatLng(), { animate: false });
+          }
+          marker.openPopup();
+        }, 100);
       } else {
         captureSentryException('Missing marker ref', { flyToId, refs: Object.keys(markerRefs.current ?? {}) });
       }
@@ -245,14 +263,34 @@ export default function Markers({
     }
 
     if (isLabelMarker(m)) {
+      // Determine if this marker is the currently active/selected one
+      const isActive =
+        activeMarkerPosition != null &&
+        Math.abs(activeMarkerPosition[0] - lat) < 0.0001 &&
+        Math.abs(activeMarkerPosition[1] - lng) < 0.0001;
+
+      // Support flyToId via optional id property on the marker object
+      const markerId = (m as Record<string, unknown>).id as number | undefined;
+
       return (
         <Marker
-          icon={markerBlueIcon}
+          icon={isActive ? markerBlueIconActive : markerBlueIcon}
           position={position}
-          zIndexOffset={100}
+          zIndexOffset={isActive ? 1000 : 100}
           key={['label', m.label, lat, lng].join('/')}
+          ref={(ref) => {
+            if (markerId != null) {
+              markerRefs.current[markerId] = ref;
+            }
+          }}
           eventHandlers={{
-            click: () => addEventHandlers && navigate(m.url),
+            click: () => {
+              if (onMarkerClick) {
+                onMarkerClick(m);
+              } else if (addEventHandlers) {
+                navigate(m.url);
+              }
+            },
           }}
           draggable={false}
         >
@@ -262,7 +300,13 @@ export default function Markers({
             interactive={addEventHandlers}
             className={`buldreinfo-tooltip-compact${addEventHandlers ? 'buldreinfo-tooltip-clickable' : ''}`}
             eventHandlers={{
-              click: () => addEventHandlers && navigate(m.url),
+              click: () => {
+                if (onMarkerClick) {
+                  onMarkerClick(m);
+                } else if (addEventHandlers) {
+                  navigate(m.url);
+                }
+              },
             }}
           >
             {labelText}
@@ -278,7 +322,13 @@ export default function Markers({
         zIndexOffset={650}
         key={['red', lat, lng].join('/')}
         eventHandlers={{
-          click: () => addEventHandlers && m.url && navigate(m.url),
+          click: () => {
+            if (onMarkerClick) {
+              onMarkerClick(m);
+            } else if (addEventHandlers && m.url) {
+              navigate(m.url);
+            }
+          },
         }}
         draggable={false}
       />

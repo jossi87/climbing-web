@@ -117,6 +117,23 @@ const createRockIcon = () =>
   });
 
 const markerBlueIcon = createDotIcon('#3b82f6');
+const markerBlueIconActive = createDotIcon('#f59e0b');
+// Override the active icon with a larger size and brand-colored border/glow
+markerBlueIconActive.options.html = renderToString(
+  <div
+    style={{
+      width: '18px',
+      height: '18px',
+      backgroundColor: '#f59e0b',
+      borderRadius: '50%',
+      border: '2px solid rgba(15, 23, 42, 0.85)',
+      boxShadow: '0 0 0 3px rgba(245, 158, 11, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.5), 0 2px 8px rgba(0,0,0,0.55)',
+    }}
+  />,
+);
+markerBlueIconActive.options.iconSize = [18, 18];
+markerBlueIconActive.options.iconAnchor = [9, 9];
+
 const markerRedIcon = createDotIcon('#ef4444');
 const parkingIcon = createParkingIcon();
 const rockIcon = createRockIcon();
@@ -148,4 +165,4 @@ weatherIconActive.options.html = renderToString(
 weatherIconActive.options.iconSize = [32, 32];
 weatherIconActive.options.iconAnchor = [16, 16];
 
-export { markerBlueIcon, markerRedIcon, parkingIcon, weatherIcon, weatherIconActive, rockIcon };
+export { markerBlueIcon, markerBlueIconActive, markerRedIcon, parkingIcon, weatherIcon, weatherIconActive, rockIcon };

@@ -2118,6 +2118,7 @@ export type components = {
             forDevelopers?: boolean;
             name?: string;
             coordinates?: components["schemas"]["Coordinates"];
+            pageViews?: string;
         };
         Administrator: {
             /** Format: int32 */
@@ -3526,7 +3527,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "text/plain": number;
+                    "text/plain": string;
                 };
             };
         };
