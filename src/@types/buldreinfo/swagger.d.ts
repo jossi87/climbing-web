@@ -393,7 +393,7 @@ export type paths = {
             path?: never;
             cookie?: never;
         };
-        /** Get areas */
+        /** Get basic area list */
         get: operations["getAreas"];
         put?: never;
         /** Update area */
@@ -915,6 +915,23 @@ export type paths = {
         };
         /** Get boulders/routes marked as dangerous */
         get: operations["getDangerous"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/areas/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get specific area */
+        get: operations["getArea"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2092,6 +2109,16 @@ export type components = {
             sunToHour?: number;
             problems?: components["schemas"]["DangerousProblem"][];
         };
+        AreaBasic: {
+            regionName?: string;
+            /** Format: int32 */
+            id?: number;
+            lockedAdmin?: boolean;
+            lockedSuperadmin?: boolean;
+            forDevelopers?: boolean;
+            name?: string;
+            coordinates?: components["schemas"]["Coordinates"];
+        };
         Administrator: {
             /** Format: int32 */
             userId?: number;
@@ -2832,9 +2859,7 @@ export interface operations {
     };
     getAreas: {
         parameters: {
-            query?: {
-                id?: number;
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
@@ -2847,7 +2872,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Area"][];
+                    "application/json": components["schemas"]["AreaBasic"][];
                 };
             };
         };
@@ -3522,6 +3547,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DangerousArea"][];
+                };
+            };
+        };
+    };
+    getArea: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Area"];
                 };
             };
         };

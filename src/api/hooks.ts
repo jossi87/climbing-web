@@ -284,19 +284,18 @@ export function useActivity({
 }
 
 export function useAreas() {
-  return useData<Success<'getAreas'>>(`/areas`, {
+  return useData<components['schemas']['AreaBasic'][]>(`/areas`, {
     queryKey: [`/areas`],
   });
 }
 
 export function useArea(id: number) {
-  return useData<Success<'getAreas'>, Success<'getAreas'>[number] | undefined>(`/areas?id=${id}`, {
-    queryKey: [`/areas`, { id }],
+  return useData<Success<'getArea'>>(`/areas/${id}`, {
+    queryKey: [`/areas/${id}`, { id }],
     enabled: id > 0,
-    select(response) {
-      const row = response?.[0];
-      applyEntityRedirectUrl(row);
-      return row;
+    select(data) {
+      applyEntityRedirectUrl(data);
+      return data;
     },
   });
 }

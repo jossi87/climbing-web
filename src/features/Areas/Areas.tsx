@@ -57,9 +57,7 @@ const Areas = () => {
               </Link>
               <LockSymbol lockedAdmin={!!a.lockedAdmin} lockedSuperadmin={!!a.lockedSuperadmin} />
             </div>
-            <div className='text-[12px] text-slate-400'>
-              {a.numSectors ?? 0} sectors, {a.numProblems ?? 0} {typeDescription}
-            </div>
+            <div className='text-[12px] text-slate-400'>{typeDescription}</div>
           </div>
         ),
       };
