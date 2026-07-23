@@ -220,7 +220,13 @@ function ProblemLoaded({
       url: `/problem/${data.id}`,
     });
   }
-  if (data.sectorParking) markers.push({ coordinates: data.sectorParking, isParking: true });
+  if (data.sectorParking)
+    markers.push({
+      coordinates: data.sectorParking,
+      isParking: true,
+      label: data.sectorName || undefined,
+      url: data.sectorId ? '/sector/' + data.sectorId : undefined,
+    });
 
   const [conditionLat, conditionLng] = (() => {
     if (data.coordinates?.latitude && data.coordinates?.longitude)

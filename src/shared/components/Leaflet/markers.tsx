@@ -19,6 +19,10 @@ import { openMap } from '../../../utils/openMap';
 type ParkingMarker = {
   coordinates: components['schemas']['Coordinates'] | null | undefined;
   isParking: true;
+  label?: string;
+  url?: string;
+  /** Multiple sector links for when a parking spot is shared by several sectors */
+  links?: { label: string; url: string }[];
 };
 
 type CameraFeed = {
@@ -137,9 +141,41 @@ export default function Markers({
         <Marker icon={parkingIcon} position={position} key={['parking', lat, lng].join('/')}>
           <Popup closeButton={false}>
             <div className='flex flex-col gap-1.5'>
+              {m.links && m.links.length > 0 ? (
+                <div className='flex flex-col gap-0.5'>
+                  {m.links.map((link) => (
+                    <a
+                      key={link.url}
+                      href={link.url}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate(link.url);
+                      }}
+                      className='buldreinfo-popup-primary-link inline-flex items-baseline gap-0.5 text-sm font-bold'
+                    >
+                      {link.label}
+                      <ExternalLink size={10} strokeWidth={2.5} className='shrink-0 translate-y-px opacity-60' />
+                    </a>
+                  ))}
+                </div>
+              ) : m.label && m.url ? (
+                <a
+                  href={m.url}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate(m.url!);
+                  }}
+                  className='buldreinfo-popup-primary-link inline-flex items-baseline gap-0.5 text-sm font-bold'
+                >
+                  {m.label}
+                  <ExternalLink size={10} strokeWidth={2.5} className='shrink-0 translate-y-px opacity-60' />
+                </a>
+              ) : m.label ? (
+                <span className='text-sm font-bold text-slate-100'>{m.label}</span>
+              ) : null}
               <button
                 type='button'
-                onClick={() => openMap(lat, lng, 'Parking')}
+                onClick={() => openMap(lat, lng, m.label || 'Parking')}
                 className='border-surface-border bg-surface-nav type-body inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[12px] leading-none font-semibold text-slate-200 no-underline transition-colors hover:border-white/15 hover:text-slate-100'
               >
                 <Navigation size={12} />

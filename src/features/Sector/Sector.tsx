@@ -440,8 +440,8 @@ const Sector = () => {
 
   const parkingMarkers = useMemo((): NonNullable<ComponentProps<typeof Leaflet>['markers']> => {
     if (!data?.parking) return [];
-    return [{ coordinates: data.parking, isParking: true }];
-  }, [data?.parking]);
+    return [{ coordinates: data.parking, isParking: true, label: data.name || undefined, url: '/sector/' + data.id }];
+  }, [data?.parking, data?.name, data?.id]);
 
   const problemMarkers = useMemo((): NonNullable<ComponentProps<typeof Leaflet>['markers']> => {
     if (!data) return [];

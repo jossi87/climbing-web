@@ -413,6 +413,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
   const outlines: ComponentProps<typeof Leaflet>['outlines'] = [];
   const trailPolylines: ComponentProps<typeof Leaflet>['trails'] = [];
   let otherDescentCount = 0;
+  let otherAscentCount = 0;
   (area.sectors ?? [])
     .filter((s) => s.id !== data.id)
     .forEach((s) => {
@@ -424,10 +425,10 @@ export const SectorEdit = ({ sector, area }: Props) => {
         });
       }
       (s.trails ?? []).forEach((t) => {
-        const descentIndex = t.isDescent ? otherDescentCount++ : -1;
+        const index = t.isDescent ? otherDescentCount++ : otherAscentCount++;
         trailPolylines.push({
           trail: t,
-          backgroundColor: getTrailColor(!!t.isDescent, descentIndex),
+          backgroundColor: getTrailColor(!!t.isDescent, index),
           background: true,
         });
       });
@@ -437,14 +438,15 @@ export const SectorEdit = ({ sector, area }: Props) => {
     outlines.push({ outline: data.outline, background: false });
   }
   let localDescentCount = 0;
+  let localAscentCount = 0;
   trails.forEach((t) => {
     if (t.delete) return;
     // Skip trails with no path points — Leaflet Polyline requires latlngs
     if (!t.path || t.path.length < 2) return;
-    const descentIndex = t.isDescent ? localDescentCount++ : -1;
+    const index = t.isDescent ? localDescentCount++ : localAscentCount++;
     trailPolylines.push({
       trail: t,
-      backgroundColor: getTrailColor(!!t.isDescent, descentIndex),
+      backgroundColor: getTrailColor(!!t.isDescent, index),
       background: false,
     });
   });
@@ -454,6 +456,8 @@ export const SectorEdit = ({ sector, area }: Props) => {
     markers.push({
       coordinates: data.parking,
       isParking: true,
+      label: data.name || undefined,
+      url: data.id && data.id > 0 ? '/sector/' + data.id : undefined,
     });
   }
   if (sectorMarkers != null) {

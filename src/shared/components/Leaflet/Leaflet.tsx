@@ -604,6 +604,15 @@ const Leaflet = ({
           border-color: var(--color-brand) !important;
         }
 
+        .buldreinfo-popup-primary-link {
+          cursor: pointer !important;
+          color: var(--color-slate-100) !important;
+          transition: color 0.15s ease !important;
+        }
+        .buldreinfo-popup-primary-link:hover {
+          color: var(--color-brand) !important;
+        }
+
         .marker-cluster-small,
         .marker-cluster-medium,
         .marker-cluster-large {

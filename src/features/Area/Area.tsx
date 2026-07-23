@@ -533,6 +533,9 @@ const Area = () => {
     return Object.values(uniqueSectors).map((info) => ({
       coordinates: { latitude: info.latitude, longitude: info.longitude },
       isParking: true,
+      label: info.sectors.map((s) => s.name).join(', ') || undefined,
+      url: info.sectors.length === 1 ? '/sector/' + info.sectors[0].id : undefined,
+      links: info.sectors.map((s) => ({ label: s.name, url: '/sector/' + s.id })),
     }));
   }, [data?.sectors]);
 
