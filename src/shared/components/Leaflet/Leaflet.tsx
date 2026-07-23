@@ -561,6 +561,7 @@ const Leaflet = ({
           border: 1px solid var(--color-surface-border) !important;
           color: var(--color-white) !important;
           box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45) !important;
+          padding: 2px 6px !important;
         }
         html[data-theme='light'] .leaflet-container .leaflet-tooltip {
           box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(15, 23, 42, 0.06) !important;
@@ -579,23 +580,23 @@ const Leaflet = ({
         }
 
         .buldreinfo-tooltip-compact {
-          font-size: 9px !important;
-          line-height: 1.15 !important;
-          padding: 1px 5px !important;
-          border-radius: 6px !important;
-          max-width: 150px !important;
+          font-size: 8px !important;
+          line-height: 1 !important;
+          padding: 0 3px !important;
+          border-radius: 3px !important;
+          max-width: 100px !important;
           white-space: nowrap !important;
           overflow: hidden !important;
           text-overflow: ellipsis !important;
         }
         .buldreinfo-tooltip-semi {
-          opacity: 0.7 !important;
+          opacity: 0.6 !important;
         }
 
         .buldreinfo-tooltip-clickable {
           cursor: pointer !important;
-          padding: 3px 7px !important;
-          font-size: 10px !important;
+          padding: 0 4px !important;
+          font-size: 8px !important;
           font-weight: 600 !important;
         }
         .buldreinfo-tooltip-clickable:hover {

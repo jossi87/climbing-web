@@ -31,7 +31,7 @@ function bearing(from: [number, number], to: [number, number]): number {
  * Create a directional arrow icon (triangle) pointing in the direction of travel.
  */
 function createArrowIcon(color: string, angle: number, idx: number) {
-  const size = 16;
+  const size = 10;
   const filterId = `arrow-shadow-${idx}`;
   // The SVG arrow points right (east, 90°) by default. The bearing() function returns
   // geographic degrees where 0 = north, 90 = east. We subtract 90 to convert from
@@ -40,13 +40,13 @@ function createArrowIcon(color: string, angle: number, idx: number) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform:rotate(${rotation}deg)">
     <defs>
       <filter id="${filterId}" x="-20%" y="-20%" width="140%" height="140%">
-        <feDropShadow dx="0" dy="0" stdDeviation="1" flood-color="rgba(0,0,0,0.6)"/>
+        <feDropShadow dx="0" dy="0" stdDeviation="0.5" flood-color="rgba(0,0,0,0.4)"/>
       </filter>
     </defs>
     <!-- Arrow shaft -->
-    <rect x="0" y="${size / 2 - 1.5}" width="${size * 0.55}" height="3" fill="${color}" opacity="0.9"/>
+    <rect x="0" y="${size / 2 - 1}" width="${size * 0.55}" height="2" fill="${color}" opacity="0.5"/>
     <!-- Arrowhead -->
-    <polygon points="${size},${size / 2} ${size * 0.45},0 ${size * 0.45},${size}" fill="${color}" opacity="0.9" filter="url(#${filterId})"/>
+    <polygon points="${size},${size / 2} ${size * 0.45},0 ${size * 0.45},${size}" fill="${color}" opacity="0.5" filter="url(#${filterId})"/>
   </svg>`;
   return divIcon({
     className: 'trail-direction-arrow',
