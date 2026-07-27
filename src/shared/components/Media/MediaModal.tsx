@@ -706,7 +706,9 @@ const MediaModal = ({
                       type='button'
                       onClick={() => {
                         setShowMenu(false);
-                        putMediaVideoEmbedRefreshThumbnail(accessToken, mediaIdentityId(m.identity));
+                        putMediaVideoEmbedRefreshThumbnail(accessToken, mediaIdentityId(m.identity)).then(() => {
+                          onClose();
+                        });
                       }}
                       className={mediaMenuItemClass}
                     >
