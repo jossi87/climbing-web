@@ -532,3 +532,11 @@ export function putMediaJpegRotate(accessToken: string | null, idMedia: number, 
     ...invalidateQueriesAfter,
   }).then((response) => ensureOkResponse(response, url));
 }
+
+export function putMediaVideoEmbedRefreshThumbnail(accessToken: string | null, id: number): Promise<Response> {
+  const url = `/media/video/embed/refresh-thumbnail?id=${id}`;
+  return makeAuthenticatedRequest(accessToken, url, {
+    method: 'PUT',
+    ...invalidateQueriesAfter,
+  }).then((response) => ensureOkResponse(response, url));
+}
