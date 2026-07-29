@@ -861,7 +861,12 @@ export const SvgEdit = ({
                 zoomMode ? 'h-auto' : 'h-auto w-full',
                 draggingOverlay && 'cursor-grabbing',
               )}
-              style={zoomMode ? { width: 'min(1920px, 150vw)', maxWidth: 'none' } : undefined}
+              style={{
+                // Allow native pinch-zoom on mobile, but prevent single-finger scroll/pan
+                // so pointer events can handle draw/drag without interference.
+                touchAction: 'pinch-zoom',
+                ...(zoomMode ? { width: 'min(1920px, 150vw)', maxWidth: 'none' } : undefined),
+              }}
             >
               <image
                 ref={imageRef}
