@@ -264,13 +264,6 @@ export const SvgEdit = ({
   const dispatchRef = useRef(dispatch);
   dispatchRef.current = dispatch;
 
-  // Pinch-to-zoom state
-  const [pinchZoom, setPinchZoom] = useState({ scale: 1, x: 0, y: 0 });
-  const pinchZoomRef = useRef(pinchZoom);
-  pinchZoomRef.current = pinchZoom;
-  const activePointersRef = useRef<Map<number, { x: number; y: number }>>(new Map());
-  const pinchDistRef = useRef(0);
-
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       shift.current = e.shiftKey;
@@ -348,27 +341,14 @@ export const SvgEdit = ({
     [activeTab, drawMode, getMouseCoordsFromClient],
   );
 
-  // Pointer events for drag support + pinch-to-zoom on mobile.
-  // Works on both desktop (mouse) and mobile (touch/pen).
+  // Pointer events for drag support — works on both desktop (mouse) and mobile (touch/pen).
   // Chrome desktop mobile emulation does NOT fire touch events, but it does fire pointer events.
+  // On mobile, the browser handles pinch-to-zoom natively (touchAction is not 'none').
   useEffect(() => {
     const svg = svgRef.current;
     if (!svg) return;
 
     const onPointerDown = (e: PointerEvent) => {
-      // Track this pointer for pinch-to-zoom
-      activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
-
-      // If 2+ pointers are active, we're in pinch-zoom mode — don't start point drag
-      if (activePointersRef.current.size >= 2) {
-        // Calculate initial pinch distance
-        const ptrs = Array.from(activePointersRef.current.values());
-        const dx = ptrs[0].x - ptrs[1].x;
-        const dy = ptrs[0].y - ptrs[1].y;
-        pinchDistRef.current = Math.hypot(dx, dy);
-        return;
-      }
-
       // Only handle primary button (left click / touch)
       if (e.button !== 0) return;
       if (isDraggingPointRef.current) return;
@@ -394,55 +374,14 @@ export const SvgEdit = ({
     };
 
     const onPointerMove = (e: PointerEvent) => {
-      // Update pointer position
-      activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
-
-      // Pinch-to-zoom with 2+ pointers
-      if (activePointersRef.current.size >= 2) {
-        const ptrs = Array.from(activePointersRef.current.values());
-        const dx = ptrs[0].x - ptrs[1].x;
-        const dy = ptrs[0].y - ptrs[1].y;
-        const dist = Math.hypot(dx, dy);
-        if (pinchDistRef.current > 0) {
-          const scaleDelta = dist / pinchDistRef.current;
-          const current = pinchZoomRef.current;
-          const newScale = Math.max(1, Math.min(10, current.scale * scaleDelta));
-          // Pan to keep the midpoint centered
-          const midX = (ptrs[0].x + ptrs[1].x) / 2;
-          const midY = (ptrs[0].y + ptrs[1].y) / 2;
-          const svgRect = svg.getBoundingClientRect();
-          const relX = midX - svgRect.left;
-          const relY = midY - svgRect.top;
-          const newX = relX - (relX - current.x) * (newScale / current.scale);
-          const newY = relY - (relY - current.y) * (newScale / current.scale);
-          setPinchZoom({ scale: newScale, x: newX, y: newY });
-        }
-        pinchDistRef.current = dist;
-        return;
-      }
-
-      // Single pointer — normal point drag
       if (!isDraggingPointRef.current) return;
+      // Prevent browser from panning/scrolling while dragging a point
+      e.preventDefault();
       const coords = getMouseCoordsFromClient(e.clientX, e.clientY, true);
       dispatchRef.current({ action: 'mouse-move', ...coords });
     };
 
     const onPointerUp = (e: PointerEvent) => {
-      // Remove this pointer from tracking
-      activePointersRef.current.delete(e.pointerId);
-
-      // If still 2+ pointers, recalculate pinch distance
-      if (activePointersRef.current.size >= 2) {
-        const ptrs = Array.from(activePointersRef.current.values());
-        const dx = ptrs[0].x - ptrs[1].x;
-        const dy = ptrs[0].y - ptrs[1].y;
-        pinchDistRef.current = Math.hypot(dx, dy);
-        return;
-      }
-
-      // Reset pinch distance when fewer than 2 pointers
-      pinchDistRef.current = 0;
-
       if (e.button !== 0) return;
       if (isDraggingPointRef.current) {
         isDraggingPointRef.current = false;
@@ -910,10 +849,7 @@ export const SvgEdit = ({
               'border-surface-border relative w-full min-w-0 cursor-crosshair bg-black select-none',
               zoomMode ? 'overflow-auto' : 'overflow-hidden',
             )}
-            style={{
-              touchAction: 'none',
-              ...(zoomMode ? { maxHeight: '100dvh' } : undefined),
-            }}
+            style={zoomMode ? { maxHeight: '100dvh' } : undefined}
           >
             <svg
               ref={svgRef}
@@ -925,15 +861,7 @@ export const SvgEdit = ({
                 zoomMode ? 'h-auto' : 'h-auto w-full',
                 draggingOverlay && 'cursor-grabbing',
               )}
-              style={{
-                touchAction: 'none',
-                transformOrigin: '0 0',
-                transform:
-                  pinchZoom.scale !== 1
-                    ? `scale(${pinchZoom.scale}) translate(${pinchZoom.x}px, ${pinchZoom.y}px)`
-                    : undefined,
-                ...(zoomMode ? { width: 'min(1920px, 150vw)', maxWidth: 'none' } : undefined),
-              }}
+              style={zoomMode ? { width: 'min(1920px, 150vw)', maxWidth: 'none' } : undefined}
             >
               <image
                 ref={imageRef}
