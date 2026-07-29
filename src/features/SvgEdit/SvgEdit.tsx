@@ -912,12 +912,15 @@ export const SvgEdit = ({
                   const btnH = 0.028 * w;
                   const btnW = 0.055 * w;
                   const gap = 0.006 * w;
-                  const btnCount = isFirst ? 1 : isLast && points.length > 1 ? (isBouldering ? 2 : 3) : 2;
+                  const showAnchor = !isBouldering && isLast && points.length > 1;
+                  const btnCount = isFirst ? 1 : isLast && points.length > 1 ? (showAnchor ? 3 : 2) : 2;
                   const totalW = btnW * btnCount + gap * (btnCount - 1);
                   const toolbarX = ap.x - totalW / 2;
                   const toolbarY = ap.y + 0.035 * w;
                   const labelY = toolbarY + btnH * 0.65;
                   const labelFs = 0.013 * w;
+                  // Delete button column index (0-based): after Line/Curve and optionally Anchor
+                  const delCol = isFirst ? 0 : showAnchor ? 2 : 1;
                   return (
                     <g>
                       {/* Background pill */}
@@ -1015,14 +1018,14 @@ export const SvgEdit = ({
                         }}
                       >
                         <rect
-                          x={toolbarX + (isFirst ? 0 : isLast ? btnW * 2 + gap * 2 : btnW + gap)}
+                          x={toolbarX + delCol * (btnW + gap)}
                           y={toolbarY}
                           width={btnW}
                           height={btnH}
                           fill='transparent'
                         />
                         <text
-                          x={toolbarX + (isFirst ? 0 : isLast ? btnW * 2 + gap * 2 : btnW + gap) + btnW / 2}
+                          x={toolbarX + delCol * (btnW + gap) + btnW / 2}
                           y={labelY}
                           textAnchor='middle'
                           fontSize={labelFs}
