@@ -628,105 +628,111 @@ export const SvgEdit = ({
                       </>
                     )}
                   </div>
-                  <button
-                    type='button'
-                    role='tab'
-                    aria-selected={activeTab === 'text'}
-                    id='svg-edit-tab-text'
-                    className={editorTabClass('text')}
-                    onClick={() => setActiveTab('text')}
-                  >
-                    Text
-                    {texts.length > 0 && (
-                      <span
-                        role='button'
-                        tabIndex={0}
-                        title='Reset all text labels'
-                        aria-label='Reset all text labels'
-                        className='ml-0.5 inline-flex text-red-400 hover:text-red-300'
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          setTexts([]);
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
+                  {!isBouldering && (
+                    <button
+                      type='button'
+                      role='tab'
+                      aria-selected={activeTab === 'text'}
+                      id='svg-edit-tab-text'
+                      className={editorTabClass('text')}
+                      onClick={() => setActiveTab('text')}
+                    >
+                      Text
+                      {texts.length > 0 && (
+                        <span
+                          role='button'
+                          tabIndex={0}
+                          title='Reset all text labels'
+                          aria-label='Reset all text labels'
+                          className='ml-0.5 inline-flex text-red-400 hover:text-red-300'
+                          onClick={(e) => {
                             e.stopPropagation();
                             e.preventDefault();
                             setTexts([]);
-                          }
-                        }}
-                      >
-                        <RotateCcw size={12} strokeWidth={2} />
-                      </span>
-                    )}
-                  </button>
-                  <button
-                    type='button'
-                    role='tab'
-                    aria-selected={activeTab === 'anchors'}
-                    id='svg-edit-tab-anchors'
-                    className={editorTabClass('anchors')}
-                    onClick={() => setActiveTab('anchors')}
-                  >
-                    Bolts
-                    {anchors.length > 0 && (
-                      <span
-                        role='button'
-                        tabIndex={0}
-                        title='Reset all anchors'
-                        aria-label='Reset all anchors'
-                        className='ml-0.5 inline-flex text-red-400 hover:text-red-300'
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          setAnchors([]);
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              setTexts([]);
+                            }
+                          }}
+                        >
+                          <RotateCcw size={12} strokeWidth={2} />
+                        </span>
+                      )}
+                    </button>
+                  )}
+                  {!isBouldering && (
+                    <button
+                      type='button'
+                      role='tab'
+                      aria-selected={activeTab === 'anchors'}
+                      id='svg-edit-tab-anchors'
+                      className={editorTabClass('anchors')}
+                      onClick={() => setActiveTab('anchors')}
+                    >
+                      Bolts
+                      {anchors.length > 0 && (
+                        <span
+                          role='button'
+                          tabIndex={0}
+                          title='Reset all anchors'
+                          aria-label='Reset all anchors'
+                          className='ml-0.5 inline-flex text-red-400 hover:text-red-300'
+                          onClick={(e) => {
                             e.stopPropagation();
                             e.preventDefault();
                             setAnchors([]);
-                          }
-                        }}
-                      >
-                        <RotateCcw size={12} strokeWidth={2} />
-                      </span>
-                    )}
-                  </button>
-                  <button
-                    type='button'
-                    role='tab'
-                    aria-selected={activeTab === 'trad'}
-                    id='svg-edit-tab-trad'
-                    className={editorTabClass('trad')}
-                    onClick={() => setActiveTab('trad')}
-                  >
-                    Trad
-                    {tradBelayStations.length > 0 && (
-                      <span
-                        role='button'
-                        tabIndex={0}
-                        title='Reset all trad belays'
-                        aria-label='Reset all trad belays'
-                        className='ml-0.5 inline-flex text-red-400 hover:text-red-300'
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          setTradBelayStations([]);
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              setAnchors([]);
+                            }
+                          }}
+                        >
+                          <RotateCcw size={12} strokeWidth={2} />
+                        </span>
+                      )}
+                    </button>
+                  )}
+                  {!isBouldering && (
+                    <button
+                      type='button'
+                      role='tab'
+                      aria-selected={activeTab === 'trad'}
+                      id='svg-edit-tab-trad'
+                      className={editorTabClass('trad')}
+                      onClick={() => setActiveTab('trad')}
+                    >
+                      Trad
+                      {tradBelayStations.length > 0 && (
+                        <span
+                          role='button'
+                          tabIndex={0}
+                          title='Reset all trad belays'
+                          aria-label='Reset all trad belays'
+                          className='ml-0.5 inline-flex text-red-400 hover:text-red-300'
+                          onClick={(e) => {
                             e.stopPropagation();
                             e.preventDefault();
                             setTradBelayStations([]);
-                          }
-                        }}
-                      >
-                        <RotateCcw size={12} strokeWidth={2} />
-                      </span>
-                    )}
-                  </button>
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              setTradBelayStations([]);
+                            }
+                          }}
+                        >
+                          <RotateCcw size={12} strokeWidth={2} />
+                        </span>
+                      )}
+                    </button>
+                  )}
                 </div>
                 <div className='flex shrink-0 flex-nowrap items-center gap-1.5 self-start pt-0.5 sm:pt-0'>
                   <Link
@@ -762,7 +768,12 @@ export const SvgEdit = ({
                     title='Save'
                     aria-label='Save'
                     className={cn(pageActionIconBtn, pageActionIconBtnGreen)}
-                    disabled={saving}
+                    disabled={
+                      saving ||
+                      (!isBouldering &&
+                        !path?.trim() &&
+                        (texts.length > 0 || anchors.length > 0 || tradBelayStations.length > 0))
+                    }
                     onClick={() => onSave({ anchors, hasAnchor, path, tradBelayStations, texts })}
                   >
                     {saving ? (
