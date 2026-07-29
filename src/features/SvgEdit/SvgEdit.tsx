@@ -369,6 +369,8 @@ export const SvgEdit = ({
             dispatchRef.current({ action: 'drag-point', index: i });
           }
           isDraggingPointRef.current = true;
+          // Prevent browser from starting scroll/pan when touching a point
+          e.preventDefault();
           return;
         }
         el = el.parentElement;
@@ -1029,7 +1031,8 @@ export const SvgEdit = ({
                 const cubicHitR = 0.008 * w;
 
                 return points.map((p, i) => {
-                  const handles = isCubicPoint(p) && (
+                  const isLast = i === points.length - 1;
+                  const handles = !drawMode && isCubicPoint(p) && (
                     <g>
                       <line
                         x1={points[i - 1].x}
@@ -1107,7 +1110,7 @@ export const SvgEdit = ({
                   );
                   return (
                     <g key={`${p.x}-${p.y}-${i}`}>
-                      {(!drawMode || points.length <= 1) && (
+                      {(!drawMode || points.length <= 1 || (isLast && hasAnchor)) && (
                         <circle
                           cx={p.x}
                           cy={p.y}
