@@ -260,8 +260,6 @@ export const SvgEdit = ({
   });
   const suppressNextSvgClickRef = useRef(false);
   const isDraggingPointRef = useRef(false);
-  const isPanningRef = useRef(false);
-  const panStartRef = useRef({ x: 0, y: 0, scrollLeft: 0, scrollTop: 0 });
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const dispatchRef = useRef(dispatch);
@@ -344,9 +342,10 @@ export const SvgEdit = ({
     [activeTab, drawMode, getMouseCoordsFromClient],
   );
 
-  // Pointer events for drag + pan support — works on both desktop (mouse) and mobile (touch/pen).
+  // Pointer events for drag support — works on both desktop (mouse) and mobile (touch/pen).
   // Chrome desktop mobile emulation does NOT fire touch events, but it does fire pointer events.
-  // On mobile, the browser handles pinch-to-zoom natively (touchAction is not 'none').
+  // On mobile, the browser handles pinch-to-zoom and pan natively (touchAction is 'auto').
+  // We only call preventDefault() when dragging a point to stop the browser from panning.
   useEffect(() => {
     const svg = svgRef.current;
     if (!svg) return;
@@ -374,37 +373,14 @@ export const SvgEdit = ({
         }
         el = el.parentElement;
       }
-      // Not on a point — start panning (scroll the container)
-      const container = containerRef.current;
-      if (container) {
-        isPanningRef.current = true;
-        panStartRef.current = {
-          x: e.clientX,
-          y: e.clientY,
-          scrollLeft: container.scrollLeft,
-          scrollTop: container.scrollTop,
-        };
-        container.style.cursor = 'grabbing';
-      }
     };
 
     const onPointerMove = (e: PointerEvent) => {
-      if (isDraggingPointRef.current) {
-        // Prevent browser from panning/scrolling while dragging a point
-        e.preventDefault();
-        const coords = getMouseCoordsFromClient(e.clientX, e.clientY, true);
-        dispatchRef.current({ action: 'mouse-move', ...coords });
-        return;
-      }
-      if (isPanningRef.current) {
-        const container = containerRef.current;
-        if (container) {
-          const dx = e.clientX - panStartRef.current.x;
-          const dy = e.clientY - panStartRef.current.y;
-          container.scrollLeft = panStartRef.current.scrollLeft - dx;
-          container.scrollTop = panStartRef.current.scrollTop - dy;
-        }
-      }
+      if (!isDraggingPointRef.current) return;
+      // Prevent browser from panning/scrolling while dragging a point
+      e.preventDefault();
+      const coords = getMouseCoordsFromClient(e.clientX, e.clientY, true);
+      dispatchRef.current({ action: 'mouse-move', ...coords });
     };
 
     const onPointerUp = (e: PointerEvent) => {
@@ -413,26 +389,6 @@ export const SvgEdit = ({
         isDraggingPointRef.current = false;
         suppressNextSvgClickRef.current = false;
         dispatchRef.current({ action: 'idle' });
-        return;
-      }
-      if (isPanningRef.current) {
-        isPanningRef.current = false;
-        const container = containerRef.current;
-        if (container) container.style.cursor = '';
-        // If the user barely moved, treat it as a tap
-        const dx = Math.abs(e.clientX - panStartRef.current.x);
-        const dy = Math.abs(e.clientY - panStartRef.current.y);
-        if (dx < 8 && dy < 8) {
-          // Tap — add point or place overlay
-          if (suppressNextSvgClickRef.current) {
-            suppressNextSvgClickRef.current = false;
-            return;
-          }
-          const target = document.elementFromPoint(e.clientX, e.clientY);
-          if (target?.closest?.('[data-overlay-handle]')) return;
-          handleImageInteraction(e.clientX, e.clientY);
-          suppressNextSvgClickRef.current = true;
-        }
         return;
       }
       // Tap — add point or place overlay
@@ -909,9 +865,9 @@ export const SvgEdit = ({
                 draggingOverlay && 'cursor-grabbing',
               )}
               style={{
-                // Prevent browser from intercepting touch gestures — we handle panning
-                // and pinch-to-zoom manually via pointer events.
-                touchAction: 'none',
+                // Allow browser to handle pinch-to-zoom and pan natively on mobile.
+                // We only call preventDefault() when dragging a point to stop panning.
+                touchAction: 'auto',
                 ...(zoomMode ? { width: 'min(1920px, 150vw)', maxWidth: 'none' } : undefined),
               }}
             >
