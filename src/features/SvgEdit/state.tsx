@@ -81,25 +81,26 @@ export const reducer = (state: State, update: Update): State => {
       if (points.length > 1) {
         const latest = points[points.length - 1];
         const previous = points[points.length - 2];
-        const distance = Math.hypot(latest.x - previous.x, latest.y - previous.y);
-        if (distance > 130) {
-          // If the points are sufficiently far away from each other,
-          // automatically connect them with a curve, rather than a line.
-
-          const deltaX = Math.round((previous.x - latest.x) / 3);
-          const deltaY = Math.round((previous.y - latest.y) / 3);
-          // Update points
-          (latest as CubicPoint).c = [
-            {
-              x: previous.x - deltaX,
-              y: previous.y - deltaY,
-            },
-            {
-              x: latest.x + deltaX,
-              y: latest.y + deltaY,
-            },
-          ];
-        }
+        // Always auto-curve so the user can see the line is editable.
+        // Offset control points in opposite perpendicular directions to
+        // create an S-curve — clearly visible as a curve, not a straight line.
+        const dx = previous.x - latest.x;
+        const dy = previous.y - latest.y;
+        const len = Math.hypot(dx, dy) || 1;
+        const offset = len / 6;
+        // Perpendicular unit vector
+        const nx = (-dy / len) * offset;
+        const ny = (dx / len) * offset;
+        (latest as CubicPoint).c = [
+          {
+            x: Math.round(previous.x - dx / 3 + nx),
+            y: Math.round(previous.y - dy / 3 + ny),
+          },
+          {
+            x: Math.round(latest.x + dx / 3 - nx),
+            y: Math.round(latest.y + dy / 3 - ny),
+          },
+        ];
       }
 
       const path = generatePath(points);
@@ -261,17 +262,23 @@ export const reducer = (state: State, update: Update): State => {
 
           case 'curve': {
             const previous = points[i - 1];
-
+            // Use the same S-curve formula as add-point
+            const dx = previous.x - p.x;
+            const dy = previous.y - p.y;
+            const len = Math.hypot(dx, dy) || 1;
+            const offset = len / 6;
+            const nx = (-dy / len) * offset;
+            const ny = (dx / len) * offset;
             return {
               ...p,
               c: [
                 {
-                  x: (p.x + previous.x - 50) / 2,
-                  y: (p.y + previous.y) / 2,
+                  x: Math.round(previous.x - dx / 3 + nx),
+                  y: Math.round(previous.y - dy / 3 + ny),
                 },
                 {
-                  x: (p.x + previous.x + 50) / 2,
-                  y: (p.y + previous.y) / 2,
+                  x: Math.round(p.x + dx / 3 - nx),
+                  y: Math.round(p.y + dy / 3 - ny),
                 },
               ],
             } satisfies ParsedEntry;

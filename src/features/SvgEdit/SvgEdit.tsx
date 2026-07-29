@@ -20,25 +20,7 @@ import { captureSentryException } from '../../utils/sentry';
 import { generatePath, reducer, type State } from './state';
 import { neverGuard } from '../../utils/neverGuard';
 import type { MediaRegion } from '../../utils/svg-scaler';
-import {
-  Video,
-  RotateCcw,
-  Save,
-  Type,
-  Anchor,
-  Triangle,
-  Square,
-  CheckSquare,
-  RefreshCw,
-  Loader2,
-  Settings2,
-  X,
-  Trash2,
-  Spline,
-  ZoomIn,
-  Plus,
-  Move,
-} from 'lucide-react';
+import { Video, RotateCcw, Save, RefreshCw, Loader2, Settings2, X, ZoomIn } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 
@@ -271,6 +253,10 @@ export const SvgEdit = ({
     return isTouchDeviceRef.current && pnts.length === 0;
   });
   const suppressNextSvgClickRef = useRef(false);
+  const isDraggingPointRef = useRef(false);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const dispatchRef = useRef(dispatch);
+  dispatchRef.current = dispatch;
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -324,11 +310,23 @@ export const SvgEdit = ({
       } else {
         const coords = getMouseCoordsFromClient(clientX, clientY, activeTab !== 'text');
         if (activeTab === 'text') {
-          setTexts((prev) => [...prev, { txt: 'Text', ...coords }]);
+          setTexts((prev) => {
+            const next = [...prev, { txt: 'Text', ...coords }];
+            setSelectedOverlay({ kind: 'text', index: next.length - 1 });
+            return next;
+          });
         } else if (activeTab === 'anchors') {
-          setAnchors((prev) => [...prev, coords]);
+          setAnchors((prev) => {
+            const next = [...prev, coords];
+            setSelectedOverlay({ kind: 'anchor', index: next.length - 1 });
+            return next;
+          });
         } else if (activeTab === 'trad') {
-          setTradBelayStations((prev) => [...prev, coords]);
+          setTradBelayStations((prev) => {
+            const next = [...prev, coords];
+            setSelectedOverlay({ kind: 'trad', index: next.length - 1 });
+            return next;
+          });
         } else {
           neverGuard(activeTab as never, null);
         }
@@ -336,6 +334,73 @@ export const SvgEdit = ({
     },
     [activeTab, drawMode, getMouseCoordsFromClient],
   );
+
+  // Pointer events for drag support — works on both desktop (mouse) and mobile
+  // (touch/pen). Chrome desktop mobile emulation does NOT fire touch events,
+  // but it does fire pointer events.
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
+
+    const onPointerDown = (e: PointerEvent) => {
+      // Only handle primary button (left click / touch)
+      if (e.button !== 0) return;
+      if (isDraggingPointRef.current) return;
+      // Let overlay handles handle their own events
+      if ((e.target as Element)?.closest?.('[data-overlay-handle]')) return;
+      // Walk up the DOM tree to find an element with data-point-index
+      let el = e.target as Element | null;
+      while (el && el !== svg) {
+        const pointIndex = el.getAttribute('data-point-index');
+        if (pointIndex !== null) {
+          const i = parseInt(pointIndex, 10);
+          const cubic = el.getAttribute('data-cubic');
+          if (cubic !== null) {
+            dispatchRef.current({ action: 'drag-cubic', index: i, c: parseInt(cubic, 10) as 0 | 1 });
+          } else {
+            dispatchRef.current({ action: 'drag-point', index: i });
+          }
+          isDraggingPointRef.current = true;
+          return;
+        }
+        el = el.parentElement;
+      }
+    };
+
+    const onPointerMove = (e: PointerEvent) => {
+      if (!isDraggingPointRef.current) return;
+      const coords = getMouseCoordsFromClient(e.clientX, e.clientY, true);
+      dispatchRef.current({ action: 'mouse-move', ...coords });
+    };
+
+    const onPointerUp = (e: PointerEvent) => {
+      if (e.button !== 0) return;
+      if (isDraggingPointRef.current) {
+        isDraggingPointRef.current = false;
+        suppressNextSvgClickRef.current = false;
+        dispatchRef.current({ action: 'idle' });
+        return;
+      }
+      // Tap — add point or place overlay
+      if (suppressNextSvgClickRef.current) {
+        suppressNextSvgClickRef.current = false;
+        return;
+      }
+      const target = document.elementFromPoint(e.clientX, e.clientY);
+      if (target?.closest?.('[data-overlay-handle]')) return;
+      handleImageInteraction(e.clientX, e.clientY);
+      suppressNextSvgClickRef.current = true;
+    };
+
+    svg.addEventListener('pointerdown', onPointerDown);
+    svg.addEventListener('pointermove', onPointerMove);
+    svg.addEventListener('pointerup', onPointerUp);
+    return () => {
+      svg.removeEventListener('pointerdown', onPointerDown);
+      svg.removeEventListener('pointermove', onPointerMove);
+      svg.removeEventListener('pointerup', onPointerUp);
+    };
+  }, [getMouseCoordsFromClient, handleImageInteraction]);
 
   useEffect(() => {
     if (!draggingOverlay) return;
@@ -414,31 +479,10 @@ export const SvgEdit = ({
     handleImageInteraction(e.clientX, e.clientY);
   };
 
-  const handleTouchEndOnSvg = useCallback(
-    (e: React.TouchEvent) => {
-      if (suppressNextSvgClickRef.current) {
-        suppressNextSvgClickRef.current = false;
-        return;
-      }
-      // Only handle single-finger taps (not drags or multi-touch)
-      if (e.changedTouches.length !== 1) return;
-      const touch = e.changedTouches[0];
-      // Check if the touch target (or its parent) is an overlay handle
-      const target = document.elementFromPoint(touch.clientX, touch.clientY);
-      if (target?.closest?.('[data-overlay-handle]')) return;
-      handleImageInteraction(touch.clientX, touch.clientY);
-      // Suppress the subsequent click event so we don't add two points on one tap
-      suppressNextSvgClickRef.current = true;
-    },
-    [handleImageInteraction],
-  );
-
   const toolBtn = cn(
     'inline-flex items-center gap-1.5 rounded-md px-2 py-1.5 transition-colors disabled:pointer-events-none disabled:opacity-35',
     designContract.typography.uiCompact,
   );
-  const toolBtnOnActive = 'bg-surface-raised-hover text-slate-100 ring-1 ring-inset ring-brand-border/50';
-  const toolBtnOnPathAnchor = 'bg-surface-raised-hover text-slate-100 ring-1 ring-inset ring-brand-border/45';
   const toolBtnOff = 'text-slate-500 hover:bg-surface-raised-hover hover:text-slate-200';
 
   const fieldClass = cn(
@@ -449,9 +493,11 @@ export const SvgEdit = ({
 
   const editorTabClass = (tab: EditorTab) =>
     cn(
-      'inline-flex min-h-9 shrink-0 items-center gap-1 rounded-md px-3 py-2 font-medium transition-colors',
+      'inline-flex min-h-9 shrink-0 items-center gap-1 rounded-md border px-3 py-2 font-medium transition-colors',
       designContract.typography.uiCompact,
-      activeTab === tab ? toolBtnOnActive : 'text-slate-500 hover:bg-surface-raised/80 hover:text-slate-200',
+      activeTab === tab
+        ? 'border-brand bg-brand/20 text-slate-100 shadow-sm'
+        : 'border-white/12 bg-surface-raised text-slate-500 hover:border-white/18 hover:bg-surface-raised-hover hover:text-slate-200',
     );
 
   /** Path handles sit below anchors/text/trad in DOM — disable overlay picking on Segment tab. */
@@ -461,53 +507,98 @@ export const SvgEdit = ({
     <div className='w-full min-w-0' onMouseUp={() => dispatch({ action: 'idle' })}>
       <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm'>
         <div className='divide-y divide-white/6'>
-          <div className='p-3 sm:p-5'>
-            <div className='mb-4 flex min-w-0 flex-col gap-3'>
+          <div className='p-2 sm:p-3'>
+            <div className='flex min-w-0 flex-col gap-2'>
               <span className='sr-only'>Topo editor</span>
               <div className='flex min-w-0 flex-row items-start justify-between gap-3'>
                 <div
-                  className='flex min-w-0 flex-1 flex-wrap gap-1 gap-y-1'
+                  className='flex min-w-0 flex-1 flex-wrap items-center gap-1'
                   role='tablist'
                   aria-label='Topo editor sections'
                 >
-                  <button
-                    type='button'
+                  {/* Segment pill — visually grouped as one compound control */}
+                  <div
                     role='tab'
                     aria-selected={activeTab === 'segment'}
-                    id='svg-edit-tab-segment'
-                    className={editorTabClass('segment')}
-                    onClick={() => setActiveTab('segment')}
+                    className={cn(
+                      'inline-flex min-h-9 shrink-0 items-center overflow-hidden rounded-md border transition-colors',
+                      activeTab === 'segment'
+                        ? 'border-brand bg-brand/20 shadow-sm'
+                        : 'bg-surface-raised border-white/12',
+                    )}
                   >
-                    <Spline size={14} strokeWidth={2} className='shrink-0 opacity-90' aria-hidden />
-                    Segment
+                    <button
+                      type='button'
+                      id='svg-edit-tab-segment'
+                      className={cn(
+                        'inline-flex items-center gap-1 px-3 py-1.5 font-medium transition-colors',
+                        designContract.typography.uiCompact,
+                        activeTab === 'segment' ? 'text-slate-100' : 'text-slate-500 hover:text-slate-200',
+                      )}
+                      onClick={() => setActiveTab('segment')}
+                    >
+                      Path
+                    </button>
+                    <div className='h-5 w-px bg-white/12' />
+                    <button
+                      type='button'
+                      title='Draw mode — tap the photo to add points'
+                      aria-label='Draw mode — tap the photo to add points'
+                      aria-pressed={activeTab === 'segment' && drawMode}
+                      className={cn(
+                        'inline-flex items-center px-2.5 py-1.5 transition-colors',
+                        designContract.typography.uiCompact,
+                        activeTab === 'segment' && drawMode
+                          ? 'bg-surface-raised font-bold text-slate-100'
+                          : 'text-slate-500 hover:text-slate-200',
+                      )}
+                      onClick={() => {
+                        setActiveTab('segment');
+                        setDrawMode(true);
+                      }}
+                    >
+                      Draw{isTouchDeviceRef.current ? '' : ' (hold ⇧)'}
+                    </button>
+                    <div className='h-5 w-px bg-white/12' />
+                    <button
+                      type='button'
+                      title='Drag mode — select and move existing points'
+                      aria-label='Drag mode — select and move existing points'
+                      aria-pressed={activeTab === 'segment' && !drawMode}
+                      className={cn(
+                        'inline-flex items-center px-2.5 py-1.5 transition-colors',
+                        designContract.typography.uiCompact,
+                        activeTab === 'segment' && !drawMode
+                          ? 'bg-surface-raised font-bold text-slate-100'
+                          : 'text-slate-500 hover:text-slate-200',
+                      )}
+                      onClick={() => {
+                        setActiveTab('segment');
+                        setDrawMode(false);
+                      }}
+                    >
+                      Drag
+                    </button>
                     {points.length > 0 && (
-                      <span
-                        role='button'
-                        tabIndex={0}
-                        title='Reset segment path'
-                        aria-label='Reset segment path'
-                        className='ml-0.5 inline-flex text-red-400 hover:text-red-300'
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          dispatch({ action: 'reset' });
-                          // On mobile, switch back to Draw mode after reset so users can start drawing again
-                          if (isTouchDeviceRef.current) setDrawMode(true);
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
+                      <>
+                        <div className='h-5 w-px bg-white/12' />
+                        <button
+                          type='button'
+                          title='Reset segment path'
+                          aria-label='Reset segment path'
+                          className='inline-flex items-center px-2 py-1.5 text-red-400 hover:text-red-300'
+                          onClick={(e) => {
                             e.stopPropagation();
                             e.preventDefault();
                             dispatch({ action: 'reset' });
-                            // On mobile, switch back to Draw mode after reset so users can start drawing again
                             if (isTouchDeviceRef.current) setDrawMode(true);
-                          }
-                        }}
-                      >
-                        <RotateCcw size={12} strokeWidth={2} />
-                      </span>
+                          }}
+                        >
+                          <RotateCcw size={12} strokeWidth={2} />
+                        </button>
+                      </>
                     )}
-                  </button>
+                  </div>
                   <button
                     type='button'
                     role='tab'
@@ -516,7 +607,6 @@ export const SvgEdit = ({
                     className={editorTabClass('text')}
                     onClick={() => setActiveTab('text')}
                   >
-                    <Type size={14} strokeWidth={2} className='shrink-0 opacity-90' aria-hidden />
                     Text
                     {texts.length > 0 && (
                       <span
@@ -550,8 +640,7 @@ export const SvgEdit = ({
                     className={editorTabClass('anchors')}
                     onClick={() => setActiveTab('anchors')}
                   >
-                    <Anchor size={14} strokeWidth={2} className='shrink-0 opacity-90' aria-hidden />
-                    Anchors
+                    Bolts
                     {anchors.length > 0 && (
                       <span
                         role='button'
@@ -584,7 +673,6 @@ export const SvgEdit = ({
                     className={editorTabClass('trad')}
                     onClick={() => setActiveTab('trad')}
                   >
-                    <Triangle size={14} strokeWidth={2} className='shrink-0 opacity-90' aria-hidden />
                     Trad
                     {tradBelayStations.length > 0 && (
                       <span
@@ -664,15 +752,13 @@ export const SvgEdit = ({
                 className='min-w-0 space-y-3'
               >
                 {activeTab === 'segment' && (
-                  <>
+                  <div className='flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2'>
                     {showPitchScopeDropdown && (
-                      <div className='flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2 border-b border-white/6 pb-3'>
-                        <span className={cn(designContract.typography.label, 'shrink-0 text-slate-500')}>
-                          Topo scope
-                        </span>
+                      <>
+                        <span className={cn(designContract.typography.label, 'shrink-0 text-slate-500')}>Pitch</span>
                         <select
                           className={cn(fieldClass, 'max-w-[min(100%,24rem)] min-w-0')}
-                          aria-label='Entire route or which pitch strip to edit'
+                          aria-label='Which pitch strip to edit'
                           value={pitch}
                           onChange={(e) => {
                             const next = +e.target.value;
@@ -684,276 +770,66 @@ export const SvgEdit = ({
                           <option value={0}>Entire route</option>
                           {Array.from({ length: pitchStripCount }, (_, i) => i + 1).map((p) => (
                             <option key={p} value={p}>
-                              Pitch {p}
+                              {p}
                             </option>
                           ))}
                         </select>
-                      </div>
+                      </>
                     )}
-                    <div className='flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2'>
-                      <div className='flex items-center overflow-hidden rounded-md border border-white/12'>
-                        <button
-                          type='button'
-                          title='Draw mode — tap the photo to add points'
-                          aria-label='Draw mode — tap the photo to add points'
-                          aria-pressed={drawMode}
-                          className={cn(
-                            'inline-flex items-center gap-1 px-2.5 py-1.5 transition-colors',
-                            designContract.typography.uiCompact,
-                            drawMode
-                              ? 'bg-surface-raised-hover ring-brand-border/50 text-slate-100 ring-1 ring-inset'
-                              : 'hover:bg-surface-raised-hover text-slate-500 hover:text-slate-200',
-                          )}
-                          onClick={() => setDrawMode(true)}
-                        >
-                          <Plus size={14} strokeWidth={2} />
-                          <span className='whitespace-nowrap'>Draw (hold ⇧)</span>
-                        </button>
-                        <div className='h-5 w-px bg-white/12' />
-                        <button
-                          type='button'
-                          title='Drag mode — select and move existing points'
-                          aria-label='Drag mode — select and move existing points'
-                          aria-pressed={!drawMode}
-                          className={cn(
-                            'inline-flex items-center gap-1 px-2.5 py-1.5 transition-colors',
-                            designContract.typography.uiCompact,
-                            !drawMode
-                              ? 'bg-surface-raised-hover ring-brand-border/50 text-slate-100 ring-1 ring-inset'
-                              : 'hover:bg-surface-raised-hover text-slate-500 hover:text-slate-200',
-                          )}
-                          onClick={() => setDrawMode(false)}
-                        >
-                          <Move size={14} strokeWidth={2} />
-                          <span className='whitespace-nowrap'>Drag</span>
-                        </button>
-                      </div>
-                      {activePoint !== 0 && (
-                        <select
-                          className={cn(fieldClass, 'min-w-0')}
-                          value={isCubicPoint(points[activePoint]) ? 'C' : 'L'}
+                    {showMultiPitchCropUi && (
+                      <>
+                        <div className='flex items-center gap-1.5 text-slate-500'>
+                          <Settings2 size={14} strokeWidth={2} />
+                          <span className={cn(designContract.typography.label, 'text-slate-500')}>Crop</span>
+                        </div>
+                        <input
+                          type='number'
+                          className={cn(fieldClass, 'w-14 shrink-0 sm:w-16')}
+                          placeholder='X'
+                          value={customMediaRegion?.x ?? 0}
                           onChange={(e) =>
-                            dispatch({ action: 'set-type', type: e.target.value === 'C' ? 'curve' : 'line' })
+                            setCustomMediaRegion((prev) => ({
+                              ...(prev ?? { y: 0, width: w, height: h, x: 0 }),
+                              x: +e.target.value,
+                            }))
                           }
-                        >
-                          <option value='L'>Line</option>
-                          <option value='C'>Curve</option>
-                        </select>
-                      )}
-                      <button
-                        type='button'
-                        title='Remove the selected path point'
-                        aria-label='Remove selected path point'
-                        className={cn(
-                          toolBtn,
-                          'bg-surface-nav border-white/10 text-slate-300 hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-200',
-                          'w-auto shrink-0',
-                        )}
-                        disabled={points.length === 0}
-                        onClick={() => dispatch({ action: 'remove-point' })}
-                      >
-                        <Trash2 size={14} strokeWidth={2} />
-                        <span className='whitespace-nowrap'>Remove point</span>
-                      </button>
-                      <button
-                        type='button'
-                        className={cn(
-                          toolBtn,
-                          points.length === 0 ? toolBtnOff : hasAnchor ? toolBtnOnPathAnchor : toolBtnOff,
-                        )}
-                        onClick={() => setHasAnchor(!hasAnchor)}
-                        disabled={points.length === 0}
-                      >
-                        {hasAnchor ? (
-                          <CheckSquare size={14} className='text-brand' strokeWidth={2} />
-                        ) : (
-                          <Square size={14} strokeWidth={2} />
-                        )}{' '}
-                        Anchor
-                      </button>
-                      {showMultiPitchCropUi && (
-                        <div className='flex w-full min-w-0 flex-wrap items-center gap-2 border-t border-white/6 pt-3 sm:ml-auto sm:w-auto sm:border-t-0 sm:pt-0'>
-                          <div className='flex items-center gap-1.5 text-slate-500'>
-                            <Settings2 size={14} strokeWidth={2} />
-                            <span className={cn(designContract.typography.label, 'text-slate-500')}>Crop</span>
-                          </div>
-                          <input
-                            type='number'
-                            className={cn(fieldClass, 'w-14 shrink-0 sm:w-16')}
-                            placeholder='X'
-                            value={customMediaRegion?.x ?? 0}
-                            onChange={(e) =>
-                              setCustomMediaRegion((prev) => ({
-                                ...(prev ?? { y: 0, width: w, height: h, x: 0 }),
-                                x: +e.target.value,
-                              }))
-                            }
-                          />
-                          <input
-                            type='number'
-                            className={cn(fieldClass, 'w-14 shrink-0 sm:w-16')}
-                            placeholder='Y'
-                            value={customMediaRegion?.y ?? 0}
-                            onChange={(e) =>
-                              setCustomMediaRegion((prev) => ({
-                                ...(prev ?? { x: 0, width: w, height: h, y: 0 }),
-                                y: +e.target.value,
-                              }))
-                            }
-                          />
-                          <button
-                            type='button'
-                            title={
-                              cropApplyDirty
-                                ? 'Apply to update the crop preview and editor'
-                                : 'Crop matches the current preview'
-                            }
-                            aria-label={cropApplyDirty ? 'Apply crop changes (you have unsaved edits)' : 'Apply crop'}
-                            className={cn(
-                              toolBtn,
-                              cropApplyDirty
-                                ? cn(
-                                    pageActionIconBtnBrand,
-                                    'rounded-md px-2.5 py-1.5 font-medium',
-                                    '[&_svg]:text-[var(--color-brand-foreground)]',
-                                  )
-                                : cn(toolBtnOff, 'bg-surface-raised border-white/10'),
-                            )}
-                            onClick={() => onUpdateMediaRegion(customMediaRegion ?? null)}
-                          >
-                            <RefreshCw size={12} strokeWidth={2} className='shrink-0' aria-hidden /> Apply
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </>
-                )}
-
-                {activeTab === 'text' && (
-                  <div className='space-y-2'>
-                    <p className={cn(designContract.typography.meta, 'text-slate-500')}>
-                      {texts.length === 0
-                        ? 'Tap the photo to place a label. Add as many as you need — edit the wording here and drag labels on the photo.'
-                        : 'Edit labels below; drag the red text on the photo to position. Tap the photo to add another.'}
-                    </p>
-                    <div className='flex flex-wrap gap-2'>
-                      {texts.map((t, i) => (
-                        <div
-                          key={`text-card-${i}`}
+                        />
+                        <input
+                          type='number'
+                          className={cn(fieldClass, 'w-14 shrink-0 sm:w-16')}
+                          placeholder='Y'
+                          value={customMediaRegion?.y ?? 0}
+                          onChange={(e) =>
+                            setCustomMediaRegion((prev) => ({
+                              ...(prev ?? { x: 0, width: w, height: h, y: 0 }),
+                              y: +e.target.value,
+                            }))
+                          }
+                        />
+                        <button
+                          type='button'
+                          title={
+                            cropApplyDirty
+                              ? 'Apply to update the crop preview and editor'
+                              : 'Crop matches the current preview'
+                          }
+                          aria-label={cropApplyDirty ? 'Apply crop changes (you have unsaved edits)' : 'Apply crop'}
                           className={cn(
-                            'border-surface-border flex max-w-full min-w-[min(100%,14rem)] flex-1 items-center gap-1.5 rounded-lg border px-2 py-1.5 sm:max-w-xs sm:min-w-[12rem]',
-                            selectedOverlay?.kind === 'text' && selectedOverlay.index === i
-                              ? 'bg-brand/10 ring-brand-border/50 ring-1'
-                              : 'bg-surface-nav',
+                            toolBtn,
+                            cropApplyDirty
+                              ? cn(
+                                  pageActionIconBtnBrand,
+                                  'rounded-md px-2.5 py-1.5 font-medium',
+                                  '[&_svg]:text-[var(--color-brand-foreground)]',
+                                )
+                              : cn(toolBtnOff, 'bg-surface-raised border-white/10'),
                           )}
+                          onClick={() => onUpdateMediaRegion(customMediaRegion ?? null)}
                         >
-                          <input
-                            type='text'
-                            className={cn(fieldClass, 'min-w-0 flex-1')}
-                            value={t.txt}
-                            onChange={(e) =>
-                              setTexts((prev) =>
-                                prev.map((row, j) => (j === i ? { ...row, txt: e.target.value } : row)),
-                              )
-                            }
-                            onClick={() => setSelectedOverlay({ kind: 'text', index: i })}
-                            aria-label={`Text ${i + 1}`}
-                          />
-                          <button
-                            type='button'
-                            title='Remove label'
-                            className='text-slate-500 hover:text-red-300'
-                            onClick={() => removeTextAt(i)}
-                          >
-                            <X size={16} strokeWidth={2} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === 'anchors' && (
-                  <div className='space-y-2'>
-                    <p className={cn(designContract.typography.meta, 'text-slate-500')}>
-                      {anchors.length === 0
-                        ? 'Tap the photo to place bolt anchors. Add several by tapping again. Drag red circles to move.'
-                        : 'Drag a circle on the photo to move it. Tap the photo to add another anchor.'}
-                    </p>
-                    <div className='flex flex-wrap gap-2'>
-                      {anchors.map((_, i) => (
-                        <div
-                          key={`anchor-card-${i}`}
-                          className={cn(
-                            'border-surface-border flex items-center gap-2 rounded-lg border px-2 py-1.5',
-                            selectedOverlay?.kind === 'anchor' && selectedOverlay.index === i
-                              ? 'bg-amber-500/10 ring-1 ring-amber-400/45'
-                              : 'bg-surface-nav',
-                          )}
-                        >
-                          <button
-                            type='button'
-                            className={cn(
-                              designContract.typography.meta,
-                              'min-w-0 flex-1 truncate text-left text-slate-200',
-                            )}
-                            onClick={() => setSelectedOverlay({ kind: 'anchor', index: i })}
-                          >
-                            Anchor {i + 1}
-                          </button>
-                          <button
-                            type='button'
-                            title='Remove anchor'
-                            className='text-slate-500 hover:text-red-300'
-                            onClick={() => removeAnchorAt(i)}
-                          >
-                            <X size={16} strokeWidth={2} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === 'trad' && (
-                  <div className='space-y-2'>
-                    <p className={cn(designContract.typography.meta, 'text-slate-500')}>
-                      {tradBelayStations.length === 0
-                        ? 'Tap the photo for each trad belay station. Drag triangles on the photo to move them.'
-                        : 'One card per belay. Drag a triangle on the photo or select a card, then drag. Tap the photo to add more.'}
-                    </p>
-                    <div className='flex flex-wrap gap-2'>
-                      {tradBelayStations.map((_, i) => (
-                        <div
-                          key={`trad-card-${i}`}
-                          className={cn(
-                            'border-surface-border flex items-center gap-2 rounded-lg border px-2 py-1.5',
-                            selectedOverlay?.kind === 'trad' && selectedOverlay.index === i
-                              ? 'bg-orange-500/10 ring-1 ring-orange-400/45'
-                              : 'bg-surface-nav',
-                          )}
-                        >
-                          <button
-                            type='button'
-                            className={cn(
-                              designContract.typography.meta,
-                              'min-w-0 flex-1 truncate text-left text-slate-200',
-                            )}
-                            onClick={() => setSelectedOverlay({ kind: 'trad', index: i })}
-                          >
-                            Trad {i + 1}
-                          </button>
-                          <button
-                            type='button'
-                            title='Remove belay'
-                            className='text-slate-500 hover:text-red-300'
-                            onClick={() => removeTradAt(i)}
-                          >
-                            <X size={16} strokeWidth={2} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
+                          <RefreshCw size={12} strokeWidth={2} className='shrink-0' aria-hidden /> Apply
+                        </button>
+                      </>
+                    )}
                   </div>
                 )}
               </div>
@@ -965,19 +841,25 @@ export const SvgEdit = ({
               'border-surface-border relative w-full min-w-0 cursor-crosshair bg-black select-none',
               zoomMode ? 'overflow-auto' : 'overflow-hidden',
             )}
-            style={zoomMode ? { maxHeight: '100dvh' } : undefined}
+            style={{
+              touchAction: 'none',
+              ...(zoomMode ? { maxHeight: '100dvh' } : undefined),
+            }}
           >
             <svg
+              ref={svgRef}
               viewBox={`0 0 ${w} ${h}`}
               onClick={handleOnClick}
-              onTouchEnd={handleTouchEndOnSvg}
               onMouseMove={(e) => dispatch({ action: 'mouse-move', ...getMouseCoords(e, true) })}
               className={cn(
                 'block select-none',
                 zoomMode ? 'h-auto' : 'h-auto w-full',
                 draggingOverlay && 'cursor-grabbing',
               )}
-              style={zoomMode ? { width: 'min(1920px, 150vw)', maxWidth: 'none' } : undefined}
+              style={{
+                touchAction: 'none',
+                ...(zoomMode ? { width: 'min(1920px, 150vw)', maxWidth: 'none' } : undefined),
+              }}
             >
               <image
                 ref={imageRef}
@@ -988,6 +870,142 @@ export const SvgEdit = ({
               {parseReadOnlySvgs(readOnlySvgs, w, h, 1000)}
               <path d={path} fill='none' stroke={black} strokeWidth={0.003 * w} pointerEvents='none' />
               <path d={path} fill='none' stroke='#FF0000' strokeWidth={0.002 * w} pointerEvents='none' />
+
+              {/* Floating point toolbar — rendered AFTER points so toolbar buttons are clickable */}
+              {activeTab === 'segment' &&
+                points.length > 0 &&
+                (() => {
+                  const ap = points[activePoint];
+                  const isFirst = activePoint === 0;
+                  const isLast = activePoint === points.length - 1;
+                  const isCurve = !isFirst && isCubicPoint(ap);
+                  const btnH = 0.028 * w;
+                  const btnW = 0.055 * w;
+                  const gap = 0.006 * w;
+                  const btnCount = isFirst ? 1 : isLast && points.length > 1 ? 3 : 2;
+                  const totalW = btnW * btnCount + gap * (btnCount - 1);
+                  const toolbarX = ap.x - totalW / 2;
+                  const toolbarY = ap.y + 0.035 * w;
+                  const labelY = toolbarY + btnH * 0.65;
+                  const labelFs = 0.013 * w;
+                  return (
+                    <g>
+                      {/* Background pill */}
+                      <rect
+                        x={toolbarX}
+                        y={toolbarY}
+                        width={totalW}
+                        height={btnH}
+                        rx={btnH / 2}
+                        fill='rgba(0,0,0,0.7)'
+                        stroke='rgba(255,255,255,0.15)'
+                        strokeWidth={0.001 * w}
+                        pointerEvents='none'
+                      />
+                      {!isFirst && (
+                        <>
+                          <g
+                            style={{ cursor: 'pointer' }}
+                            data-overlay-handle
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              dispatch({ action: 'set-type', type: isCurve ? 'line' : 'curve' });
+                            }}
+                          >
+                            <rect x={toolbarX} y={toolbarY} width={btnW} height={btnH} fill='transparent' />
+                            <text
+                              x={toolbarX + btnW / 2}
+                              y={labelY}
+                              textAnchor='middle'
+                              fontSize={labelFs}
+                              fill={isCurve ? '#60A5FA' : '#E2E8F0'}
+                              fontWeight='bold'
+                              pointerEvents='none'
+                            >
+                              {isCurve ? 'Curve' : 'Line'}
+                            </text>
+                          </g>
+                          <line
+                            x1={toolbarX + btnW}
+                            y1={toolbarY + btnH * 0.2}
+                            x2={toolbarX + btnW}
+                            y2={toolbarY + btnH * 0.8}
+                            stroke='rgba(255,255,255,0.15)'
+                            strokeWidth={0.0008 * w}
+                            pointerEvents='none'
+                          />
+                        </>
+                      )}
+                      {isLast && points.length > 1 && (
+                        <>
+                          <g
+                            style={{ cursor: 'pointer' }}
+                            data-overlay-handle
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setHasAnchor(!hasAnchor);
+                            }}
+                          >
+                            <rect
+                              x={toolbarX + btnW + gap}
+                              y={toolbarY}
+                              width={btnW}
+                              height={btnH}
+                              fill='transparent'
+                            />
+                            <text
+                              x={toolbarX + btnW + gap + btnW / 2}
+                              y={labelY}
+                              textAnchor='middle'
+                              fontSize={labelFs}
+                              fill={hasAnchor ? '#FBBF24' : '#94A3B8'}
+                              fontWeight='bold'
+                              pointerEvents='none'
+                            >
+                              Anchor
+                            </text>
+                          </g>
+                          <line
+                            x1={toolbarX + btnW * 2 + gap}
+                            y1={toolbarY + btnH * 0.2}
+                            x2={toolbarX + btnW * 2 + gap}
+                            y2={toolbarY + btnH * 0.8}
+                            stroke='rgba(255,255,255,0.15)'
+                            strokeWidth={0.0008 * w}
+                            pointerEvents='none'
+                          />
+                        </>
+                      )}
+                      <g
+                        style={{ cursor: 'pointer' }}
+                        data-overlay-handle
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          dispatch({ action: 'remove-point' });
+                        }}
+                      >
+                        <rect
+                          x={toolbarX + (isFirst ? 0 : isLast ? btnW * 2 + gap * 2 : btnW + gap)}
+                          y={toolbarY}
+                          width={btnW}
+                          height={btnH}
+                          fill='transparent'
+                        />
+                        <text
+                          x={toolbarX + (isFirst ? 0 : isLast ? btnW * 2 + gap * 2 : btnW + gap) + btnW / 2}
+                          y={labelY}
+                          textAnchor='middle'
+                          fontSize={labelFs}
+                          fill='#F87171'
+                          fontWeight='bold'
+                          pointerEvents='none'
+                        >
+                          Delete
+                        </text>
+                      </g>
+                    </g>
+                  );
+                })()}
 
               {(() => {
                 /** Large enough to grab easily; hollow + stroke keeps the photo visible inside. */
@@ -1033,12 +1051,9 @@ export const SvgEdit = ({
                         r={cubicHitR}
                         fill='transparent'
                         className='cursor-grab'
+                        data-point-index={i}
+                        data-cubic='0'
                         onMouseDown={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          dispatch({ action: 'drag-cubic', index: i, c: 0 });
-                        }}
-                        onTouchStart={(e) => {
                           e.stopPropagation();
                           e.preventDefault();
                           dispatch({ action: 'drag-cubic', index: i, c: 0 });
@@ -1060,12 +1075,9 @@ export const SvgEdit = ({
                         r={cubicHitR}
                         fill='transparent'
                         className='cursor-grab'
+                        data-point-index={i}
+                        data-cubic='1'
                         onMouseDown={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          dispatch({ action: 'drag-cubic', index: i, c: 1 });
-                        }}
-                        onTouchStart={(e) => {
                           e.stopPropagation();
                           e.preventDefault();
                           dispatch({ action: 'drag-cubic', index: i, c: 1 });
@@ -1085,30 +1097,29 @@ export const SvgEdit = ({
                   );
                   return (
                     <g key={`${p.x}-${p.y}-${i}`}>
+                      {(!drawMode || points.length <= 1) && (
+                        <circle
+                          cx={p.x}
+                          cy={p.y}
+                          r={i === points.length - 1 && hasAnchor ? 0.008 * w : 0.005 * w}
+                          fill={activePoint === i ? '#00FF00' : '#FF0000'}
+                          stroke={black}
+                          pointerEvents='none'
+                          data-point-index={i}
+                        />
+                      )}
                       <circle
                         cx={p.x}
                         cy={p.y}
                         r={vertexHitR}
                         fill='transparent'
                         className='cursor-grab'
+                        data-point-index={i}
                         onMouseDown={(e) => {
                           e.stopPropagation();
                           e.preventDefault();
                           dispatch({ action: 'drag-point', index: i });
                         }}
-                        onTouchStart={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          dispatch({ action: 'drag-point', index: i });
-                        }}
-                      />
-                      <circle
-                        cx={p.x}
-                        cy={p.y}
-                        r={0.005 * w}
-                        fill={activePoint === i ? '#00FF00' : '#FF0000'}
-                        stroke={black}
-                        pointerEvents='none'
                       />
                       {handles}
                     </g>
@@ -1120,6 +1131,10 @@ export const SvgEdit = ({
                 const sel = selectedOverlay?.kind === 'anchor' && selectedOverlay.index === i;
                 const rVis = 0.006 * w;
                 const rHit = 0.014 * w;
+                const btnH = 0.022 * w;
+                const btnW = 0.045 * w;
+                const delX = a.x - btnW / 2;
+                const delY = a.y + rVis + 0.006 * w;
                 return (
                   <g key={`anchor-${i}`} data-overlay-handle>
                     <circle
@@ -1141,6 +1156,38 @@ export const SvgEdit = ({
                       strokeWidth={sel ? 0.002 * w : 0.0012 * w}
                       pointerEvents='none'
                     />
+                    {/* Inline delete button below the circle */}
+                    {sel && (
+                      <g
+                        style={{ cursor: 'pointer' }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeAnchorAt(i);
+                        }}
+                      >
+                        <rect
+                          x={delX}
+                          y={delY}
+                          width={btnW}
+                          height={btnH}
+                          rx={btnH / 2}
+                          fill='rgba(0,0,0,0.7)'
+                          stroke='rgba(255,255,255,0.15)'
+                          strokeWidth={0.0008 * w}
+                        />
+                        <text
+                          x={a.x}
+                          y={delY + btnH * 0.65}
+                          textAnchor='middle'
+                          fontSize={0.012 * w}
+                          fill='#F87171'
+                          fontWeight='bold'
+                          pointerEvents='none'
+                        >
+                          Delete
+                        </text>
+                      </g>
+                    )}
                   </g>
                 );
               })}
@@ -1150,6 +1197,10 @@ export const SvgEdit = ({
                 const pad = 0.012 * w;
                 const bx = a.x - pad;
                 const by = a.y - pad - tri;
+                const btnH = 0.022 * w;
+                const btnW = 0.045 * w;
+                const delX = a.x - btnW / 2;
+                const delY = a.y + tri + 0.006 * w;
                 return (
                   <g key={`trad-${i}`} data-overlay-handle>
                     <rect
@@ -1171,6 +1222,38 @@ export const SvgEdit = ({
                       pointerEvents='none'
                       points={`${a.x},${a.y - tri} ${a.x - tri},${a.y + tri} ${a.x + tri},${a.y + tri}`}
                     />
+                    {/* Inline delete button below the triangle */}
+                    {sel && (
+                      <g
+                        style={{ cursor: 'pointer' }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeTradAt(i);
+                        }}
+                      >
+                        <rect
+                          x={delX}
+                          y={delY}
+                          width={btnW}
+                          height={btnH}
+                          rx={btnH / 2}
+                          fill='rgba(0,0,0,0.7)'
+                          stroke='rgba(255,255,255,0.15)'
+                          strokeWidth={0.0008 * w}
+                        />
+                        <text
+                          x={a.x}
+                          y={delY + btnH * 0.65}
+                          textAnchor='middle'
+                          fontSize={0.012 * w}
+                          fill='#F87171'
+                          fontWeight='bold'
+                          pointerEvents='none'
+                        >
+                          Delete
+                        </text>
+                      </g>
+                    )}
                   </g>
                 );
               })}
@@ -1180,6 +1263,10 @@ export const SvgEdit = ({
                 const pad = fs * 0.45;
                 const tw = Math.max(fs * (t.txt.length || 1) * 0.55, fs * 2);
                 const th = fs * 1.35;
+                const btnH = 0.022 * w;
+                const btnW = 0.045 * w;
+                const delX = t.x - btnW / 2;
+                const delY = t.y + 0.008 * w;
                 return (
                   <g key={`text-${i}`} data-overlay-handle>
                     <rect
@@ -1206,6 +1293,76 @@ export const SvgEdit = ({
                     >
                       {t.txt}
                     </text>
+                    {/* Inline edit + delete when selected */}
+                    {sel && (
+                      <g>
+                        {/* Background pill for controls */}
+                        <rect
+                          x={delX - btnW * 1.5 - 0.004 * w}
+                          y={delY}
+                          width={btnW * 2.5 + 0.008 * w}
+                          height={btnH}
+                          rx={btnH / 2}
+                          fill='rgba(0,0,0,0.7)'
+                          stroke='rgba(255,255,255,0.15)'
+                          strokeWidth={0.0008 * w}
+                          pointerEvents='none'
+                        />
+                        {/* Edit text button */}
+                        <g
+                          style={{ cursor: 'pointer' }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const newText = prompt('Edit label text:', t.txt);
+                            if (newText !== null && newText.trim()) {
+                              setTexts((prev) =>
+                                prev.map((row, j) => (j === i ? { ...row, txt: newText.trim() } : row)),
+                              );
+                            }
+                          }}
+                        >
+                          <rect
+                            x={delX - btnW * 1.5 - 0.004 * w}
+                            y={delY}
+                            width={btnW * 1.5}
+                            height={btnH}
+                            fill='transparent'
+                          />
+                          <text
+                            x={delX - btnW * 1.5 - 0.004 * w + btnW * 0.75}
+                            y={delY + btnH * 0.65}
+                            textAnchor='middle'
+                            fontSize={0.012 * w}
+                            fill='#E2E8F0'
+                            fontWeight='bold'
+                            pointerEvents='none'
+                          >
+                            Edit
+                          </text>
+                        </g>
+                        {/* Delete button */}
+                        <g
+                          style={{ cursor: 'pointer' }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeTextAt(i);
+                          }}
+                        >
+                          <rect x={delX} y={delY} width={btnW} height={btnH} fill='transparent' />
+                          <text
+                            x={delX + btnW / 2}
+                            y={delY + btnH * 0.65}
+                            textAnchor='middle'
+                            fontSize={0.012 * w}
+                            fill='#F87171'
+                            fontWeight='bold'
+                            pointerEvents='none'
+                          >
+                            Delete
+                          </text>
+                        </g>
+                      </g>
+                    )}
                   </g>
                 );
               })}
