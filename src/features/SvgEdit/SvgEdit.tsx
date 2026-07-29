@@ -142,6 +142,7 @@ export const SvgEditLoader = () => {
         saving={saving}
         onCancel={() => navigate(`/problem/${problemId}`)}
         onUpdateMediaRegion={setCustomMediaRegion}
+        isBouldering={meta.isBouldering}
       />
     </div>
   );
@@ -156,6 +157,7 @@ type Props = EditableSvg & {
   saving: boolean;
   onCancel: () => void;
   onUpdateMediaRegion: (customMediaRegion: MediaRegion | null) => void;
+  isBouldering: boolean;
 };
 
 const black = '#000000';
@@ -186,6 +188,7 @@ export const SvgEdit = ({
   anchors: initialAnchors,
   texts: initialTexts,
   hasAnchor: initialHasAnchor,
+  isBouldering,
 }: Props) => {
   const navigate = useNavigate();
   const [customMediaRegion, setCustomMediaRegion] = useState<MediaRegion | undefined>(mediaRegion);
@@ -237,7 +240,10 @@ export const SvgEdit = ({
   const [anchors, setAnchors] = useState<Coords[]>(initialAnchors ?? []);
   const [tradBelayStations, setTradBelayStations] = useState<Coords[]>(initialTradBelayStations ?? []);
   const [texts, setTexts] = useState<{ txt: string; x: number; y: number }[]>(initialTexts ?? []);
-  const [hasAnchor, setHasAnchor] = useState(!!initialHasAnchor);
+  const [hasAnchor, setHasAnchor] = useState(() => {
+    if (isBouldering) return true;
+    return !!initialHasAnchor;
+  });
   const [activeTab, setActiveTab] = useState<EditorTab>('segment');
   const [selectedOverlay, setSelectedOverlay] = useState<OverlaySelection | null>(null);
   const [draggingOverlay, setDraggingOverlay] = useState<OverlaySelection | null>(null);
@@ -257,6 +263,13 @@ export const SvgEdit = ({
   const svgRef = useRef<SVGSVGElement>(null);
   const dispatchRef = useRef(dispatch);
   dispatchRef.current = dispatch;
+
+  // Pinch-to-zoom state
+  const [pinchZoom, setPinchZoom] = useState({ scale: 1, x: 0, y: 0 });
+  const pinchZoomRef = useRef(pinchZoom);
+  pinchZoomRef.current = pinchZoom;
+  const activePointersRef = useRef<Map<number, { x: number; y: number }>>(new Map());
+  const pinchDistRef = useRef(0);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -335,14 +348,27 @@ export const SvgEdit = ({
     [activeTab, drawMode, getMouseCoordsFromClient],
   );
 
-  // Pointer events for drag support — works on both desktop (mouse) and mobile
-  // (touch/pen). Chrome desktop mobile emulation does NOT fire touch events,
-  // but it does fire pointer events.
+  // Pointer events for drag support + pinch-to-zoom on mobile.
+  // Works on both desktop (mouse) and mobile (touch/pen).
+  // Chrome desktop mobile emulation does NOT fire touch events, but it does fire pointer events.
   useEffect(() => {
     const svg = svgRef.current;
     if (!svg) return;
 
     const onPointerDown = (e: PointerEvent) => {
+      // Track this pointer for pinch-to-zoom
+      activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+      // If 2+ pointers are active, we're in pinch-zoom mode — don't start point drag
+      if (activePointersRef.current.size >= 2) {
+        // Calculate initial pinch distance
+        const ptrs = Array.from(activePointersRef.current.values());
+        const dx = ptrs[0].x - ptrs[1].x;
+        const dy = ptrs[0].y - ptrs[1].y;
+        pinchDistRef.current = Math.hypot(dx, dy);
+        return;
+      }
+
       // Only handle primary button (left click / touch)
       if (e.button !== 0) return;
       if (isDraggingPointRef.current) return;
@@ -368,12 +394,55 @@ export const SvgEdit = ({
     };
 
     const onPointerMove = (e: PointerEvent) => {
+      // Update pointer position
+      activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+      // Pinch-to-zoom with 2+ pointers
+      if (activePointersRef.current.size >= 2) {
+        const ptrs = Array.from(activePointersRef.current.values());
+        const dx = ptrs[0].x - ptrs[1].x;
+        const dy = ptrs[0].y - ptrs[1].y;
+        const dist = Math.hypot(dx, dy);
+        if (pinchDistRef.current > 0) {
+          const scaleDelta = dist / pinchDistRef.current;
+          const current = pinchZoomRef.current;
+          const newScale = Math.max(1, Math.min(10, current.scale * scaleDelta));
+          // Pan to keep the midpoint centered
+          const midX = (ptrs[0].x + ptrs[1].x) / 2;
+          const midY = (ptrs[0].y + ptrs[1].y) / 2;
+          const svgRect = svg.getBoundingClientRect();
+          const relX = midX - svgRect.left;
+          const relY = midY - svgRect.top;
+          const newX = relX - (relX - current.x) * (newScale / current.scale);
+          const newY = relY - (relY - current.y) * (newScale / current.scale);
+          setPinchZoom({ scale: newScale, x: newX, y: newY });
+        }
+        pinchDistRef.current = dist;
+        return;
+      }
+
+      // Single pointer — normal point drag
       if (!isDraggingPointRef.current) return;
       const coords = getMouseCoordsFromClient(e.clientX, e.clientY, true);
       dispatchRef.current({ action: 'mouse-move', ...coords });
     };
 
     const onPointerUp = (e: PointerEvent) => {
+      // Remove this pointer from tracking
+      activePointersRef.current.delete(e.pointerId);
+
+      // If still 2+ pointers, recalculate pinch distance
+      if (activePointersRef.current.size >= 2) {
+        const ptrs = Array.from(activePointersRef.current.values());
+        const dx = ptrs[0].x - ptrs[1].x;
+        const dy = ptrs[0].y - ptrs[1].y;
+        pinchDistRef.current = Math.hypot(dx, dy);
+        return;
+      }
+
+      // Reset pinch distance when fewer than 2 pointers
+      pinchDistRef.current = 0;
+
       if (e.button !== 0) return;
       if (isDraggingPointRef.current) {
         isDraggingPointRef.current = false;
@@ -858,6 +927,11 @@ export const SvgEdit = ({
               )}
               style={{
                 touchAction: 'none',
+                transformOrigin: '0 0',
+                transform:
+                  pinchZoom.scale !== 1
+                    ? `scale(${pinchZoom.scale}) translate(${pinchZoom.x}px, ${pinchZoom.y}px)`
+                    : undefined,
                 ...(zoomMode ? { width: 'min(1920px, 150vw)', maxWidth: 'none' } : undefined),
               }}
             >
@@ -882,7 +956,7 @@ export const SvgEdit = ({
                   const btnH = 0.028 * w;
                   const btnW = 0.055 * w;
                   const gap = 0.006 * w;
-                  const btnCount = isFirst ? 1 : isLast && points.length > 1 ? 3 : 2;
+                  const btnCount = isFirst ? 1 : isLast && points.length > 1 ? (isBouldering ? 2 : 3) : 2;
                   const totalW = btnW * btnCount + gap * (btnCount - 1);
                   const toolbarX = ap.x - totalW / 2;
                   const toolbarY = ap.y + 0.035 * w;
@@ -936,7 +1010,7 @@ export const SvgEdit = ({
                           />
                         </>
                       )}
-                      {isLast && points.length > 1 && (
+                      {!isBouldering && isLast && points.length > 1 && (
                         <>
                           <g
                             style={{ cursor: 'pointer' }}
