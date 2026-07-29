@@ -286,6 +286,7 @@ export const reducer = (state: State, update: Update): State => {
       return {
         ...state,
         points,
+        path: generatePath(points),
       };
     }
 

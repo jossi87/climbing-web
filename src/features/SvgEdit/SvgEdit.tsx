@@ -36,6 +36,8 @@ import {
   Trash2,
   Spline,
   ZoomIn,
+  Plus,
+  Move,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
@@ -50,7 +52,8 @@ const pageActionIconBtn =
   'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-colors disabled:pointer-events-none disabled:opacity-40';
 const pageActionIconBtnGlass =
   'border-white/12 bg-surface-raised text-slate-300 hover:border-white/18 hover:bg-surface-raised-hover';
-const pageActionIconBtnGreen = 'border-green-400/45 bg-green-500/20 text-green-300 hover:bg-green-500/28';
+const pageActionIconBtnGreen =
+  'border-green-600/50 bg-green-600/15 text-green-300 hover:bg-green-600/25 light:border-green-600 light:bg-green-600 light:text-white light:hover:bg-green-700';
 const pageActionIconBtnBrand = 'border-brand-border btn-brand-solid shadow-sm hover:border-brand-border';
 
 function mediaRegionsDiffer(a: MediaRegion | undefined | null, b: MediaRegion | undefined | null): boolean {
@@ -163,7 +166,7 @@ export const SvgEditLoader = () => {
 };
 
 type Props = EditableSvg & {
-  /** Number of pitch strips (not counting “entire route”). Used for Segment-tab pitch scope dropdown when &gt; 1. */
+  /** Number of pitch strips (not counting "entire route"). Used for Segment-tab pitch scope dropdown when > 1. */
   pitchStripCount: number;
   onSave: (
     updated: Required<Pick<EditableSvg, 'path' | 'hasAnchor' | 'anchors' | 'tradBelayStations' | 'texts'>>,
@@ -257,11 +260,28 @@ export const SvgEdit = ({
   const [selectedOverlay, setSelectedOverlay] = useState<OverlaySelection | null>(null);
   const [draggingOverlay, setDraggingOverlay] = useState<OverlaySelection | null>(null);
   const [zoomMode, setZoomMode] = useState(false);
+  // On touch devices with no existing points, default to Draw mode so mobile
+  // users can start drawing immediately. On desktop, or when points exist,
+  // default to Drag mode (Shift key toggles Draw temporarily).
+  const isTouchDeviceRef = useRef(
+    typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0),
+  );
+  const [drawMode, setDrawMode] = useState(() => {
+    const pnts = parsePath(initialPath);
+    return isTouchDeviceRef.current && pnts.length === 0;
+  });
   const suppressNextSvgClickRef = useRef(false);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       shift.current = e.shiftKey;
+      // When holding Shift on desktop, auto-enable draw mode.
+      // When releasing Shift, go back to the default mode.
+      if (e.shiftKey) {
+        setDrawMode(true);
+      } else {
+        setDrawMode(false);
+      }
     };
     document.addEventListener('keydown', handleKey);
     document.addEventListener('keyup', handleKey);
@@ -292,11 +312,38 @@ export const SvgEdit = ({
     [getMouseCoordsFromClient],
   );
 
+  /** Shared handler for both mouse and touch events to add a point or place an overlay. */
+  const handleImageInteraction = useCallback(
+    (clientX: number, clientY: number) => {
+      if (activeTab === 'segment') {
+        if (drawMode || shift.current) {
+          const coords = getMouseCoordsFromClient(clientX, clientY, true);
+          dispatch({ action: 'add-point', ...coords });
+        }
+        dispatch({ action: 'mouse-up' });
+      } else {
+        const coords = getMouseCoordsFromClient(clientX, clientY, activeTab !== 'text');
+        if (activeTab === 'text') {
+          setTexts((prev) => [...prev, { txt: 'Text', ...coords }]);
+        } else if (activeTab === 'anchors') {
+          setAnchors((prev) => [...prev, coords]);
+        } else if (activeTab === 'trad') {
+          setTradBelayStations((prev) => [...prev, coords]);
+        } else {
+          neverGuard(activeTab as never, null);
+        }
+      }
+    },
+    [activeTab, drawMode, getMouseCoordsFromClient],
+  );
+
   useEffect(() => {
     if (!draggingOverlay) return;
-    const onMove = (e: MouseEvent) => {
+    const onMove = (e: MouseEvent | TouchEvent) => {
+      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+      const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
       const snap = draggingOverlay.kind !== 'text';
-      const c = getMouseCoordsFromClient(e.clientX, e.clientY, snap);
+      const c = getMouseCoordsFromClient(clientX, clientY, snap);
       if (draggingOverlay.kind === 'anchor') {
         setAnchors((prev) => prev.map((p, i) => (i === draggingOverlay.index ? c : p)));
       } else if (draggingOverlay.kind === 'trad') {
@@ -311,9 +358,13 @@ export const SvgEdit = ({
     };
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseup', onUp);
+    document.addEventListener('touchmove', onMove, { passive: false });
+    document.addEventListener('touchend', onUp);
     return () => {
       document.removeEventListener('mousemove', onMove);
       document.removeEventListener('mouseup', onUp);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('touchend', onUp);
     };
   }, [draggingOverlay, getMouseCoordsFromClient]);
 
@@ -347,7 +398,7 @@ export const SvgEdit = ({
     });
   }, []);
 
-  const startOverlayDrag = useCallback((kind: OverlayKind, index: number, e: React.MouseEvent) => {
+  const startOverlayDrag = useCallback((kind: OverlayKind, index: number, e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation();
     e.preventDefault();
     setSelectedOverlay({ kind, index });
@@ -360,38 +411,35 @@ export const SvgEdit = ({
       return;
     }
     if ((e.target as Element).closest?.('[data-overlay-handle]')) return;
-
-    if (activeTab === 'segment') {
-      if (shift.current) {
-        const coords = getMouseCoords(e, true);
-        dispatch({ action: 'add-point', ...coords });
-      }
-      dispatch({ action: 'mouse-up' });
-    } else {
-      const coords = getMouseCoords(e, activeTab !== 'text');
-      if (activeTab === 'text') {
-        setTexts((prev) => [...prev, { txt: 'Text', ...coords }]);
-      } else if (activeTab === 'anchors') {
-        setAnchors((prev) => [...prev, coords]);
-      } else if (activeTab === 'trad') {
-        setTradBelayStations((prev) => [...prev, coords]);
-      } else {
-        neverGuard(activeTab as never, null);
-      }
-    }
+    handleImageInteraction(e.clientX, e.clientY);
   };
+
+  const handleTouchEndOnSvg = useCallback(
+    (e: React.TouchEvent) => {
+      if (suppressNextSvgClickRef.current) {
+        suppressNextSvgClickRef.current = false;
+        return;
+      }
+      // Only handle single-finger taps (not drags or multi-touch)
+      if (e.changedTouches.length !== 1) return;
+      const touch = e.changedTouches[0];
+      // Check if the touch target (or its parent) is an overlay handle
+      const target = document.elementFromPoint(touch.clientX, touch.clientY);
+      if (target?.closest?.('[data-overlay-handle]')) return;
+      handleImageInteraction(touch.clientX, touch.clientY);
+      // Suppress the subsequent click event so we don't add two points on one tap
+      suppressNextSvgClickRef.current = true;
+    },
+    [handleImageInteraction],
+  );
 
   const toolBtn = cn(
     'inline-flex items-center gap-1.5 rounded-md px-2 py-1.5 transition-colors disabled:pointer-events-none disabled:opacity-35',
     designContract.typography.uiCompact,
   );
-  /** Tab active — segment neutral; overlays keep brand / amber / orange. */
-  const toolBtnOnText = 'bg-brand/15 text-brand ring-1 ring-inset ring-brand-border/40';
-  const toolBtnOnAnchor = 'bg-amber-500/12 text-amber-100 ring-1 ring-inset ring-amber-400/25';
-  const toolBtnOnTrad = 'bg-orange-500/12 text-orange-100 ring-1 ring-inset ring-orange-400/25';
+  const toolBtnOnActive = 'bg-surface-raised-hover text-slate-100 ring-1 ring-inset ring-brand-border/50';
   const toolBtnOnPathAnchor = 'bg-surface-raised-hover text-slate-100 ring-1 ring-inset ring-brand-border/45';
   const toolBtnOff = 'text-slate-500 hover:bg-surface-raised-hover hover:text-slate-200';
-  const toolBtnReset = 'text-red-400/90 hover:bg-red-500/10 hover:text-red-200';
 
   const fieldClass = cn(
     'rounded-md border border-surface-border bg-surface-nav px-2 py-1.5 outline-none focus-visible:ring-2 focus-visible:ring-brand-border/60',
@@ -403,13 +451,7 @@ export const SvgEdit = ({
     cn(
       'inline-flex min-h-9 shrink-0 items-center gap-1 rounded-md px-3 py-2 font-medium transition-colors',
       designContract.typography.uiCompact,
-      activeTab === tab
-        ? tab === 'segment' || tab === 'text'
-          ? toolBtnOnText
-          : tab === 'anchors'
-            ? toolBtnOnAnchor
-            : toolBtnOnTrad
-        : 'text-slate-500 hover:bg-surface-raised/80 hover:text-slate-200',
+      activeTab === tab ? toolBtnOnActive : 'text-slate-500 hover:bg-surface-raised/80 hover:text-slate-200',
     );
 
   /** Path handles sit below anchors/text/trad in DOM — disable overlay picking on Segment tab. */
@@ -422,8 +464,12 @@ export const SvgEdit = ({
           <div className='p-3 sm:p-5'>
             <div className='mb-4 flex min-w-0 flex-col gap-3'>
               <span className='sr-only'>Topo editor</span>
-              <div className='flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4'>
-                <div className='flex min-w-0 flex-wrap gap-1 gap-y-1' role='tablist' aria-label='Topo editor sections'>
+              <div className='flex min-w-0 flex-row items-start justify-between gap-3'>
+                <div
+                  className='flex min-w-0 flex-1 flex-wrap gap-1 gap-y-1'
+                  role='tablist'
+                  aria-label='Topo editor sections'
+                >
                   <button
                     type='button'
                     role='tab'
@@ -433,7 +479,34 @@ export const SvgEdit = ({
                     onClick={() => setActiveTab('segment')}
                   >
                     <Spline size={14} strokeWidth={2} className='shrink-0 opacity-90' aria-hidden />
-                    Segment{points.length > 0 ? '*' : ''}
+                    Segment
+                    {points.length > 0 && (
+                      <span
+                        role='button'
+                        tabIndex={0}
+                        title='Reset segment path'
+                        aria-label='Reset segment path'
+                        className='ml-0.5 inline-flex text-red-400 hover:text-red-300'
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          dispatch({ action: 'reset' });
+                          // On mobile, switch back to Draw mode after reset so users can start drawing again
+                          if (isTouchDeviceRef.current) setDrawMode(true);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            dispatch({ action: 'reset' });
+                            // On mobile, switch back to Draw mode after reset so users can start drawing again
+                            if (isTouchDeviceRef.current) setDrawMode(true);
+                          }
+                        }}
+                      >
+                        <RotateCcw size={12} strokeWidth={2} />
+                      </span>
+                    )}
                   </button>
                   <button
                     type='button'
@@ -444,7 +517,30 @@ export const SvgEdit = ({
                     onClick={() => setActiveTab('text')}
                   >
                     <Type size={14} strokeWidth={2} className='shrink-0 opacity-90' aria-hidden />
-                    Text{texts.length > 0 ? '*' : ''}
+                    Text
+                    {texts.length > 0 && (
+                      <span
+                        role='button'
+                        tabIndex={0}
+                        title='Reset all text labels'
+                        aria-label='Reset all text labels'
+                        className='ml-0.5 inline-flex text-red-400 hover:text-red-300'
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          setTexts([]);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setTexts([]);
+                          }
+                        }}
+                      >
+                        <RotateCcw size={12} strokeWidth={2} />
+                      </span>
+                    )}
                   </button>
                   <button
                     type='button'
@@ -455,7 +551,30 @@ export const SvgEdit = ({
                     onClick={() => setActiveTab('anchors')}
                   >
                     <Anchor size={14} strokeWidth={2} className='shrink-0 opacity-90' aria-hidden />
-                    Anchors{anchors.length > 0 ? '*' : ''}
+                    Anchors
+                    {anchors.length > 0 && (
+                      <span
+                        role='button'
+                        tabIndex={0}
+                        title='Reset all anchors'
+                        aria-label='Reset all anchors'
+                        className='ml-0.5 inline-flex text-red-400 hover:text-red-300'
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          setAnchors([]);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setAnchors([]);
+                          }
+                        }}
+                      >
+                        <RotateCcw size={12} strokeWidth={2} />
+                      </span>
+                    )}
                   </button>
                   <button
                     type='button'
@@ -466,7 +585,30 @@ export const SvgEdit = ({
                     onClick={() => setActiveTab('trad')}
                   >
                     <Triangle size={14} strokeWidth={2} className='shrink-0 opacity-90' aria-hidden />
-                    Trad{tradBelayStations.length > 0 ? '*' : ''}
+                    Trad
+                    {tradBelayStations.length > 0 && (
+                      <span
+                        role='button'
+                        tabIndex={0}
+                        title='Reset all trad belays'
+                        aria-label='Reset all trad belays'
+                        className='ml-0.5 inline-flex text-red-400 hover:text-red-300'
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          setTradBelayStations([]);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setTradBelayStations([]);
+                          }
+                        }}
+                      >
+                        <RotateCcw size={12} strokeWidth={2} />
+                      </span>
+                    )}
                   </button>
                 </div>
                 <div className='flex shrink-0 flex-nowrap items-center gap-1.5 self-start pt-0.5 sm:pt-0'>
@@ -523,10 +665,6 @@ export const SvgEdit = ({
               >
                 {activeTab === 'segment' && (
                   <>
-                    <p className={cn(designContract.typography.meta, 'text-slate-500')}>
-                      Shift+click the photo to add path points. Select a point to edit the segment type, or remove it.
-                      Curve handles are the blue circles.
-                    </p>
                     {showPitchScopeDropdown && (
                       <div className='flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2 border-b border-white/6 pb-3'>
                         <span className={cn(designContract.typography.label, 'shrink-0 text-slate-500')}>
@@ -553,22 +691,54 @@ export const SvgEdit = ({
                       </div>
                     )}
                     <div className='flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2'>
+                      <div className='flex items-center overflow-hidden rounded-md border border-white/12'>
+                        <button
+                          type='button'
+                          title='Draw mode — tap the photo to add points'
+                          aria-label='Draw mode — tap the photo to add points'
+                          aria-pressed={drawMode}
+                          className={cn(
+                            'inline-flex items-center gap-1 px-2.5 py-1.5 transition-colors',
+                            designContract.typography.uiCompact,
+                            drawMode
+                              ? 'bg-surface-raised-hover ring-brand-border/50 text-slate-100 ring-1 ring-inset'
+                              : 'hover:bg-surface-raised-hover text-slate-500 hover:text-slate-200',
+                          )}
+                          onClick={() => setDrawMode(true)}
+                        >
+                          <Plus size={14} strokeWidth={2} />
+                          <span className='whitespace-nowrap'>Draw (hold ⇧)</span>
+                        </button>
+                        <div className='h-5 w-px bg-white/12' />
+                        <button
+                          type='button'
+                          title='Drag mode — select and move existing points'
+                          aria-label='Drag mode — select and move existing points'
+                          aria-pressed={!drawMode}
+                          className={cn(
+                            'inline-flex items-center gap-1 px-2.5 py-1.5 transition-colors',
+                            designContract.typography.uiCompact,
+                            !drawMode
+                              ? 'bg-surface-raised-hover ring-brand-border/50 text-slate-100 ring-1 ring-inset'
+                              : 'hover:bg-surface-raised-hover text-slate-500 hover:text-slate-200',
+                          )}
+                          onClick={() => setDrawMode(false)}
+                        >
+                          <Move size={14} strokeWidth={2} />
+                          <span className='whitespace-nowrap'>Drag</span>
+                        </button>
+                      </div>
                       {activePoint !== 0 && (
-                        <div className='flex min-w-0 items-center gap-2'>
-                          <span className={cn(designContract.typography.label, 'shrink-0 text-slate-500')}>
-                            Segment type
-                          </span>
-                          <select
-                            className={cn(fieldClass, 'min-w-0')}
-                            value={isCubicPoint(points[activePoint]) ? 'C' : 'L'}
-                            onChange={(e) =>
-                              dispatch({ action: 'set-type', type: e.target.value === 'C' ? 'curve' : 'line' })
-                            }
-                          >
-                            <option value='L'>Line</option>
-                            <option value='C'>Curve</option>
-                          </select>
-                        </div>
+                        <select
+                          className={cn(fieldClass, 'min-w-0')}
+                          value={isCubicPoint(points[activePoint]) ? 'C' : 'L'}
+                          onChange={(e) =>
+                            dispatch({ action: 'set-type', type: e.target.value === 'C' ? 'curve' : 'line' })
+                          }
+                        >
+                          <option value='L'>Line</option>
+                          <option value='C'>Curve</option>
+                        </select>
                       )}
                       <button
                         type='button'
@@ -601,21 +771,6 @@ export const SvgEdit = ({
                         )}{' '}
                         Anchor
                       </button>
-                      <button
-                        type='button'
-                        className={cn(toolBtn, toolBtnReset)}
-                        onClick={() => {
-                          setTexts([]);
-                          setAnchors([]);
-                          setTradBelayStations([]);
-                          setSelectedOverlay(null);
-                          setDraggingOverlay(null);
-                          dispatch({ action: 'reset' });
-                        }}
-                      >
-                        <RotateCcw size={14} strokeWidth={2} /> Reset all
-                      </button>
-
                       {showMultiPitchCropUi && (
                         <div className='flex w-full min-w-0 flex-wrap items-center gap-2 border-t border-white/6 pt-3 sm:ml-auto sm:w-auto sm:border-t-0 sm:pt-0'>
                           <div className='flex items-center gap-1.5 text-slate-500'>
@@ -678,8 +833,8 @@ export const SvgEdit = ({
                   <div className='space-y-2'>
                     <p className={cn(designContract.typography.meta, 'text-slate-500')}>
                       {texts.length === 0
-                        ? 'Click the photo to place a label. Add as many as you need — edit the wording here and drag labels on the photo.'
-                        : 'Edit labels below; drag the red text on the photo to position. Click the photo to add another.'}
+                        ? 'Tap the photo to place a label. Add as many as you need — edit the wording here and drag labels on the photo.'
+                        : 'Edit labels below; drag the red text on the photo to position. Tap the photo to add another.'}
                     </p>
                     <div className='flex flex-wrap gap-2'>
                       {texts.map((t, i) => (
@@ -722,8 +877,8 @@ export const SvgEdit = ({
                   <div className='space-y-2'>
                     <p className={cn(designContract.typography.meta, 'text-slate-500')}>
                       {anchors.length === 0
-                        ? 'Click the photo to place bolt anchors. Add several by clicking again. Drag red circles to move.'
-                        : 'Drag a circle on the photo to move it. Click the photo to add another anchor.'}
+                        ? 'Tap the photo to place bolt anchors. Add several by tapping again. Drag red circles to move.'
+                        : 'Drag a circle on the photo to move it. Tap the photo to add another anchor.'}
                     </p>
                     <div className='flex flex-wrap gap-2'>
                       {anchors.map((_, i) => (
@@ -764,8 +919,8 @@ export const SvgEdit = ({
                   <div className='space-y-2'>
                     <p className={cn(designContract.typography.meta, 'text-slate-500')}>
                       {tradBelayStations.length === 0
-                        ? 'Click the photo for each trad belay station. Drag triangles on the photo to move them.'
-                        : 'One card per belay. Drag a triangle on the photo or select a card, then drag. Click the photo to add more.'}
+                        ? 'Tap the photo for each trad belay station. Drag triangles on the photo to move them.'
+                        : 'One card per belay. Drag a triangle on the photo or select a card, then drag. Tap the photo to add more.'}
                     </p>
                     <div className='flex flex-wrap gap-2'>
                       {tradBelayStations.map((_, i) => (
@@ -815,6 +970,7 @@ export const SvgEdit = ({
             <svg
               viewBox={`0 0 ${w} ${h}`}
               onClick={handleOnClick}
+              onTouchEnd={handleTouchEndOnSvg}
               onMouseMove={(e) => dispatch({ action: 'mouse-move', ...getMouseCoords(e, true) })}
               className={cn(
                 'block select-none',
@@ -840,7 +996,7 @@ export const SvgEdit = ({
                 const cubicGuideStrokeW = 0.0014 * w;
                 const cubicDash = Math.max(4, 0.004 * w);
 
-                /** Wider invisible targets so handles aren’t blocked by guide lines or thin strokes. */
+                /** Wider invisible targets so handles aren't blocked by guide lines or thin strokes. */
                 const vertexHitR = 0.012 * w;
                 const cubicHitR = 0.008 * w;
 
@@ -882,6 +1038,11 @@ export const SvgEdit = ({
                           e.preventDefault();
                           dispatch({ action: 'drag-cubic', index: i, c: 0 });
                         }}
+                        onTouchStart={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          dispatch({ action: 'drag-cubic', index: i, c: 0 });
+                        }}
                       />
                       <circle
                         cx={p.c[0].x}
@@ -900,6 +1061,11 @@ export const SvgEdit = ({
                         fill='transparent'
                         className='cursor-grab'
                         onMouseDown={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          dispatch({ action: 'drag-cubic', index: i, c: 1 });
+                        }}
+                        onTouchStart={(e) => {
                           e.stopPropagation();
                           e.preventDefault();
                           dispatch({ action: 'drag-cubic', index: i, c: 1 });
@@ -926,6 +1092,11 @@ export const SvgEdit = ({
                         fill='transparent'
                         className='cursor-grab'
                         onMouseDown={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          dispatch({ action: 'drag-point', index: i });
+                        }}
+                        onTouchStart={(e) => {
                           e.stopPropagation();
                           e.preventDefault();
                           dispatch({ action: 'drag-point', index: i });
@@ -959,6 +1130,7 @@ export const SvgEdit = ({
                       className='cursor-grab'
                       pointerEvents={overlayPointerEvents}
                       onMouseDown={(e) => startOverlayDrag('anchor', i, e)}
+                      onTouchStart={(e) => startOverlayDrag('anchor', i, e)}
                     />
                     <circle
                       cx={a.x}
@@ -989,6 +1161,7 @@ export const SvgEdit = ({
                       className='cursor-grab'
                       pointerEvents={overlayPointerEvents}
                       onMouseDown={(e) => startOverlayDrag('trad', i, e)}
+                      onTouchStart={(e) => startOverlayDrag('trad', i, e)}
                     />
                     <polygon
                       fill='#E2011A'
@@ -1018,6 +1191,7 @@ export const SvgEdit = ({
                       className='cursor-grab'
                       pointerEvents={overlayPointerEvents}
                       onMouseDown={(e) => startOverlayDrag('text', i, e)}
+                      onTouchStart={(e) => startOverlayDrag('text', i, e)}
                     />
                     <text
                       x={t.x}
