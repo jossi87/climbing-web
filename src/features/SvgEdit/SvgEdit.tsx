@@ -920,16 +920,24 @@ export const SvgEdit = ({
                   const isFirst = activePoint === 0;
                   const isLast = activePoint === points.length - 1;
                   const isCurve = !isFirst && isCubicPoint(ap);
-                  const btnH = 0.028 * w;
-                  const btnW = 0.055 * w;
-                  const gap = 0.006 * w;
+                  const btnH = 0.02 * w;
+                  const btnW = 0.03 * w;
+                  const gap = 0.004 * w;
                   const showAnchor = !isBouldering && isLast && points.length > 1;
                   const btnCount = isFirst ? 1 : isLast && points.length > 1 ? (showAnchor ? 3 : 2) : 2;
                   const totalW = btnW * btnCount + gap * (btnCount - 1);
-                  const toolbarX = ap.x - totalW / 2;
-                  const toolbarY = ap.y + 0.035 * w;
-                  const labelY = toolbarY + btnH * 0.65;
-                  const labelFs = 0.013 * w;
+                  // Position toolbar to the right of the point, close to it
+                  const gapX = 0.008 * w;
+                  let toolbarX = ap.x + gapX;
+                  // Guard: if toolbar would overflow the right edge, flip to the left side
+                  if (toolbarX + totalW > w) {
+                    toolbarX = ap.x - gapX - totalW;
+                  }
+                  // Guard: if also overflows left edge, center below the point
+                  if (toolbarX < 0) {
+                    toolbarX = Math.max(0, ap.x - totalW / 2);
+                  }
+                  const toolbarY = ap.y - btnH / 2;
                   // Delete button column index (0-based): after Line/Curve and optionally Anchor
                   const delCol = isFirst ? 0 : showAnchor ? 2 : 1;
                   return (
@@ -957,17 +965,22 @@ export const SvgEdit = ({
                             }}
                           >
                             <rect x={toolbarX} y={toolbarY} width={btnW} height={btnH} fill='transparent' />
-                            <text
-                              x={toolbarX + btnW / 2}
-                              y={labelY}
-                              textAnchor='middle'
-                              fontSize={labelFs}
-                              fill={isCurve ? '#60A5FA' : '#E2E8F0'}
-                              fontWeight='bold'
+                            {/* Line icon (straight horizontal line) or Curve icon (bezier S-curve) */}
+                            <g
+                              transform={`translate(${toolbarX + btnW / 2}, ${toolbarY + btnH / 2}) scale(${btnH * 0.035}) translate(-12, -12)`}
+                              fill='none'
+                              stroke='#60A5FA'
+                              strokeWidth={2}
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
                               pointerEvents='none'
                             >
-                              {isCurve ? 'Curve' : 'Line'}
-                            </text>
+                              {isCurve ? (
+                                <path d='M4 17 Q 9 5, 12 12 T 20 7' />
+                              ) : (
+                                <line x1='4' y1='12' x2='20' y2='12' />
+                              )}
+                            </g>
                           </g>
                           <line
                             x1={toolbarX + btnW}
@@ -997,17 +1010,21 @@ export const SvgEdit = ({
                               height={btnH}
                               fill='transparent'
                             />
-                            <text
-                              x={toolbarX + btnW + gap + btnW / 2}
-                              y={labelY}
-                              textAnchor='middle'
-                              fontSize={labelFs}
-                              fill={hasAnchor ? '#FBBF24' : '#94A3B8'}
-                              fontWeight='bold'
+                            {/* Anchor icon — with diagonal slash when disabled */}
+                            <g
+                              transform={`translate(${toolbarX + btnW + gap + btnW / 2}, ${toolbarY + btnH / 2}) scale(${btnH * 0.028}) translate(-12, -12)`}
+                              fill='none'
+                              stroke={hasAnchor ? '#FBBF24' : '#94A3B8'}
+                              strokeWidth={2}
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
                               pointerEvents='none'
                             >
-                              Anchor
-                            </text>
+                              <circle cx='12' cy='5' r='3' />
+                              <line x1='12' y1='22' x2='12' y2='8' />
+                              <path d='M5 12H2a10 10 0 0 0 20 0h-3' />
+                              {!hasAnchor && <line x1='4' y1='4' x2='20' y2='20' />}
+                            </g>
                           </g>
                           <line
                             x1={toolbarX + btnW * 2 + gap}
@@ -1035,17 +1052,22 @@ export const SvgEdit = ({
                           height={btnH}
                           fill='transparent'
                         />
-                        <text
-                          x={toolbarX + delCol * (btnW + gap) + btnW / 2}
-                          y={labelY}
-                          textAnchor='middle'
-                          fontSize={labelFs}
-                          fill='#F87171'
-                          fontWeight='bold'
+                        {/* Trash2 icon from lucide (24x24 viewBox) */}
+                        <g
+                          transform={`translate(${toolbarX + delCol * (btnW + gap) + btnW / 2}, ${toolbarY + btnH / 2}) scale(${btnH * 0.028}) translate(-12, -12)`}
+                          fill='none'
+                          stroke='#F87171'
+                          strokeWidth={2}
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
                           pointerEvents='none'
                         >
-                          Delete
-                        </text>
+                          <path d='M3 6h18' />
+                          <path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6' />
+                          <path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2' />
+                          <line x1='10' y1='11' x2='10' y2='17' />
+                          <line x1='14' y1='11' x2='14' y2='17' />
+                        </g>
                       </g>
                     </g>
                   );
