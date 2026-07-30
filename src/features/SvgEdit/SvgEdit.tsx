@@ -948,7 +948,7 @@ export const SvgEdit = ({
                               {isCurve ? (
                                 <path d='M4 17 Q 9 5, 12 12 T 20 7' />
                               ) : (
-                                <line x1='4' y1='12' x2='20' y2='12' />
+                                <line x1='4' y1='18' x2='20' y2='6' />
                               )}
                             </g>
                           </g>
