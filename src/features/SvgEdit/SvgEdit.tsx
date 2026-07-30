@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo, type MouseEventHandler, useReducer } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMeta } from '../../shared/components/Meta';
 import {
@@ -14,13 +14,26 @@ import {
   useSvgEdit,
 } from '../../api';
 import { parseReadOnlySvgs, parsePath, isCubicPoint, type ParsedEntry } from '../../utils/svg-helpers';
+import { Rappel } from '../../utils/svg-utils';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { Card } from '../../shared/ui';
 import { captureSentryException } from '../../utils/sentry';
 import { generatePath, reducer, type State } from './state';
 import { neverGuard } from '../../utils/neverGuard';
 import type { MediaRegion } from '../../utils/svg-scaler';
-import { Video, RotateCcw, Save, RefreshCw, Loader2, Settings2, X, ZoomIn } from 'lucide-react';
+import {
+  RotateCcw,
+  Save,
+  RefreshCw,
+  Loader2,
+  Settings2,
+  X,
+  ZoomIn,
+  Spline,
+  Anchor,
+  Triangle,
+  Type,
+} from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 
@@ -240,13 +253,26 @@ export const SvgEdit = ({
   const [anchors, setAnchors] = useState<Coords[]>(initialAnchors ?? []);
   const [tradBelayStations, setTradBelayStations] = useState<Coords[]>(initialTradBelayStations ?? []);
   const [texts, setTexts] = useState<{ txt: string; x: number; y: number }[]>(initialTexts ?? []);
+  // Keep refs in sync with state for drag offset calculation
+  useEffect(() => {
+    anchorsRef.current = anchors;
+  }, [anchors]);
+  useEffect(() => {
+    tradBelayStationsRef.current = tradBelayStations;
+  }, [tradBelayStations]);
+  useEffect(() => {
+    textsRef.current = texts;
+  }, [texts]);
   const [hasAnchor, setHasAnchor] = useState(() => {
     if (isBouldering) return true;
     return !!initialHasAnchor;
   });
   const [activeTab, setActiveTab] = useState<EditorTab>('segment');
-  const [selectedOverlay, setSelectedOverlay] = useState<OverlaySelection | null>(null);
   const [draggingOverlay, setDraggingOverlay] = useState<OverlaySelection | null>(null);
+  const dragOffsetRef = useRef<Coords>({ x: 0, y: 0 });
+  const anchorsRef = useRef(initialAnchors ?? []);
+  const tradBelayStationsRef = useRef(initialTradBelayStations ?? []);
+  const textsRef = useRef(initialTexts ?? []);
   const [zoomMode, setZoomMode] = useState(false);
   const suppressNextSvgClickRef = useRef(false);
   const isDraggingPointRef = useRef(false);
@@ -300,23 +326,11 @@ export const SvgEdit = ({
       } else {
         const coords = getMouseCoordsFromClient(clientX, clientY, activeTab !== 'text');
         if (activeTab === 'text') {
-          setTexts((prev) => {
-            const next = [...prev, { txt: 'Text', ...coords }];
-            setSelectedOverlay({ kind: 'text', index: next.length - 1 });
-            return next;
-          });
+          setTexts((prev) => [...prev, { txt: 'Text', ...coords }]);
         } else if (activeTab === 'anchors') {
-          setAnchors((prev) => {
-            const next = [...prev, coords];
-            setSelectedOverlay({ kind: 'anchor', index: next.length - 1 });
-            return next;
-          });
+          setAnchors((prev) => [...prev, coords]);
         } else if (activeTab === 'trad') {
-          setTradBelayStations((prev) => {
-            const next = [...prev, coords];
-            setSelectedOverlay({ kind: 'trad', index: next.length - 1 });
-            return next;
-          });
+          setTradBelayStations((prev) => [...prev, coords]);
         } else {
           neverGuard(activeTab as never, null);
         }
@@ -337,6 +351,8 @@ export const SvgEdit = ({
       if (e.button !== 0) return;
       if (isDraggingPointRef.current) return;
       if ((e.target as Element)?.closest?.('[data-overlay-handle]')) return;
+      // Only allow point drag when in segment tab
+      if (activeTab !== 'segment') return;
       // Walk up the DOM tree to find an element with data-point-index
       let el = e.target as Element | null;
       while (el && el !== svg) {
@@ -389,7 +405,7 @@ export const SvgEdit = ({
       svg.removeEventListener('pointermove', onPointerMove);
       svg.removeEventListener('pointerup', onPointerUp);
     };
-  }, [getMouseCoordsFromClient, handleImageInteraction]);
+  }, [getMouseCoordsFromClient, handleImageInteraction, activeTab]);
 
   // Non-passive touchstart listener to prevent browser scroll/pan when touching a point.
   // This is the key to making point drag work on mobile — touchstart with preventDefault()
@@ -421,12 +437,14 @@ export const SvgEdit = ({
       const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
       const snap = draggingOverlay.kind !== 'text';
       const c = getMouseCoordsFromClient(clientX, clientY, snap);
+      // Apply drag offset so the overlay doesn't jump to the mouse position
+      const adjusted = { x: c.x - dragOffsetRef.current.x, y: c.y - dragOffsetRef.current.y };
       if (draggingOverlay.kind === 'anchor') {
-        setAnchors((prev) => prev.map((p, i) => (i === draggingOverlay.index ? c : p)));
+        setAnchors((prev) => prev.map((p, i) => (i === draggingOverlay.index ? adjusted : p)));
       } else if (draggingOverlay.kind === 'trad') {
-        setTradBelayStations((prev) => prev.map((p, i) => (i === draggingOverlay.index ? c : p)));
+        setTradBelayStations((prev) => prev.map((p, i) => (i === draggingOverlay.index ? adjusted : p)));
       } else {
-        setTexts((prev) => prev.map((t, i) => (i === draggingOverlay.index ? { ...t, ...c } : t)));
+        setTexts((prev) => prev.map((t, i) => (i === draggingOverlay.index ? { ...t, ...adjusted } : t)));
       }
     };
     const onUp = () => {
@@ -447,40 +465,45 @@ export const SvgEdit = ({
 
   const removeAnchorAt = useCallback((index: number) => {
     setAnchors((prev) => prev.filter((_, i) => i !== index));
-    setSelectedOverlay((s) => {
-      if (!s || s.kind !== 'anchor') return s;
-      if (s.index === index) return null;
-      if (s.index > index) return { kind: 'anchor', index: s.index - 1 };
-      return s;
-    });
   }, []);
 
   const removeTradAt = useCallback((index: number) => {
     setTradBelayStations((prev) => prev.filter((_, i) => i !== index));
-    setSelectedOverlay((s) => {
-      if (!s || s.kind !== 'trad') return s;
-      if (s.index === index) return null;
-      if (s.index > index) return { kind: 'trad', index: s.index - 1 };
-      return s;
-    });
   }, []);
 
   const removeTextAt = useCallback((index: number) => {
     setTexts((prev) => prev.filter((_, i) => i !== index));
-    setSelectedOverlay((s) => {
-      if (!s || s.kind !== 'text') return s;
-      if (s.index === index) return null;
-      if (s.index > index) return { kind: 'text', index: s.index - 1 };
-      return s;
-    });
   }, []);
 
-  const startOverlayDrag = useCallback((kind: OverlayKind, index: number, e: React.MouseEvent | React.TouchEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    setSelectedOverlay({ kind, index });
-    setDraggingOverlay({ kind, index });
-  }, []);
+  const startOverlayDrag = useCallback(
+    (kind: OverlayKind, index: number, e: React.MouseEvent | React.TouchEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+      // Store offset between mouse/touch and overlay center to prevent jump on pickup
+      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+      const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+      const dim = imageRef.current?.getBoundingClientRect();
+      if (dim) {
+        const mx = Math.round((clientX - dim.left) * (w / dim.width));
+        const my = Math.round((clientY - dim.top) * (h / dim.height));
+        // Get the current overlay position from refs (synchronous)
+        let ox: number, oy: number;
+        if (kind === 'anchor') {
+          ox = anchorsRef.current[index]?.x ?? 0;
+          oy = anchorsRef.current[index]?.y ?? 0;
+        } else if (kind === 'trad') {
+          ox = tradBelayStationsRef.current[index]?.x ?? 0;
+          oy = tradBelayStationsRef.current[index]?.y ?? 0;
+        } else {
+          ox = textsRef.current[index]?.x ?? 0;
+          oy = textsRef.current[index]?.y ?? 0;
+        }
+        dragOffsetRef.current = { x: mx - ox, y: my - oy };
+      }
+      setDraggingOverlay({ kind, index });
+    },
+    [w, h],
+  );
 
   const handleOnClick: MouseEventHandler = (e) => {
     if (suppressNextSvgClickRef.current) {
@@ -512,8 +535,14 @@ export const SvgEdit = ({
         : 'border-white/12 bg-surface-raised text-slate-500 hover:border-white/18 hover:bg-surface-raised-hover hover:text-slate-200',
     );
 
-  /** Path handles sit below anchors/text/trad in DOM — disable overlay picking on Segment tab. */
-  const overlayPointerEvents = activeTab === 'segment' ? 'none' : ('auto' as const);
+  /** Only the active tab's overlays are interactive; others are read-only. */
+  const overlayPointerEvents = (kind: OverlayKind): 'auto' | 'none' => {
+    if (activeTab === 'segment') return 'none';
+    if (activeTab === 'anchors' && kind === 'anchor') return 'auto';
+    if (activeTab === 'trad' && kind === 'trad') return 'auto';
+    if (activeTab === 'text' && kind === 'text') return 'auto';
+    return 'none';
+  };
 
   return (
     <div className='w-full min-w-0' onMouseUp={() => dispatch({ action: 'idle' })}>
@@ -549,7 +578,7 @@ export const SvgEdit = ({
                       )}
                       onClick={() => setActiveTab('segment')}
                     >
-                      Path
+                      <Spline size={14} strokeWidth={2} /> Path
                     </button>
                     {points.length > 0 && (
                       <>
@@ -579,7 +608,7 @@ export const SvgEdit = ({
                       className={editorTabClass('text')}
                       onClick={() => setActiveTab('text')}
                     >
-                      Text
+                      <Type size={14} strokeWidth={2} /> Text
                       {texts.length > 0 && (
                         <span
                           role='button'
@@ -614,7 +643,7 @@ export const SvgEdit = ({
                       className={editorTabClass('anchors')}
                       onClick={() => setActiveTab('anchors')}
                     >
-                      Bolts
+                      <Anchor size={14} strokeWidth={2} /> Bolts
                       {anchors.length > 0 && (
                         <span
                           role='button'
@@ -649,7 +678,7 @@ export const SvgEdit = ({
                       className={editorTabClass('trad')}
                       onClick={() => setActiveTab('trad')}
                     >
-                      Trad
+                      <Triangle size={14} strokeWidth={2} /> Trad
                       {tradBelayStations.length > 0 && (
                         <span
                           role='button'
@@ -677,21 +706,14 @@ export const SvgEdit = ({
                   )}
                 </div>
                 <div className='flex shrink-0 flex-nowrap items-center gap-1.5 self-start pt-0.5 sm:pt-0'>
-                  <Link
-                    to='/mp4/20230718_SvgEditExample.mp4'
-                    target='_blank'
-                    rel='noreferrer'
-                    title='How-to video'
-                    aria-label='How-to video'
-                    className={cn(pageActionIconBtn, pageActionIconBtnGlass, 'no-underline')}
-                  >
-                    <Video size={14} strokeWidth={2.25} />
-                  </Link>
                   <button
                     type='button'
                     title={zoomMode ? 'Fit to screen' : 'Zoom and pan'}
                     aria-label={zoomMode ? 'Fit to screen' : 'Zoom and pan'}
-                    className={cn(pageActionIconBtn, zoomMode ? pageActionIconBtnBrand : pageActionIconBtnGlass)}
+                    className={cn(
+                      pageActionIconBtn,
+                      zoomMode ? 'border-brand bg-brand/20 text-brand shadow-sm' : pageActionIconBtnGlass,
+                    )}
                     onClick={() => setZoomMode(!zoomMode)}
                   >
                     <ZoomIn size={14} strokeWidth={2.25} />
@@ -700,7 +722,7 @@ export const SvgEdit = ({
                     type='button'
                     title='Cancel'
                     aria-label='Cancel and go back to problem'
-                    className={cn(pageActionIconBtn, pageActionIconBtnBrand)}
+                    className={cn(pageActionIconBtn, pageActionIconBtnGlass)}
                     onClick={onCancel}
                   >
                     <X size={14} strokeWidth={2.5} />
@@ -851,8 +873,14 @@ export const SvgEdit = ({
                 height='100%'
               />
               {parseReadOnlySvgs(readOnlySvgs, w, h, 1000)}
-              <path d={path} fill='none' stroke={black} strokeWidth={0.003 * w} pointerEvents='none' />
-              <path d={path} fill='none' stroke='#FF0000' strokeWidth={0.002 * w} pointerEvents='none' />
+              {activeTab === 'segment' ? (
+                <>
+                  <path d={path} fill='none' stroke={black} strokeWidth={0.003 * w} pointerEvents='none' />
+                  <path d={path} fill='none' stroke='#FF0000' strokeWidth={0.002 * w} pointerEvents='none' />
+                </>
+              ) : (
+                <path d={path} fill='none' stroke={black} strokeWidth={0.003 * w} pointerEvents='none' />
+              )}
 
               {/* Floating point toolbar — rendered AFTER points so toolbar buttons are clickable */}
               {activeTab === 'segment' &&
@@ -1015,264 +1043,314 @@ export const SvgEdit = ({
                   );
                 })()}
 
-              {(() => {
-                /** Large enough to grab easily; hollow + stroke keeps the photo visible inside. */
-                const cubicHandleR = 0.004 * w;
-                const cubicHandleStrokeW = 0.00185 * w;
-                const cubicGuideStrokeW = 0.0014 * w;
-                const cubicDash = Math.max(4, 0.004 * w);
+              {activeTab === 'segment' &&
+                (() => {
+                  /** Large enough to grab easily; hollow + stroke keeps the photo visible inside. */
+                  const cubicHandleR = 0.004 * w;
+                  const cubicHandleStrokeW = 0.00185 * w;
+                  const cubicGuideStrokeW = 0.0014 * w;
+                  const cubicDash = Math.max(4, 0.004 * w);
 
-                /** Wider invisible targets so handles aren't blocked by guide lines or thin strokes. */
-                const vertexHitR = 0.012 * w;
-                const cubicHitR = 0.008 * w;
+                  /** Wider invisible targets so handles aren't blocked by guide lines or thin strokes. */
+                  const vertexHitR = 0.012 * w;
+                  const cubicHitR = 0.008 * w;
 
-                return points.map((p, i) => {
-                  const handles = isCubicPoint(p) && (
-                    <g>
-                      <line
-                        x1={points[i - 1].x}
-                        y1={points[i - 1].y}
-                        x2={p.c[0].x}
-                        y2={p.c[0].y}
-                        stroke={strokeColor}
-                        strokeOpacity={curveGuideOpacity}
-                        strokeWidth={cubicGuideStrokeW}
-                        strokeDasharray={`${cubicDash},${cubicDash}`}
-                        strokeLinecap='round'
-                        pointerEvents='none'
-                      />
-                      <line
-                        x1={p.x}
-                        y1={p.y}
-                        x2={p.c[1].x}
-                        y2={p.c[1].y}
-                        stroke={strokeColor}
-                        strokeOpacity={curveGuideOpacity}
-                        strokeWidth={cubicGuideStrokeW}
-                        strokeDasharray={`${cubicDash},${cubicDash}`}
-                        strokeLinecap='round'
-                        pointerEvents='none'
-                      />
-                      <circle
-                        cx={p.c[0].x}
-                        cy={p.c[0].y}
-                        r={cubicHitR}
-                        fill='transparent'
-                        className='cursor-grab'
-                        data-point-index={i}
-                        data-cubic='0'
-                        onMouseDown={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          dispatch({ action: 'drag-cubic', index: i, c: 0 });
-                        }}
-                      />
-                      <circle
-                        cx={p.c[0].x}
-                        cy={p.c[0].y}
-                        r={cubicHandleR}
-                        fill={curveHandleFill}
-                        stroke={curveHandleStroke}
-                        strokeWidth={cubicHandleStrokeW}
-                        strokeLinejoin='round'
-                        pointerEvents='none'
-                      />
-                      <circle
-                        cx={p.c[1].x}
-                        cy={p.c[1].y}
-                        r={cubicHitR}
-                        fill='transparent'
-                        className='cursor-grab'
-                        data-point-index={i}
-                        data-cubic='1'
-                        onMouseDown={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          dispatch({ action: 'drag-cubic', index: i, c: 1 });
-                        }}
-                      />
-                      <circle
-                        cx={p.c[1].x}
-                        cy={p.c[1].y}
-                        r={cubicHandleR}
-                        fill={curveHandleFill}
-                        stroke={curveHandleStroke}
-                        strokeWidth={cubicHandleStrokeW}
-                        strokeLinejoin='round'
-                        pointerEvents='none'
-                      />
-                    </g>
-                  );
-                  return (
-                    <g key={`${p.x}-${p.y}-${i}`}>
-                      <circle
-                        cx={p.x}
-                        cy={p.y}
-                        r={i === points.length - 1 && hasAnchor ? 0.008 * w : 0.005 * w}
-                        fill={activePoint === i ? '#00FF00' : '#FF0000'}
-                        stroke={black}
-                        pointerEvents='none'
-                        data-point-index={i}
-                      />
-                      <circle
-                        cx={p.x}
-                        cy={p.y}
-                        r={vertexHitR}
-                        fill='transparent'
-                        className='cursor-grab'
-                        data-point-index={i}
-                        onMouseDown={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          dispatch({ action: 'drag-point', index: i });
-                        }}
-                      />
-                      {handles}
-                    </g>
-                  );
-                });
-              })()}
+                  return points.map((p, i) => {
+                    const handles = isCubicPoint(p) && (
+                      <g>
+                        <line
+                          x1={points[i - 1].x}
+                          y1={points[i - 1].y}
+                          x2={p.c[0].x}
+                          y2={p.c[0].y}
+                          stroke={strokeColor}
+                          strokeOpacity={curveGuideOpacity}
+                          strokeWidth={cubicGuideStrokeW}
+                          strokeDasharray={`${cubicDash},${cubicDash}`}
+                          strokeLinecap='round'
+                          pointerEvents='none'
+                        />
+                        <line
+                          x1={p.x}
+                          y1={p.y}
+                          x2={p.c[1].x}
+                          y2={p.c[1].y}
+                          stroke={strokeColor}
+                          strokeOpacity={curveGuideOpacity}
+                          strokeWidth={cubicGuideStrokeW}
+                          strokeDasharray={`${cubicDash},${cubicDash}`}
+                          strokeLinecap='round'
+                          pointerEvents='none'
+                        />
+                        <circle
+                          cx={p.c[0].x}
+                          cy={p.c[0].y}
+                          r={cubicHitR}
+                          fill='transparent'
+                          className='cursor-grab'
+                          data-point-index={i}
+                          data-cubic='0'
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            dispatch({ action: 'drag-cubic', index: i, c: 0 });
+                          }}
+                        />
+                        <circle
+                          cx={p.c[0].x}
+                          cy={p.c[0].y}
+                          r={cubicHandleR}
+                          fill={curveHandleFill}
+                          stroke={curveHandleStroke}
+                          strokeWidth={cubicHandleStrokeW}
+                          strokeLinejoin='round'
+                          pointerEvents='none'
+                        />
+                        <circle
+                          cx={p.c[1].x}
+                          cy={p.c[1].y}
+                          r={cubicHitR}
+                          fill='transparent'
+                          className='cursor-grab'
+                          data-point-index={i}
+                          data-cubic='1'
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            dispatch({ action: 'drag-cubic', index: i, c: 1 });
+                          }}
+                        />
+                        <circle
+                          cx={p.c[1].x}
+                          cy={p.c[1].y}
+                          r={cubicHandleR}
+                          fill={curveHandleFill}
+                          stroke={curveHandleStroke}
+                          strokeWidth={cubicHandleStrokeW}
+                          strokeLinejoin='round'
+                          pointerEvents='none'
+                        />
+                      </g>
+                    );
+                    return (
+                      <g key={`${p.x}-${p.y}-${i}`}>
+                        <circle
+                          cx={p.x}
+                          cy={p.y}
+                          r={i === points.length - 1 && hasAnchor ? 0.008 * w : 0.005 * w}
+                          fill={activePoint === i ? '#00FF00' : '#FF0000'}
+                          stroke={black}
+                          pointerEvents='none'
+                          data-point-index={i}
+                        />
+                        <circle
+                          cx={p.x}
+                          cy={p.y}
+                          r={vertexHitR}
+                          fill='transparent'
+                          className='cursor-grab'
+                          data-point-index={i}
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            dispatch({ action: 'drag-point', index: i });
+                          }}
+                        />
+                        {handles}
+                      </g>
+                    );
+                  });
+                })()}
 
               {anchors.map((a, i) => {
-                const sel = selectedOverlay?.kind === 'anchor' && selectedOverlay.index === i;
-                const rVis = 0.006 * w;
-                const rHit = 0.014 * w;
-                const btnH = 0.022 * w;
-                const btnW = 0.045 * w;
-                const delX = a.x - btnW / 2;
-                const delY = a.y + rVis + 0.006 * w;
+                // Rappel icon: circle at (x,y) with r = 6*scale, stem from y+r to y+3r
+                // Visual extent: x ± r+sw, y - r-sw to y + 3r+sw (sw = 3*scale*2 for bg stroke)
+                // With scale = 0.00072*w: r ≈ 0.0043*w, sw ≈ 0.0043*w (bg stroke * 2)
+                // Full extent: x ± 0.0086*w, y - 0.0086*w to y + 0.0172*w
+                // Use a generous rect centered on the visual center
+                const hitHalfW = 0.009 * w;
+                const hitHalfH = 0.013 * w;
+                const hitX = a.x - hitHalfW;
+                const hitY = a.y - hitHalfH + 0.004 * w; // shift down slightly to cover stem
+                const hitW = hitHalfW * 2;
+                const hitH = hitHalfH * 2;
+                const delBtnH = 0.02 * w;
+                const delBtnW = 0.03 * w;
+                const gapX = 0.008 * w;
+                let toolbarX = a.x + gapX;
+                if (toolbarX + delBtnW > w) {
+                  toolbarX = a.x - gapX - delBtnW;
+                }
+                if (toolbarX < 0) {
+                  toolbarX = Math.max(0, a.x - delBtnW / 2);
+                }
+                const toolbarY = a.y - delBtnH / 2;
                 return (
                   <g key={`anchor-${i}`} data-overlay-handle>
-                    <circle
-                      cx={a.x}
-                      cy={a.y}
-                      r={rHit}
+                    <Rappel
+                      backgroundColor={'black'}
+                      bolted={true}
+                      color={activeTab === 'anchors' ? '#FF0000' : 'white'}
+                      scale={0.00072 * w}
+                      thumb={false}
+                      x={a.x}
+                      y={a.y}
+                    />
+                    {/* Hitbox on TOP of the Rappel icon so touches hit it first */}
+                    <rect
+                      x={hitX}
+                      y={hitY}
+                      width={hitW}
+                      height={hitH}
                       fill='transparent'
                       className='cursor-grab'
-                      pointerEvents={overlayPointerEvents}
+                      pointerEvents={overlayPointerEvents('anchor')}
                       onMouseDown={(e) => startOverlayDrag('anchor', i, e)}
                       onTouchStart={(e) => startOverlayDrag('anchor', i, e)}
                     />
-                    <circle
-                      cx={a.x}
-                      cy={a.y}
-                      r={rVis}
-                      fill='#E2011A'
-                      stroke={sel ? '#FFFFFF' : '#000000'}
-                      strokeWidth={sel ? 0.002 * w : 0.0012 * w}
-                      pointerEvents='none'
-                    />
-                    {/* Inline delete button below the circle */}
-                    {sel && (
-                      <g
-                        style={{ cursor: 'pointer' }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeAnchorAt(i);
-                        }}
-                      >
+                    {activeTab === 'anchors' && (
+                      <>
+                        {/* Always-visible delete toolbar to the right */}
                         <rect
-                          x={delX}
-                          y={delY}
-                          width={btnW}
-                          height={btnH}
-                          rx={btnH / 2}
+                          x={toolbarX}
+                          y={toolbarY}
+                          width={delBtnW}
+                          height={delBtnH}
+                          rx={delBtnH / 2}
                           fill='rgba(0,0,0,0.7)'
                           stroke='rgba(255,255,255,0.15)'
-                          strokeWidth={0.0008 * w}
-                        />
-                        <text
-                          x={a.x}
-                          y={delY + btnH * 0.65}
-                          textAnchor='middle'
-                          fontSize={0.012 * w}
-                          fill='#F87171'
-                          fontWeight='bold'
+                          strokeWidth={0.001 * w}
                           pointerEvents='none'
+                        />
+                        <g
+                          style={{ cursor: 'pointer' }}
+                          data-overlay-handle
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeAnchorAt(i);
+                          }}
                         >
-                          Delete
-                        </text>
-                      </g>
+                          <rect x={toolbarX} y={toolbarY} width={delBtnW} height={delBtnH} fill='transparent' />
+                          <g
+                            transform={`translate(${toolbarX + delBtnW / 2}, ${toolbarY + delBtnH / 2}) scale(${delBtnH * 0.028}) translate(-12, -12)`}
+                            fill='none'
+                            stroke='#F87171'
+                            strokeWidth={2}
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                            pointerEvents='none'
+                          >
+                            <path d='M3 6h18' />
+                            <path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6' />
+                            <path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2' />
+                            <line x1='10' y1='11' x2='10' y2='17' />
+                            <line x1='14' y1='11' x2='14' y2='17' />
+                          </g>
+                        </g>
+                      </>
                     )}
                   </g>
                 );
               })}
               {tradBelayStations.map((a, i) => {
-                const sel = selectedOverlay?.kind === 'trad' && selectedOverlay.index === i;
-                const tri = 0.006 * w;
-                const pad = 0.012 * w;
-                const bx = a.x - pad;
-                const by = a.y - pad - tri;
-                const btnH = 0.022 * w;
-                const btnW = 0.045 * w;
-                const delX = a.x - btnW / 2;
-                const delY = a.y + tri + 0.006 * w;
+                // Same hitbox as bolts — covers the full Rappel icon (circle + stem)
+                const hitHalfW = 0.009 * w;
+                const hitHalfH = 0.013 * w;
+                const hitX = a.x - hitHalfW;
+                const hitY = a.y - hitHalfH + 0.004 * w; // shift down slightly to cover stem
+                const hitW = hitHalfW * 2;
+                const hitH = hitHalfH * 2;
+                const delBtnH = 0.02 * w;
+                const delBtnW = 0.03 * w;
+                const gapX = 0.008 * w;
+                let toolbarX = a.x + gapX;
+                if (toolbarX + delBtnW > w) {
+                  toolbarX = a.x - gapX - delBtnW;
+                }
+                if (toolbarX < 0) {
+                  toolbarX = Math.max(0, a.x - delBtnW / 2);
+                }
+                const toolbarY = a.y - delBtnH / 2;
                 return (
                   <g key={`trad-${i}`} data-overlay-handle>
+                    <Rappel
+                      backgroundColor={'black'}
+                      bolted={false}
+                      color={activeTab === 'trad' ? '#FF0000' : 'white'}
+                      scale={0.00072 * w}
+                      thumb={false}
+                      x={a.x}
+                      y={a.y}
+                    />
+                    {/* Hitbox on TOP of the Rappel icon so touches hit it first */}
                     <rect
-                      x={bx}
-                      y={by}
-                      width={pad * 2}
-                      height={pad * 2 + tri * 2}
+                      x={hitX}
+                      y={hitY}
+                      width={hitW}
+                      height={hitH}
                       fill='transparent'
                       className='cursor-grab'
-                      pointerEvents={overlayPointerEvents}
+                      pointerEvents={overlayPointerEvents('trad')}
                       onMouseDown={(e) => startOverlayDrag('trad', i, e)}
                       onTouchStart={(e) => startOverlayDrag('trad', i, e)}
                     />
-                    <polygon
-                      fill='#E2011A'
-                      stroke={sel ? '#FFFFFF' : '#000000'}
-                      strokeWidth={sel ? 0.002 * w : 0.0012 * w}
-                      strokeLinejoin='round'
-                      pointerEvents='none'
-                      points={`${a.x},${a.y - tri} ${a.x - tri},${a.y + tri} ${a.x + tri},${a.y + tri}`}
-                    />
-                    {/* Inline delete button below the triangle */}
-                    {sel && (
-                      <g
-                        style={{ cursor: 'pointer' }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeTradAt(i);
-                        }}
-                      >
+                    {activeTab === 'trad' && (
+                      <>
+                        {/* Always-visible delete toolbar to the right */}
                         <rect
-                          x={delX}
-                          y={delY}
-                          width={btnW}
-                          height={btnH}
-                          rx={btnH / 2}
+                          x={toolbarX}
+                          y={toolbarY}
+                          width={delBtnW}
+                          height={delBtnH}
+                          rx={delBtnH / 2}
                           fill='rgba(0,0,0,0.7)'
                           stroke='rgba(255,255,255,0.15)'
-                          strokeWidth={0.0008 * w}
-                        />
-                        <text
-                          x={a.x}
-                          y={delY + btnH * 0.65}
-                          textAnchor='middle'
-                          fontSize={0.012 * w}
-                          fill='#F87171'
-                          fontWeight='bold'
+                          strokeWidth={0.001 * w}
                           pointerEvents='none'
+                        />
+                        <g
+                          style={{ cursor: 'pointer' }}
+                          data-overlay-handle
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeTradAt(i);
+                          }}
                         >
-                          Delete
-                        </text>
-                      </g>
+                          <rect x={toolbarX} y={toolbarY} width={delBtnW} height={delBtnH} fill='transparent' />
+                          <g
+                            transform={`translate(${toolbarX + delBtnW / 2}, ${toolbarY + delBtnH / 2}) scale(${delBtnH * 0.028}) translate(-12, -12)`}
+                            fill='none'
+                            stroke='#F87171'
+                            strokeWidth={2}
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                            pointerEvents='none'
+                          >
+                            <path d='M3 6h18' />
+                            <path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6' />
+                            <path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2' />
+                            <line x1='10' y1='11' x2='10' y2='17' />
+                            <line x1='14' y1='11' x2='14' y2='17' />
+                          </g>
+                        </g>
+                      </>
                     )}
                   </g>
                 );
               })}
               {texts.map((t, i) => {
-                const sel = selectedOverlay?.kind === 'text' && selectedOverlay.index === i;
                 const fs = 0.03 * w;
                 const pad = fs * 0.45;
                 const tw = Math.max(fs * (t.txt.length || 1) * 0.55, fs * 2);
                 const th = fs * 1.35;
-                const btnH = 0.022 * w;
-                const btnW = 0.045 * w;
-                const delX = t.x - btnW / 2;
-                const delY = t.y + 0.008 * w;
+                const btnH = 0.02 * w;
+                const btnW = 0.03 * w;
+                const gap = 0.004 * w;
+                const totalW = btnW * 2 + gap;
+                const gapY = 0.006 * w;
+                let toolbarX = t.x;
+                if (toolbarX + totalW > w) toolbarX = w - totalW;
+                const toolbarY = t.y + gapY;
                 return (
                   <g key={`text-${i}`} data-overlay-handle>
                     <rect
@@ -1282,7 +1360,7 @@ export const SvgEdit = ({
                       height={th}
                       fill='transparent'
                       className='cursor-grab'
-                      pointerEvents={overlayPointerEvents}
+                      pointerEvents={overlayPointerEvents('text')}
                       onMouseDown={(e) => startOverlayDrag('text', i, e)}
                       onTouchStart={(e) => startOverlayDrag('text', i, e)}
                     />
@@ -1290,33 +1368,31 @@ export const SvgEdit = ({
                       x={t.x}
                       y={t.y}
                       fontSize={fs}
-                      fill='red'
+                      fill={activeTab === 'text' ? '#FF0000' : 'white'}
                       fontWeight='bold'
-                      stroke={sel ? '#FFFFFF' : 'none'}
-                      strokeWidth={sel ? 0.0012 * w : 0}
-                      paintOrder='stroke fill'
+                      stroke='none'
                       pointerEvents='none'
                     >
                       {t.txt}
                     </text>
-                    {/* Inline edit + delete when selected */}
-                    {sel && (
-                      <g>
-                        {/* Background pill for controls */}
+                    {activeTab === 'text' && (
+                      <>
+                        {/* Always-visible toolbar below the text: Edit + Delete */}
                         <rect
-                          x={delX - btnW * 1.5 - 0.004 * w}
-                          y={delY}
-                          width={btnW * 2.5 + 0.008 * w}
+                          x={toolbarX}
+                          y={toolbarY}
+                          width={totalW}
                           height={btnH}
                           rx={btnH / 2}
                           fill='rgba(0,0,0,0.7)'
                           stroke='rgba(255,255,255,0.15)'
-                          strokeWidth={0.0008 * w}
+                          strokeWidth={0.001 * w}
                           pointerEvents='none'
                         />
-                        {/* Edit text button */}
+                        {/* Edit button */}
                         <g
                           style={{ cursor: 'pointer' }}
+                          data-overlay-handle
                           onClick={(e) => {
                             e.stopPropagation();
                             const newText = prompt('Edit label text:', t.txt);
@@ -1327,47 +1403,56 @@ export const SvgEdit = ({
                             }
                           }}
                         >
-                          <rect
-                            x={delX - btnW * 1.5 - 0.004 * w}
-                            y={delY}
-                            width={btnW * 1.5}
-                            height={btnH}
-                            fill='transparent'
-                          />
-                          <text
-                            x={delX - btnW * 1.5 - 0.004 * w + btnW * 0.75}
-                            y={delY + btnH * 0.65}
-                            textAnchor='middle'
-                            fontSize={0.012 * w}
-                            fill='#E2E8F0'
-                            fontWeight='bold'
+                          <rect x={toolbarX} y={toolbarY} width={btnW} height={btnH} fill='transparent' />
+                          <g
+                            transform={`translate(${toolbarX + btnW / 2}, ${toolbarY + btnH / 2}) scale(${btnH * 0.028}) translate(-12, -12)`}
+                            fill='none'
+                            stroke='#60A5FA'
+                            strokeWidth={2}
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
                             pointerEvents='none'
                           >
-                            Edit
-                          </text>
+                            <path d='M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z' />
+                          </g>
                         </g>
+                        {/* Separator */}
+                        <line
+                          x1={toolbarX + btnW}
+                          y1={toolbarY + btnH * 0.2}
+                          x2={toolbarX + btnW}
+                          y2={toolbarY + btnH * 0.8}
+                          stroke='rgba(255,255,255,0.15)'
+                          strokeWidth={0.0008 * w}
+                          pointerEvents='none'
+                        />
                         {/* Delete button */}
                         <g
                           style={{ cursor: 'pointer' }}
+                          data-overlay-handle
                           onClick={(e) => {
                             e.stopPropagation();
                             removeTextAt(i);
                           }}
                         >
-                          <rect x={delX} y={delY} width={btnW} height={btnH} fill='transparent' />
-                          <text
-                            x={delX + btnW / 2}
-                            y={delY + btnH * 0.65}
-                            textAnchor='middle'
-                            fontSize={0.012 * w}
-                            fill='#F87171'
-                            fontWeight='bold'
+                          <rect x={toolbarX + btnW + gap} y={toolbarY} width={btnW} height={btnH} fill='transparent' />
+                          <g
+                            transform={`translate(${toolbarX + btnW + gap + btnW / 2}, ${toolbarY + btnH / 2}) scale(${btnH * 0.028}) translate(-12, -12)`}
+                            fill='none'
+                            stroke='#F87171'
+                            strokeWidth={2}
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
                             pointerEvents='none'
                           >
-                            Delete
-                          </text>
+                            <path d='M3 6h18' />
+                            <path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6' />
+                            <path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2' />
+                            <line x1='10' y1='11' x2='10' y2='17' />
+                            <line x1='14' y1='11' x2='14' y2='17' />
+                          </g>
                         </g>
-                      </g>
+                      </>
                     )}
                   </g>
                 );

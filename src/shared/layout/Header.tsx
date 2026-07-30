@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, type ElementType, type ReactNode } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Link, useLocation } from 'react-router-dom';
-import { User, Settings, Download, LogOut, Trash2, Users, Code, HelpCircle, LogIn, Loader2 } from 'lucide-react';
+import { User, Settings, Download, LogOut, Trash2, Users, Code, LogIn, Loader2 } from 'lucide-react';
 import { useMeta } from '../components/Meta/context';
 import SearchBox from '../components/SearchBox/SearchBox';
 import { Avatar } from '../ui';
@@ -135,15 +135,6 @@ const Header = () => {
               </button>
 
               <div className='border-surface-border/35 mx-2 my-1 border-t' />
-
-              <a
-                href='/pdf/20230525_administrator_doc.pdf'
-                target='_blank'
-                rel='noopener noreferrer'
-                className='hover:bg-surface-raised-hover mx-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] leading-snug font-medium text-slate-300 transition-colors hover:text-slate-50 sm:text-[14px]'
-              >
-                <HelpCircle size={16} strokeWidth={2} className='shrink-0 text-slate-400' /> Help
-              </a>
 
               {isSuperAdmin && (
                 <>
