@@ -248,16 +248,6 @@ export const SvgEdit = ({
   const [selectedOverlay, setSelectedOverlay] = useState<OverlaySelection | null>(null);
   const [draggingOverlay, setDraggingOverlay] = useState<OverlaySelection | null>(null);
   const [zoomMode, setZoomMode] = useState(false);
-  // On touch devices with no existing points, default to Draw mode so mobile
-  // users can start drawing immediately. On desktop, or when points exist,
-  // default to Drag mode (Shift key toggles Draw temporarily).
-  const isTouchDeviceRef = useRef(
-    typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0),
-  );
-  const [drawMode, setDrawMode] = useState(() => {
-    const pnts = parsePath(initialPath);
-    return isTouchDeviceRef.current && pnts.length === 0;
-  });
   const suppressNextSvgClickRef = useRef(false);
   const isDraggingPointRef = useRef(false);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -268,13 +258,6 @@ export const SvgEdit = ({
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       shift.current = e.shiftKey;
-      // When holding Shift on desktop, auto-enable draw mode.
-      // When releasing Shift, go back to the default mode.
-      if (e.shiftKey) {
-        setDrawMode(true);
-      } else {
-        setDrawMode(false);
-      }
     };
     document.addEventListener('keydown', handleKey);
     document.addEventListener('keyup', handleKey);
@@ -309,10 +292,10 @@ export const SvgEdit = ({
   const handleImageInteraction = useCallback(
     (clientX: number, clientY: number) => {
       if (activeTab === 'segment') {
-        if (drawMode || shift.current) {
-          const coords = getMouseCoordsFromClient(clientX, clientY, true);
-          dispatch({ action: 'add-point', ...coords });
-        }
+        // Hitbox-based: if the user tapped empty space (not a point), add a point.
+        // The pointerdown handler already checks for point hits and starts dragging.
+        const coords = getMouseCoordsFromClient(clientX, clientY, true);
+        dispatch({ action: 'add-point', ...coords });
         dispatch({ action: 'mouse-up' });
       } else {
         const coords = getMouseCoordsFromClient(clientX, clientY, activeTab !== 'text');
@@ -339,7 +322,7 @@ export const SvgEdit = ({
         }
       }
     },
-    [activeTab, drawMode, getMouseCoordsFromClient],
+    [activeTab, getMouseCoordsFromClient],
   );
 
   // Pointer events for point drag — works on desktop (mouse) and mobile (touch/pen).
@@ -383,7 +366,7 @@ export const SvgEdit = ({
       if (e.button !== 0) return;
       if (isDraggingPointRef.current) {
         isDraggingPointRef.current = false;
-        suppressNextSvgClickRef.current = false;
+        suppressNextSvgClickRef.current = true;
         dispatchRef.current({ action: 'idle' });
         return;
       }
@@ -545,7 +528,7 @@ export const SvgEdit = ({
                   role='tablist'
                   aria-label='Topo editor sections'
                 >
-                  {/* Segment pill — visually grouped as one compound control */}
+                  {/* Segment pill — simple Path tab with reset */}
                   <div
                     role='tab'
                     aria-selected={activeTab === 'segment'}
@@ -568,46 +551,6 @@ export const SvgEdit = ({
                     >
                       Path
                     </button>
-                    <div className='h-5 w-px bg-white/12' />
-                    <button
-                      type='button'
-                      title='Draw mode — tap the photo to add points'
-                      aria-label='Draw mode — tap the photo to add points'
-                      aria-pressed={activeTab === 'segment' && drawMode}
-                      className={cn(
-                        'inline-flex items-center px-2.5 py-1.5 transition-colors',
-                        designContract.typography.uiCompact,
-                        activeTab === 'segment' && drawMode
-                          ? 'bg-surface-raised font-bold text-slate-100'
-                          : 'text-slate-500 hover:text-slate-200',
-                      )}
-                      onClick={() => {
-                        setActiveTab('segment');
-                        setDrawMode(true);
-                      }}
-                    >
-                      Draw{isTouchDeviceRef.current ? '' : ' (hold ⇧)'}
-                    </button>
-                    <div className='h-5 w-px bg-white/12' />
-                    <button
-                      type='button'
-                      title='Drag mode — select and move existing points'
-                      aria-label='Drag mode — select and move existing points'
-                      aria-pressed={activeTab === 'segment' && !drawMode}
-                      className={cn(
-                        'inline-flex items-center px-2.5 py-1.5 transition-colors',
-                        designContract.typography.uiCompact,
-                        activeTab === 'segment' && !drawMode
-                          ? 'bg-surface-raised font-bold text-slate-100'
-                          : 'text-slate-500 hover:text-slate-200',
-                      )}
-                      onClick={() => {
-                        setActiveTab('segment');
-                        setDrawMode(false);
-                      }}
-                    >
-                      Drag
-                    </button>
                     {points.length > 0 && (
                       <>
                         <div className='h-5 w-px bg-white/12' />
@@ -620,7 +563,6 @@ export const SvgEdit = ({
                             e.stopPropagation();
                             e.preventDefault();
                             dispatch({ action: 'reset' });
-                            if (isTouchDeviceRef.current) setDrawMode(true);
                           }}
                         >
                           <RotateCcw size={12} strokeWidth={2} />
@@ -1085,8 +1027,7 @@ export const SvgEdit = ({
                 const cubicHitR = 0.008 * w;
 
                 return points.map((p, i) => {
-                  const isLast = i === points.length - 1;
-                  const handles = !drawMode && isCubicPoint(p) && (
+                  const handles = isCubicPoint(p) && (
                     <g>
                       <line
                         x1={points[i - 1].x}
@@ -1164,17 +1105,15 @@ export const SvgEdit = ({
                   );
                   return (
                     <g key={`${p.x}-${p.y}-${i}`}>
-                      {(!drawMode || points.length <= 1 || (isLast && hasAnchor)) && (
-                        <circle
-                          cx={p.x}
-                          cy={p.y}
-                          r={i === points.length - 1 && hasAnchor ? 0.008 * w : 0.005 * w}
-                          fill={activePoint === i ? '#00FF00' : '#FF0000'}
-                          stroke={black}
-                          pointerEvents='none'
-                          data-point-index={i}
-                        />
-                      )}
+                      <circle
+                        cx={p.x}
+                        cy={p.y}
+                        r={i === points.length - 1 && hasAnchor ? 0.008 * w : 0.005 * w}
+                        fill={activePoint === i ? '#00FF00' : '#FF0000'}
+                        stroke={black}
+                        pointerEvents='none'
+                        data-point-index={i}
+                      />
                       <circle
                         cx={p.x}
                         cy={p.y}
