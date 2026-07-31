@@ -58,13 +58,15 @@ const downloadGpxFile = (
   coordinates: components['schemas']['Coordinates'][],
 ) => {
   const xml = createXmlString(areaName, sectorName, title, coordinates);
-  const url = 'data:text/json;charset=utf-8,' + encodeURIComponent(xml);
+  const blob = new Blob([xml], { type: 'application/gpx+xml' });
+  const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.download = `${areaName}_${sectorName}_${title}`.replace(/[^a-z0-9]/gi, '_') + '_Trail.gpx';
   link.href = url;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 };
 
 export const TrailProfile = ({
