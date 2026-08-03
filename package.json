@@ -72,7 +72,7 @@
     "react-is": "^19.2.8",
     "react-leaflet": "^5.0.0",
     "react-markdown": "^10.1.0",
-    "react-router-dom": "^7.11.0",
+    "react-router-dom": "^7.18.2",
     "react-select": "^5.10.2",
     "react-swipeable": "^7.0.2",
     "recharts": "^3.10.1",
