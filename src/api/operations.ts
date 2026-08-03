@@ -373,6 +373,9 @@ export function postMediaImage(
       Accept: 'application/json',
     },
     ...invalidateQueriesAfter,
+    // Media uploads are the primary case where a mobile network switch (5G → WiFi)
+    // aborts an in-flight request. Retry so the upload survives the handoff.
+    retryOnNetworkError: true,
   }).then((response) => ensureOkJson(response, url, {} as components['schemas']['Media']));
 }
 
@@ -399,6 +402,7 @@ export function postMediaVideoInitiate(
       'Content-Type': 'application/json',
       Accept: 'application/json',
     },
+    retryOnNetworkError: true,
   }).then((response) => ensureOkJson(response, url, {} as components['schemas']['VideoInitResponse']));
 }
 
@@ -411,6 +415,7 @@ export function postMediaVideoComplete(accessToken: string | null, id: number): 
   return makeAuthenticatedRequest(accessToken, url, {
     method: 'POST',
     ...invalidateQueriesAfter,
+    retryOnNetworkError: true,
   }).then((response) => ensureOkResponse(response, url));
 }
 
@@ -431,6 +436,7 @@ export function postMediaVideoEmbed(
       Accept: 'application/json',
     },
     ...invalidateQueriesAfter,
+    retryOnNetworkError: true,
   }).then((response) => ensureOkJson(response, url, {} as components['schemas']['Media']));
 }
 
@@ -475,42 +481,82 @@ export function postMediaInstagramSave(
       'X-Selected-Media-Index': String(selectedMediaIndex),
     },
     ...invalidateQueriesAfter,
+    retryOnNetworkError: true,
   }).then((response) => ensureOkJson(response, apiUrl, {} as components['schemas']['Media']));
 }
 
 /**
+ * Number of times to retry a direct-to-S3 upload that fails with a transient
+ * network error (e.g. mobile switching 5G → WiFi mid-upload). The presigned URL
+ * is idempotent for a PUT, so a retry is safe.
+ */
+const UPLOAD_RETRY_ATTEMPTS = 3;
+
+/** Base delay (ms) before the first retry; each retry doubles it (exponential backoff). */
+const UPLOAD_RETRY_BASE_DELAY_MS = 1000;
+
+/** Max delay (ms) between retries. */
+const UPLOAD_RETRY_MAX_DELAY_MS = 5000;
+
+const uploadSleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
  * Upload a file to a presigned S3 URL with the required x-amz-acl: public-read header.
+ * Retries transient network failures (dropped connection during a network switch)
+ * with exponential backoff.
  */
 export async function uploadToPresignedUrl(
   presignedUrl: string,
   file: File,
   onProgress?: (percent: number) => void,
 ): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open('PUT', presignedUrl, true);
-    xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
-    xhr.setRequestHeader('x-amz-acl', 'public-read');
+  const attempt = (): Promise<void> =>
+    new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('PUT', presignedUrl, true);
+      xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
+      xhr.setRequestHeader('x-amz-acl', 'public-read');
 
-    if (onProgress && xhr.upload) {
-      xhr.upload.onprogress = (event) => {
-        if (event.lengthComputable && event.total > 0) {
-          onProgress(Math.round((event.loaded / event.total) * 100));
+      if (onProgress && xhr.upload) {
+        xhr.upload.onprogress = (event) => {
+          if (event.lengthComputable && event.total > 0) {
+            onProgress(Math.round((event.loaded / event.total) * 100));
+          }
+        };
+      }
+
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve();
+        } else {
+          reject(new Error(`Upload failed with status ${xhr.status}: ${xhr.statusText}`));
         }
       };
-    }
 
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        resolve();
-      } else {
-        reject(new Error(`Upload failed with status ${xhr.status}: ${xhr.statusText}`));
+      xhr.onerror = () => reject(new Error('Network error during upload to storage'));
+      xhr.send(file);
+    });
+
+  try {
+    return await attempt();
+  } catch (error) {
+    // Only retry network-level failures (the request never reached S3). HTTP
+    // error responses are NOT retried.
+    if (!(error instanceof Error) || !error.message.includes('Network error')) throw error;
+    let delay = UPLOAD_RETRY_BASE_DELAY_MS;
+    let lastError = error;
+    for (let i = 0; i < UPLOAD_RETRY_ATTEMPTS; i++) {
+      await uploadSleep(delay);
+      try {
+        return await attempt();
+      } catch (retryError) {
+        if (!(retryError instanceof Error) || !retryError.message.includes('Network error')) throw retryError;
+        lastError = retryError;
+        delay = Math.min(delay * 2, UPLOAD_RETRY_MAX_DELAY_MS);
       }
-    };
-
-    xhr.onerror = () => reject(new Error('Network error during upload to storage'));
-    xhr.send(file);
-  });
+    }
+    throw lastError;
+  }
 }
 
 export function putMedia(accessToken: string | null, media: components['schemas']['Media']): Promise<Response> {
@@ -522,6 +568,7 @@ export function putMedia(accessToken: string | null, media: components['schemas'
       'Content-Type': 'application/json',
     },
     ...invalidateQueriesAfter,
+    retryOnNetworkError: true,
   }).then((response) => ensureOkResponse(response, url));
 }
 

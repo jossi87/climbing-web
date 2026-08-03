@@ -163,6 +163,33 @@ export function convertFromStringToDate(yyyy_MM_dd: string): Date | null {
 
 const ABSOLUTE_PATTERN = /^https?:\/\//;
 
+/**
+ * Number of times to retry a request that fails with a transient network error
+ * (e.g. `TypeError: Failed to fetch`). This commonly happens on mobile when the
+ * device switches between cellular and WiFi mid-request, which aborts in-flight
+ * connections. A short retry lets the network settle before giving up.
+ */
+const NETWORK_RETRY_ATTEMPTS = 3;
+
+/** Base delay (ms) before the first retry; each retry doubles it (exponential backoff). */
+const NETWORK_RETRY_BASE_DELAY_MS = 500;
+
+/** Max delay (ms) between retries, to avoid long stalls on a dead connection. */
+const NETWORK_RETRY_MAX_DELAY_MS = 4000;
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * True when a fetch rejection is a transient network-level failure (the request
+ * never reached the server / the connection was dropped), as opposed to an HTTP
+ * error response. These are safe to retry because the server never processed the
+ * request. `TypeError: Failed to fetch` is the standard browser message for this.
+ */
+function isTransientNetworkError(error: unknown): boolean {
+  if (!(error instanceof TypeError)) return false;
+  return error.message === 'Failed to fetch' || error.message.includes('NetworkError');
+}
+
 export function makeAuthenticatedRequest(accessToken: string | null, incomingUrl: string, extraOptions?: FetchOptions) {
   const url = ABSOLUTE_PATTERN.test(incomingUrl)
     ? // If we already have an absolute URL (eg: https://...), then we don't
@@ -171,7 +198,7 @@ export function makeAuthenticatedRequest(accessToken: string | null, incomingUrl
     : // Otherwise, append the link to the correct backend instance.
       getUrl(incomingUrl);
 
-  const { consistencyAction, invalidateActivityFeed, ...opts } = extraOptions || {};
+  const { consistencyAction, invalidateActivityFeed, retryOnNetworkError, ...opts } = extraOptions || {};
   const baseHeaders = (opts?.headers as Record<string, string> | undefined) ?? {};
   const headers: Record<string, string> = {
     ...baseHeaders,
@@ -184,7 +211,7 @@ export function makeAuthenticatedRequest(accessToken: string | null, incomingUrl
     headers,
   };
 
-  return fetch(url, options).then((res) => {
+  const dispatchMutationEvents = (res: Response) => {
     if ((options.method ?? 'GET') !== 'GET') {
       window.dispatchEvent(
         new CustomEvent(DATA_MUTATION_EVENT, {
@@ -197,6 +224,32 @@ export function makeAuthenticatedRequest(accessToken: string | null, incomingUrl
       }
     }
     return res;
+  };
+
+  const attempt = (): Promise<Response> => fetch(url, options).then(dispatchMutationEvents);
+
+  // Retry transient network failures (e.g. mobile switching 5G → WiFi) with
+  // exponential backoff. HTTP error responses are NOT retried — only requests
+  // that never reached the server. Retrying is opt-in via `retryOnNetworkError`
+  // because a request may have reached the server even if the response was lost,
+  // so it should only be enabled for operations that are safe to retry.
+  if (!retryOnNetworkError) return attempt();
+
+  return attempt().catch(async (error) => {
+    if (!isTransientNetworkError(error)) throw error;
+    let delay = NETWORK_RETRY_BASE_DELAY_MS;
+    let lastError = error;
+    for (let i = 0; i < NETWORK_RETRY_ATTEMPTS; i++) {
+      await sleep(delay);
+      try {
+        return await attempt();
+      } catch (retryError) {
+        if (!isTransientNetworkError(retryError)) throw retryError;
+        lastError = retryError;
+        delay = Math.min(delay * 2, NETWORK_RETRY_MAX_DELAY_MS);
+      }
+    }
+    throw lastError;
   });
 }
 

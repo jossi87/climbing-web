@@ -633,7 +633,15 @@ const MediaEdit = () => {
       }
     } catch (error) {
       console.warn(error);
-      const msg = error instanceof Error ? error.message : String(error);
+      // Give a clearer message for transient network failures (e.g. mobile
+      // switching 5G → WiFi), which surface as `TypeError: Failed to fetch`.
+      const isNetworkError =
+        error instanceof TypeError && (error.message === 'Failed to fetch' || error.message.includes('NetworkError'));
+      const msg = isNetworkError
+        ? 'Network connection was interrupted (e.g. switching between mobile data and WiFi). Please try again.'
+        : error instanceof Error
+          ? error.message
+          : String(error);
       // Mark any pending/uploading tasks as errored
       setUploadTasks((prev) =>
         prev.map((t) =>
@@ -651,6 +659,7 @@ const MediaEdit = () => {
   };
 
   // ── Edit-mode: thumbnail picker handlers ────────────────────────────
+
   const handleLoadedMetadata = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
