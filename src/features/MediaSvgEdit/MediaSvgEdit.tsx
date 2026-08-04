@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef, useCallback, type JSX } from 'react';
 import {
   getMediaFileUrl,
+  invalidateAllAreaQueries,
   invalidateAllProblemQueries,
+  invalidateAllSectorQueries,
   invalidateMediaQueries,
-  invalidateSectorQueries,
   useMediaSvg,
 } from '../../api';
 import { Rappel } from '../../utils/svg-utils';
@@ -275,24 +276,14 @@ const MediaSvgEdit = () => {
     void newSave(data).then(async () => {
       await invalidateMediaQueries(queryClient, mediaIdNum);
       await invalidateAllProblemQueries(queryClient);
-      if (data!.sectors) {
-        await Promise.all(data!.sectors.map((s) => invalidateSectorQueries(queryClient, s.sectorId!)));
-      }
-      if (data!.areas) {
-        await Promise.all(
-          data!.areas.map((a) =>
-            queryClient.invalidateQueries({
-              predicate: (q) => {
-                const key = q.queryKey;
-                if (!Array.isArray(key) || key[0] !== '/areas') return false;
-                const meta = key[1];
-                if (meta == null || typeof meta !== 'object') return false;
-                return 'id' in meta && (meta as { id: number }).id === a.areaId;
-              },
-            }),
-          ),
-        );
-      }
+      // Refetch every sector query: the image may be shown on a sector page even when it is only connected via a
+      // problem (media_problem), which the media payload's `sectors[]` does not reflect. Refetching all sectors
+      // guarantees the sector page the user came from shows the freshly drawn SVG elements.
+      await invalidateAllSectorQueries(queryClient);
+      // Refetch every area query. The area page's query key is `['/areas/:id', { id }]`, so a per-id predicate on
+      // `key[0] === '/areas'` never matches it. Like sectors, the image may be shown on an area page even when it is
+      // only connected via a problem, so refetching all areas guarantees the area page shows the freshly drawn SVG.
+      await invalidateAllAreaQueries(queryClient);
       navigate(-1);
     });
   }

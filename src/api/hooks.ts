@@ -102,6 +102,12 @@ function activityIdsCountForOffset(row: components['schemas']['Activity']): numb
   return ids.length;
 }
 
+/**
+ * Refetch a sector payload after edits. `refetchType: 'all'` ensures the sector query is refetched even when it is
+ * **inactive** (e.g. the `/media/svg-edit/:id` page has unmounted the sector page). The default `refetchType:
+ * 'active'` only marks inactive queries stale without refetching, so navigating back would serve the stale cached
+ * payload (the app's global `staleTime` is 30 min) until a manual refresh.
+ */
 export function invalidateSectorQueries(client: QueryClient, sectorId: number) {
   return client.invalidateQueries({
     predicate: (q) => {
@@ -111,6 +117,45 @@ export function invalidateSectorQueries(client: QueryClient, sectorId: number) {
       if (meta == null || typeof meta !== 'object') return false;
       return 'id' in meta && (meta as { id: number }).id === sectorId;
     },
+    refetchType: 'all',
+  });
+}
+
+/**
+ * Refetch every cached sector payload. A media image can be shown on a sector page even when it is **not** directly
+ * connected to that sector via `media_sector` — the sector page's media list also includes images connected via
+ * `media_problem` (a problem's image). The media payload's `sectors[]` only reflects direct `media_sector` links, so
+ * per-id {@link invalidateSectorQueries} can miss the sector the user actually came from. Refetching all sector
+ * queries guarantees the sector page shows the freshly drawn SVG elements.
+ *
+ * `refetchType: 'all'` is required: these queries are typically **inactive** while the user is on the
+ * `/media/svg-edit/:id` page (the sector page is unmounted). The default `refetchType: 'active'` only marks inactive
+ * queries stale without refetching them, so navigating back would serve the stale cached payload (the app's global
+ * `staleTime` is 30 min) until a manual refresh.
+ */
+export function invalidateAllSectorQueries(client: QueryClient) {
+  return client.invalidateQueries({ queryKey: ['/sectors'], refetchType: 'all' });
+}
+
+/**
+ * Refetch every cached area payload. The area page's query key is `['/areas/:id', { id }]` (see {@link useArea}), so
+ * a `queryKey: ['/areas']` prefix match would miss it — match on the `/areas/` prefix instead. Like sectors, an image
+ * can be shown on an area page even when it is only connected via a problem, so refetching all areas guarantees the
+ * area page the user came from shows the freshly drawn SVG elements.
+ *
+ * `refetchType: 'all'` is required: these queries are typically **inactive** while the user is on the
+ * `/media/svg-edit/:id` page (the area page is unmounted). The default `refetchType: 'active'` only marks inactive
+ * queries stale without refetching them, so navigating back would serve the stale cached payload (the app's global
+ * `staleTime` is 30 min) until a manual refresh.
+ */
+export function invalidateAllAreaQueries(client: QueryClient) {
+  return client.invalidateQueries({
+    predicate: (q) => {
+      const key = q.queryKey;
+      if (!Array.isArray(key) || typeof key[0] !== 'string') return false;
+      return key[0].startsWith('/areas/');
+    },
+    refetchType: 'all',
   });
 }
 
