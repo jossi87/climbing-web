@@ -19,6 +19,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { postPermissions } from './operations';
 import { captureSentryException } from '../utils/sentry';
 import { type MediaRegion, calculateMediaRegion, isPathVisible, scaleCoordsJson, scalePath } from '../utils/svg-scaler';
+import type { SvgType } from '../utils/svg-helpers';
 
 import { createHttpErrorFromResponse, isHttpError } from './httpError';
 import { applyEntityRedirectUrl } from './redirectResponse';
@@ -735,10 +736,7 @@ export type EditableSvg = {
   path: string;
   texts: { x: number; y: number; txt: string }[];
   tradBelayStations: { x: number; y: number }[];
-  readOnlySvgs: (Pick<
-    EditableSvg,
-    'nr' | 'pitch' | 'hasAnchor' | 'path' | 'anchors' | 'tradBelayStations' | 'texts'
-  > & { t: 'other' })[];
+  readOnlySvgs: SvgType[];
 };
 
 export function useSvgEdit(problemId: number, pitch: number, mediaId: number, mediaRegion: MediaRegion | null) {
@@ -836,11 +834,36 @@ export function useSvgEdit(problemId: number, pitch: number, mediaId: number, me
         hasAnchor: !!s.hasAnchor,
         path: (s.path && mediaRegionLocal ? scalePath(s.path, mediaRegionLocal) : s.path) ?? '',
         anchors: s.anchors ? JSON.parse(scaleCoordsJson(s.anchors, mediaRegionLocal)) : [],
-        tradBelayStations: s.tradBelayStations
-          ? JSON.parse(scaleCoordsJson(s.tradBelayStations, mediaRegionLocal))
-          : [],
-        texts: s.texts ? JSON.parse(scaleCoordsJson(s.texts, mediaRegionLocal)) : [],
         t: 'other',
+      });
+    }
+  }
+
+  // Include the media's own "Draw on image" SVGs (descent path + rappel markers) as
+  // read-only overlays so they stay visible while drawing a topo line. Media SVGs are
+  // stored in full-image coordinates, so scale them to the cropped media region like
+  // the other read-only SVGs above.
+  for (const ms of m.mediaSvgs ?? []) {
+    if (!ms.t) continue;
+    if (ms.t === 'PATH') {
+      readOnlySvgs.push({
+        t: 'PATH',
+        path: (ms.path && mediaRegionLocal ? scalePath(ms.path, mediaRegionLocal) : ms.path) ?? '',
+        anchors: [],
+        nr: 0,
+        pitch: 0,
+        hasAnchor: false,
+      });
+    } else {
+      readOnlySvgs.push({
+        t: ms.t,
+        path: '',
+        anchors: [],
+        nr: 0,
+        pitch: 0,
+        hasAnchor: false,
+        rappelX: (ms.rappelX ?? 0) - (mediaRegionLocal?.x ?? 0),
+        rappelY: (ms.rappelY ?? 0) - (mediaRegionLocal?.y ?? 0),
       });
     }
   }

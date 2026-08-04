@@ -872,7 +872,8 @@ export const SvgEdit = ({
                 width='100%'
                 height='100%'
               />
-              {parseReadOnlySvgs(readOnlySvgs, w, h, 1000)}
+              {parseReadOnlySvgs(readOnlySvgs, w, h, 0.00072 * w)}
+
               {activeTab === 'segment' ? (
                 <>
                   <path d={path} fill='none' stroke={black} strokeWidth={0.003 * w} pointerEvents='none' />
