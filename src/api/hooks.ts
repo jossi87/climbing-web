@@ -40,7 +40,14 @@ function useKey(customKey: readonly unknown[] | undefined, urlSuffix: string): r
 
 export { invalidateActivityAndFrontpageQueries } from './activityFeedInvalidation';
 
-/** Call after tick/comment POSTs so `useProblem` refetches (cache is not updated automatically). */
+/**
+ * Call after tick/comment POSTs so `useProblem` refetches (cache is not updated automatically).
+ *
+ * `refetchType: 'all'` ensures the problem payload is refetched even when its query is **inactive** (e.g. the
+ * topo editor `/problem/svg-edit/:id` page has unmounted the problem page). The default `refetchType: 'active'`
+ * only marks inactive queries stale without refetching, so navigating back would serve the stale cached payload
+ * (the app's global `staleTime` is 30 min) until a manual refresh.
+ */
 export function invalidateProblemQueries(client: QueryClient, problemId: number) {
   return client.invalidateQueries({
     predicate: (q) => {
@@ -50,15 +57,21 @@ export function invalidateProblemQueries(client: QueryClient, problemId: number)
       if (meta == null || typeof meta !== 'object') return false;
       return 'id' in meta && (meta as { id: number }).id === problemId;
     },
+    refetchType: 'all',
   });
 }
 
 /**
  * Refetch every cached problem payload (`/media/svg` overlays update `mediaSvgs` only — those rows are not listed in
  * `svgs[]`, so per-id {@link invalidateProblemQueries} misses the problems that embed this image).
+ *
+ * `refetchType: 'all'` is required: these queries are typically **inactive** while the user is on the
+ * `/media/svg-edit/:id` page (the problem/sector/area page that embeds the image is unmounted). The default
+ * `refetchType: 'active'` only marks inactive queries stale without refetching them, so navigating back would
+ * serve the stale cached payload (the app's global `staleTime` is 30 min) until a manual refresh.
  */
 export function invalidateAllProblemQueries(client: QueryClient) {
-  return client.invalidateQueries({ queryKey: ['/problems'] });
+  return client.invalidateQueries({ queryKey: ['/problems'], refetchType: 'all' });
 }
 
 /** After topo/SVG edits on a shared image — `useMedia` / modals refetch. Query key matches {@link useMediaSvg}. */
@@ -71,6 +84,7 @@ export function invalidateMediaQueries(client: QueryClient, idMedia: number) {
       if (meta == null || typeof meta !== 'object') return false;
       return 'idMedia' in meta && (meta as { idMedia: number }).idMedia === idMedia;
     },
+    refetchType: 'all',
   });
 }
 
