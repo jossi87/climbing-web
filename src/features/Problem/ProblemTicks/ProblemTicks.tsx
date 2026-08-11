@@ -36,6 +36,35 @@ function joinDates(dates: (string | undefined | null)[]) {
   return dates.filter(nonEmptyDate).join(' · ');
 }
 
+/** A single ascent entry (the original tick or one of its repeats) with an optional date and comment. */
+type AscentEntry = { date?: string | null; comment?: string | null };
+
+/**
+ * Combine the original tick with its repeats into a single list of ascent entries,
+ * sorted newest-first (descending by date). Entries without a date are kept at the end.
+ */
+function combineAscents(t: components['schemas']['ProblemTick']): AscentEntry[] {
+  const entries: AscentEntry[] = [{ date: t.date, comment: t.comment }];
+  for (const r of t.repeats ?? []) {
+    entries.push({ date: r.date, comment: r.comment });
+  }
+  return entries.sort((a, b) => {
+    const da = a.date ?? '';
+    const db = b.date ?? '';
+    if (da && db) return db.localeCompare(da);
+    if (da) return -1;
+    if (db) return 1;
+    return 0;
+  });
+}
+
+/** The newest date across a tick and all its repeats (used to position the tick block among other users). */
+function newestDate(t: components['schemas']['ProblemTick']): string | undefined {
+  const dates = [t.date, ...(t.repeats ?? []).map((r) => r.date)].filter(nonEmptyDate);
+  if (dates.length === 0) return undefined;
+  return dates.sort((a, b) => b.localeCompare(a))[0];
+}
+
 /** Tighter vertical padding than frontpage {@link Activity} rows so stacked entries don’t read as overly airy. */
 const activityRowPad = 'px-4 py-2.5 md:px-5 md:py-2.5';
 const activityAvatarGap = 'gap-3 md:gap-3';
@@ -46,7 +75,7 @@ const quoteBlock = cn(
 );
 
 export const ProblemTicks = ({ ticks, faUsers, faAidUsers }: Props) => {
-  const safeTicks = ticks ?? [];
+  const safeTicks = useMemo(() => ticks ?? [], [ticks]);
 
   /** Set of user IDs that are either FA or FA Aid — used to show "FA" badge on matching tick users. */
   const faUserIdSet = useMemo(() => {
@@ -60,38 +89,42 @@ export const ProblemTicks = ({ ticks, faUsers, faAidUsers }: Props) => {
     return ids;
   }, [faUsers, faAidUsers]);
 
+  /** Order tick blocks by the newest ascent date (tick + repeats combined), newest first. */
+  const sortedTicks = useMemo(() => {
+    return [...safeTicks].sort((a, b) => {
+      const na = newestDate(a);
+      const nb = newestDate(b);
+      if (na && nb) return nb.localeCompare(na);
+      if (na) return -1;
+      if (nb) return 1;
+      return 0;
+    });
+  }, [safeTicks]);
+
   if (safeTicks.length === 0) return null;
 
   return (
     <div className='flex flex-col'>
-      {safeTicks.map((t, index) => {
+      {sortedTicks.map((t, index) => {
         const repeats = t.repeats ?? [];
         const isSelf = !!t.writable;
         const isFaUser = t.idUser != null && faUserIdSet.has(t.idUser);
-        const displayDate = joinDates([t.date, ...repeats.map((r) => r.date)]);
+        const ascents = combineAscents(t);
+        const displayDate = joinDates(ascents.map((a) => a.date));
+        const hasRepeats = repeats.length > 0;
         let commentContent: ReactNode = null;
 
-        if (repeats.length > 0) {
+        if (hasRepeats) {
           commentContent = (
             <div className={cn(quoteBlock, 'space-y-0')}>
-              <div className='flex flex-wrap gap-x-2 gap-y-0'>
-                {nonEmptyDate(t.date) ? (
-                  <span className={cn(tickFlags, 'font-mono tabular-nums')}>{t.date}</span>
-                ) : null}
-                {t.comment ? (
-                  <span className={cn(tickCommentSmall, 'min-w-0 flex-1 text-slate-50 not-italic')}>
-                    <Linkify>{t.comment}</Linkify>
-                  </span>
-                ) : null}
-              </div>
-              {repeats.map((r, idx) => (
+              {ascents.map((a, idx) => (
                 <div key={idx} className='flex flex-wrap gap-x-2 gap-y-0'>
-                  {nonEmptyDate(r.date) ? (
-                    <span className={cn(tickFlags, 'font-mono tabular-nums')}>{r.date}</span>
+                  {nonEmptyDate(a.date) ? (
+                    <span className={cn(tickFlags, 'font-mono tabular-nums')}>{a.date}</span>
                   ) : null}
-                  {r.comment ? (
+                  {a.comment ? (
                     <span className={cn(tickCommentSmall, 'min-w-0 flex-1 text-slate-50 not-italic')}>
-                      <Linkify>{r.comment}</Linkify>
+                      <Linkify>{a.comment}</Linkify>
                     </span>
                   ) : null}
                 </div>

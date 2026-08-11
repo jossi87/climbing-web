@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => {
     envPrefix: 'REACT_APP_',
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, './src'),
+        '@': path.resolve(import.meta.dirname, './src'),
       },
     },
     plugins: [
