@@ -149,8 +149,11 @@ export const useAreaEdit = ({ areaId }: { areaId: number }) => {
     onSuccess: (redirect) => {
       const id = redirect.idArea && redirect.idArea > 0 ? redirect.idArea : areaId;
       if (id > 0) {
+        // `useArea` keys its query as `['/areas/:id', { id }]` (a string first element), so the
+        // invalidation must match that exact shape — a `['/areas', { id }]` key would miss it and
+        // leave the stale cached area payload (30 min staleTime) on the page after an edit.
         queryClient.invalidateQueries({
-          queryKey: ['/areas', { id }],
+          queryKey: [`/areas/${id}`, { id }],
         });
       }
     },
