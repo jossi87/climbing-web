@@ -11,6 +11,8 @@ export type Row = {
   ticked: boolean;
   rock: string;
   subType: string;
+  /** Multi-pitch route count (only exposed for user todo lists; used for the "Only multipitch" filter). */
+  numPitches?: number;
   /** Sector/area lists: used with {@link rowListTypeKey} for Broken grouping. */
   broken?: boolean;
   num: number;

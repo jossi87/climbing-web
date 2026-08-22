@@ -41,6 +41,23 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/media/video/embed/refresh-thumbnail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Refresh thumbnail for embedded video (YouTube/Vimeo) */
+        put: operations["putMediaVideoEmbedRefreshThumbnail"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/media/jpeg/rotate": {
         parameters: {
             query?: never;
@@ -1839,6 +1856,9 @@ export type components = {
             nr?: number;
             name?: string;
             grade?: string;
+            subType?: string;
+            /** Format: int32 */
+            numPitches?: number;
             coordinates?: components["schemas"]["Coordinates"];
             partners?: components["schemas"]["User"][];
         };
@@ -2264,6 +2284,26 @@ export interface operations {
         };
     };
     deleteMedia: {
+        parameters: {
+            query: {
+                id: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    putMediaVideoEmbedRefreshThumbnail: {
         parameters: {
             query: {
                 id: number;

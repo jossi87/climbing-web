@@ -11,6 +11,7 @@ import {
   tickCragLinkArea,
   tickCragLinkSector,
   tickFlags,
+  tickListRowQuietMeta,
   tickProblemLink,
   tickWhenGrade,
 } from './profileRowTypography';
@@ -46,6 +47,8 @@ type TodoItem = {
   problemName: string;
   grade: string;
   gradeWeight: number;
+  subType: string;
+  numPitches: number;
   coordinates?: { latitude: number; longitude: number };
   problemLockedAdmin: boolean;
   problemLockedSuperadmin: boolean;
@@ -73,6 +76,14 @@ const TodoListItem = ({ item }: { item: TodoItem }) => (
         <span className={cn(tickWhenGrade, 'whitespace-nowrap tabular-nums')}>{item.grade}</span>
       </>
     ) : null}
+    {item.numPitches > 1 && (
+      <>
+        {' '}
+        <span className={cn(tickListRowQuietMeta, 'whitespace-nowrap')}>
+          {'\u00B7'} {item.numPitches} pitches
+        </span>
+      </>
+    )}
     <LockSymbol lockedAdmin={item.problemLockedAdmin} lockedSuperadmin={item.problemLockedSuperadmin} />
     {item.partners.length > 0 ? (
       <>
@@ -236,6 +247,8 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
             problemName: problem.name ?? '',
             grade: problem.grade ?? '',
             gradeWeight: resolveGradeId(problem.grade ?? 'n/a'),
+            subType: problem.subType ?? '',
+            numPitches: problem.numPitches ?? 0,
             coordinates:
               problem.coordinates?.latitude != null && problem.coordinates?.longitude != null
                 ? {
@@ -304,7 +317,8 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
             numTicks: 0,
             ticked: false,
             rock: '',
-            subType: '',
+            subType: item.subType,
+            numPitches: item.numPitches,
             num: item.todoId,
             fa: false,
             faDate: null,

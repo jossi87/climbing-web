@@ -18,6 +18,7 @@ type UiState = {
   groupBy: GroupOption;
   hideTicked: boolean;
   onlyFa: boolean;
+  onlyMultipitch: boolean;
   types: Record<string, boolean>;
 };
 
@@ -30,6 +31,7 @@ type DerivedState = {
   uniqueTypes: string[];
   containsFa: boolean;
   containsTicked: boolean;
+  containsMultipitch: boolean;
 };
 
 export type State = UiState & DerivedState;
@@ -40,6 +42,7 @@ type Update =
   | { action: 'group-by'; groupBy: UiState['groupBy'] }
   | { action: 'hide-ticked'; hideTicked?: UiState['hideTicked'] }
   | { action: 'only-fa'; onlyFa?: UiState['onlyFa'] }
+  | { action: 'only-multipitch'; onlyMultipitch?: UiState['onlyMultipitch'] }
   | { action: 'init-types'; typeNames: string[] }
   | { action: 'type'; type: string; enabled: boolean };
 
@@ -92,6 +95,13 @@ const uiStateReducer = (state: UiState, update: Update): UiState => {
       return {
         ...state,
         onlyFa: update.onlyFa !== undefined ? update.onlyFa : !state.onlyFa,
+      };
+    }
+
+    case 'only-multipitch': {
+      return {
+        ...state,
+        onlyMultipitch: update.onlyMultipitch !== undefined ? update.onlyMultipitch : !state.onlyMultipitch,
       };
     }
 
@@ -186,6 +196,7 @@ export const useProblemListState = ({
 }): State & { dispatch: Dispatch<Update> } => {
   const [storedHideTicked, setStoredHideTicked] = useSessionStorage(`problemList/${key}/hideTicked`, false);
   const [storedOnlyFa, setStoredOnlyFa] = useSessionStorage(`problemList/${key}/onlyFa`, false);
+  const [storedOnlyMultipitch, setStoredOnlyMultipitch] = useSessionStorage(`problemList/${key}/onlyMultipitch`, false);
 
   const orderStorageKey =
     sortPreferenceBucket != null
@@ -206,25 +217,30 @@ export const useProblemListState = ({
   const validGradeLow = storedGradeLow !== null && easyToHard.includes(storedGradeLow) ? storedGradeLow : null;
   const validGradeHigh = storedGradeHigh !== null && easyToHard.includes(storedGradeHigh) ? storedGradeHigh : null;
 
-  const [{ gradeLow, gradeHigh, hideTicked, onlyFa, order, groupBy, types }, dispatch] = useReducer(uiStateReducer, {
-    gradeLow: validGradeLow ?? undefined,
-    gradeHigh: validGradeHigh ?? undefined,
-    order: CLEANED_ORDER[storedOrderBy as OrderOption] ?? defaultOrder,
-    /** Grouping is not persisted — default to none each visit. */
-    groupBy: 'none',
-    hideTicked: storedHideTicked,
-    onlyFa: storedOnlyFa,
-    types: rows.reduce(
-      (acc, row) => {
-        const tKey = rowListTypeKey(row);
-        return { ...acc, [tKey]: storedTypes[tKey] ?? true };
-      },
-      {} as Record<string, boolean>,
-    ),
-  });
+  const [{ gradeLow, gradeHigh, hideTicked, onlyFa, onlyMultipitch, order, groupBy, types }, dispatch] = useReducer(
+    uiStateReducer,
+    {
+      gradeLow: validGradeLow ?? undefined,
+      gradeHigh: validGradeHigh ?? undefined,
+      order: CLEANED_ORDER[storedOrderBy as OrderOption] ?? defaultOrder,
+      /** Grouping is not persisted — default to none each visit. */
+      groupBy: 'none',
+      hideTicked: storedHideTicked,
+      onlyFa: storedOnlyFa,
+      onlyMultipitch: storedOnlyMultipitch,
+      types: rows.reduce(
+        (acc, row) => {
+          const tKey = rowListTypeKey(row);
+          return { ...acc, [tKey]: storedTypes[tKey] ?? true };
+        },
+        {} as Record<string, boolean>,
+      ),
+    },
+  );
 
   useEffect(() => setStoredHideTicked(hideTicked), [hideTicked, setStoredHideTicked]);
   useEffect(() => setStoredOnlyFa(onlyFa), [onlyFa, setStoredOnlyFa]);
+  useEffect(() => setStoredOnlyMultipitch(onlyMultipitch), [onlyMultipitch, setStoredOnlyMultipitch]);
   useEffect(() => setStoredOrderBy(order), [order, setStoredOrderBy]);
   useEffect(() => setStoredGradeLow(gradeLow ?? null), [gradeLow, setStoredGradeLow]);
   useEffect(() => setStoredGradeHigh(gradeHigh ?? null), [gradeHigh, setStoredGradeHigh]);
@@ -259,13 +275,14 @@ export const useProblemListState = ({
           index <= indexHigh &&
           (hideTicked ? !problem.ticked : true) &&
           (onlyFa ? problem.fa : true) &&
+          (onlyMultipitch ? (problem.numPitches ?? 0) > 1 : true) &&
           (filterByType ? !!types[tKey] : true)
         );
       })
       .sort(SORTS[order]);
 
     return [filtered, [...areas].sort(), [...rocks].sort(), [...sectors].sort(), [...typeNames].sort()];
-  }, [easyToHard, gradeHigh, gradeLow, hideTicked, idToGrade, mapping, onlyFa, order, rows, types]);
+  }, [easyToHard, gradeHigh, gradeLow, hideTicked, idToGrade, mapping, onlyFa, onlyMultipitch, order, rows, types]);
 
   return {
     dispatch,
@@ -277,6 +294,7 @@ export const useProblemListState = ({
     groupBy,
     hideTicked,
     onlyFa,
+    onlyMultipitch,
     types,
 
     // Derived state
@@ -288,5 +306,6 @@ export const useProblemListState = ({
     uniqueTypes,
     containsFa: !!rows.find(({ fa }) => !!fa),
     containsTicked: !!rows.find(({ ticked }) => !!ticked),
+    containsMultipitch: !!rows.find(({ numPitches }) => (numPitches ?? 0) > 1),
   };
 };

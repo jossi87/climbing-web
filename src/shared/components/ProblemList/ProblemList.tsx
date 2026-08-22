@@ -492,6 +492,7 @@ export const ProblemList = ({
     groupBy,
     hideTicked,
     onlyFa,
+    onlyMultipitch,
     types,
     filtered,
     uniqueAreas,
@@ -500,6 +501,7 @@ export const ProblemList = ({
     uniqueTypes,
     containsFa,
     containsTicked,
+    containsMultipitch,
     dispatch,
   } = useProblemListState({
     rows: allRows,
@@ -522,7 +524,12 @@ export const ProblemList = ({
   const showListControls = allRows.length >= MIN_ROWS_FOR_LIST_CONTROLS;
 
   const hasActiveFilters =
-    gradeLow !== undefined || gradeHigh !== undefined || Object.values(types).some((v) => !v) || hideTicked || onlyFa;
+    gradeLow !== undefined ||
+    gradeHigh !== undefined ||
+    Object.values(types).some((v) => !v) ||
+    hideTicked ||
+    onlyFa ||
+    onlyMultipitch;
 
   if (!allRows?.length) {
     return null;
@@ -700,6 +707,16 @@ export const ProblemList = ({
                 }
               />
             ))}
+          </div>
+        )}
+
+        {mode === 'user' && containsMultipitch && (
+          <div className='flex flex-wrap gap-x-4 gap-y-1.5'>
+            <ToggleLabel
+              label='Only multipitch'
+              checked={onlyMultipitch}
+              onChange={() => dispatch({ action: 'only-multipitch' })}
+            />
           </div>
         )}
 
