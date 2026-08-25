@@ -5,7 +5,6 @@ import { visualizer } from 'rollup-plugin-visualizer';
 import path from 'path';
 
 export default defineConfig(({ mode }) => {
-  const isProd = mode === 'production';
   const isAnalyze = mode === 'analyze';
 
   return {
@@ -37,7 +36,6 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: 'build',
       target: 'esnext',
-      cssMinify: 'esbuild',
       cssCodeSplit: true,
       modulePreload: {
         /**
@@ -55,23 +53,19 @@ export default defineConfig(({ mode }) => {
             'vendor-json-url',
             'vendor-select',
             'vendor-sentry',
-            'vendor-utils',
-            'vendor-video',
           ];
           return deps.filter((dep) => !preloadDenylist.some((name) => dep.includes(name)));
         },
       },
       chunkSizeWarningLimit: 1000,
-      rollupOptions: {
-        onwarn(warning, warn) {
-          if (warning.code === 'COMMONJS_VARIABLE_IN_ESM' && warning.id?.includes('dashjs')) return;
-          warn(warning);
-        },
+      // Rolldown output options (Vite 8). Both manualChunks and the oxc minifier
+      // live here — providing `rolldownOptions` replaces the legacy `rollupOptions`
+      // compat shim entirely.
+      rolldownOptions: {
         output: {
           manualChunks(id) {
             if (id.includes('node_modules')) {
               if (id.includes('recharts')) return 'vendor-charts';
-              if (id.includes('dashjs') || id.includes('hls.js')) return 'vendor-video';
               if (id.includes('leaflet')) return 'vendor-leaflet';
               if (id.includes('lucide-react')) return 'vendor-icons';
               if (id.includes('react-datepicker')) return 'vendor-datepicker';
@@ -93,10 +87,14 @@ export default defineConfig(({ mode }) => {
               return undefined;
             }
           },
+          // Oxc minifier (Vite 8 default). Drop console/debugger in production builds.
+          minify: {
+            compress: {
+              dropConsole: true,
+              dropDebugger: true,
+            },
+          },
         },
-      },
-      esbuild: {
-        drop: isProd ? ['console', 'debugger'] : [],
       },
     },
   };
