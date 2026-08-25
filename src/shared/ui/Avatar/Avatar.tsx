@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, Suspense, lazy } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import {
   getMediaFileUrl,
@@ -9,7 +9,7 @@ import {
 import { cn } from '../../../lib/utils';
 import { avatarFallbackColors, avatarInitialsFromName } from './avatarFallback';
 
-const AvatarModal = lazy(() => import('./AvatarModal'));
+import AvatarModal from './AvatarModal';
 
 type AvatarSize = 'micro' | 'mini' | 'tiny' | 'small' | 'medium' | 'large' | 'big' | 'huge' | 'massive';
 
@@ -167,16 +167,14 @@ export function ClickableAvatar(props: AvatarProps) {
       {open &&
         mid !== 0 &&
         createPortal(
-          <Suspense fallback={null}>
-            <AvatarModal
-              mid={mid}
-              name={props.name}
-              userId={props.userId}
-              stamp={Number(props.mediaIdentity?.versionStamp ?? 0)}
-              mediaIdentity={props.mediaIdentity}
-              onClose={closeModal}
-            />
-          </Suspense>,
+          <AvatarModal
+            mid={mid}
+            name={props.name}
+            userId={props.userId}
+            stamp={Number(props.mediaIdentity?.versionStamp ?? 0)}
+            mediaIdentity={props.mediaIdentity}
+            onClose={closeModal}
+          />,
           document.body,
         )}
     </>

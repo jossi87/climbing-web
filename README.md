@@ -14,14 +14,9 @@ Backend: [https://github.com/jossi87/climbing-ws](https://github.com/jossi87/cli
   npm run dev
 ```
 
-#### Different API origins
-
-To use different environments, use the `REACT_APP_API_URL` environment variable.
-For example, here's one way to start a dev server pointing to a different site:
-
-```bash
-REACT_APP_API_URL=https://klatreforer.tromsoklatring.no npm run dev
-```
+The dev server uses `https://brattelinjer.no` as the API origin (hardcoded in
+`getBaseUrl()` in `src/api/utils.ts`). Change that constant to point at a different
+API while developing.
 
 <!-- Deployment -->
 

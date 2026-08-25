@@ -8,7 +8,6 @@ export default defineConfig(({ mode }) => {
   const isAnalyze = mode === 'analyze';
 
   return {
-    envPrefix: 'REACT_APP_',
     resolve: {
       alias: {
         '@': path.resolve(import.meta.dirname, './src'),
@@ -30,7 +29,6 @@ export default defineConfig(({ mode }) => {
       open: true,
     },
     define: {
-      'process.env': {},
       global: 'window',
     },
     build: {
@@ -50,7 +48,6 @@ export default defineConfig(({ mode }) => {
             'vendor-datepicker',
             'vendor-leaflet',
             'vendor-flat',
-            'vendor-json-url',
             'vendor-select',
             'vendor-sentry',
           ];
@@ -71,7 +68,6 @@ export default defineConfig(({ mode }) => {
               if (id.includes('react-datepicker')) return 'vendor-datepicker';
               if (id.includes('date-fns')) return 'vendor-date-fns';
               if (id.includes('react-select')) return 'vendor-select';
-              if (id.includes('json-url')) return 'vendor-json-url';
               if (id.includes('flat')) return 'vendor-flat';
               if (id.includes('@auth0')) return 'vendor-auth';
               if (id.includes('@sentry')) return 'vendor-sentry';

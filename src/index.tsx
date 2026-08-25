@@ -6,6 +6,7 @@ import App from './App';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DataReloader } from './shared/providers/DataReloader';
 import { ThemeProvider } from './shared/providers/ThemeProvider';
+import { SessionGuard } from './shared/providers/SessionGuard';
 import { Component, type ErrorInfo, type ReactNode, lazy, Suspense } from 'react';
 import { captureSentryException, initSentry } from './utils/sentry';
 
@@ -15,9 +16,7 @@ const ReactQueryDevtoolsLazy = lazy(() =>
   })),
 );
 
-const APP_ENV = import.meta.env.REACT_APP_ENV;
-
-initSentry(APP_ENV);
+initSentry(import.meta.env.PROD ? 'production' : 'development');
 
 function ErrorFallback({ error, resetError }: { error: unknown; componentStack: string; resetError: () => void }) {
   return (
@@ -84,7 +83,14 @@ export const Auth0ProviderWithNavigate = ({ children }: { children: ReactNode })
       }}
       onRedirectCallback={onRedirectCallback}
       useRefreshTokens={true}
-      useRefreshTokensFallback={true}
+      /**
+       * Keep the silent-auth iframe fallback disabled. When a refresh token is
+       * revoked (Auth0 rotation reuse detection), the refresh grant 403s and the
+       * fallback opens a hidden iframe that modern browsers block — the check
+       * never settles and `isLoading` hangs, leaving a black screen. Without the
+       * fallback the failure resolves cleanly to "logged out" (login button).
+       */
+      useRefreshTokensFallback={false}
       cacheLocation={'localstorage'}
     >
       {children}
@@ -103,13 +109,15 @@ const Index = () => (
         <AppErrorBoundary>
           <DataReloader>
             <Auth0ProviderWithNavigate>
-              <App />
+              <SessionGuard>
+                <App />
+              </SessionGuard>
             </Auth0ProviderWithNavigate>
           </DataReloader>
         </AppErrorBoundary>
       </ThemeProvider>
     </BrowserRouter>
-    {APP_ENV === 'development' && (
+    {import.meta.env.DEV && (
       <Suspense fallback={null}>
         <ReactQueryDevtoolsLazy />
       </Suspense>

@@ -4,10 +4,8 @@ import { useGrades, useMeta } from '../../shared/components/Meta/context';
 import { itemLocalStorage } from '../../utils/use-local-storage';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { flatten, unflatten } from 'flat';
-import jsonUrl from 'json-url';
 import { captureSentryException, captureSentryMessage } from '../../utils/sentry';
-
-const codec = jsonUrl('lzw');
+import { decodeFilterHash, encodeFilterHash } from './filterHash';
 
 type FilterResults = {
   filteredData: components['schemas']['Toc'];
@@ -727,12 +725,14 @@ const wrappedReducer: typeof reducer = (state, update) => {
   return filter(reduced);
 };
 
-const parseHash = (hash: string): Promise<Partial<FilterInputs>> => {
-  return codec.decompress(hash.replace(/^#/, '')).then((obj) => {
-    // TODO: Validate the object
-    const unflattened: Partial<FilterInputs> = unflatten(obj, { object: true });
-    return unflattened;
-  });
+const parseHash = (hash: string): Partial<FilterInputs> => {
+  const obj = decodeFilterHash(hash);
+  if (!obj) {
+    throw new Error('Invalid filter hash');
+  }
+  // TODO: Validate the object
+  const unflattened: Partial<FilterInputs> = unflatten(obj, { object: true });
+  return unflattened;
 };
 
 export const useFilterState = (init?: Partial<UiState>) => {
@@ -786,20 +786,8 @@ export const useFilterState = (init?: Partial<UiState>) => {
       return filterValue !== undefined && filterValue !== defaultValue;
     });
 
-    (minimalDiffEntries.length === 0
-      ? Promise.resolve('')
-      : codec.compress(
-          minimalDiffEntries.reduce<Record<string, unknown>>((acc, [k, v]) => {
-            if (!acc) {
-              return { [k]: v };
-            }
-            acc[k] = v;
-            return acc;
-          }, {}),
-        )
-    ).then((out) => {
-      history.replaceState(undefined, '', `#${out}`);
-    });
+    const out = encodeFilterHash(Object.fromEntries(minimalDiffEntries));
+    history.replaceState(undefined, '', `#${out}`);
   }, [state]);
 
   const loadFromHash = useCallback(

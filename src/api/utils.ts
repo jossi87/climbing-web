@@ -70,7 +70,7 @@ export function getLocales() {
 
 export function getBaseUrl(): string {
   if (import.meta.env.DEV) {
-    return import.meta.env.REACT_APP_API_URL ?? 'https://brattelinjer.no';
+    return 'https://brattelinjer.no';
   }
   return window.origin;
 }
@@ -84,7 +84,11 @@ export function useAccessToken() {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   useEffect(() => {
     if (isAuthenticated) {
-      getAccessTokenSilently().then((token) => setAccessToken(token));
+      getAccessTokenSilently()
+        .then((token) => setAccessToken(token))
+        .catch(() => {
+          // Dead session — SessionGuard handles the logout; leave token null.
+        });
     }
   }, [getAccessTokenSilently, isAuthenticated]);
   return accessToken;

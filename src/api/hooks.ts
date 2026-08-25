@@ -232,7 +232,18 @@ export function useData<TQueryData = unknown, TData = TQueryData>(
     });
 
   const queryFn: () => Promise<TQueryData> = async (): Promise<TQueryData> => {
-    const accessToken = isAuthenticated ? await getAccessTokenSilently() : null;
+    // If the access token can't be obtained (e.g. a revoked refresh token),
+    // fall back to an anonymous request rather than failing the query.
+    // SessionGuard resets the session, but this prevents a black screen in the
+    // meantime and keeps public content renderable.
+    let accessToken: string | null = null;
+    if (isAuthenticated) {
+      try {
+        accessToken = await getAccessTokenSilently();
+      } catch {
+        accessToken = null;
+      }
+    }
     const res = await makeAuthenticatedRequest(accessToken, urlSuffix);
     if (!res.ok) {
       throw await createHttpErrorFromResponse(res, urlSuffix);
@@ -293,7 +304,16 @@ export function useActivity({
     enabled: authReady,
     initialPageParam: 0,
     queryFn: async ({ pageParam }: { pageParam: number }) => {
-      const accessToken = isAuthenticated ? await getAccessTokenSilently() : null;
+      // Fall back to anonymous if the token can't be obtained (dead session) —
+      // see SessionGuard.
+      let accessToken: string | null = null;
+      if (isAuthenticated) {
+        try {
+          accessToken = await getAccessTokenSilently();
+        } catch {
+          accessToken = null;
+        }
+      }
       const url = `/activity?idArea=${idArea}&idSector=${idSector}&lowerGrade=${lowerGrade}&fa=${fa}&comments=${comments}&ticks=${ticks}&media=${media}&offset=${pageParam}`;
       const res = await makeAuthenticatedRequest(accessToken, url);
       if (!res.ok) {

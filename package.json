@@ -1,12 +1,6 @@
 {
   "name": "climbing-web",
   "version": "2.0.0",
-  "browserslist": [
-    "last 2 versions",
-    "not dead",
-    "not ie 11",
-    "baseline 2020"
-  ],
   "description": "Climbing sites used in Norway (climbing and bouldering) - https://brattelinjer.no - https://buldreinfo.com",
   "homepage": "https://github.com/jossi87/climbing-web#readme",
   "license": "GPL-3.0",
@@ -51,7 +45,6 @@
     "clsx": "^2.1.1",
     "flat": "^6.0.1",
     "heic2any": "^0.0.4",
-    "json-url": "^4.0.0",
     "leaflet": "^1.9.4",
     "leaflet.fullscreen": "^5.3.3",
     "leaflet.locatecontrol": "^0.90.1",
@@ -59,6 +52,7 @@
     "linkify-react": "^4.3.3",
     "linkifyjs": "^4.3.3",
     "lucide-react": "^1.34.0",
+    "lz-string": "^1.5.0",
     "pannellum": "^2.5.7",
     "react": "^19.2.8",
     "react-datepicker": "^9.1.0",
