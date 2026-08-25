@@ -1,0 +1,30 @@
+# Buldreinfo / Bratte Linjer — Climbing guide for Norway
+
+> Community-edited climbing guide covering bouldering (buldreinfo.com), route climbing (brattelinjer.no) and ice climbing (is.brattelinjer.no). The same app runs on all three domains and the links below are relative, so they resolve to whichever domain you are on.
+
+Important notes:
+- Data ownership stays with the climbing community: the owner of each area's content is linked to its origin, club or individual, and local climbing clubs own the data for their areas (see [About](/about)).
+- All content is community-contributed and edited. Route information, grades and access rules can change over time; verify locally when it matters.
+- Areas, sectors and problems have stable URLs: `/area/<id>`, `/sector/<id>`, `/problem/<id>`. The complete machine-readable list of URLs is in `/api/sitemap.txt`.
+- The backend API is documented with OpenAPI at `/api/swagger-ui` and `/api/v3/api-docs`.
+
+## Core pages
+- [Front page](/): Region overview, statistics and recent ascents.
+- [Areas](/areas): All climbing areas with maps.
+- [Bouldering regions](/regions/bouldering): Regions for bouldering.
+- [Climbing regions](/regions/climbing): Regions for route climbing.
+- [Ice climbing regions](/regions/ice): Regions for ice climbing.
+- [Problems](/problems): Searchable list of all problems and routes.
+- [Activity](/activity): Recent community edits and ascents.
+- [About](/about): About the project and the community.
+- [Restrictions](/restrictions): Access restrictions per area.
+- [Dangerous](/dangerous): Warnings and hazardous conditions.
+- [Webcams](/webcams): Live webcams of climbing areas.
+- [Graph](/graph): Grade distribution charts.
+
+## Optional
+- [BRV platform agreement](/pdf/20221208_Avtale_BrattelinjerBuldreinfo.pdf): Signed agreement with BRV covering platform use and data ownership (Norwegian, PDF).
+- [Donate](/donate): Support the project.
+- [Privacy policy](/privacy-policy): How user data is handled.
+- [License](/gpl-3.0.txt): GNU General Public License v3.
+- [API docs](/api/swagger-ui): OpenAPI/Swagger UI for the backend API.
