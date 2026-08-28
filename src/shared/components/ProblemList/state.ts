@@ -44,7 +44,8 @@ type Update =
   | { action: 'only-fa'; onlyFa?: UiState['onlyFa'] }
   | { action: 'only-multipitch'; onlyMultipitch?: UiState['onlyMultipitch'] }
   | { action: 'init-types'; typeNames: string[] }
-  | { action: 'type'; type: string; enabled: boolean };
+  | { action: 'type'; type: string; enabled: boolean }
+  | { action: 'reset'; defaultOrder: OrderOption };
 
 const uiStateReducer = (state: UiState, update: Update): UiState => {
   const { action } = update;
@@ -123,6 +124,24 @@ const uiStateReducer = (state: UiState, update: Update): UiState => {
       return {
         ...state,
         types: nextTypes,
+      };
+    }
+
+    case 'reset': {
+      const defaultTypes: Record<string, boolean> = {};
+      for (const typeName of Object.keys(state.types)) {
+        defaultTypes[typeName] = true;
+      }
+      return {
+        ...state,
+        gradeLow: undefined,
+        gradeHigh: undefined,
+        order: update.defaultOrder,
+        groupBy: 'none',
+        hideTicked: false,
+        onlyFa: false,
+        onlyMultipitch: false,
+        types: defaultTypes,
       };
     }
 
@@ -211,7 +230,7 @@ export const useProblemListState = ({
   const [storedGradeHigh, setStoredGradeHigh] = useLocalStorage<string | null>(`${filterStorageKey}/gradeHigh`, null);
   const [storedTypes, setStoredTypes] = useLocalStorage<Record<string, boolean>>(`${filterStorageKey}/types`, {});
 
-  const { mapping, easyToHard, idToGrade } = useGrades();
+  const { mapping, easyToHard } = useGrades();
   const typeNames = useMemo(() => [...new Set(rows.map(rowListTypeKey))].sort(), [rows]);
 
   const validGradeLow = storedGradeLow !== null && easyToHard.includes(storedGradeLow) ? storedGradeLow : null;
@@ -268,7 +287,7 @@ export const useProblemListState = ({
         const tKey = rowListTypeKey(problem);
         typeNames.add(tKey);
 
-        const index = mapping[idToGrade[problem.gradeWeight] ?? 'n/a'] ?? 0;
+        const index = mapping[problem.grade] ?? 0;
 
         return (
           index >= indexLow &&
@@ -282,7 +301,7 @@ export const useProblemListState = ({
       .sort(SORTS[order]);
 
     return [filtered, [...areas].sort(), [...rocks].sort(), [...sectors].sort(), [...typeNames].sort()];
-  }, [easyToHard, gradeHigh, gradeLow, hideTicked, idToGrade, mapping, onlyFa, onlyMultipitch, order, rows, types]);
+  }, [easyToHard, gradeHigh, gradeLow, hideTicked, mapping, onlyFa, onlyMultipitch, order, rows, types]);
 
   return {
     dispatch,

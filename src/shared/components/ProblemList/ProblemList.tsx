@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import AccordionContainer from './AccordionContainer';
 import { rowListTypeKey, type Row } from './types';
 import { type GroupOption, type OrderOption, type State, useProblemListState } from './state';
-import { ChevronDown, Filter, FolderTree, ArrowDownWideNarrow } from 'lucide-react';
+import { ChevronDown, Filter, FolderTree, ArrowDownWideNarrow, RotateCcw } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 import { activityFilterChipBase, activityFilterChipOn } from '../../../design/activityFilterChips';
@@ -11,6 +11,21 @@ import { twInk } from '../../../design/twInk';
 import { useGrades } from '../Meta';
 import { FormSwitch } from '../../ui';
 import { ProblemListCompactContext } from './compactViewContext';
+
+/** Brand “active/changed” chip styling shared by the ProblemList toolbar chips (Filter, Group, Sort, Reset). */
+const problemListToolbarChipActive = cn(
+  'border-brand-border bg-brand/22 text-brand shadow-sm',
+  'light:border-brand light:bg-brand/28 light:shadow-sm',
+);
+
+/** Brand ink for icon/label text on active chips — brand in dark, slate-900 in light for contrast. */
+const problemListToolbarChipBrandInk = cn('text-brand', twInk.lightTextSlate900);
+
+/** Bold + brand ink for labels on changed chips — the bolder weight makes the “changed” state unmistakable. */
+const problemListToolbarChipChangedText = cn(problemListToolbarChipBrandInk, 'font-semibold');
+
+/** Subtle “open” affordance (matches ToolbarDropdown's open ring) — used for the Filter chip while its panel is open. */
+const problemListToolbarChipOpen = 'ring-1 ring-white/20 light:ring-slate-400/55';
 
 type Props = {
   rows: Row[];
@@ -192,6 +207,8 @@ const ToolbarDropdown = <T extends string>({
   fullWidth,
   className: wrapperClassName,
   variant = 'default',
+  changed = false,
+  onOpen,
 }: {
   label: string;
   icon?: React.ComponentType<{ size?: number; className?: string }>;
@@ -203,6 +220,10 @@ const ToolbarDropdown = <T extends string>({
   className?: string;
   /** Borderless controls for the dense group/sort/filter row. */
   variant?: 'default' | 'ghost';
+  /** Applies brand styling (like the active Filter chip) when the value differs from the default. */
+  changed?: boolean;
+  /** Called when the dropdown is opened — used to close sibling panels (e.g. the filter). */
+  onOpen?: () => void;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -273,7 +294,10 @@ const ToolbarDropdown = <T extends string>({
       <button
         ref={buttonRef}
         type='button'
-        onClick={() => setIsOpen((v) => !v)}
+        onClick={() => {
+          if (!isOpen) onOpen?.();
+          setIsOpen((v) => !v);
+        }}
         aria-label={`${label}: ${selected?.text ?? ''}`}
         title={selected?.text ? `${label}: ${selected.text}` : label}
         className={cn(
@@ -283,8 +307,8 @@ const ToolbarDropdown = <T extends string>({
               ? 'inline-flex h-7 w-full min-w-0 items-center justify-start gap-1.5 rounded-md border px-1.5 text-[12px] leading-none font-medium transition-colors sm:px-2 sm:text-[13px] md:h-7'
               : cn(
                   activityFilterChipBase,
-                  activityFilterChipOn,
-                  isOpen && 'light:ring-slate-400/55 ring-1 ring-white/20',
+                  changed ? problemListToolbarChipActive : activityFilterChipOn,
+                  isOpen && problemListToolbarChipOpen,
                   'w-full min-w-0 justify-start',
                 ),
           fullWidth && !compact ? 'w-full md:w-auto' : fullWidth && compact ? 'w-full' : '',
@@ -305,7 +329,13 @@ const ToolbarDropdown = <T extends string>({
             className={cn(
               'shrink-0 transition-colors',
               variant === 'default' && !compact && 'hidden md:block',
-              variant === 'default' && !compact ? 'text-slate-300' : isOpen ? 'text-slate-300' : 'text-slate-400',
+              changed
+                ? problemListToolbarChipBrandInk
+                : variant === 'default' && !compact
+                  ? 'text-slate-300'
+                  : isOpen
+                    ? 'text-slate-300'
+                    : 'text-slate-400',
             )}
           />
         ) : null}
@@ -314,7 +344,11 @@ const ToolbarDropdown = <T extends string>({
             <span
               className={cn(
                 'shrink-0 max-md:text-[10px] md:text-[11px]',
-                variant === 'default' ? cn('text-slate-400', twInk.lightTextSlate700) : 'text-slate-500',
+                changed
+                  ? problemListToolbarChipChangedText
+                  : variant === 'default'
+                    ? cn('text-slate-400', twInk.lightTextSlate700)
+                    : 'text-slate-500',
               )}
             >
               {label}:
@@ -330,14 +364,17 @@ const ToolbarDropdown = <T extends string>({
           ) : (
             <>
               <span
-                className={cn('min-w-0 flex-1 truncate text-left text-slate-100 md:hidden', twInk.lightTextSlate900)}
+                className={cn(
+                  'min-w-0 flex-1 truncate text-left md:hidden',
+                  changed ? problemListToolbarChipChangedText : cn('text-slate-100', twInk.lightTextSlate900),
+                )}
               >
                 {shortLabel}
               </span>
               <span
                 className={cn(
-                  'hidden min-w-0 flex-1 truncate text-left text-slate-100 md:block',
-                  twInk.lightTextSlate900,
+                  'hidden min-w-0 flex-1 truncate text-left md:block',
+                  changed ? problemListToolbarChipChangedText : cn('text-slate-100', twInk.lightTextSlate900),
                 )}
               >
                 {fullLabel}
@@ -485,6 +522,16 @@ export const ProblemList = ({
     return [[...types].sort(), lookup];
   }, [allRows]);
 
+  /** Grade labels actually present in the current content (ordered by difficulty) — drives the grade range options. */
+  const contentGradeLabels = useMemo(() => {
+    const present = new Set<string>();
+    for (const row of allRows) {
+      const grade = row.grade;
+      if (grade && mapping[grade] !== undefined) present.add(grade);
+    }
+    return easyToHard.filter((grade) => present.has(grade));
+  }, [allRows, easyToHard, mapping]);
+
   const {
     gradeLow,
     gradeHigh,
@@ -513,14 +560,25 @@ export const ProblemList = ({
 
   const orderByOptions = ORDER_BY_OPTIONS[mode].filter((opt) => !excludedSortOptions?.includes(opt.value));
   const maxGradeIndex = Math.max(easyToHard.length - 1, 0);
-  const currentLow = gradeLow ?? easyToHard[0];
-  const currentHigh = gradeHigh ?? easyToHard[maxGradeIndex];
-  const lowestGradeOptions = easyToHard
-    .filter((label) => (mapping[label] ?? 0) < (mapping[currentHigh] ?? maxGradeIndex))
-    .map((label) => ({ key: `low-${label}`, text: label, shortText: label, value: label }));
-  const highestGradeOptions = easyToHard
-    .filter((label) => (mapping[label] ?? maxGradeIndex) > (mapping[currentLow] ?? 0))
-    .map((label) => ({ key: `high-${label}`, text: label, shortText: label, value: label }));
+
+  /** Grade range options: content grades plus the current selection (so a stale persisted value still renders). */
+  const gradeRangeOptions = useMemo(() => {
+    const labels = [...contentGradeLabels];
+    for (const grade of [gradeLow, gradeHigh]) {
+      if (grade && !labels.includes(grade)) labels.push(grade);
+    }
+    labels.sort((a, b) => (mapping[a] ?? 0) - (mapping[b] ?? 0));
+    return labels.map((label) => ({ key: label, text: label, shortText: label, value: label }));
+  }, [contentGradeLabels, gradeLow, gradeHigh, mapping]);
+
+  const currentLow = gradeLow ?? contentGradeLabels[0] ?? easyToHard[0];
+  const currentHigh = gradeHigh ?? contentGradeLabels[contentGradeLabels.length - 1] ?? easyToHard[maxGradeIndex];
+  const lowestGradeOptions = gradeRangeOptions.filter(
+    ({ value }) => (mapping[value] ?? 0) <= (mapping[currentHigh] ?? maxGradeIndex),
+  );
+  const highestGradeOptions = gradeRangeOptions.filter(
+    ({ value }) => (mapping[value] ?? maxGradeIndex) >= (mapping[currentLow] ?? 0),
+  );
   const showListControls = allRows.length >= MIN_ROWS_FOR_LIST_CONTROLS;
 
   const hasActiveFilters =
@@ -530,6 +588,9 @@ export const ProblemList = ({
     hideTicked ||
     onlyFa ||
     onlyMultipitch;
+
+  /** Anything deviates from the defaults — drives the Reset button visibility (sort/group included). */
+  const hasChanges = hasActiveFilters || order !== defaultOrder || groupBy !== 'none';
 
   if (!allRows?.length) {
     return null;
@@ -611,6 +672,8 @@ export const ProblemList = ({
                 value={groupBy}
                 options={orderedGroupByOptions}
                 onSelect={(next) => dispatch({ action: 'group-by', groupBy: next })}
+                changed={groupBy !== 'none'}
+                onOpen={() => setFilterShowing(false)}
               />
             )}
             <ToolbarDropdown
@@ -620,6 +683,8 @@ export const ProblemList = ({
               value={order}
               options={orderedSortOptions}
               onSelect={(next) => dispatch({ action: 'order-by', order: next })}
+              changed={order !== defaultOrder}
+              onOpen={() => setFilterShowing(false)}
             />
             <button
               type='button'
@@ -628,25 +693,16 @@ export const ProblemList = ({
               onClick={() => setFilterShowing((v) => !v)}
               className={cn(
                 activityFilterChipBase,
-                showFilter || hasActiveFilters
-                  ? cn(
-                      'border-brand-border bg-brand/22 text-brand shadow-sm',
-                      'light:border-brand light:bg-brand/28 light:shadow-sm',
-                    )
-                  : activityFilterChipOn,
+                hasActiveFilters ? problemListToolbarChipActive : activityFilterChipOn,
+                showFilter && problemListToolbarChipOpen,
                 'relative shrink-0 justify-center transition-[background-color,border-color,color,box-shadow]',
               )}
             >
-              {hasActiveFilters && !showFilter && (
-                <span className='bg-brand absolute -top-1 -right-1 h-2 w-2 rounded-full' aria-hidden='true' />
-              )}
               <Filter
                 size={12}
                 className={cn(
                   'shrink-0',
-                  showFilter || hasActiveFilters
-                    ? cn('text-brand', twInk.lightTextSlate900)
-                    : problemListToolbarChipInk,
+                  hasActiveFilters ? problemListToolbarChipBrandInk : problemListToolbarChipInk,
                 )}
                 strokeWidth={2}
               />
@@ -654,14 +710,39 @@ export const ProblemList = ({
                 className={cn(
                   designContract.typography.uiCompact,
                   'whitespace-nowrap',
-                  showFilter || hasActiveFilters
-                    ? cn('text-brand', twInk.lightTextSlate900)
-                    : problemListToolbarChipInk,
+                  hasActiveFilters ? problemListToolbarChipChangedText : problemListToolbarChipInk,
                 )}
               >
                 Filter
               </span>
             </button>
+            {hasChanges && (
+              <button
+                type='button'
+                aria-label='Reset filters, sort and grouping'
+                title='Reset filters, sort and grouping'
+                onClick={() => {
+                  setFilterShowing(false);
+                  dispatch({ action: 'reset', defaultOrder });
+                }}
+                className={cn(
+                  activityFilterChipBase,
+                  problemListToolbarChipActive,
+                  'relative shrink-0 justify-center transition-[background-color,border-color,color,box-shadow]',
+                )}
+              >
+                <RotateCcw size={12} className={cn('shrink-0', problemListToolbarChipBrandInk)} strokeWidth={2} />
+                <span
+                  className={cn(
+                    designContract.typography.uiCompact,
+                    'whitespace-nowrap',
+                    problemListToolbarChipChangedText,
+                  )}
+                >
+                  Reset
+                </span>
+              </button>
+            )}
           </>
         )}
         {viewToggleAction}
@@ -673,24 +754,28 @@ export const ProblemList = ({
     showListControls && showFilter ? (
       <div
         className={cn(
-          'app-card-surface flex flex-col',
-          /** Match `.app-card`: sharp / full-bleed on phones, rounded from `sm` up. */
-          'rounded-none sm:rounded-xl',
-          'gap-2 px-4 pt-3 pb-3 sm:gap-2.5 sm:px-5 sm:pt-4 sm:pb-4',
+          'flex w-full min-w-0 flex-col',
+          /** Fluid full-width strip (no box) — content aligns with the container; `detachToolbar` matches the list padding. */
+          detachToolbar ? 'px-4 sm:px-5' : 'px-0',
+          'gap-2 py-2 sm:gap-2.5 sm:py-2.5',
+          'border-surface-border/40 border-b',
         )}
         role='region'
         aria-label='List filters'
       >
-        <div className='flex flex-wrap items-center gap-x-3 gap-y-2'>
-          <GradeRangeControl
-            low={currentLow}
-            high={currentHigh}
-            lowOptions={lowestGradeOptions}
-            highOptions={highestGradeOptions}
-            onLowSelect={(next) => dispatch({ action: 'set-grade', low: next })}
-            onHighSelect={(next) => dispatch({ action: 'set-grade', high: next })}
-          />
-        </div>
+        {/** Show the grade range only when it can actually filter (2+ distinct grades) or a grade filter is already active. */}
+        {(gradeRangeOptions.length > 1 || gradeLow !== undefined || gradeHigh !== undefined) && (
+          <div className='flex flex-wrap items-center gap-x-3 gap-y-2'>
+            <GradeRangeControl
+              low={currentLow}
+              high={currentHigh}
+              lowOptions={lowestGradeOptions}
+              highOptions={highestGradeOptions}
+              onLowSelect={(next) => dispatch({ action: 'set-grade', low: next })}
+              onHighSelect={(next) => dispatch({ action: 'set-grade', high: next })}
+            />
+          </div>
+        )}
         {allTypes.length > 1 && (
           <div className='flex flex-wrap items-center gap-x-4 gap-y-1.5'>
             {allTypes.map((type) => (
@@ -746,7 +831,7 @@ export const ProblemList = ({
 
   /**
    * No horizontal padding on the pill row (avoids mobile inset). End alignment: `md:ml-auto` on
-   * {@link designContract.layout.problemListToolbarRow}. Filter: inner padding on `.app-card-surface` only.
+   * {@link designContract.layout.problemListToolbarRow}. Filter: fluid full-width strip whose padding aligns with the list.
    */
   const detachedStripClass = cn(
     'flex w-full min-w-0 flex-col gap-3',

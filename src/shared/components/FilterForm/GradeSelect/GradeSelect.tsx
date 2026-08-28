@@ -39,7 +39,7 @@ export const GradeSelect = ({ low: filterGradeLow, high: filterGradeHigh, dispat
             {easyToHard
               .filter((label) => {
                 const rank = gradeIndexMapping[label];
-                return rank < (gradeIndexMapping[high] ?? max);
+                return rank <= (gradeIndexMapping[high] ?? max);
               })
               .map((label) => (
                 <option key={label} value={label}>
@@ -67,7 +67,7 @@ export const GradeSelect = ({ low: filterGradeLow, high: filterGradeHigh, dispat
             {easyToHard
               .filter((label) => {
                 const rank = gradeIndexMapping[label];
-                return rank > (gradeIndexMapping[low] ?? 0);
+                return rank >= (gradeIndexMapping[low] ?? 0);
               })
               .map((label) => (
                 <option key={label} value={label}>

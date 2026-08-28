@@ -18,7 +18,7 @@ const AccordionContainer = ({ accordionRows }: Props) => {
   }, []);
 
   return (
-    <div className='divide-surface-border/40 border-surface-border/50 divide-y overflow-hidden rounded-lg border'>
+    <div className='divide-surface-border/40 divide-y'>
       {accordionRows.map((d, i) => {
         const isActive = activeIndex === i;
         const hasData = (d.length ?? 0) > 0;
