@@ -119,10 +119,24 @@ export function getMediaFileUrl(
   return getUrl(url);
 }
 
-/** `originalWidth` caps which `targetWidth` steps appear — only widths ≤ this value are listed (plus `originalWidth`). */
-export function getMediaFileUrlSrcSet(id: number, versionStamp: number, originalWidth: number): string {
-  const SIZES = [300, 400, 480, 600, 800, 1280, 1920, 2560, 3840, 5120];
-  const finalSizes = Array.from(new Set([...SIZES.filter((s) => s <= originalWidth), originalWidth])).sort(
+/** Regular srcset widths for grids/tiles. Kept coarse so each media only needs a handful of on-demand variants. */
+const MEDIA_SRC_SET_SIZES = [300, 480, 800, 1280, 1920, 2560];
+
+/** Ultra-large widths emitted only for the zoom viewer (4K/5K screens). */
+const MEDIA_SRC_SET_ULTRA_SIZES = [3840, 5120];
+
+/**
+ * `originalWidth` caps which `targetWidth` steps appear — only widths ≤ this value are listed (plus `originalWidth`).
+ * Pass `{ includeUltra: true }` (zoom viewer) to also emit the 3840/5120 steps.
+ */
+export function getMediaFileUrlSrcSet(
+  id: number,
+  versionStamp: number,
+  originalWidth: number,
+  options?: { includeUltra?: boolean },
+): string {
+  const sizes = options?.includeUltra ? [...MEDIA_SRC_SET_SIZES, ...MEDIA_SRC_SET_ULTRA_SIZES] : MEDIA_SRC_SET_SIZES;
+  const finalSizes = Array.from(new Set([...sizes.filter((s) => s <= originalWidth), originalWidth])).sort(
     (a, b) => a - b,
   );
 

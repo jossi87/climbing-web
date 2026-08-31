@@ -1,4 +1,4 @@
-import { Fragment, useState, type ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Camera, Check, MessageSquare, Plus } from 'lucide-react';
 import Linkify from 'linkify-react';
@@ -15,6 +15,7 @@ import { LockSymbol } from '../../shared/ui/Indicators';
 import { useMeta } from '../../shared/components/Meta/context';
 import { VideoProcessingPlaceholder } from '../../shared/components/Media/VideoProcessingPlaceholder';
 import { VideoThumbnailPlayOverlay } from '../../shared/components/Media/VideoThumbnailPlayOverlay';
+import { useRetryingMediaImage } from '../../shared/hooks/useRetryingMediaImage';
 import { activityShowHref, type ActivityShowCategory } from '../../shared/components/Activity/activityShowPreset';
 import { climbingRouteUsesPassiveGear, formatRouteTypeLabel } from '../../utils/routeTradGear';
 import { cn } from '../../lib/utils';
@@ -535,7 +536,7 @@ const mediaTileSize = 'min-w-0 aspect-square';
  * Mirrors the rendering split in `Activity/components/LazyMedia.tsx`.
  */
 function MediaThumbFill({ m }: { m: NewestMedia }) {
-  const [imgError, setImgError] = useState(false);
+  const retry = useRetryingMediaImage();
   const mid = mediaIdentityId(m.identity);
   const stamp = mediaIdentityVersionStamp(m.identity);
   const thumbUrl = getMediaFileUrl(mid, stamp, false, { minDimension: 188 });
@@ -543,19 +544,24 @@ function MediaThumbFill({ m }: { m: NewestMedia }) {
   const primaryColorHex = mediaPrimaryColorHex(m.identity);
 
   if (isMovie) {
-    if (imgError) return <VideoProcessingPlaceholder compact className='absolute inset-0' />;
+    if (retry.showPlaceholder) return <VideoProcessingPlaceholder compact className='absolute inset-0' />;
     return (
       <>
         {primaryColorHex && <div className='absolute inset-0' style={{ backgroundColor: primaryColorHex }} />}
-        <img
-          src={thumbUrl}
-          alt={m.problemName ?? ''}
-          loading='lazy'
-          decoding='async'
-          className='absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover/tile:scale-110'
-          style={mediaObjectPositionStyle(m.identity)}
-          onError={() => setImgError(true)}
-        />
+        {retry.isRetrying ? (
+          <div className='absolute inset-0' />
+        ) : (
+          <img
+            key={retry.key}
+            src={thumbUrl}
+            alt={m.problemName ?? ''}
+            loading='lazy'
+            decoding='async'
+            className='absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover/tile:scale-110'
+            style={mediaObjectPositionStyle(m.identity)}
+            onError={retry.onError}
+          />
+        )}
       </>
     );
   }

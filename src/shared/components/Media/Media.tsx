@@ -22,6 +22,7 @@ import SvgViewer from '../SvgViewer';
 import { VideoThumbnailPlayOverlay } from './VideoThumbnailPlayOverlay';
 import { VideoProcessingPlaceholder } from './VideoProcessingPlaceholder';
 import { Loading } from '../../ui/StatusWidgets';
+import { useRetryingMediaImage } from '../../hooks/useRetryingMediaImage';
 import MediaModal from './MediaModal';
 type MediaItem = components['schemas']['Media'];
 type ProblemSection = components['schemas']['ProblemSection'];
@@ -72,7 +73,7 @@ function mediaTileSizes(compactTiles: boolean, triviaTiles: boolean): string {
 
 /** File videos: always request poster JPEG; only show placeholder when the image actually fails (e.g. not generated yet). */
 const MediaVideoTile = ({ x, triviaTiles }: { x: MediaItem; triviaTiles: boolean }) => {
-  const [imgError, setImgError] = useState(false);
+  const retry = useRetryingMediaImage();
   const sizes = mediaTileSizes(false, triviaTiles);
   const originalWidth = Math.max(Number(x.width ?? 0) || 0, 300);
   const thumbUrl = getMediaFileUrl(mediaIdentityId(x.identity), mediaIdentityVersionStamp(x.identity), false, {
@@ -84,7 +85,7 @@ const MediaVideoTile = ({ x, triviaTiles }: { x: MediaItem; triviaTiles: boolean
     originalWidth,
   );
 
-  if (imgError) {
+  if (retry.showPlaceholder) {
     return (
       <div className='absolute inset-0'>
         <VideoProcessingPlaceholder />
@@ -94,15 +95,20 @@ const MediaVideoTile = ({ x, triviaTiles }: { x: MediaItem; triviaTiles: boolean
 
   return (
     <>
-      <img
-        src={thumbUrl}
-        srcSet={thumbSrcSet}
-        sizes={sizes}
-        alt=''
-        className='absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105'
-        style={mediaObjectPositionStyle(x.identity)}
-        onError={() => setImgError(true)}
-      />
+      {retry.isRetrying ? (
+        <div className='absolute inset-0' />
+      ) : (
+        <img
+          key={retry.key}
+          src={thumbUrl}
+          srcSet={thumbSrcSet}
+          sizes={sizes}
+          alt=''
+          className='absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105'
+          style={mediaObjectPositionStyle(x.identity)}
+          onError={retry.onError}
+        />
+      )}
       <VideoThumbnailPlayOverlay />
     </>
   );
@@ -277,6 +283,7 @@ const Media = ({
 
   const LazyMediaCard = ({ x }: { x: MediaItem }) => {
     const { ref, inView } = useInView({ triggerOnce: true, rootMargin: '200px 0px' });
+    const retry = useRetryingMediaImage();
     const hasSvgs = (x.svgs?.length ?? 0) > 0 || (x.mediaSvgs?.length ?? 0) > 0;
     return (
       <div
@@ -309,8 +316,11 @@ const Media = ({
                 x={x}
                 triviaTiles={!!triviaTiles}
               />
+            ) : retry.showPlaceholder || retry.isRetrying ? (
+              <div className='absolute inset-0' />
             ) : (
               <img
+                key={retry.key}
                 src={getMediaFileUrl(mediaIdentityId(x.identity), mediaIdentityVersionStamp(x.identity), false, {
                   minDimension: mediaTileMinDimension(!!triviaTiles),
                 })}
@@ -325,6 +335,7 @@ const Media = ({
                 style={mediaObjectPositionStyle(x.identity)}
                 loading='lazy'
                 decoding='async'
+                onError={retry.onError}
               />
             )
           ) : (

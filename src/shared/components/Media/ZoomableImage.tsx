@@ -51,7 +51,7 @@ export const ZoomableImage = ({ m, showSvg, onToggleSvg, onExitZoom }: Props) =>
   const stamp = mediaIdentityVersionStamp(m.identity);
   const targetWidth = Math.max(m.width ?? 0, 2560);
   const src = getMediaFileUrl(midId, stamp, false, { targetWidth });
-  const srcSet = getMediaFileUrlSrcSet(midId, stamp, Math.max(m.width ?? 0, targetWidth));
+  const srcSet = getMediaFileUrlSrcSet(midId, stamp, Math.max(m.width ?? 0, targetWidth), { includeUltra: true });
 
   // ── SVG topo processing (mirrors SvgViewer logic) ─────────────────────
   const svgs = useMemo(() => (m.svgs ?? []) as components['schemas']['Svg'][], [m.svgs]);

@@ -1,6 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
+import { Link } from 'react-router-dom';
 import type { components } from '../../../../@types/buldreinfo/swagger';
 import {
   getMediaFileUrl,
@@ -11,13 +10,14 @@ import {
   mediaObjectPositionStyle,
   mediaPlaceholderStyle,
 } from '../../../../api';
+import { useRetryingMediaImage } from '../../../hooks/useRetryingMediaImage';
 import { VideoProcessingPlaceholder } from '../../Media/VideoProcessingPlaceholder';
 import { VideoThumbnailPlayOverlay } from '../../Media/VideoThumbnailPlayOverlay';
 
 type ActivityMedia = components['schemas']['ActivityMedia'];
 
 function ActivityMediaThumb({ m, problemId }: { m: ActivityMedia; problemId?: number }) {
-  const [imgError, setImgError] = useState(false);
+  const retry = useRetryingMediaImage();
   const isMovie = !!m.movie;
   /** Stable 1x/2x tiers (100 or 188) to avoid many on-demand S3 variants. */
   const thumbMinDimension = Math.max(100, getTieredMinDimension(94));
@@ -36,17 +36,22 @@ function ActivityMediaThumb({ m, problemId }: { m: ActivityMedia; problemId?: nu
       aria-label={`View activity photo, open problem ${problemId ?? 0}`}
     >
       {isMovie ? (
-        imgError ? (
+        retry.showPlaceholder ? (
           <VideoProcessingPlaceholder compact className='absolute inset-0' />
         ) : (
           <>
-            <img
-              src={thumbUrl}
-              alt=''
-              className='absolute inset-0 h-full w-full object-cover transition-all duration-500 ease-out group-hover/thumb:scale-110'
-              style={mediaObjectPositionStyle(m.identity)}
-              onError={() => setImgError(true)}
-            />
+            {retry.isRetrying ? (
+              <div className='absolute inset-0' />
+            ) : (
+              <img
+                key={retry.key}
+                src={thumbUrl}
+                alt=''
+                className='absolute inset-0 h-full w-full object-cover transition-all duration-500 ease-out group-hover/thumb:scale-110'
+                style={mediaObjectPositionStyle(m.identity)}
+                onError={retry.onError}
+              />
+            )}
             <VideoThumbnailPlayOverlay size='compact' />
           </>
         )

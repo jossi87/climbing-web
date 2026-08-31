@@ -10,6 +10,7 @@ import {
   mediaPrimaryColorHex,
 } from '../../api';
 import { cn } from '../../lib/utils';
+import { useRetryingMediaImage } from '../../shared/hooks/useRetryingMediaImage';
 import { ClickableAvatar, AvatarGroup, Card } from '../../shared/ui';
 import type { components } from '../../@types/buldreinfo/swagger';
 
@@ -67,6 +68,7 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
     key: listKey,
     index: 0,
   }));
+  const retry = useRetryingMediaImage();
 
   if (carousel.key !== listKey) {
     setCarousel({ key: listKey, index: 0 });
@@ -230,31 +232,36 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
           onClick={onLinkClick}
           className='focus-visible:ring-brand-border/80 absolute inset-0 z-0 block transition-[filter,transform] duration-300 outline-none hover:brightness-110 focus-visible:ring-2 focus-visible:ring-inset'
         >
-          <img
-            key={`${randomMediaItem.idProblem}-${mediaIdentityId(randomMediaItem.identity)}-${safeIndex}`}
-            className='h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105'
-            style={mediaObjectPositionStyle(randomMediaItem.identity)}
-            src={getMediaFileUrl(
-              mediaIdentityId(randomMediaItem.identity),
-              mediaIdentityVersionStamp(randomMediaItem.identity),
-              false,
-              {
-                minDimension: 400,
-              },
-            )}
-            srcSet={getMediaFileUrlSrcSet(
-              mediaIdentityId(randomMediaItem.identity),
-              mediaIdentityVersionStamp(randomMediaItem.identity),
-              randomMediaItem.width ?? 2560,
-            )}
-            sizes='(max-width: 767px) 100vw, 400px'
-            alt={randomMediaImageAlt(randomMediaItem)}
-            width={400}
-            height={364}
-            decoding='async'
-            fetchPriority={safeIndex === 0 ? 'high' : 'low'}
-            loading={safeIndex === 0 ? 'eager' : 'lazy'}
-          />
+          {retry.showPlaceholder || retry.isRetrying ? (
+            <div className='absolute inset-0' />
+          ) : (
+            <img
+              key={`${randomMediaItem.idProblem}-${mediaIdentityId(randomMediaItem.identity)}-${safeIndex}-${retry.key}`}
+              className='h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105'
+              style={mediaObjectPositionStyle(randomMediaItem.identity)}
+              src={getMediaFileUrl(
+                mediaIdentityId(randomMediaItem.identity),
+                mediaIdentityVersionStamp(randomMediaItem.identity),
+                false,
+                {
+                  minDimension: 400,
+                },
+              )}
+              srcSet={getMediaFileUrlSrcSet(
+                mediaIdentityId(randomMediaItem.identity),
+                mediaIdentityVersionStamp(randomMediaItem.identity),
+                randomMediaItem.width ?? 2560,
+              )}
+              sizes='(max-width: 767px) 100vw, 400px'
+              alt={randomMediaImageAlt(randomMediaItem)}
+              width={400}
+              height={364}
+              decoding='async'
+              fetchPriority={safeIndex === 0 ? 'high' : 'low'}
+              loading={safeIndex === 0 ? 'eager' : 'lazy'}
+              onError={retry.onError}
+            />
+          )}
         </Link>
         {multi && (
           <>
