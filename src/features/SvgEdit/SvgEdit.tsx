@@ -180,6 +180,8 @@ const curveGuideOpacity = 0.92;
 /** Curve control points — high-contrast on light/dark rock photos */
 const curveHandleFill = 'rgba(59, 130, 246, 0.42)';
 const curveHandleStroke = '#1E40AF';
+/** Pointer movement (CSS px) that counts as a drag rather than a tap. */
+const DRAG_THRESHOLD_PX = 6;
 
 export const SvgEdit = ({
   saving,
@@ -276,6 +278,9 @@ export const SvgEdit = ({
   const [zoomMode, setZoomMode] = useState(false);
   const suppressNextSvgClickRef = useRef(false);
   const isDraggingPointRef = useRef(false);
+  /** Drag-miss guard: true when the current press moved far enough to count as a drag, even if no point was hit. */
+  const didDragRef = useRef(false);
+  const pointerDownPosRef = useRef<{ x: number; y: number } | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const dispatchRef = useRef(dispatch);
@@ -349,6 +354,8 @@ export const SvgEdit = ({
 
     const onPointerDown = (e: PointerEvent) => {
       if (e.button !== 0) return;
+      pointerDownPosRef.current = { x: e.clientX, y: e.clientY };
+      didDragRef.current = false;
       if (isDraggingPointRef.current) return;
       if ((e.target as Element)?.closest?.('[data-overlay-handle]')) return;
       // Only allow point drag when in segment tab
@@ -373,13 +380,25 @@ export const SvgEdit = ({
     };
 
     const onPointerMove = (e: PointerEvent) => {
-      if (!isDraggingPointRef.current) return;
-      const coords = getMouseCoordsFromClient(e.clientX, e.clientY, true);
-      dispatchRef.current({ action: 'mouse-move', ...coords });
+      if (isDraggingPointRef.current) {
+        const coords = getMouseCoordsFromClient(e.clientX, e.clientY, true);
+        dispatchRef.current({ action: 'mouse-move', ...coords });
+        return;
+      }
+      // A press that moves beyond a small threshold counts as a drag even if it missed
+      // a point — releasing it must never create a new point.
+      const down = pointerDownPosRef.current;
+      if (down && Math.hypot(e.clientX - down.x, e.clientY - down.y) >= DRAG_THRESHOLD_PX) {
+        didDragRef.current = true;
+      }
     };
 
     const onPointerUp = (e: PointerEvent) => {
       if (e.button !== 0) return;
+      const wasPressed = pointerDownPosRef.current !== null;
+      const dragged = didDragRef.current;
+      pointerDownPosRef.current = null;
+      didDragRef.current = false;
       if (isDraggingPointRef.current) {
         isDraggingPointRef.current = false;
         suppressNextSvgClickRef.current = true;
@@ -389,6 +408,12 @@ export const SvgEdit = ({
       // Tap — add point or place overlay
       if (suppressNextSvgClickRef.current) {
         suppressNextSvgClickRef.current = false;
+        return;
+      }
+      // Never add a point after a drag gesture — e.g. the user tried to grab an
+      // existing point but missed it.
+      if (wasPressed && dragged) {
+        suppressNextSvgClickRef.current = true;
         return;
       }
       const target = document.elementFromPoint(e.clientX, e.clientY);

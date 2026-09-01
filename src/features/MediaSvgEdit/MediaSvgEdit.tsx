@@ -38,6 +38,9 @@ const pageActionIconBtnGlass =
 const pageActionIconBtnGreen =
   'border-green-600/50 bg-green-600/15 text-green-300 hover:bg-green-600/25 light:border-green-600 light:bg-green-600 light:text-white light:hover:bg-green-700';
 
+/** Pointer movement (CSS px) that counts as a drag rather than a tap. */
+const DRAG_THRESHOLD_PX = 6;
+
 const MediaSvgEdit = () => {
   const meta = useMeta();
   const queryClient = useQueryClient();
@@ -57,6 +60,9 @@ const MediaSvgEdit = () => {
   const isDraggingPointRef = useRef(false);
   const isDraggingRappelRef = useRef(false);
   const draggingRappelRef = useRef<{ kind: 'bolted' | 'trad'; index: number } | null>(null);
+  /** Drag-miss guard: true when the current press moved far enough to count as a drag, even if no point was hit. */
+  const didDragRef = useRef(false);
+  const pointerDownPosRef = useRef<{ x: number; y: number } | null>(null);
   const suppressNextClickRef = useRef(false);
   const dimsRef = useRef({ w: 0, h: 0 });
   const activePointRef = useRef(0);
@@ -140,6 +146,8 @@ const MediaSvgEdit = () => {
 
     const onPointerDown = (e: PointerEvent) => {
       if (e.button !== 0) return;
+      pointerDownPosRef.current = { x: e.clientX, y: e.clientY };
+      didDragRef.current = false;
       if (isDraggingPointRef.current || isDraggingRappelRef.current) return;
       if ((e.target as Element)?.closest?.('[data-overlay-handle]')) return;
 
@@ -206,11 +214,22 @@ const MediaSvgEdit = () => {
       } else if (isDraggingRappelRef.current && draggingRappelRef.current) {
         const coords = getMouseCoordsFromClient(e.clientX, e.clientY);
         moveRappel(draggingRappelRef.current.kind, draggingRappelRef.current.index, coords);
+      } else {
+        // A press that moves beyond a small threshold counts as a drag even if it missed
+        // a point — releasing it must never create a new point/overlay.
+        const down = pointerDownPosRef.current;
+        if (down && Math.hypot(e.clientX - down.x, e.clientY - down.y) >= DRAG_THRESHOLD_PX) {
+          didDragRef.current = true;
+        }
       }
     };
 
     const onPointerUp = (e: PointerEvent) => {
       if (e.button !== 0) return;
+      const wasPressed = pointerDownPosRef.current !== null;
+      const dragged = didDragRef.current;
+      pointerDownPosRef.current = null;
+      didDragRef.current = false;
       if (isDraggingPointRef.current) {
         isDraggingPointRef.current = false;
         suppressNextClickRef.current = true;
@@ -224,6 +243,12 @@ const MediaSvgEdit = () => {
       }
       if (suppressNextClickRef.current) {
         suppressNextClickRef.current = false;
+        return;
+      }
+      // Never add anything after a drag gesture — e.g. the user tried to grab an
+      // existing point but missed it.
+      if (wasPressed && dragged) {
+        suppressNextClickRef.current = true;
         return;
       }
       const target = document.elementFromPoint(e.clientX, e.clientY);
