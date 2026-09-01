@@ -612,6 +612,12 @@ const MediaEdit = () => {
               }));
         } else if (connectionType === 'trail') {
           body.trails = trails.map((t) => ({ trailId: t.trailId ?? 0, trailTitle: t.trailTitle }));
+        } else if (connectionType === 'guestbook') {
+          // Guestbook is a read-only connection — preserve the existing guestbookId
+          body.guestbookId = m.guestbookId ?? 0;
+        } else if (connectionType === 'user') {
+          // User avatar is a read-only connection — preserve the existing userAvatarId
+          body.userAvatarId = m.userAvatarId ?? 0;
         }
 
         await putMedia(token, body);
