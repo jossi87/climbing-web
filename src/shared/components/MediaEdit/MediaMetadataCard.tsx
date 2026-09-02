@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { MessageSquare, User as UserIcon, Users, ChevronDown, Trash2 } from 'lucide-react';
+import { MessageSquare, Camera, Users, ChevronDown, Trash2 } from 'lucide-react';
 
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { UserSelector, UsersSelector } from '../../ui/UserSelector';
@@ -282,7 +282,7 @@ export const MediaMetadataCard = ({
 
           {/* Photographer */}
           <div className='flex min-w-0 items-center gap-2'>
-            <UserIcon size={15} className='mt-[3px] shrink-0 self-start text-slate-500' aria-hidden />
+            <Camera size={15} className='mt-[3px] shrink-0 self-start text-slate-500' aria-hidden />
             <UserSelector
               compact
               matchInputLeadStyle

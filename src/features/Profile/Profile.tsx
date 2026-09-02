@@ -6,7 +6,7 @@ import ProfileStatistics from '../../shared/components/Profile/ProfileStatistics
 import { ClickableAvatar } from '../../shared/ui/Avatar/Avatar';
 import ProfileTodo from '../../shared/components/Profile/ProfileTodo';
 import ProfileMedia from '../../shared/components/Profile/ProfileMedia';
-import { LayoutDashboard, List, Bookmark, Images, Camera, Globe, Mail, Clock } from 'lucide-react';
+import { LayoutDashboard, List, Bookmark, Users, Camera, Globe, Mail, Clock } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 import {
@@ -111,7 +111,7 @@ const Profile = () => {
     { id: Page.overview, label: 'Overview', icon: LayoutDashboard },
     { id: Page.ascents, label: 'Ascents', icon: List },
     { id: Page.todo, label: 'Todo', icon: Bookmark },
-    { id: Page.media, label: numMedia > 0 ? `Media (${numMedia})` : 'Media', icon: Images },
+    { id: Page.media, label: numMedia > 0 ? `Media (${numMedia})` : 'Media', icon: Users },
     { id: Page.captured, label: numCaptured > 0 ? `Captured (${numCaptured})` : 'Captured', icon: Camera },
   ];
 

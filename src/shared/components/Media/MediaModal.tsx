@@ -22,7 +22,7 @@ import {
   ExternalLink,
   MapPin,
   Calendar,
-  User as UserIcon,
+  Camera,
   Users as UsersIcon,
   Maximize2,
   ZoomIn,
@@ -1115,7 +1115,7 @@ const MediaModal = ({
               <div className='space-y-6'>
                 <div>
                   <p className='type-label mb-2 flex items-center gap-2'>
-                    <UserIcon size={12} /> Photographer
+                    <Camera size={12} /> Photographer
                   </p>
                   <p className='type-body text-xs font-semibold'>
                     {m.photographer?.id ? (
