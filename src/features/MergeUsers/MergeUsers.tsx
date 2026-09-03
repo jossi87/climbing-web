@@ -266,28 +266,35 @@ const MergeUsers = () => {
                 <span className='min-w-0 truncate'>Seen {user.lastLogin}</span>
               </p>
             )}
-            {emails.map((email) => (
-              <a
-                key={email}
-                href={`mailto:${email}`}
+            {emails.length > 0 && (
+              <p
                 className={cn(
-                  'mt-0.5 flex min-w-0 items-center gap-1 text-[10px] leading-snug text-slate-500 transition-colors hover:text-slate-300',
+                  'mt-0.5 flex min-w-0 items-start gap-1 text-[10px] leading-snug text-slate-500',
                   twInk.lightTextSlate700,
                 )}
               >
-                <Mail size={9} className='shrink-0' aria-hidden />
-                <span className='min-w-0 truncate'>{email}</span>
-              </a>
-            ))}
+                <Mail size={9} className='mt-px shrink-0' aria-hidden />
+                <span className='min-w-0 break-words'>
+                  {emails.map((email, index) => (
+                    <span key={email}>
+                      {index > 0 && ', '}
+                      <a href={`mailto:${email}`} className='transition-colors hover:text-slate-300'>
+                        {email}
+                      </a>
+                    </span>
+                  ))}
+                </span>
+              </p>
+            )}
             {regions.length > 0 && (
               <p
                 className={cn(
-                  'mt-0.5 flex min-w-0 items-center gap-1 text-[10px] leading-snug text-slate-500',
+                  'mt-0.5 flex min-w-0 items-start gap-1 text-[10px] leading-snug text-slate-500',
                   twInk.lightTextSlate700,
                 )}
               >
-                <MapPin size={9} className='shrink-0' aria-hidden />
-                <span className='min-w-0 truncate'>{regions.map((region) => region.url).join(', ')}</span>
+                <MapPin size={9} className='mt-px shrink-0' aria-hidden />
+                <span className='min-w-0 break-words'>{regions.map((region) => region.url).join(', ')}</span>
               </p>
             )}
           </div>
@@ -490,7 +497,7 @@ const MergeUsers = () => {
                       </h4>
                       <span className='text-[10px] font-medium text-slate-500'>{group.users.length} accounts</span>
                     </div>
-                    <div className='grid grid-cols-1 gap-2 p-3 pt-1 sm:grid-cols-2 sm:p-4 sm:pt-1 lg:grid-cols-3 xl:grid-cols-4'>
+                    <div className='grid grid-cols-1 gap-2 p-3 pt-1 sm:grid-cols-2 sm:p-4 sm:pt-1 lg:grid-cols-3'>
                       {group.users.map(renderUser)}
                     </div>
                   </section>
@@ -502,7 +509,7 @@ const MergeUsers = () => {
               <p className={designContract.typography.label}>No users found</p>
             </div>
           ) : (
-            <div className='grid grid-cols-1 gap-2 p-3 sm:grid-cols-2 sm:p-4 lg:grid-cols-3 xl:grid-cols-4'>
+            <div className='grid grid-cols-1 gap-2 p-3 sm:grid-cols-2 sm:p-4 lg:grid-cols-3'>
               {filteredUsers.map(renderUser)}
             </div>
           )}
