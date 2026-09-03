@@ -92,6 +92,24 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/users/merge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all users (newest first) so a superadmin can merge duplicate accounts */
+        get: operations["getMergeUsers"];
+        put?: never;
+        /** Merge two users (superadmin) */
+        post: operations["postMergeUsers"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/trails": {
         parameters: {
             query?: never;
@@ -1616,6 +1634,20 @@ export type components = {
             /** Format: double */
             lng?: number;
         };
+        MergeRegion: {
+            /** Format: int32 */
+            id?: number;
+            name?: string;
+            url?: string;
+        };
+        MergeUser: {
+            /** Format: int32 */
+            userId?: number;
+            name?: string;
+            mediaIdentity?: components["schemas"]["MediaIdentity"];
+            emails?: string[];
+            regions?: components["schemas"]["MergeRegion"][];
+        };
         Trash: {
             /** Format: int32 */
             idArea?: number;
@@ -2349,6 +2381,47 @@ export interface operations {
             query: {
                 regionId: number;
                 delete: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getMergeUsers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MergeUser"][];
+                };
+            };
+        };
+    };
+    postMergeUsers: {
+        parameters: {
+            query: {
+                keepUserId: number;
+                deleteUserId: number;
             };
             header?: never;
             path?: never;

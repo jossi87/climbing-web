@@ -6,6 +6,7 @@ export {
   moveMedia,
   downloadUsersTicks,
   postComment,
+  postMergeUsers,
   postProblem,
   postProblemSvg,
   postSector,

@@ -16,7 +16,7 @@ import { useRedirect } from '../utils/useRedirect';
 import { makeAuthenticatedRequest, useAccessToken, mediaIdentityId, mediaIdentityVersionStamp } from './utils';
 import type { FetchOptions } from './types';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { postPermissions } from './operations';
+import { postMergeUsers, postPermissions } from './operations';
 import { captureSentryException } from '../utils/sentry';
 import { type MediaRegion, calculateMediaRegion, isPathVisible, scaleCoordsJson, scalePath } from '../utils/svg-scaler';
 import type { SvgType } from '../utils/svg-helpers';
@@ -796,6 +796,31 @@ export function usePermissions() {
   return {
     ...result,
     update: updatePermissions,
+  };
+}
+
+export function useMergeUsers() {
+  const { isAuthenticated } = useAuth0();
+  const accessToken = useAccessToken();
+  const client = useQueryClient();
+
+  const result = useData<Success<'getMergeUsers'>>(`/users/merge`, {
+    queryKey: [`/users/merge`],
+    enabled: isAuthenticated,
+    staleTime: 30 * 1000,
+  });
+
+  const merge = useCallback(
+    (keepUserId: number, deleteUserId: number): Promise<void> =>
+      postMergeUsers(accessToken, keepUserId, deleteUserId).then(() => {
+        void client.invalidateQueries({ queryKey: [`/users/merge`] });
+      }),
+    [accessToken, client],
+  );
+
+  return {
+    ...result,
+    merge,
   };
 }
 

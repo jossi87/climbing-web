@@ -110,6 +110,18 @@ export function postPermissions(
   }).then((response) => ensureOkResponse(response, url));
 }
 
+export function postMergeUsers(
+  accessToken: string | null,
+  keepUserId: number,
+  deleteUserId: number,
+): Promise<Response> {
+  const url = `/users/merge?keepUserId=${keepUserId}&deleteUserId=${deleteUserId}`;
+  return makeAuthenticatedRequest(accessToken, url, {
+    method: 'POST',
+    ...invalidateQueriesAfter,
+  }).then((response) => ensureOkResponse(response, url));
+}
+
 export function postProblem(
   accessToken: string | null,
   sectorId: number,
