@@ -1645,6 +1645,7 @@ export type components = {
             userId?: number;
             name?: string;
             mediaIdentity?: components["schemas"]["MediaIdentity"];
+            lastLogin?: string;
             emails?: string[];
             regions?: components["schemas"]["MergeRegion"][];
         };

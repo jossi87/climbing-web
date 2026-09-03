@@ -1,5 +1,16 @@
 import { useMemo, useState } from 'react';
-import { ArrowRight, Check, GitMerge, Lightbulb, Loader2, Mail, MapPin, Users as UsersIcon, X } from 'lucide-react';
+import {
+  ArrowRight,
+  Calendar,
+  Check,
+  GitMerge,
+  Lightbulb,
+  Loader2,
+  Mail,
+  MapPin,
+  Users as UsersIcon,
+  X,
+} from 'lucide-react';
 import { Avatar, Card, Loading, SearchInput, SectionHeader } from '../../shared/ui';
 import { useMergeUsers } from '../../api';
 import { useMeta } from '../../shared/components/Meta/context';
@@ -128,9 +139,10 @@ const MergeUsers = () => {
     if (normalizeName(user.name).includes(qn)) return true;
     if (String(user.userId ?? 0).includes(q)) return true;
     if ((user.emails ?? []).some((email) => email.toLowerCase().includes(q))) return true;
-    return (user.regions ?? []).some(
-      (region) => (region.name ?? '').toLowerCase().includes(q) || normalizeName(region.name).includes(qn),
-    );
+    return (user.regions ?? []).some((region) => {
+      const value = `${region.name ?? ''} ${region.url ?? ''}`.toLowerCase();
+      return value.includes(q) || normalizeName(value).includes(qn);
+    });
   };
 
   const filteredUsers = query ? data.filter(matches) : data;
@@ -243,6 +255,17 @@ const MergeUsers = () => {
               #{userId}
               {isSelf ? ' (you)' : ''}
             </p>
+            {user.lastLogin && (
+              <p
+                className={cn(
+                  'mt-0.5 flex min-w-0 items-center gap-1 text-[10px] leading-snug text-slate-500',
+                  twInk.lightTextSlate700,
+                )}
+              >
+                <Calendar size={9} className='shrink-0' aria-hidden />
+                <span className='min-w-0 truncate'>Seen {user.lastLogin}</span>
+              </p>
+            )}
             {emails.map((email) => (
               <a
                 key={email}
@@ -264,7 +287,7 @@ const MergeUsers = () => {
                 )}
               >
                 <MapPin size={9} className='shrink-0' aria-hidden />
-                <span className='min-w-0 truncate'>{regions.map((region) => region.name).join(', ')}</span>
+                <span className='min-w-0 truncate'>{regions.map((region) => region.url).join(', ')}</span>
               </p>
             )}
           </div>
