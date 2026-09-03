@@ -422,19 +422,7 @@ const MergeUsers = () => {
           {(keeper || mergees.length > 0) && (
             <div className='bg-surface-raised border-surface-border mt-4 flex flex-wrap items-center gap-3 rounded-lg border px-3 py-2.5'>
               <span className={cn(designContract.typography.label, 'text-slate-500')}>Merge</span>
-              {keeper && (
-                <div className='border-brand-border/70 bg-surface-card ring-brand-border/70 flex min-w-0 items-center gap-2 rounded-md border py-1 pr-2 pl-1 ring-1'>
-                  <Avatar name={keeper.name} mediaIdentity={keeper.mediaIdentity} size='mini' />
-                  <span className='truncate text-[11px] font-semibold text-slate-100'>{keeper.name}</span>
-                  <span className='shrink-0 text-[10px] text-slate-500'>#{keeper.userId}</span>
-                </div>
-              )}
-              <ArrowRight size={14} className='shrink-0 text-slate-500' aria-hidden />
-              {mergees.length === 0 ? (
-                <span className='min-w-0 text-[11px] text-slate-500'>
-                  into the kept account{keeper ? '' : ' (pick one account to keep first)'}
-                </span>
-              ) : (
+              {mergees.length > 0 &&
                 mergees.slice(0, 4).map((mergee) => (
                   <div
                     key={mergee.userId}
@@ -444,9 +432,23 @@ const MergeUsers = () => {
                     <span className='truncate text-[11px] font-semibold text-slate-200'>{mergee.name}</span>
                     <span className='shrink-0 text-[10px] text-slate-500'>#{mergee.userId}</span>
                   </div>
-                ))
-              )}
+                ))}
               {mergees.length > 4 && <span className='text-[11px] text-slate-500'>+{mergees.length - 4} more</span>}
+              <ArrowRight size={14} className='shrink-0 text-slate-500' aria-hidden />
+              {keeper ? (
+                <>
+                  <div className='border-brand-border/70 bg-surface-card ring-brand-border/70 flex min-w-0 items-center gap-2 rounded-md border py-1 pr-2 pl-1 ring-1'>
+                    <Avatar name={keeper.name} mediaIdentity={keeper.mediaIdentity} size='mini' />
+                    <span className='truncate text-[11px] font-semibold text-slate-100'>{keeper.name}</span>
+                    <span className='shrink-0 text-[10px] text-slate-500'>#{keeper.userId} · kept</span>
+                  </div>
+                  {mergees.length === 0 && (
+                    <span className='min-w-0 text-[11px] text-slate-500'>(pick the account(s) to merge into it)</span>
+                  )}
+                </>
+              ) : (
+                <span className='min-w-0 text-[11px] text-slate-500'>kept account (pick which one to keep first)</span>
+              )}
               <div className='ml-auto flex shrink-0 items-center gap-2'>
                 <button
                   type='button'
