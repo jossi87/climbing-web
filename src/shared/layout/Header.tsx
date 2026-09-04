@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, type ElementType, type ReactNode } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Link, useLocation } from 'react-router-dom';
-import { User, Settings, Download, LogOut, Trash2, Users, Code, LogIn, Loader2, GitMerge } from 'lucide-react';
+import { User, Settings, Download, LogOut, Trash2, Users, Code, LogIn, Loader2, UserCog } from 'lucide-react';
 import { useMeta } from '../components/Meta/context';
 import SearchBox from '../components/SearchBox/SearchBox';
 import { Avatar } from '../ui';
@@ -141,8 +141,8 @@ const Header = () => {
                   <DropdownItem to='/permissions' icon={Users} onClick={() => setIsAccountOpen(false)}>
                     Permissions
                   </DropdownItem>
-                  <DropdownItem to='/merge-users' icon={GitMerge} onClick={() => setIsAccountOpen(false)}>
-                    Merge users
+                  <DropdownItem to='/users' icon={UserCog} onClick={() => setIsAccountOpen(false)}>
+                    Users
                   </DropdownItem>
                   <a
                     href='/api/swagger-ui/index.html'

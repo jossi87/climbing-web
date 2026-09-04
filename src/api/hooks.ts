@@ -16,7 +16,7 @@ import { useRedirect } from '../utils/useRedirect';
 import { makeAuthenticatedRequest, useAccessToken, mediaIdentityId, mediaIdentityVersionStamp } from './utils';
 import type { FetchOptions } from './types';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { postMergeUsers, postPermissions } from './operations';
+import { postMergeUsers, postPermissions, postUserRename } from './operations';
 import { captureSentryException } from '../utils/sentry';
 import { type MediaRegion, calculateMediaRegion, isPathVisible, scaleCoordsJson, scalePath } from '../utils/svg-scaler';
 import type { SvgType } from '../utils/svg-helpers';
@@ -799,13 +799,13 @@ export function usePermissions() {
   };
 }
 
-export function useMergeUsers() {
+export function useUsers() {
   const { isAuthenticated } = useAuth0();
   const accessToken = useAccessToken();
   const client = useQueryClient();
 
-  const result = useData<Success<'getMergeUsers'>>(`/users/merge`, {
-    queryKey: [`/users/merge`],
+  const result = useData<Success<'getUsers'>>(`/users`, {
+    queryKey: [`/users`],
     enabled: isAuthenticated,
     staleTime: 30 * 1000,
   });
@@ -813,7 +813,15 @@ export function useMergeUsers() {
   const merge = useCallback(
     (keepUserId: number, deleteUserId: number): Promise<void> =>
       postMergeUsers(accessToken, keepUserId, deleteUserId).then(() => {
-        void client.invalidateQueries({ queryKey: [`/users/merge`] });
+        void client.invalidateQueries({ queryKey: [`/users`] });
+      }),
+    [accessToken, client],
+  );
+
+  const rename = useCallback(
+    (userId: number, firstname: string, lastname: string): Promise<void> =>
+      postUserRename(accessToken, userId, firstname, lastname).then(() => {
+        void client.invalidateQueries({ queryKey: [`/users`] });
       }),
     [accessToken, client],
   );
@@ -821,6 +829,7 @@ export function useMergeUsers() {
   return {
     ...result,
     merge,
+    rename,
   };
 }
 

@@ -14,7 +14,7 @@ const Donations = lazy(() => import('../features/Donations/Donations'), 'donatio
 const Graph = lazy(() => import('../features/Graph/Graph'), 'graph');
 const MediaEdit = lazy(() => import('../features/MediaEdit/MediaEdit'), 'media-edit');
 const MediaSvgEdit = lazy(() => import('../features/MediaSvgEdit/MediaSvgEdit'), 'media-svg-edit');
-const MergeUsers = lazy(() => import('../features/MergeUsers/MergeUsers'), 'merge-users');
+const Users = lazy(() => import('../features/Users/Users'), 'users');
 const Permissions = lazy(() => import('../features/Permissions/Permissions'), 'permissions');
 const PrivacyPolicy = lazy(() => import('../features/PrivacyPolicy/PrivacyPolicy'), 'privacy-policy');
 const Problem = lazy(() => import('../features/Problem'), 'problem');
@@ -88,10 +88,10 @@ function AppRoutes() {
               }
             />
             <Route
-              path='/merge-users'
+              path='/users'
               element={
                 <AuthContainer level='super-admin'>
-                  <MergeUsers />
+                  <Users />
                 </AuthContainer>
               }
             />

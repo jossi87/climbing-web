@@ -92,6 +92,23 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/users/name": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Rename a user (superadmin) */
+        post: operations["postUserRename"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/users/merge": {
         parameters: {
             query?: never;
@@ -99,8 +116,7 @@ export type paths = {
             path?: never;
             cookie?: never;
         };
-        /** Get all users (newest first) so a superadmin can merge duplicate accounts */
-        get: operations["getMergeUsers"];
+        get?: never;
         put?: never;
         /** Merge two users (superadmin) */
         post: operations["postMergeUsers"];
@@ -576,6 +592,23 @@ export type paths = {
         };
         /** Get webcams */
         get: operations["getCameras"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all users (newest first) so a superadmin can manage accounts */
+        get: operations["getUsers"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1634,20 +1667,23 @@ export type components = {
             /** Format: double */
             lng?: number;
         };
-        MergeRegion: {
+        AdminRegion: {
             /** Format: int32 */
             id?: number;
             name?: string;
             url?: string;
         };
-        MergeUser: {
+        AdminUser: {
             /** Format: int32 */
             userId?: number;
             name?: string;
+            firstname?: string;
+            lastname?: string;
+            canEditName?: boolean;
             mediaIdentity?: components["schemas"]["MediaIdentity"];
             lastLogin?: string;
             emails?: string[];
-            regions?: components["schemas"]["MergeRegion"][];
+            regions?: components["schemas"]["AdminRegion"][];
         };
         Trash: {
             /** Format: int32 */
@@ -2398,9 +2434,13 @@ export interface operations {
             };
         };
     };
-    getMergeUsers: {
+    postUserRename: {
         parameters: {
-            query?: never;
+            query: {
+                userId: number;
+                firstname: string;
+                lastname: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -2412,9 +2452,7 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": components["schemas"]["MergeUser"][];
-                };
+                content?: never;
             };
         };
     };
@@ -3182,6 +3220,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Webcam"][];
+                };
+            };
+        };
+    };
+    getUsers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUser"][];
                 };
             };
         };

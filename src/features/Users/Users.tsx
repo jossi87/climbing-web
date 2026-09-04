@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   ArrowRight,
   Calendar,
@@ -8,19 +9,24 @@ import {
   Loader2,
   Mail,
   MapPin,
+  Pencil,
+  UserCog,
   Users as UsersIcon,
   X,
 } from 'lucide-react';
 import { Avatar, Card, Loading, SearchInput, SectionHeader } from '../../shared/ui';
-import { useMergeUsers } from '../../api';
+import { useUsers } from '../../api';
 import { useMeta } from '../../shared/components/Meta/context';
 import { designContract } from '../../design/contract';
 import { twInk } from '../../design/twInk';
 import { cn } from '../../lib/utils';
 import type { components } from '../../@types/buldreinfo/swagger';
 
-type MergeUser = components['schemas']['MergeUser'];
-type MergeRegion = components['schemas']['MergeRegion'];
+type AdminUser = components['schemas']['AdminUser'];
+type AdminRegion = components['schemas']['AdminRegion'];
+
+/** Form field captions — readable on `surface-card`. */
+const fieldLabelClass = cn(designContract.typography.label, 'text-slate-300');
 
 const normalize = (value: string) => value.trim().toLowerCase().replace(/\s+/g, ' ');
 
@@ -40,14 +46,14 @@ const normalizeName = (value?: string) =>
 const withScheme = (url?: string) => (!url ? '' : /^https?:\/\//i.test(url) ? url : `https://${url}`);
 
 /** Profile link on the region's own web page (fallback to the current site when the user has no region). */
-const profileUrl = (user: MergeUser, region?: MergeRegion): string => {
+const profileUrl = (user: AdminUser, region?: AdminRegion): string => {
   const base = region?.url ? withScheme(region.url) : '';
   return base ? `${base}/user/${user.userId}` : `/user/${user.userId}`;
 };
 
-type MergeGroup = {
+type UserGroup = {
   label: string;
-  users: MergeUser[];
+  users: AdminUser[];
 };
 
 /**
@@ -56,8 +62,8 @@ type MergeGroup = {
  * least one region to be suggested together. Connected components are used so a chain A-B (share R1) + B-C (share R2)
  * is suggested as one group.
  */
-function buildGroups(data: MergeUser[]): MergeGroup[] {
-  const byName = new Map<string, MergeUser[]>();
+function buildGroups(data: AdminUser[]): UserGroup[] {
+  const byName = new Map<string, AdminUser[]>();
   for (const user of data) {
     const key = normalizeName(user.name);
     if (!key) continue;
@@ -66,7 +72,7 @@ function buildGroups(data: MergeUser[]): MergeGroup[] {
     byName.set(key, arr);
   }
 
-  const groups: MergeGroup[] = [];
+  const groups: UserGroup[] = [];
   for (const [key, members] of byName) {
     if (members.length < 2) continue;
     const regionIds = members.map(
@@ -103,7 +109,7 @@ function buildGroups(data: MergeUser[]): MergeGroup[] {
         if (shares) union(i, j);
       }
     }
-    const components = new Map<number, MergeUser[]>();
+    const components = new Map<number, AdminUser[]>();
     members.forEach((m, i) => {
       const root = find(i);
       const arr = components.get(root) ?? [];
@@ -121,28 +127,25 @@ function buildGroups(data: MergeUser[]): MergeGroup[] {
   return groups;
 }
 
-const MergeUsers = () => {
+const Users = () => {
   const meta = useMeta();
   const [query, setQuery] = useState('');
   const [mode, setMode] = useState<'suggestions' | 'all'>('suggestions');
   const [keepUserId, setKeepUserId] = useState<number | null>(null);
   const [mergeUserIds, setMergeUserIds] = useState<ReadonlySet<number>>(new Set());
+  const [renameUser, setRenameUser] = useState<AdminUser | null>(null);
   const [isMerging, setIsMerging] = useState(false);
-  const { data = [], isLoading: loading, merge } = useMergeUsers();
+  const { data = [], isLoading: loading, merge, rename } = useUsers();
 
   const groups = useMemo(() => buildGroups(data), [data]);
 
-  const matches = (user: MergeUser) => {
+  const matches = (user: AdminUser) => {
+    // Not clever - just a plain substring check against the user id or the name (first + last name). Names that are
+    // actually emails (e.g. stored in firstname) are matched too, so searching "@" works.
     const q = normalize(query);
-    const qn = normalizeName(query);
     if (!q) return true;
-    if (normalizeName(user.name).includes(qn)) return true;
     if (String(user.userId ?? 0).includes(q)) return true;
-    if ((user.emails ?? []).some((email) => email.toLowerCase().includes(q))) return true;
-    return (user.regions ?? []).some((region) => {
-      const value = `${region.name ?? ''} ${region.url ?? ''}`.toLowerCase();
-      return value.includes(q) || normalizeName(value).includes(qn);
-    });
+    return (user.name ?? '').toLowerCase().includes(q);
   };
 
   const filteredUsers = query ? data.filter(matches) : data;
@@ -211,11 +214,12 @@ const MergeUsers = () => {
     }
   };
 
-  const renderUser = (user: MergeUser) => {
+  const renderUser = (user: AdminUser) => {
     const userId = user.userId ?? 0;
     const isKeep = userId === keepUserId;
     const isMergee = mergeUserIds.has(userId);
     const isSelf = userId === ownUserId;
+    const canEditName = user.canEditName === true;
     const emails = user.emails ?? [];
     const regions = user.regions ?? [];
     const profile = profileUrl(user, regions[0]);
@@ -225,7 +229,7 @@ const MergeUsers = () => {
       <div
         key={userId}
         className={cn(
-          'flex min-w-0 items-center gap-2.5 rounded-lg border px-2.5 py-2 transition-colors sm:gap-3 sm:px-3 sm:py-2.5',
+          'flex min-w-0 items-start gap-2.5 rounded-lg border px-2.5 py-2 transition-colors sm:gap-3 sm:px-3 sm:py-2.5',
           isKeep
             ? 'border-brand-border/70 bg-surface-hover ring-brand-border/60 ring-1'
             : isMergee
@@ -233,7 +237,7 @@ const MergeUsers = () => {
               : 'border-surface-border/50 bg-surface-card hover:bg-surface-raised-hover',
         )}
       >
-        <div className='flex min-w-0 flex-1 items-center gap-2.5 sm:gap-3'>
+        <div className='flex min-w-0 flex-1 items-start gap-2.5 sm:gap-3'>
           <a
             {...linkProps}
             title={`Open profile of ${user.name ?? 'user'} (#${userId})`}
@@ -242,19 +246,21 @@ const MergeUsers = () => {
             <Avatar name={user.name} mediaIdentity={user.mediaIdentity} size='tiny' />
           </a>
           <div className='min-w-0 flex-1'>
-            <a
-              {...linkProps}
-              className={cn(
-                'block truncate text-sm font-semibold text-slate-100 transition-colors hover:text-slate-300',
-                twInk.lightTextSlate900,
-              )}
-            >
-              {user.name || 'Unknown'}
-            </a>
-            <p className={cn('mt-0.5 text-[10px] font-medium text-slate-500', twInk.lightTextSlate700)}>
-              #{userId}
-              {isSelf ? ' (you)' : ''}
-            </p>
+            <div className='flex min-w-0 items-baseline gap-x-1.5'>
+              <a
+                {...linkProps}
+                className={cn(
+                  'min-w-0 flex-1 truncate text-sm font-bold text-slate-100 transition-colors hover:text-slate-300',
+                  twInk.lightTextSlate900,
+                )}
+              >
+                {user.name || 'Unknown'}
+              </a>
+              <span className={cn('shrink-0 text-[10px] font-medium text-slate-500', twInk.lightTextSlate700)}>
+                #{userId}
+                {isSelf ? ' (you)' : ''}
+              </span>
+            </div>
             {user.lastLogin && (
               <p
                 className={cn(
@@ -299,14 +305,33 @@ const MergeUsers = () => {
             )}
           </div>
         </div>
-        <div className='flex shrink-0 flex-col gap-1'>
+        <div className='flex w-[5.75rem] shrink-0 flex-col gap-1'>
+          <button
+            type='button'
+            disabled={!canEditName}
+            title={
+              canEditName
+                ? 'Edit the name of this user'
+                : 'Not allowed - this user is only associated with regions where you are not a superadmin'
+            }
+            onClick={() => setRenameUser(user)}
+            className={cn(
+              'inline-flex w-full items-center justify-center gap-1 rounded-md border px-1.5 py-1.5 text-[10px] font-semibold transition-colors',
+              canEditName
+                ? 'border-surface-border/60 bg-surface-card text-slate-500 hover:border-slate-500 hover:text-slate-200'
+                : 'border-surface-border/40 bg-surface-card cursor-not-allowed text-slate-600 opacity-50',
+            )}
+          >
+            <Pencil size={10} aria-hidden />
+            Edit name
+          </button>
           <button
             type='button'
             aria-pressed={isKeep}
             title='Keep this account (the merge target)'
             onClick={() => toggleKeep(userId)}
             className={cn(
-              'inline-flex items-center gap-1 rounded-md border px-2 py-1 text-[10px] font-semibold transition-colors',
+              'inline-flex w-full items-center justify-center gap-1 rounded-md border px-1.5 py-1.5 text-[10px] font-semibold transition-colors',
               isKeep
                 ? 'border-brand-border/70 bg-surface-card text-slate-100'
                 : 'border-surface-border/60 bg-surface-card text-slate-500 hover:border-slate-500 hover:text-slate-200',
@@ -332,7 +357,7 @@ const MergeUsers = () => {
             }
             onClick={() => toggleMerge(userId)}
             className={cn(
-              'inline-flex items-center gap-1 rounded-md border px-2 py-1 text-[10px] font-semibold transition-colors',
+              'inline-flex w-full items-center justify-center gap-1 rounded-md border px-1.5 py-1.5 text-[10px] font-semibold transition-colors',
               isMergee
                 ? 'bg-surface-card border-slate-400/70 text-slate-100'
                 : 'border-surface-border/60 bg-surface-card text-slate-500 hover:border-slate-500 hover:text-slate-200',
@@ -356,7 +381,7 @@ const MergeUsers = () => {
   }
 
   const MODES = [
-    { id: 'suggestions', label: 'Suggestions', icon: Lightbulb },
+    { id: 'suggestions', label: 'Merge suggestions', icon: Lightbulb },
     { id: 'all', label: 'All users', icon: UsersIcon },
   ] as const;
 
@@ -373,21 +398,16 @@ const MergeUsers = () => {
 
   return (
     <div className='w-full min-w-0'>
-      <title>{`Merge users | ${meta?.title}`}</title>
-      <meta name='description' content='Merge duplicate user accounts' />
+      <title>{`Users | ${meta?.title}`}</title>
+      <meta name='description' content='Browse users, merge duplicate accounts and edit names (superadmin only)' />
       <Card flush className='min-w-0 overflow-visible border-0'>
         <div className='p-4 pb-3 sm:p-5 sm:pb-4'>
           <div className='flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between'>
-            <SectionHeader
-              className='mb-0 min-w-0 lg:flex-1'
-              title='Merge users'
-              icon={GitMerge}
-              subheader={subheader}
-            />
+            <SectionHeader className='mb-0 min-w-0 lg:flex-1' title='Users' icon={UserCog} subheader={subheader} />
             <div className='w-full shrink-0 lg:w-80 lg:max-w-[52vw]'>
               <div
                 role='tablist'
-                aria-label='Merge view'
+                aria-label='Users view'
                 className='bg-surface-raised border-surface-border mb-2 grid grid-cols-2 gap-1 rounded-lg border p-1'
               >
                 {MODES.map((tab) => (
@@ -517,8 +537,167 @@ const MergeUsers = () => {
           )}
         </div>
       </Card>
+      {renameUser && (
+        <RenameUserDialog
+          key={renameUser.userId ?? 0}
+          user={renameUser}
+          onRename={(firstname, lastname) => rename(renameUser.userId ?? 0, firstname, lastname)}
+          onClose={() => setRenameUser(null)}
+        />
+      )}
     </div>
   );
 };
 
-export default MergeUsers;
+type RenameUserDialogProps = {
+  user: AdminUser;
+  onRename: (firstname: string, lastname: string) => Promise<void>;
+  onClose: () => void;
+};
+
+/**
+ * Modal for renaming an existing user (superadmin only, and only when the caller is superadmin in at least one of the
+ * user's regions - or the user has no region association).
+ */
+const RenameUserDialog = ({ user, onRename, onClose }: RenameUserDialogProps) => {
+  const [firstname, setFirstname] = useState(user.firstname ?? '');
+  const [lastname, setLastname] = useState(user.lastname ?? '');
+  const [isSaving, setIsSaving] = useState(false);
+  /** Backdrop closes only when the press itself started on the backdrop - never when a drag began inside the dialog. */
+  const pointerDownOnBackdrop = useRef(false);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || isSaving) return;
+      onClose();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [onClose, isSaving]);
+
+  const trimmedFirstname = firstname.trim();
+  const trimmedLastname = lastname.trim();
+  const canSave = trimmedFirstname.length > 0 && !isSaving;
+
+  const handleSave = async () => {
+    if (!canSave) return;
+    setIsSaving(true);
+    try {
+      await onRename(trimmedFirstname, trimmedLastname);
+      onClose();
+    } catch (error) {
+      console.error(error);
+      alert(error instanceof Error ? error.message : String(error));
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return createPortal(
+    <div
+      className='animate-in fade-in fixed inset-0 z-200 flex h-dvh min-h-dvh w-full items-center justify-center bg-black/80 p-4 backdrop-blur-sm duration-200'
+      role='dialog'
+      aria-modal='true'
+      aria-labelledby='rename-user-modal-title'
+      onMouseDown={(e) => {
+        pointerDownOnBackdrop.current = e.target === e.currentTarget;
+      }}
+      onClick={() => {
+        if (isSaving || !pointerDownOnBackdrop.current) return;
+        pointerDownOnBackdrop.current = false;
+        onClose();
+      }}
+    >
+      <div className='bg-surface-card border-surface-border w-full max-w-sm overflow-hidden rounded-2xl border shadow-2xl'>
+        <div className='border-surface-border bg-surface-raised flex shrink-0 items-center justify-between border-b px-4 py-3 sm:px-5'>
+          <h3 id='rename-user-modal-title' className='type-label flex min-w-0 items-center gap-2 text-slate-200'>
+            <Pencil size={16} className='shrink-0 text-slate-400' />
+            <span className='truncate'>Edit name</span>
+          </h3>
+          <button
+            type='button'
+            onClick={onClose}
+            disabled={isSaving}
+            className='hover:bg-surface-raised-hover -mr-1 shrink-0 rounded-lg p-1.5 opacity-70 transition-colors hover:opacity-100 disabled:pointer-events-none disabled:opacity-40'
+            aria-label='Close'
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        <div className='space-y-4 px-4 py-4 sm:px-5'>
+          <div className='flex min-w-0 items-center gap-2.5'>
+            <Avatar name={user.name} mediaIdentity={user.mediaIdentity} size='tiny' />
+            <div className='min-w-0'>
+              <p className='truncate text-sm font-semibold text-slate-100'>{user.name || 'Unknown'}</p>
+              <p className='mt-0.5 text-[10px] font-medium text-slate-500'>#{user.userId}</p>
+            </div>
+          </div>
+
+          <div className='space-y-1.5'>
+            <label htmlFor='rename-user-firstname' className={cn('ml-1', fieldLabelClass)}>
+              First name{' '}
+              <span className='text-red-500' aria-hidden>
+                *
+              </span>
+              <span className='sr-only'> (required)</span>
+            </label>
+            <input
+              id='rename-user-firstname'
+              type='text'
+              autoFocus
+              placeholder='First name'
+              className='bg-surface-nav border-surface-border type-body focus:border-brand w-full rounded-lg border px-3 py-2 transition-colors focus:outline-none'
+              value={firstname}
+              onChange={(e) => setFirstname(e.target.value)}
+            />
+          </div>
+
+          <div className='space-y-1.5'>
+            <label htmlFor='rename-user-lastname' className={cn('ml-1', fieldLabelClass)}>
+              Last name
+            </label>
+            <input
+              id='rename-user-lastname'
+              type='text'
+              placeholder='Last name'
+              className='bg-surface-nav border-surface-border type-body focus:border-brand w-full rounded-lg border px-3 py-2 transition-colors focus:outline-none'
+              value={lastname}
+              onChange={(e) => setLastname(e.target.value)}
+            />
+          </div>
+
+          <p className='border-surface-border/50 flex items-start gap-1.5 rounded-lg border border-dashed px-2.5 py-2 text-[10px] leading-snug text-slate-500'>
+            <MapPin size={10} className='mt-px shrink-0' aria-hidden />
+            <span>
+              {user.regions && user.regions.length > 0
+                ? `Associated regions: ${user.regions.map((r) => r.name).join(', ')}.`
+                : 'This user is not associated with any region.'}
+            </span>
+          </p>
+        </div>
+
+        <div className='border-surface-border bg-surface-raised flex shrink-0 justify-end gap-2 border-t px-3 py-3 sm:px-5'>
+          <button type='button' onClick={onClose} disabled={isSaving} className='modal-action-cancel'>
+            Cancel
+          </button>
+          <button
+            type='button'
+            onClick={handleSave}
+            disabled={!canSave}
+            className={cn(
+              designContract.controls.savePrimaryModal,
+              'disabled:bg-surface-nav px-5 py-2 text-[10px] shadow-sm disabled:opacity-50',
+            )}
+          >
+            {isSaving ? <Loader2 size={14} className='animate-spin' /> : <Check size={14} />}
+            {isSaving ? 'Saving…' : 'Save name'}
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+};
+
+export default Users;

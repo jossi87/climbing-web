@@ -7,6 +7,7 @@ export {
   downloadUsersTicks,
   postComment,
   postMergeUsers,
+  postUserRename,
   postProblem,
   postProblemSvg,
   postSector,

@@ -122,6 +122,19 @@ export function postMergeUsers(
   }).then((response) => ensureOkResponse(response, url));
 }
 
+export function postUserRename(
+  accessToken: string | null,
+  userId: number,
+  firstname: string,
+  lastname: string,
+): Promise<Response> {
+  const url = `/users/name?userId=${userId}&firstname=${firstname}&lastname=${lastname}`;
+  return makeAuthenticatedRequest(accessToken, url, {
+    method: 'POST',
+    ...invalidateQueriesAfter,
+  }).then((response) => ensureOkResponse(response, url));
+}
+
 export function postProblem(
   accessToken: string | null,
   sectorId: number,
