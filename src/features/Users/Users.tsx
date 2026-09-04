@@ -14,7 +14,7 @@ import {
   Users as UsersIcon,
   X,
 } from 'lucide-react';
-import { Avatar, Card, Loading, SearchInput, SectionHeader } from '../../shared/ui';
+import { Avatar, Card, ClickableAvatar, Loading, SearchInput, SectionHeader } from '../../shared/ui';
 import { useUsers } from '../../api';
 import { useMeta } from '../../shared/components/Meta/context';
 import { designContract } from '../../design/contract';
@@ -56,71 +56,121 @@ type UserGroup = {
   users: AdminUser[];
 };
 
+/** Split a full name into normalized single-word tokens ("Håkon M. Hansen" -> ["haakon", "m", "hansen"]). */
+const nameTokens = (value?: string) => (value ?? '').split(/\s+/).map(normalizeName).filter(Boolean);
+
+/** Two tokens agree when they are equal, or when one is a single-letter initial of the other ("h" ~ "håkon"). */
+const initialsCompatible = (a: string, b: string) =>
+  a === b || (a.length === 1 && b.startsWith(a)) || (b.length === 1 && a.startsWith(b));
+
+/** Middle-name words must not contradict: an initial may stand for a full middle name and extra words are allowed. */
+function middlesConsistent(a: string[], b: string[]): boolean {
+  const [fewer, more] = a.length <= b.length ? [a, b] : [b, a];
+  if (fewer.length === 0) return true;
+  const used = more.map(() => false);
+  for (const token of fewer) {
+    const index = more.findIndex((candidate, i) => !used[i] && initialsCompatible(token, candidate));
+    if (index === -1) return false;
+    used[index] = true;
+  }
+  return true;
+}
+
 /**
- * Merge suggestions = users that have the same normalized name. Accounts with no region associations (e.g. users
- * added manually when tagging photos) are always candidates. When both accounts have region(s) they must share at
- * least one region to be suggested together. Connected components are used so a chain A-B (share R1) + B-C (share R2)
- * is suggested as one group.
+ * Initials may stand for missing words, but a match still needs at least one full (multi-letter) word in common.
+ * Without this, a name like "A. B." would "bridge" every A* B* name together (Axel Von Bergen + Audun Bratrud).
+ */
+const sharesFullWord = (a: string[], b: string[]) => a.some((token) => token.length > 1 && b.includes(token));
+
+/**
+ * Same-person name variants: "Håkon Hansen" vs "Håkon Middlename Hansen" vs "Håkon M. Hansen" vs "Håkon H." vs
+ * "H. Hansen" (first-name initials and one-word names like "Håkon" are also accepted).
+ */
+function isNameVariant(a: string[], b: string[]): boolean {
+  const aSingle = a.length === 1 ? a[0] : null;
+  const bSingle = b.length === 1 ? b[0] : null;
+  if (aSingle || bSingle) {
+    // One-word name (e.g. "Håkon") must literally be the other account's first or last name. A lone initial is too vague.
+    const single = aSingle ?? bSingle ?? '';
+    const other = aSingle ? b : a;
+    return single.length > 1 && (other[0] === single || other[other.length - 1] === single);
+  }
+  if (!sharesFullWord(a, b)) return false;
+  if (!initialsCompatible(a[0], b[0])) return false;
+  if (!initialsCompatible(a[a.length - 1], b[b.length - 1])) return false;
+  return middlesConsistent(a.slice(1, -1), b.slice(1, -1));
+}
+
+/**
+ * Merge suggestions = users whose names are the same person's name written in different ways (see {@link isNameVariant}).
+ * Accounts with no region associations (e.g. users added manually when tagging photos) are always candidates. When both
+ * accounts have region(s) they must share at least one region to be suggested together. Connected components are used so
+ * a chain A-B (share R1) + B-C (share R2) is suggested as one group.
  */
 function buildGroups(data: AdminUser[]): UserGroup[] {
-  const byName = new Map<string, AdminUser[]>();
-  for (const user of data) {
-    const key = normalizeName(user.name);
-    if (!key) continue;
-    const arr = byName.get(key) ?? [];
-    arr.push(user);
-    byName.set(key, arr);
+  const tokenLists = data.map((user) => nameTokens(user.name));
+  const regionIds = data.map(
+    (user) => new Set((user.regions ?? []).map((r) => r.id).filter((id): id is number => !!id)),
+  );
+
+  // Bucket by the first-name initial so we never compare names that cannot be the same person.
+  const byInitial = new Map<string, number[]>();
+  data.forEach((_, index) => {
+    const initial = tokenLists[index][0]?.[0];
+    if (!initial) return;
+    const arr = byInitial.get(initial) ?? [];
+    arr.push(index);
+    byInitial.set(initial, arr);
+  });
+
+  const parent = data.map((_, i) => i);
+  const find = (index: number): number => {
+    let i = index;
+    while (parent[i] !== i) {
+      parent[i] = parent[parent[i]];
+      i = parent[i];
+    }
+    return i;
+  };
+  const union = (a: number, b: number) => {
+    const ra = find(a);
+    const rb = find(b);
+    if (ra !== rb) parent[rb] = ra;
+  };
+
+  for (const bucket of byInitial.values()) {
+    for (let i = 0; i < bucket.length; i++) {
+      for (let j = i + 1; j < bucket.length; j++) {
+        const a = bucket[i];
+        const b = bucket[j];
+        if (!isNameVariant(tokenLists[a], tokenLists[b])) continue;
+        // Region guard: both accounts with regions must share one; region-less accounts are always candidates.
+        const sharesRegion = [...regionIds[a]].some((id) => regionIds[b].has(id));
+        if (regionIds[a].size === 0 || regionIds[b].size === 0 || sharesRegion) {
+          union(a, b);
+        }
+      }
+    }
   }
 
+  const components = new Map<number, number[]>();
+  data.forEach((_, index) => {
+    const root = find(index);
+    const arr = components.get(root) ?? [];
+    arr.push(index);
+    components.set(root, arr);
+  });
+
   const groups: UserGroup[] = [];
-  for (const [key, members] of byName) {
-    if (members.length < 2) continue;
-    const regionIds = members.map(
-      (u) => new Set((u.regions ?? []).map((r) => r.id).filter((id): id is number => !!id)),
-    );
-    const parent = members.map((_, i) => i);
-    const find = (index: number): number => {
-      let i = index;
-      while (parent[i] !== i) {
-        parent[i] = parent[parent[i]];
-        i = parent[i];
-      }
-      return i;
-    };
-    const union = (a: number, b: number) => {
-      const ra = find(a);
-      const rb = find(b);
-      if (ra !== rb) parent[rb] = ra;
-    };
-    for (let i = 0; i < members.length; i++) {
-      for (let j = i + 1; j < members.length; j++) {
-        // Accounts without any region are always suggested together with same-name users.
-        if (regionIds[i].size === 0 || regionIds[j].size === 0) {
-          union(i, j);
-          continue;
-        }
-        let shares = false;
-        for (const id of regionIds[i]) {
-          if (regionIds[j].has(id)) {
-            shares = true;
-            break;
-          }
-        }
-        if (shares) union(i, j);
-      }
-    }
-    const components = new Map<number, AdminUser[]>();
-    members.forEach((m, i) => {
-      const root = find(i);
-      const arr = components.get(root) ?? [];
-      arr.push(m);
-      components.set(root, arr);
-    });
-    for (const comp of components.values()) {
-      if (comp.length < 2) continue;
-      comp.sort((a, b) => (a.userId ?? 0) - (b.userId ?? 0));
-      groups.push({ label: comp[0]?.name ?? key, users: comp });
-    }
+  for (const memberIndexes of components.values()) {
+    if (memberIndexes.length < 2) continue;
+    const members = memberIndexes.map((index) => data[index]).sort((x, y) => (x.userId ?? 0) - (y.userId ?? 0));
+    // Label the group with the fullest written name so the "real" account reads as the representative.
+    const labelUser = [...members].sort((x, y) => {
+      const tokensDelta = nameTokens(y.name).length - nameTokens(x.name).length;
+      return tokensDelta || (x.userId ?? 0) - (y.userId ?? 0);
+    })[0];
+    groups.push({ label: labelUser?.name ?? 'Unknown', users: members });
   }
 
   groups.sort((a, b) => a.label.localeCompare(b.label));
@@ -154,6 +204,7 @@ const Users = () => {
   const keeper = data.find((item) => item.userId === keepUserId) ?? null;
   const mergees = data.filter((item) => mergeUserIds.has(item.userId ?? -1));
   const canMerge = !!keeper && mergees.length > 0 && !isMerging;
+  const showMergeBar = !!keeper || mergees.length > 0;
   const ownUserId = meta?.userId ?? -1;
 
   const toggleKeep = (userId: number) => {
@@ -223,8 +274,7 @@ const Users = () => {
     const emails = user.emails ?? [];
     const regions = user.regions ?? [];
     const profile = profileUrl(user, regions[0]);
-    const external = profile.startsWith('http');
-    const linkProps = external ? { href: profile, target: '_blank', rel: 'noopener noreferrer' } : { href: profile };
+    const linkProps = { href: profile, target: '_blank', rel: 'noopener noreferrer' };
     return (
       <div
         key={userId}
@@ -238,13 +288,13 @@ const Users = () => {
         )}
       >
         <div className='flex min-w-0 flex-1 items-start gap-2.5 sm:gap-3'>
-          <a
-            {...linkProps}
-            title={`Open profile of ${user.name ?? 'user'} (#${userId})`}
-            className='shrink-0 rounded-full transition-opacity hover:opacity-80'
-          >
-            <Avatar name={user.name} mediaIdentity={user.mediaIdentity} size='tiny' />
-          </a>
+          <ClickableAvatar
+            name={user.name}
+            mediaIdentity={user.mediaIdentity}
+            userId={userId}
+            size='tiny'
+            className='shrink-0 rounded-full'
+          />
           <div className='min-w-0 flex-1'>
             <div className='flex min-w-0 items-baseline gap-x-1.5'>
               <a
@@ -431,7 +481,7 @@ const Users = () => {
               </div>
               <SearchInput
                 type='text'
-                placeholder='Search users (name, id, email or region)...'
+                placeholder='Search users (name or id)...'
                 onChange={(e) => setQuery(e.target.value)}
                 value={query}
                 onClear={() => setQuery('')}
@@ -439,65 +489,6 @@ const Users = () => {
               />
             </div>
           </div>
-          {(keeper || mergees.length > 0) && (
-            <div className='bg-surface-raised border-surface-border mt-4 flex flex-wrap items-center gap-3 rounded-lg border px-3 py-2.5'>
-              <span className={cn(designContract.typography.label, 'text-slate-500')}>Merge</span>
-              {mergees.length > 0 &&
-                mergees.slice(0, 4).map((mergee) => (
-                  <div
-                    key={mergee.userId}
-                    className='border-surface-border/60 bg-surface-card flex min-w-0 items-center gap-2 rounded-md border py-1 pr-2 pl-1'
-                  >
-                    <Avatar name={mergee.name} mediaIdentity={mergee.mediaIdentity} size='mini' />
-                    <span className='truncate text-[11px] font-semibold text-slate-200'>{mergee.name}</span>
-                    <span className='shrink-0 text-[10px] text-slate-500'>#{mergee.userId}</span>
-                  </div>
-                ))}
-              {mergees.length > 4 && <span className='text-[11px] text-slate-500'>+{mergees.length - 4} more</span>}
-              <ArrowRight size={14} className='shrink-0 text-slate-500' aria-hidden />
-              {keeper ? (
-                <>
-                  <div className='border-brand-border/70 bg-surface-card ring-brand-border/70 flex min-w-0 items-center gap-2 rounded-md border py-1 pr-2 pl-1 ring-1'>
-                    <Avatar name={keeper.name} mediaIdentity={keeper.mediaIdentity} size='mini' />
-                    <span className='truncate text-[11px] font-semibold text-slate-100'>{keeper.name}</span>
-                    <span className='shrink-0 text-[10px] text-slate-500'>#{keeper.userId} · kept</span>
-                  </div>
-                  {mergees.length === 0 && (
-                    <span className='min-w-0 text-[11px] text-slate-500'>(pick the account(s) to merge into it)</span>
-                  )}
-                </>
-              ) : (
-                <span className='min-w-0 text-[11px] text-slate-500'>kept account (pick which one to keep first)</span>
-              )}
-              <div className='ml-auto flex shrink-0 items-center gap-2'>
-                <button
-                  type='button'
-                  onClick={clearSelection}
-                  disabled={isMerging}
-                  className='border-surface-border/60 hover:bg-surface-hover inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[11px] font-semibold text-slate-300 transition-colors disabled:cursor-not-allowed disabled:opacity-50'
-                >
-                  <X size={12} aria-hidden />
-                  Clear
-                </button>
-                <button
-                  type='button'
-                  onClick={runMerge}
-                  disabled={!canMerge}
-                  className={cn(
-                    'inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[11px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50',
-                    canMerge ? 'bg-brand text-slate-50 hover:opacity-90' : 'bg-surface-raised-hover text-slate-500',
-                  )}
-                >
-                  {isMerging ? (
-                    <Loader2 size={12} className='animate-spin' aria-hidden />
-                  ) : (
-                    <GitMerge size={12} aria-hidden />
-                  )}
-                  {isMerging ? 'Merging…' : `Merge ${mergees.length} account${mergees.length === 1 ? '' : 's'}`}
-                </button>
-              </div>
-            </div>
-          )}
         </div>
         <div className='border-surface-border/60 border-t'>
           {mode === 'suggestions' ? (
@@ -537,6 +528,103 @@ const Users = () => {
           )}
         </div>
       </Card>
+      {showMergeBar &&
+        createPortal(
+          <div className='pointer-events-none fixed inset-x-0 bottom-3 z-[300] flex justify-center px-3 sm:bottom-5'>
+            <div
+              role='status'
+              aria-label='Merge selection'
+              title={
+                keeper || mergees.length > 0
+                  ? [
+                      keeper ? `Keep: ${keeper.name ?? 'Unknown'} (#${keeper.userId})` : null,
+                      ...mergees.map((m) => `Merge: ${m.name ?? 'Unknown'} (#${m.userId})`),
+                    ]
+                      .filter(Boolean)
+                      .join(' | ')
+                  : undefined
+              }
+              className='animate-in fade-in slide-in-from-bottom-3 border-brand-border/70 bg-surface-nav ring-brand/25 pointer-events-auto flex w-full max-w-[min(58rem,calc(100vw-1.5rem))] items-center gap-1.5 rounded-full border py-1.5 pr-1.5 pl-2 shadow-[0_12px_44px_-10px_rgba(0,0,0,0.75)] ring-2 duration-200 sm:gap-2 sm:py-2 sm:pl-2.5'
+            >
+              <span className='bg-brand flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-slate-50 shadow-sm sm:h-8 sm:w-8'>
+                <GitMerge size={14} strokeWidth={2.25} aria-hidden />
+              </span>
+
+              <div
+                className='flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto sm:gap-2 [&::-webkit-scrollbar]:hidden'
+                style={{ scrollbarWidth: 'none' }}
+              >
+                <div className='flex shrink-0 items-center gap-1.5 sm:gap-2'>
+                  {mergees.length > 0 ? (
+                    mergees.map((mergee) => (
+                      <span
+                        key={mergee.userId}
+                        className='border-surface-border/70 bg-surface-card inline-flex shrink-0 items-center gap-1 rounded-full border py-0.5 pr-2 pl-0.5'
+                        title={mergee.name ?? 'Unknown'}
+                      >
+                        <Avatar name={mergee.name} mediaIdentity={mergee.mediaIdentity} size='micro' />
+                        <span className='max-w-[10rem] truncate text-[11px] font-medium text-slate-200'>
+                          {mergee.name}
+                        </span>
+                      </span>
+                    ))
+                  ) : (
+                    <span className='border-surface-border/70 inline-flex shrink-0 items-center gap-1 rounded-full border border-dashed px-2.5 py-1 text-[11px] font-medium text-slate-400'>
+                      Mark accounts to merge
+                    </span>
+                  )}
+                </div>
+
+                {mergees.length > 0 && <ArrowRight size={14} className='text-brand shrink-0' aria-hidden />}
+
+                {keeper ? (
+                  <span
+                    className='border-brand-border/80 bg-surface-card ring-brand-border/60 inline-flex shrink-0 items-center gap-1 rounded-full border py-0.5 pr-2 pl-0.5 ring-1'
+                    title={keeper.name ?? 'Unknown'}
+                  >
+                    <Avatar name={keeper.name} mediaIdentity={keeper.mediaIdentity} size='micro' />
+                    <span className='max-w-[10rem] truncate text-[11px] font-bold text-slate-50'>{keeper.name}</span>
+                    <span className='shrink-0 text-[10px] font-medium text-slate-400'>#{keeper.userId}</span>
+                  </span>
+                ) : (
+                  <span className='border-brand-border/60 inline-flex shrink-0 items-center gap-1 rounded-full border border-dashed px-2.5 py-1 text-[11px] font-medium text-slate-400'>
+                    Pick keeper
+                  </span>
+                )}
+              </div>
+
+              <button
+                type='button'
+                onClick={clearSelection}
+                disabled={isMerging}
+                className='hover:bg-surface-raised-hover border-surface-border/70 shrink-0 rounded-full border px-2 py-1 text-[11px] font-semibold text-slate-300 transition-colors hover:text-slate-100 disabled:cursor-not-allowed disabled:opacity-50 sm:px-2.5'
+              >
+                Clear
+              </button>
+              <button
+                type='button'
+                onClick={runMerge}
+                disabled={!canMerge}
+                className={cn(
+                  'shrink-0 rounded-full px-3 py-1 text-[11px] font-bold tracking-wide transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:px-3.5 sm:py-1.5',
+                  canMerge
+                    ? 'bg-brand text-slate-50 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.6)] hover:brightness-110'
+                    : 'bg-surface-raised-hover text-slate-500',
+                )}
+              >
+                {isMerging ? (
+                  <span className='inline-flex items-center gap-1'>
+                    <Loader2 size={12} className='animate-spin' aria-hidden />
+                    Merging…
+                  </span>
+                ) : (
+                  'Merge'
+                )}
+              </button>
+            </div>
+          </div>,
+          document.body,
+        )}
       {renameUser && (
         <RenameUserDialog
           key={renameUser.userId ?? 0}
@@ -668,10 +756,17 @@ const RenameUserDialog = ({ user, onRename, onClose }: RenameUserDialogProps) =>
           </div>
 
           <p className='border-surface-border/50 flex items-start gap-1.5 rounded-lg border border-dashed px-2.5 py-2 text-[10px] leading-snug text-slate-500'>
+            <Mail size={10} className='mt-px shrink-0' aria-hidden />
+            <span className='min-w-0 break-words'>
+              {user.emails && user.emails.length > 0 ? `Emails: ${user.emails.join(', ')}` : 'No email registered.'}
+            </span>
+          </p>
+
+          <p className='border-surface-border/50 flex items-start gap-1.5 rounded-lg border border-dashed px-2.5 py-2 text-[10px] leading-snug text-slate-500'>
             <MapPin size={10} className='mt-px shrink-0' aria-hidden />
-            <span>
+            <span className='min-w-0 break-words'>
               {user.regions && user.regions.length > 0
-                ? `Associated regions: ${user.regions.map((r) => r.name).join(', ')}.`
+                ? `Associated regions: ${user.regions.map((r) => r.url || r.name).join(', ')}.`
                 : 'This user is not associated with any region.'}
             </span>
           </p>
