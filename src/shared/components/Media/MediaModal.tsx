@@ -39,7 +39,6 @@ import {
   mediaIdentityId,
   mediaIdentityVersionStamp,
   mediaPrimaryColorHex,
-  putMediaVideoEmbedRefreshThumbnail,
   useAccessToken,
 } from '../../../api';
 import SvgViewer from '../SvgViewer';
@@ -733,20 +732,6 @@ const MediaModal = ({
                       className={mediaMenuItemClass}
                     >
                       <Edit size={14} className={mediaMenuIconClass} strokeWidth={2} /> Edit media
-                    </button>
-                  )}
-                  {canEdit && isVideo && !!m.embedUrl && !isInstagramEmbed && (
-                    <button
-                      type='button'
-                      onClick={() => {
-                        setShowMenu(false);
-                        putMediaVideoEmbedRefreshThumbnail(accessToken, mediaIdentityId(m.identity)).then(() => {
-                          onClose();
-                        });
-                      }}
-                      className={mediaMenuItemClass}
-                    >
-                      <RefreshCw size={14} className={mediaMenuIconClass} strokeWidth={2} /> Refresh thumbnail
                     </button>
                   )}
                   {canDelete && (

@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth0 } from '@auth0/auth0-react';
-import { Save, Loader2, Image, X, ChevronDown, Plus } from 'lucide-react';
+import { Save, Loader2, Image, X, ChevronDown, Plus, RefreshCw, AlertTriangle } from 'lucide-react';
 
 import type { components } from '../../@types/buldreinfo/swagger';
 import {
@@ -14,13 +14,14 @@ import {
   postMediaVideoComplete,
   postMediaVideoEmbed,
   postMediaInstagramSave,
+  putMediaVideoEmbedRefreshThumbnail,
   uploadToPresignedUrl,
   useArea,
   useSector,
 } from '../../api';
 import { getMediaFileUrl, mediaIdentityId, mediaIdentityVersionStamp } from '../../api/utils';
 import { Loading } from '../../shared/ui/StatusWidgets';
-import { Card } from '../../shared/ui';
+import { Card, FormSwitch } from '../../shared/ui';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 import { useMeta } from '../../shared/components/Meta/context';
@@ -126,6 +127,10 @@ const MediaEdit = () => {
   const [thumbnailSeconds, setThumbnailSeconds] = useState<number>(0);
   const [thumbnailDuration, setThumbnailDuration] = useState(0);
 
+  // Edit-mode: re-fetch embedded (YouTube/Vimeo) thumbnail on save + inline error banner
+  const [refreshEmbedThumb, setRefreshEmbedThumb] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
   // ── Connection type & move-to state (edit mode only) ───────────────
   const [editConnectionType, setEditConnectionType] = useState<MediaConnectionType | null>(null);
   const [moveTarget, setMoveTarget] = useState<{
@@ -174,6 +179,8 @@ const MediaEdit = () => {
     setAreaTrivia(Object.fromEntries((m.areas ?? []).map((a) => [a.areaId ?? 0, a.trivia ?? false])));
     setSectorTrivia(Object.fromEntries((m.sectors ?? []).map((s) => [s.sectorId ?? 0, s.trivia ?? false])));
     setThumbnailSeconds(m.thumbnailSeconds ?? 0);
+    setRefreshEmbedThumb(false);
+    setSaveError(null);
 
     // Derive initial connection type from loaded data
     const initialType: MediaConnectionType = (() => {
@@ -202,6 +209,9 @@ const MediaEdit = () => {
         return false;
       }
     })();
+
+  /** YouTube/Vimeo iframe embeds: thumbnail lives on the provider, so offer a refresh-on-save toggle. */
+  const isEmbedYoutubeVimeo = isVideo && hasEmbed && !isInstagramEmbed;
 
   const embedSrc = useMemo(() => {
     const raw = m?.embedUrl?.trim();
@@ -440,6 +450,7 @@ const MediaEdit = () => {
   const handleSave = async () => {
     if (saving) return;
     setSaving(true);
+    setSaveError(null);
 
     // Build task list for progress dialog (add mode only, when there are actual uploads)
     if (isAddMode) {
@@ -621,6 +632,13 @@ const MediaEdit = () => {
         }
 
         await putMedia(token, body);
+        // Embedded YouTube/Vimeo videos have no seekable thumbnail picker; when the user
+        // opted in, also fetch the current provider thumbnail (the stored one can be broken
+        // or outdated if the video was edited on YouTube/Vimeo after it was added). Runs
+        // after the metadata save so a provider failure never blocks the metadata update.
+        if (refreshEmbedThumb && isEmbedYoutubeVimeo) {
+          await putMediaVideoEmbedRefreshThumbnail(token, id);
+        }
         await Promise.all([
           queryClient.refetchQueries({
             predicate: (q) => {
@@ -649,6 +667,7 @@ const MediaEdit = () => {
           ? error.message
           : String(error);
       // Mark any pending/uploading tasks as errored
+      const hasUploadTasks = uploadTasks.length > 0;
       setUploadTasks((prev) =>
         prev.map((t) =>
           t.state === 'pending' || t.state === 'uploading' || t.state === 'processing'
@@ -656,9 +675,13 @@ const MediaEdit = () => {
             : t,
         ),
       );
-      // Keep dialog visible for a moment so user can see the error
-      await new Promise((r) => setTimeout(r, 3000));
-      setUploadTasks([]);
+      // Edit-mode failures are shown in an inline banner above the save buttons.
+      setSaveError(msg);
+      if (hasUploadTasks) {
+        // Keep dialog visible for a moment so user can see the error
+        await new Promise((r) => setTimeout(r, 3000));
+        setUploadTasks([]);
+      }
     } finally {
       setSaving(false);
     }
@@ -968,6 +991,26 @@ const MediaEdit = () => {
                       </div>
                     )}
 
+                    {/* Embedded YouTube/Vimeo videos have no seekable frame — offer a refresh-on-save instead */}
+                    {isVideo && hasEmbed && !isInstagramEmbed && (
+                      <div className='bg-surface-raised border-surface-border mt-3 rounded-xl border p-3'>
+                        <label className='flex cursor-pointer items-center justify-between gap-3'>
+                          <span className='flex items-center gap-2'>
+                            <RefreshCw size={14} className='text-slate-500' />
+                            <span className='text-xs font-medium text-slate-300'>Update thumbnail on save</span>
+                          </span>
+                          <FormSwitch
+                            checked={refreshEmbedThumb}
+                            onChange={() => setRefreshEmbedThumb((v) => !v)}
+                            aria-label='Re-fetch the thumbnail from YouTube/Vimeo when saving'
+                          />
+                        </label>
+                        <p className='mt-2 text-[11px] leading-relaxed text-slate-500'>
+                          Re-fetches the current thumbnail from YouTube/Vimeo.
+                        </p>
+                      </div>
+                    )}
+
                     {/* Connected section (unless video + problem with timestamps) */}
                     {!(isVideo && connectionType === 'problem') && (
                       <ConnectedSection
@@ -1057,6 +1100,12 @@ const MediaEdit = () => {
         )}
 
         {/* ── Cancel / Save buttons (outside all cards) ──────────────────── */}
+        {saveError && (
+          <div className='flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-[13px] text-red-400'>
+            <AlertTriangle size={15} className='shrink-0' />
+            <span>{saveError}</span>
+          </div>
+        )}
         <div className='flex items-center justify-end gap-3'>
           <button type='button' onClick={() => navigate(-1)} className='form-footer-cancel'>
             Cancel
