@@ -584,8 +584,12 @@ export async function uploadToPresignedUrl(
   }
 }
 
-export function putMedia(accessToken: string | null, media: components['schemas']['Media']): Promise<Response> {
-  const url = `/media`;
+export function putMedia(
+  accessToken: string | null,
+  media: components['schemas']['Media'],
+  refreshEmbedThumbnail = false,
+): Promise<Response> {
+  const url = refreshEmbedThumbnail ? '/media?refreshEmbedThumbnail=true' : '/media';
   return makeAuthenticatedRequest(accessToken, url, {
     method: 'PUT',
     body: JSON.stringify(media),
@@ -599,14 +603,6 @@ export function putMedia(accessToken: string | null, media: components['schemas'
 
 export function putMediaJpegRotate(accessToken: string | null, idMedia: number, degrees: number): Promise<unknown> {
   const url = `/media/jpeg/rotate?idMedia=${idMedia}&degrees=${degrees}`;
-  return makeAuthenticatedRequest(accessToken, url, {
-    method: 'PUT',
-    ...invalidateQueriesAfter,
-  }).then((response) => ensureOkResponse(response, url));
-}
-
-export function putMediaVideoEmbedRefreshThumbnail(accessToken: string | null, id: number): Promise<Response> {
-  const url = `/media/video/embed/refresh-thumbnail?id=${id}`;
   return makeAuthenticatedRequest(accessToken, url, {
     method: 'PUT',
     ...invalidateQueriesAfter,

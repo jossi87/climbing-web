@@ -31,28 +31,11 @@ export type paths = {
         };
         /** Get Media by id */
         get: operations["getMedia"];
-        /** Update media */
+        /** Update media (optionally refresh the thumbnail of an embedded YouTube/Vimeo video) */
         put: operations["putMedia"];
         post?: never;
         /** Move media to trash */
         delete: operations["deleteMedia"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/media/video/embed/refresh-thumbnail": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Refresh thumbnail for embedded video (YouTube/Vimeo) */
-        put: operations["putMediaVideoEmbedRefreshThumbnail"];
-        post?: never;
-        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -2332,7 +2315,9 @@ export interface operations {
     };
     putMedia: {
         parameters: {
-            query?: never;
+            query?: {
+                refreshEmbedThumbnail?: boolean;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -2353,26 +2338,6 @@ export interface operations {
         };
     };
     deleteMedia: {
-        parameters: {
-            query: {
-                id: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    putMediaVideoEmbedRefreshThumbnail: {
         parameters: {
             query: {
                 id: number;

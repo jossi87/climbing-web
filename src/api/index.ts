@@ -23,7 +23,6 @@ export {
   uploadToPresignedUrl,
   putMedia,
   putMediaJpegRotate,
-  putMediaVideoEmbedRefreshThumbnail,
 } from './operations';
 
 export {

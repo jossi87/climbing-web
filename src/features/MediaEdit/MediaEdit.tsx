@@ -14,7 +14,6 @@ import {
   postMediaVideoComplete,
   postMediaVideoEmbed,
   postMediaInstagramSave,
-  putMediaVideoEmbedRefreshThumbnail,
   uploadToPresignedUrl,
   useArea,
   useSector,
@@ -631,14 +630,9 @@ const MediaEdit = () => {
           body.userAvatarId = m.userAvatarId ?? 0;
         }
 
-        await putMedia(token, body);
-        // Embedded YouTube/Vimeo videos have no seekable thumbnail picker; when the user
-        // opted in, also fetch the current provider thumbnail (the stored one can be broken
-        // or outdated if the video was edited on YouTube/Vimeo after it was added). Runs
-        // after the metadata save so a provider failure never blocks the metadata update.
-        if (refreshEmbedThumb && isEmbedYoutubeVimeo) {
-          await putMediaVideoEmbedRefreshThumbnail(token, id);
-        }
+        // Embedded YouTube/Vimeo videos have no seekable frame picker; the "Update thumbnail
+        // on save" toggle re-fetches the current provider thumbnail as part of this update.
+        await putMedia(token, body, refreshEmbedThumb && isEmbedYoutubeVimeo);
         await Promise.all([
           queryClient.refetchQueries({
             predicate: (q) => {
