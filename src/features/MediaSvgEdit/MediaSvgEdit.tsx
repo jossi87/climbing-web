@@ -920,7 +920,7 @@ const MediaSvgEdit = () => {
                     </button>
                     <button
                       type='button'
-                      title='Zoom to fit (0)'
+                      title='Zoom to fit (0) — scroll to zoom, Alt+scroll to scroll the page'
                       aria-label='Zoom to fit'
                       className={cn(
                         'inline-flex h-8 min-w-12 shrink-0 items-center justify-center px-1 font-mono tabular-nums',

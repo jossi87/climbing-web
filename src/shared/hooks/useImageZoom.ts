@@ -64,13 +64,14 @@ export type ImageZoom = {
  * CSS width).
  *
  * The surface is the only thing that scales — the surrounding page keeps its own type size — so the
- * wheel magnifies photo pixels instead of running the browser's page zoom. `Shift` + wheel keeps its
- * native horizontal-pan meaning and `Alt`/`Option` + wheel scrolls natively, which is the escape hatch
- * for reaching the page again while zoomed in.
+ * wheel magnifies photo pixels instead of running the browser's page zoom. Over the surface the wheel is
+ * the zoom control and nothing else: it never scrolls the page, and at the zoom limits a notch simply
+ * does nothing. `Shift` + wheel keeps its native horizontal-pan meaning, `Alt`/`Option` + wheel scrolls
+ * natively and a mostly-horizontal trackpad swipe pans — those are how the rest of the page stays
+ * reachable without moving the pointer off the photo.
  *
- * The wheel is claimed *only when it actually zooms*: at fit and at maximum zoom it falls through to the
- * page, so the surface can never trap ordinary scrolling. `touch-action` stays untouched and touch/pen
- * pointers are ignored, so the browser still owns mobile pinch-zoom and panning.
+ * `touch-action` stays untouched and touch/pen pointers are ignored, so the browser still owns mobile
+ * pinch-zoom and panning.
  *
  * Zoom is anchored under the cursor: the point below the pointer stays put, which is what makes
  * zooming in on a hold feel right.
@@ -143,14 +144,13 @@ export function useImageZoom({
 
   /**
    * `point` is relative to the container's visible box (cursor position, or the middle of the view) —
-   * whatever sits under it stays fixed while the surface is resized. Returns whether the zoom actually
-   * changed, so the wheel handler can hand the event back to the browser when it didn't.
+   * whatever sits under it stays fixed while the surface is resized.
    */
   const zoomAt = useCallback((point: { x: number; y: number } | null, factor: number) => {
     const el = nodeRef.current;
     const current = zoomRef.current;
     const next = clamp(current * factor, 1, maxZoomRef.current);
-    if (!el || next === current) return false;
+    if (!el || next === current) return;
 
     const from = renderWidthRef.current || el.clientWidth;
     const x = point?.x ?? el.clientWidth / 2;
@@ -163,7 +163,6 @@ export function useImageZoom({
     };
     zoomRef.current = next;
     setZoom(next);
-    return true;
   }, []);
 
   /** Runs after the surface has been resized but before paint, so the anchored point never jumps. */
@@ -193,18 +192,21 @@ export function useImageZoom({
 
     const onWheel = (e: WheelEvent) => {
       // `Shift` keeps its native horizontal-pan meaning, and `Alt`/`Option` is the escape hatch that
-      // scrolls natively (e.g. to reach the page again while zoomed in).
+      // scrolls natively (the way to reach the rest of the page while the pointer is over the photo).
       if (e.shiftKey || e.altKey) return;
+      // A mostly-horizontal wheel (a trackpad swipe) is a pan, not a zoom — leave it to the browser.
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+
+      /**
+       * The wheel over the surface *is* the zoom control, so it never scrolls the page — not even when it
+       * hits a limit, where it simply does nothing for that notch. Handing the event back to the browser
+       * at 400 % made the page jump away mid-edit, which read as a bug rather than as a feature.
+       */
+      e.preventDefault();
 
       const delta = e.deltaY * (e.deltaMode === 1 ? WHEEL_DELTA_LINE_PX : e.deltaMode === 2 ? WHEEL_DELTA_PAGE_PX : 1);
       const rect = container.getBoundingClientRect();
-      const zoomed = zoomAt(
-        { x: e.clientX - rect.left, y: e.clientY - rect.top },
-        Math.exp(-delta * WHEEL_ZOOM_SENSITIVITY),
-      );
-      // Claim the wheel *only* when it changed the zoom: at fit and at maximum zoom it keeps scrolling
-      // the page, so the surface can never trap ordinary scrolling.
-      if (zoomed) e.preventDefault();
+      zoomAt({ x: e.clientX - rect.left, y: e.clientY - rect.top }, Math.exp(-delta * WHEEL_ZOOM_SENSITIVITY));
     };
 
     // Native listener: React delegates `wheel` passively, so `preventDefault()` there is a no-op.
