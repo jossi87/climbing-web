@@ -1,8 +1,4 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type RefCallback } from 'react';
-import { useLocalStorage } from '../../utils/use-local-storage';
-
-/** Remembered preference: does a plain (unmodified) wheel zoom the surface or scroll/pan it? */
-const WHEEL_ZOOMS_STORAGE_KEY = 'topoEditorWheelZooms';
 
 /** Image pixels per CSS pixel when zoomed all the way in — past 100 % the raster is magnified. */
 const DEFAULT_MAX_OVERSAMPLE = 4;
@@ -61,9 +57,6 @@ export type ImageZoom = {
   zoomIn: () => void;
   zoomOut: () => void;
   zoomToFit: () => void;
-  /** True when a plain wheel zooms the surface (the default); false when it scrolls/pans instead. */
-  wheelZooms: boolean;
-  toggleWheelZoom: () => void;
 };
 
 /**
@@ -71,9 +64,9 @@ export type ImageZoom = {
  * CSS width).
  *
  * The surface is the only thing that scales — the surrounding page keeps its own type size — so the
- * wheel magnifies photo pixels instead of running the browser's page zoom. Plain wheel zooms by default
- * ({@link ImageZoom.wheelZooms}), `Ctrl`/`⌘` + wheel and trackpad pinches always zoom, `Shift` + wheel
- * keeps its native horizontal-pan meaning and `Alt`/`Option` + wheel always scrolls natively.
+ * wheel magnifies photo pixels instead of running the browser's page zoom. `Shift` + wheel keeps its
+ * native horizontal-pan meaning and `Alt`/`Option` + wheel scrolls natively, which is the escape hatch
+ * for reaching the page again while zoomed in.
  *
  * The wheel is claimed *only when it actually zooms*: at fit and at maximum zoom it falls through to the
  * page, so the surface can never trap ordinary scrolling. `touch-action` stays untouched and touch/pen
@@ -98,7 +91,6 @@ export function useImageZoom({
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
   const [fitWidth, setFitWidth] = useState(0);
   const [zoom, setZoom] = useState(1);
-  const [wheelZooms, setWheelZooms] = useLocalStorage(WHEEL_ZOOMS_STORAGE_KEY, true);
   const [isPanning, setIsPanning] = useState(false);
   /** Mirrors `zoom` for the native wheel listener and ResizeObserver callbacks (never stale). */
   const zoomRef = useRef(1);
@@ -118,8 +110,6 @@ export function useImageZoom({
   maxZoomRef.current = maxZoom;
   const renderWidthRef = useRef(renderWidth);
   renderWidthRef.current = renderWidth;
-  const wheelZoomsRef = useRef(wheelZooms);
-  wheelZoomsRef.current = wheelZooms;
 
   const measureFit = useCallback(() => {
     const el = nodeRef.current;
@@ -202,11 +192,9 @@ export function useImageZoom({
     if (!container) return;
 
     const onWheel = (e: WheelEvent) => {
-      // `Shift` keeps its native horizontal-pan meaning, and `Alt`/`Option` is an escape hatch that
-      // always scrolls natively — regardless of how the plain wheel is configured.
+      // `Shift` keeps its native horizontal-pan meaning, and `Alt`/`Option` is the escape hatch that
+      // scrolls natively (e.g. to reach the page again while zoomed in).
       if (e.shiftKey || e.altKey) return;
-      // `Ctrl`/`⌘` + wheel (and a trackpad pinch, which browsers report as Ctrl + wheel) always zooms.
-      if (!e.ctrlKey && !e.metaKey && !wheelZoomsRef.current) return;
 
       const delta = e.deltaY * (e.deltaMode === 1 ? WHEEL_DELTA_LINE_PX : e.deltaMode === 2 ? WHEEL_DELTA_PAGE_PX : 1);
       const rect = container.getBoundingClientRect();
@@ -223,8 +211,6 @@ export function useImageZoom({
     container.addEventListener('wheel', onWheel, { passive: false });
     return () => container.removeEventListener('wheel', onWheel);
   }, [container, zoomAt]);
-
-  const toggleWheelZoom = useCallback(() => setWheelZooms((prev) => !prev), [setWheelZooms]);
 
   /**
    * Set when a pan finishes. Browsers fire a `click` after a drag, and the editors' click handlers treat
@@ -358,7 +344,5 @@ export function useImageZoom({
     zoomIn,
     zoomOut,
     zoomToFit,
-    wheelZooms,
-    toggleWheelZoom,
   };
 }

@@ -39,8 +39,6 @@ import {
   X,
   ZoomIn,
   ZoomOut,
-  Mouse,
-  MousePointer2,
   Spline,
   Anchor,
   Triangle,
@@ -850,27 +848,6 @@ export const SvgEdit = ({
                       <ZoomIn size={14} strokeWidth={2.25} />
                     </button>
                   </div>
-                  <button
-                    type='button'
-                    title={
-                      zoom.wheelZooms
-                        ? 'Scroll wheel zooms the image — click to let it scroll/pan instead (Ctrl+scroll always zooms)'
-                        : 'Scroll wheel scrolls/pans — click to make it zoom the image (Ctrl+scroll always zooms)'
-                    }
-                    aria-label={zoom.wheelZooms ? 'Scroll wheel zooms the image' : 'Scroll wheel scrolls the image'}
-                    aria-pressed={zoom.wheelZooms}
-                    className={cn(
-                      pageActionIconBtn,
-                      zoom.wheelZooms ? 'border-brand bg-brand/20 text-brand shadow-sm' : pageActionIconBtnGlass,
-                    )}
-                    onClick={zoom.toggleWheelZoom}
-                  >
-                    {zoom.wheelZooms ? (
-                      <Mouse size={14} strokeWidth={2.25} />
-                    ) : (
-                      <MousePointer2 size={14} strokeWidth={2.25} />
-                    )}
-                  </button>
                   <button
                     type='button'
                     title='Cancel'

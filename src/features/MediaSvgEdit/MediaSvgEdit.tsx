@@ -25,7 +25,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { Card } from '../../shared/ui';
 import { useMeta } from '../../shared/components/Meta';
-import { RotateCcw, Save, X, Spline, Anchor, Triangle, ZoomIn, ZoomOut, Mouse, MousePointer2 } from 'lucide-react';
+import { RotateCcw, Save, X, Spline, Anchor, Triangle, ZoomIn, ZoomOut } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 
@@ -941,27 +941,6 @@ const MediaSvgEdit = () => {
                       <ZoomIn size={14} strokeWidth={2.25} />
                     </button>
                   </div>
-                  <button
-                    type='button'
-                    title={
-                      zoom.wheelZooms
-                        ? 'Scroll wheel zooms the image — click to let it scroll/pan instead (Ctrl+scroll always zooms)'
-                        : 'Scroll wheel scrolls/pans — click to make it zoom the image (Ctrl+scroll always zooms)'
-                    }
-                    aria-label={zoom.wheelZooms ? 'Scroll wheel zooms the image' : 'Scroll wheel scrolls the image'}
-                    aria-pressed={zoom.wheelZooms}
-                    className={cn(
-                      pageActionIconBtn,
-                      zoom.wheelZooms ? 'border-brand bg-brand/20 text-brand shadow-sm' : pageActionIconBtnGlass,
-                    )}
-                    onClick={zoom.toggleWheelZoom}
-                  >
-                    {zoom.wheelZooms ? (
-                      <Mouse size={14} strokeWidth={2.25} />
-                    ) : (
-                      <MousePointer2 size={14} strokeWidth={2.25} />
-                    )}
-                  </button>
                   <button
                     type='button'
                     title='Cancel'
