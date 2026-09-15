@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, type JSX } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo, type JSX } from 'react';
 import {
   getMediaFileUrl,
   invalidateAllAreaQueries,
@@ -8,14 +8,24 @@ import {
   useMediaSvg,
 } from '../../api';
 import { Rappel } from '../../utils/svg-utils';
-import { parseReadOnlySvgs, type ParsedEntry, type SvgType, isQuadraticPoint, isArc } from '../../utils/svg-helpers';
+import {
+  parseReadOnlySvgs,
+  type ParsedEntry,
+  type SvgType,
+  type ReadOnlySvgSizes,
+  isQuadraticPoint,
+  isArc,
+} from '../../utils/svg-helpers';
+import { useImageZoom } from '../../shared/hooks/useImageZoom';
+import { useZoomRaster } from '../../shared/hooks/useZoomRaster';
+import { cappedUu, chromeUu, editorChrome, hoverGrowth, type EditorSizeScale } from '../SvgEdit/editor-sizes';
 
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { Card } from '../../shared/ui';
 import { useMeta } from '../../shared/components/Meta';
-import { RotateCcw, Save, X, Spline, Anchor, Triangle, ZoomIn } from 'lucide-react';
+import { RotateCcw, Save, X, Spline, Anchor, Triangle, ZoomIn, ZoomOut, Mouse, MousePointer2 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 
@@ -53,10 +63,45 @@ const MediaSvgEdit = () => {
   const [, setForceUpdate] = useState(0);
   const [activeTab, setActiveTab] = useState<EditorTab>('descent');
   const [activePoint, setActivePoint] = useState<number>(0);
-  const [zoomMode, setZoomMode] = useState(false);
+  /** Point index the pointer is over — its dot grows so a grab is never a guess. */
+  const [hoveredPoint, setHoveredPoint] = useState<number | null>(null);
+  /** Original image dimensions — also the editing surface' `viewBox` size. */
+  const w = data?.width ?? 0;
+  const h = data?.height ?? 0;
+
+  /**
+   * Zoom/pan of the editing surface. The surface is the only thing that scales, so `Ctrl`+scroll
+   * magnifies photo pixels instead of running the browser's page zoom (which only grew the text).
+   */
+  const zoom = useImageZoom({ imageWidth: w, imageHeight: h });
+  /** Sharper raster once the user zooms past the standard web image. */
+  const rasterUrlFor = useCallback(
+    (targetWidth: number) =>
+      getMediaFileUrl(data?.identity?.id ?? 0, Number(data?.identity?.versionStamp ?? 0), false, { targetWidth }),
+    [data?.identity?.id, data?.identity?.versionStamp],
+  );
+  const rasterTargetWidth = useZoomRaster({
+    renderWidth: zoom.renderWidth,
+    originalWidth: w,
+    zoomed: zoom.isZoomed,
+    resolveUrl: rasterUrlFor,
+  });
+
+  /** Bridge between screen-space sizes and SVG user units — see `editor-sizes.ts`. */
+  const size = useMemo<EditorSizeScale>(
+    () => ({ unitPerCssPx: zoom.unitPerCssPx, zoom: zoom.zoom }),
+    [zoom.unitPerCssPx, zoom.zoom],
+  );
+  /** Editing chrome (dots, hit areas, toolbars): constant on screen at every zoom level. */
+  const chrome = useCallback(
+    (relativeUu: number, minCss: number, maxCss: number) => chromeUu(size, relativeUu, minCss, maxCss),
+    [size],
+  );
+  /** Published geometry (descent path, arrows, bolts): fit-time look, growth-capped. */
+  const capped = useCallback((relativeUu: number) => cappedUu(size, relativeUu), [size]);
+
   const imageRef = useRef<SVGImageElement | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
-  const containerRef = useRef<HTMLDivElement | null>(null);
   const isDraggingPointRef = useRef(false);
   const isDraggingRappelRef = useRef(false);
   const draggingRappelRef = useRef<{ kind: 'bolted' | 'trad'; index: number } | null>(null);
@@ -146,6 +191,12 @@ const MediaSvgEdit = () => {
 
     const onPointerDown = (e: PointerEvent) => {
       if (e.button !== 0) return;
+      /**
+       * A click always follows its own gesture, so any suppression still set here is stale. Clearing it
+       * matters: a stale flag would otherwise be *consumed* by the next pointer-up, and that gesture's
+       * click would then be treated as a tap and add a point/rappel.
+       */
+      suppressNextClickRef.current = false;
       pointerDownPosRef.current = { x: e.clientX, y: e.clientY };
       didDragRef.current = false;
       if (isDraggingPointRef.current || isDraggingRappelRef.current) return;
@@ -241,14 +292,17 @@ const MediaSvgEdit = () => {
         suppressNextClickRef.current = true;
         return;
       }
-      if (suppressNextClickRef.current) {
-        suppressNextClickRef.current = false;
-        return;
-      }
-      // Never add anything after a drag gesture — e.g. the user tried to grab an
-      // existing point but missed it.
+      /**
+       * Never add anything after a drag gesture — e.g. the user tried to grab an existing point but
+       * missed it, or dragged the surface to pan it. Checked *before* the tap suppression below, so a
+       * leftover flag from an earlier gesture can't turn this drag into a tap that adds a point.
+       */
       if (wasPressed && dragged) {
         suppressNextClickRef.current = true;
+        return;
+      }
+      if (suppressNextClickRef.current) {
+        suppressNextClickRef.current = false;
         return;
       }
       const target = document.elementFromPoint(e.clientX, e.clientY);
@@ -291,8 +345,6 @@ const MediaSvgEdit = () => {
     return <Loading />;
   }
 
-  const w = data.width ?? 0;
-  const h = data.height ?? 0;
   dimsRef.current = { w, h };
 
   const getMediaSvgs = () => (data.mediaSvgs = data.mediaSvgs ?? []) as EditableSvg[];
@@ -413,17 +465,36 @@ const MediaSvgEdit = () => {
     if (!descentSvg || !descentPoints.length) return null;
     return descentPoints.map((p, i) => {
       const fill = activePoint === i ? '#00FF00' : '#FF0000';
+      /**
+       * The visible dot shrinks with the zoom so fine work isn't blocked by it, which is why the drag
+       * target is a separate, purely screen-sized circle on top (it used to be the dot itself, leaving
+       * a 2 px tap target on a phone at fit). Hovering or dragging grows the dot, so the small marker
+       * never leaves any doubt about what a grab picks up.
+       */
+      const boosted = hoveredPoint === i || (isDraggingPointRef.current && activePoint === i);
       return (
-        <circle
-          key={'point-' + i}
-          className='cursor-pointer'
-          fill={fill}
-          cx={p.x}
-          cy={p.y}
-          r={0.005 * w}
-          data-point-index={i}
-          style={{ pointerEvents: pointerEventsFor('descent') }}
-        />
+        <g key={'point-' + i}>
+          <circle
+            className='cursor-pointer'
+            fill={fill}
+            cx={p.x}
+            cy={p.y}
+            r={chrome(0.005 * w, editorChrome.vertexR.min, editorChrome.vertexR.max) * (boosted ? hoverGrowth : 1)}
+            data-point-index={i}
+            pointerEvents='none'
+          />
+          <circle
+            cx={p.x}
+            cy={p.y}
+            r={chrome(0.012 * w, editorChrome.vertexHitR.min, editorChrome.vertexHitR.max)}
+            fill='transparent'
+            className='cursor-grab'
+            data-point-index={i}
+            style={{ pointerEvents: pointerEventsFor('descent') }}
+            onMouseEnter={() => setHoveredPoint(i)}
+            onMouseLeave={() => setHoveredPoint(null)}
+          />
+        </g>
       );
     });
   })();
@@ -439,16 +510,45 @@ const MediaSvgEdit = () => {
     </g>
   );
 
-  // Delete toolbar size (same for all types)
-  const delBtnH = 0.02 * w;
-  const delBtnW = 0.03 * w;
+  // Delete toolbar size (same for all types) — screen-space, so it stays tappable when zoomed in
+  const delBtnH = chrome(0.02 * w, editorChrome.toolbarHeight.min, editorChrome.toolbarHeight.max);
+  const delBtnW = delBtnH * 1.5;
+  /** Floating-toolbar chrome — constant on screen at every zoom level. */
+  const toolbarStrokeW = chrome(0.001 * w, editorChrome.toolbarStroke.min, editorChrome.toolbarStroke.max);
+  /** Distance between a marker (point/bolt) and its floating toolbar. */
+  const toolbarGap = chrome(0.008 * w, 12, 18);
+  /**
+   * Read-only sibling topo (other routes' dashed lines and their route-number badges). Screen-space, so
+   * it reads like the published topo at any zoom instead of growing into big black number plates.
+   */
+  const readOnlySizes: ReadOnlySvgSizes = {
+    lineStroke: chrome(0.003 * w, editorChrome.readOnly.lineStroke.min, editorChrome.readOnly.lineStroke.max),
+    dash: chrome(0.006 * w, editorChrome.readOnly.dash.min, editorChrome.readOnly.dash.max),
+    anchorDotR: chrome(0.006 * w, editorChrome.readOnly.anchorDotR.min, editorChrome.readOnly.anchorDotR.max),
+    badgeR: chrome(0.012 * w, editorChrome.readOnly.badgeR.min, editorChrome.readOnly.badgeR.max),
+    badgeFontSize: chrome(0.015 * w, editorChrome.readOnly.badgeFontSize.min, editorChrome.readOnly.badgeFontSize.max),
+    badgeAnchorR: chrome(0.005 * w, editorChrome.readOnly.badgeAnchorR.min, editorChrome.readOnly.badgeAnchorR.max),
+  };
+  /**
+   * Read-only "other" topo on this image, split into two layers: lines/arrows first (so the descent
+   * path being edited stays on top), number plates last (so no line can run across a number).
+   */
+  const readOnlyLayers = parseReadOnlySvgs(
+    mediaSvgs.filter(
+      (s) => (s.t !== 'PATH' || s !== descentSvg) && s.t !== 'RAPPEL_BOLTED' && s.t !== 'RAPPEL_NOT_BOLTED',
+    ) as SvgType[],
+    w,
+    h,
+    capped(scale),
+    readOnlySizes,
+  );
 
   // Descent point delete toolbar — only shown when descent tab is active
   const descentDeleteToolbars = (() => {
     if (activeTab !== 'descent') return null;
     if (!descentSvg || !descentPoints.length) return null;
     return descentPoints.map((p, i) => {
-      const gapX = 0.008 * w;
+      const gapX = toolbarGap;
       let toolbarX = p.x + gapX;
       if (toolbarX + delBtnW > w) {
         toolbarX = p.x - gapX - delBtnW;
@@ -467,7 +567,7 @@ const MediaSvgEdit = () => {
             rx={delBtnH / 2}
             fill='rgba(0,0,0,0.7)'
             stroke='rgba(255,255,255,0.15)'
-            strokeWidth={0.001 * w}
+            strokeWidth={toolbarStrokeW}
             pointerEvents='none'
           />
           <g
@@ -496,12 +596,16 @@ const MediaSvgEdit = () => {
     const elements: JSX.Element[] = [];
     // Hit area must be rendered ON TOP of the Rappel icon to capture pointer events.
     // We render Rappel first, then the transparent rect on top.
-    // Hit area sized to match the Rappel icon (r ≈ 6 * scale * 0.55 ≈ 3.3 * scale)
-    const hitSize = 0.025 * w; // just enough to cover the icon comfortably
+    // The square is sized in screen space: it covers the icon comfortably, stays a real touch target
+    // on a phone, and never grows into a huge invisible layer when zoomed in.
+    const hitSize = Math.max(
+      chrome(0.025 * w, editorChrome.rappelHit.min, editorChrome.rappelHit.max),
+      capped(0.026 * w),
+    );
 
     boltedSvgs.forEach((s, i) => {
       if (s.rappelX != null && s.rappelY != null) {
-        const btnX = s.rappelX + 0.012 * w;
+        const btnX = s.rappelX + toolbarGap;
         const btnY = s.rappelY - delBtnH / 2;
         elements.push(
           <g key={`bolted-${i}`}>
@@ -509,7 +613,7 @@ const MediaSvgEdit = () => {
               backgroundColor={'black'}
               bolted={true}
               color={activeTab === 'bolted' ? '#FF0000' : 'white'}
-              scale={0.00072 * w}
+              scale={capped(0.00072 * w)}
               thumb={false}
               x={s.rappelX}
               y={s.rappelY}
@@ -542,7 +646,7 @@ const MediaSvgEdit = () => {
                   rx={delBtnH / 2}
                   fill='rgba(0,0,0,0.7)'
                   stroke='rgba(255,255,255,0.15)'
-                  strokeWidth={0.001 * w}
+                  strokeWidth={toolbarStrokeW}
                 />
                 <g
                   transform={`translate(${btnX + delBtnW / 2}, ${btnY + delBtnH / 2}) scale(${delBtnH * 0.028}) translate(-12, -12)`}
@@ -557,7 +661,7 @@ const MediaSvgEdit = () => {
     });
     tradSvgs.forEach((s, i) => {
       if (s.rappelX != null && s.rappelY != null) {
-        const btnX = s.rappelX + 0.012 * w;
+        const btnX = s.rappelX + toolbarGap;
         const btnY = s.rappelY - delBtnH / 2;
         elements.push(
           <g key={`trad-${i}`}>
@@ -565,7 +669,7 @@ const MediaSvgEdit = () => {
               backgroundColor={'black'}
               bolted={false}
               color={activeTab === 'trad' ? '#FF0000' : 'white'}
-              scale={0.00072 * w}
+              scale={capped(0.00072 * w)}
               thumb={false}
               x={s.rappelX}
               y={s.rappelY}
@@ -598,7 +702,7 @@ const MediaSvgEdit = () => {
                   rx={delBtnH / 2}
                   fill='rgba(0,0,0,0.7)'
                   stroke='rgba(255,255,255,0.15)'
-                  strokeWidth={0.001 * w}
+                  strokeWidth={toolbarStrokeW}
                 />
                 <g
                   transform={`translate(${btnX + delBtnW / 2}, ${btnY + delBtnH / 2}) scale(${delBtnH * 0.028}) translate(-12, -12)`}
@@ -624,7 +728,7 @@ const MediaSvgEdit = () => {
   // Midpoint arrows for descent path direction — one per segment, at center of line
   const descentArrows = (() => {
     if (!descentSvg || descentPoints.length < 2) return null;
-    const arrowSize = 0.015 * w; // length of arrow from tip to base center
+    const arrowSize = capped(0.015 * w); // length of arrow from tip to base center
     const halfW = arrowSize * 0.5; // half-width of arrow base
     const arrows: JSX.Element[] = [];
     for (let i = 0; i < descentPoints.length - 1; i++) {
@@ -796,17 +900,67 @@ const MediaSvgEdit = () => {
                   </div>
                 </div>
                 <div className='flex shrink-0 flex-nowrap items-center gap-1.5 self-start pt-0.5 sm:pt-0'>
+                  <div
+                    className={cn(
+                      'inline-flex shrink-0 items-center overflow-hidden rounded-full border transition-colors',
+                      zoom.isZoomed
+                        ? 'border-brand bg-brand/20 text-brand'
+                        : cn(pageActionIconBtnGlass, 'text-slate-400'),
+                    )}
+                  >
+                    <button
+                      type='button'
+                      title='Zoom out (-)'
+                      aria-label='Zoom out'
+                      disabled={!zoom.canZoomOut}
+                      className='inline-flex h-8 w-8 shrink-0 items-center justify-center transition-colors disabled:pointer-events-none disabled:opacity-40'
+                      onClick={zoom.zoomOut}
+                    >
+                      <ZoomOut size={14} strokeWidth={2.25} />
+                    </button>
+                    <button
+                      type='button'
+                      title='Zoom to fit (0)'
+                      aria-label='Zoom to fit'
+                      className={cn(
+                        'inline-flex h-8 min-w-12 shrink-0 items-center justify-center px-1 font-mono tabular-nums',
+                        designContract.typography.uiCompact,
+                      )}
+                      onClick={zoom.zoomToFit}
+                    >
+                      {Math.round(zoom.percentOfNative)}%
+                    </button>
+                    <button
+                      type='button'
+                      title='Zoom in (+)'
+                      aria-label='Zoom in'
+                      disabled={!zoom.canZoomIn}
+                      className='inline-flex h-8 w-8 shrink-0 items-center justify-center transition-colors disabled:pointer-events-none disabled:opacity-40'
+                      onClick={zoom.zoomIn}
+                    >
+                      <ZoomIn size={14} strokeWidth={2.25} />
+                    </button>
+                  </div>
                   <button
                     type='button'
-                    title={zoomMode ? 'Fit to screen' : 'Zoom and pan'}
-                    aria-label={zoomMode ? 'Fit to screen' : 'Zoom and pan'}
+                    title={
+                      zoom.wheelZooms
+                        ? 'Scroll wheel zooms the image — click to let it scroll/pan instead (Ctrl+scroll always zooms)'
+                        : 'Scroll wheel scrolls/pans — click to make it zoom the image (Ctrl+scroll always zooms)'
+                    }
+                    aria-label={zoom.wheelZooms ? 'Scroll wheel zooms the image' : 'Scroll wheel scrolls the image'}
+                    aria-pressed={zoom.wheelZooms}
                     className={cn(
                       pageActionIconBtn,
-                      zoomMode ? 'border-brand bg-brand/20 text-brand shadow-sm' : pageActionIconBtnGlass,
+                      zoom.wheelZooms ? 'border-brand bg-brand/20 text-brand shadow-sm' : pageActionIconBtnGlass,
                     )}
-                    onClick={() => setZoomMode(!zoomMode)}
+                    onClick={zoom.toggleWheelZoom}
                   >
-                    <ZoomIn size={14} strokeWidth={2.25} />
+                    {zoom.wheelZooms ? (
+                      <Mouse size={14} strokeWidth={2.25} />
+                    ) : (
+                      <MousePointer2 size={14} strokeWidth={2.25} />
+                    )}
                   </button>
                   <button
                     type='button'
@@ -832,26 +986,40 @@ const MediaSvgEdit = () => {
           </div>
 
           <div
-            ref={containerRef}
+            ref={zoom.containerRef}
             className={cn(
-              'border-surface-border relative w-full min-w-0 cursor-crosshair bg-black select-none',
-              zoomMode ? 'overflow-auto' : 'overflow-hidden',
+              'border-surface-border relative w-full min-w-0 bg-black select-none',
+              /** Pan affordance: dragging the surface moves the photo (`useImageZoom`). */
+              zoom.isPanning ? 'cursor-grabbing' : zoom.isZoomed ? 'cursor-grab' : 'cursor-crosshair',
+              zoom.isZoomed ? 'overflow-auto' : 'overflow-hidden',
             )}
-            style={zoomMode ? { maxHeight: '100dvh' } : undefined}
+            style={zoom.isZoomed ? { maxHeight: '100dvh' } : undefined}
           >
             <svg
               ref={svgRef}
               viewBox={'0 0 ' + w + ' ' + h}
               onClick={handleSvgClick}
-              className={cn('block select-none', zoomMode ? 'h-auto' : 'h-auto w-full')}
+              className='block h-auto select-none'
               style={{
                 touchAction: 'auto',
-                ...(zoomMode ? { width: 'min(1920px, 150vw)', maxWidth: 'none' } : undefined),
+                /**
+                 * Explicit width instead of `w-full`: `renderWidth` follows the container while
+                 * fitted and grows past it when zoomed (the wrapper then scrolls = native pan).
+                 * Wheel/Ctrl+wheel zooming lives in `useImageZoom`.
+                 */
+                width: zoom.renderWidth > 0 ? `${Math.round(zoom.renderWidth)}px` : '100%',
+                maxWidth: 'none',
               }}
             >
               <image
                 ref={imageRef}
-                xlinkHref={getMediaFileUrl(data.identity?.id ?? 0, Number(data.identity?.versionStamp ?? 0), false)}
+                /** Upgrades from the standard web image to a sharper variant once zoomed past it. */
+                xlinkHref={getMediaFileUrl(
+                  data.identity?.id ?? 0,
+                  Number(data.identity?.versionStamp ?? 0),
+                  false,
+                  rasterTargetWidth > 0 ? { targetWidth: rasterTargetWidth } : undefined,
+                )}
                 width='100%'
                 height='100%'
               />
@@ -860,7 +1028,7 @@ const MediaSvgEdit = () => {
                   className='pointer-events-none'
                   style={{ fill: 'none', stroke: activeTab === 'descent' ? '#FF0000' : '#FFFFFF' }}
                   d={descentSvg.path}
-                  strokeWidth={0.002 * w}
+                  strokeWidth={capped(0.002 * w)}
                 />
               )}
               {descentArrows}
@@ -868,16 +1036,9 @@ const MediaSvgEdit = () => {
               {descentDeleteToolbars}
               {rappelElements}
 
-              {mediaSvgs &&
-                parseReadOnlySvgs(
-                  mediaSvgs.filter(
-                    (s) =>
-                      (s.t !== 'PATH' || s !== descentSvg) && s.t !== 'RAPPEL_BOLTED' && s.t !== 'RAPPEL_NOT_BOLTED',
-                  ) as SvgType[],
-                  w,
-                  h,
-                  scale,
-                )}
+              {readOnlyLayers.shapes}
+              {/* Number plates last: no line can run across a number. */}
+              {readOnlyLayers.badges}
             </svg>
           </div>
         </div>

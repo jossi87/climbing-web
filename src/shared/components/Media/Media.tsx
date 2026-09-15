@@ -47,7 +47,8 @@ const useIds = () => {
   const mediaIdNum = raw && /^\d+$/.test(String(raw)) ? +raw : 0;
   return { mediaId: mediaIdNum, pitch: pitch ? +pitch : 0 };
 };
-type MediaAction = (token: string) => Promise<unknown>;
+/** Confirmed media action; the token is `null` when the session can't mint one (API layer expects that). */
+type MediaAction = (token: string | null) => Promise<unknown>;
 
 /**
  * Tile thumbs are rendered at roughly 110-205 CSS px depending on grid variant.
@@ -257,8 +258,9 @@ const Media = ({
   const executeMediaAction = (action: MediaAction) => {
     setIsSaving(true);
     getAccessTokenSilently()
+      // Auth0 may resolve `undefined`; the API layer expects `string | null`.
       .then((token) =>
-        action(token).then(() => {
+        action(token ?? null).then(() => {
           setIsSaving(false);
           closeModal();
         }),

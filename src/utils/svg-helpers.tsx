@@ -135,6 +135,32 @@ export type SvgType = {
   | { t: 'other' }
 );
 
+/** Screen-space (or explicitly chosen) sizes for the read-only sibling topo overlays. */
+export type ReadOnlySvgSizes = {
+  /** Sibling route line stroke width, in user units. */
+  lineStroke: number;
+  /** Sibling route dash length, in user units. */
+  dash: number;
+  /** Sibling route anchor dot radius, in user units. */
+  anchorDotR: number;
+  /** Route-number badge radius, in user units. */
+  badgeR: number;
+  /** Route-number font size, in user units. */
+  badgeFontSize: number;
+  /** Start-anchor marker radius inside the badge group, in user units. */
+  badgeAnchorR: number;
+};
+
+/** Historical sizing: fractions of the image width, i.e. what the viewer shows when scaled to screen. */
+export const defaultReadOnlySvgSizes = (w: number, sizeRatio = 1): ReadOnlySvgSizes => ({
+  lineStroke: 0.003 * w * sizeRatio,
+  dash: 0.006 * w * sizeRatio,
+  anchorDotR: 0.006 * w * sizeRatio,
+  badgeR: 0.012 * w * sizeRatio,
+  badgeFontSize: 0.015 * w * sizeRatio,
+  badgeAnchorR: 0.005 * w * sizeRatio,
+});
+
 export function generateSvgNrAndAnchor(
   key: string,
   path: { x: number; y: number }[],
@@ -142,6 +168,7 @@ export function generateSvgNrAndAnchor(
   hasAnchor: boolean,
   w: number,
   h: number,
+  sizes: ReadOnlySvgSizes,
 ) {
   let ixNr: number | undefined = undefined;
   let maxY = 0;
@@ -167,20 +194,20 @@ export function generateSvgNrAndAnchor(
 
   let x = path[ixNr].x;
   let y = path[ixNr].y;
-  const r = 0.012 * w;
+  const r = sizes.badgeR;
   if (x < r) x = r;
   if (x > w - r) x = w - r;
   if (y < r) y = r;
   if (y > h - r) y = h - r;
   return (
-    <g key={key} className='buldreinfo-svg-edit-opacity'>
+    <g key={key} className='buldreinfo-svg-edit-opacity' pointerEvents='none'>
       {nr && (
         <>
           <rect fill='#000000' x={x - r} y={y - r} width={r * 2} height={r * 1.9} rx={r / 3} />
           <text
             dominantBaseline='central'
             textAnchor='middle'
-            fontSize={0.015 * w}
+            fontSize={sizes.badgeFontSize}
             fontWeight='bolder'
             fill='#FFFFFF'
             x={x}
@@ -190,24 +217,45 @@ export function generateSvgNrAndAnchor(
           </text>
         </>
       )}
-      {hasAnchor && <circle fill={'#000000'} cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={0.005 * w} />}
+      {hasAnchor && <circle fill={'#000000'} cx={path[ixAnchor].x} cy={path[ixAnchor].y} r={sizes.badgeAnchorR} />}
     </g>
   );
 }
 
-export function parseReadOnlySvgs(readOnlySvgs: SvgType[], w: number, h: number, scale: number) {
+export type ReadOnlySvgLayers = {
+  /** Route lines, descent arrows and rappel markers — draw first, so the edited route stays on top. */
+  shapes: ReactNode[];
+  /** Route-number plates — draw last, so no line ever runs across a number. */
+  badges: ReactNode[];
+};
+
+export function parseReadOnlySvgs(
+  readOnlySvgs: SvgType[],
+  w: number,
+  h: number,
+  scale: number,
+  sizes: ReadOnlySvgSizes = defaultReadOnlySvgSizes(w),
+): ReadOnlySvgLayers {
   const backgroundColor = 'black';
   const color = 'white';
-  const shapes = readOnlySvgs.reduce<ReactNode[]>((acc, svg) => {
+  /** Route lines, descent arrows and rappel markers. */
+  const shapes: ReactNode[] = [];
+  /**
+   * Route-number badges, rendered *after* every line (and after every sibling route) so nothing is ever
+   * drawn across a number — that is what used to make them hard to read.
+   */
+  const badges: ReactNode[] = [];
+
+  for (const svg of readOnlySvgs) {
     const { t } = svg;
     switch (t) {
       case 'PATH': {
-        return [...acc, <Descent key={svg.path} path={svg.path} scale={scale} thumb={false} />];
+        shapes.push(<Descent key={svg.path} path={svg.path} scale={scale} thumb={false} />);
+        break;
       }
       case 'RAPPEL_BOLTED':
       case 'RAPPEL_NOT_BOLTED': {
-        return [
-          ...acc,
+        shapes.push(
           <Rappel
             key={[svg.rappelX, svg.rappelY].join('x')}
             x={svg.rappelX}
@@ -218,27 +266,19 @@ export function parseReadOnlySvgs(readOnlySvgs: SvgType[], w: number, h: number,
             backgroundColor={backgroundColor}
             color={color}
           />,
-        ];
+        );
+        break;
       }
       default: {
         const commands = makeAbsolute(parseSVG(svg.path)); // Note: mutates the commands in place!
-        return [
-          ...acc,
-          generateSvgNrAndAnchor(
-            svg.nr + '_' + svg.pitch + '_path',
-            commands as Parameters<typeof generateSvgNrAndAnchor>[1],
-            svg.nr,
-            svg.hasAnchor,
-            w,
-            h,
-          ),
+        shapes.push(
           <path
             key={svg.path}
             d={svg.path}
             className={'buldreinfo-svg-edit-opacity'}
             style={{ fill: 'none', stroke: '#000000' }}
-            strokeWidth={0.003 * w}
-            strokeDasharray={0.006 * w}
+            strokeWidth={sizes.lineStroke}
+            strokeDasharray={sizes.dash}
           />,
           ...svg.anchors.map((a) => (
             <circle
@@ -247,12 +287,25 @@ export function parseReadOnlySvgs(readOnlySvgs: SvgType[], w: number, h: number,
               fill='#000000'
               cx={a.x}
               cy={a.y}
-              r={0.006 * w}
+              r={sizes.anchorDotR}
             />
           )),
-        ];
+        );
+        badges.push(
+          generateSvgNrAndAnchor(
+            svg.nr + '_' + svg.pitch + '_path',
+            commands as Parameters<typeof generateSvgNrAndAnchor>[1],
+            svg.nr,
+            svg.hasAnchor,
+            w,
+            h,
+            sizes,
+          ),
+        );
+        break;
       }
     }
-  }, []);
-  return shapes;
+  }
+
+  return { shapes, badges };
 }

@@ -85,7 +85,9 @@ export function useAccessToken() {
   useEffect(() => {
     if (isAuthenticated) {
       getAccessTokenSilently()
-        .then((token) => setAccessToken(token))
+        // The Auth0 SDK resolves `undefined` (instead of throwing) when it cannot mint a token, while the
+        // API layer models "no token" as `null` — normalise here so every caller sees one representation.
+        .then((token) => setAccessToken(token ?? null))
         .catch(() => {
           // Dead session — SessionGuard handles the logout; leave token null.
         });
@@ -143,6 +145,28 @@ export function getMediaFileUrlSrcSet(
   return finalSizes
     .map((size) => `${getMediaFileUrl(id, versionStamp, false, { targetWidth: size })} ${size}w`)
     .join(',\n');
+}
+
+/**
+ * Raster widths the editors may ask for once the user zooms past the standard web image. The server
+ * caches one variant per exact `targetWidth`, so this list stays coarse on purpose — a handful of
+ * discrete steps instead of one variant per zoom notch. Widths above the web image are rendered from
+ * the original image.
+ */
+const MEDIA_EDIT_ZOOM_TIERS = [2560, 3840, 5120] as const;
+
+/**
+ * Smallest cached variant that still has at least `neededCssPx` pixels of width for the current zoom.
+ *
+ * Returns `0` when the standard web image already suffices — callers then leave the URL parameterless,
+ * so plain viewing keeps generating no extra variants. Never asks for more than the original image has
+ * (that request would only redirect to the untouched original anyway) and falls back to the largest
+ * tier below the needed width, which degrades gracefully into a slightly upscaled image.
+ */
+export function pickMediaRasterTier(neededCssPx: number, originalWidth: number): number {
+  const available = MEDIA_EDIT_ZOOM_TIERS.filter((size) => originalWidth <= 0 || size <= originalWidth);
+  if (neededCssPx <= MEDIA_EDIT_ZOOM_TIERS[0]) return 0;
+  return available.find((size) => size >= neededCssPx) ?? available[available.length - 1] ?? 0;
 }
 
 /**

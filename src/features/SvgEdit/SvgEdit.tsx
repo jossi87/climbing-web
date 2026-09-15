@@ -13,7 +13,13 @@ import {
   useProblem,
   useSvgEdit,
 } from '../../api';
-import { parseReadOnlySvgs, parsePath, isCubicPoint, type ParsedEntry } from '../../utils/svg-helpers';
+import {
+  parseReadOnlySvgs,
+  parsePath,
+  isCubicPoint,
+  type ParsedEntry,
+  type ReadOnlySvgSizes,
+} from '../../utils/svg-helpers';
 import { Rappel } from '../../utils/svg-utils';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { Card } from '../../shared/ui';
@@ -21,6 +27,9 @@ import { captureSentryException } from '../../utils/sentry';
 import { generatePath, reducer, type State } from './state';
 import { neverGuard } from '../../utils/neverGuard';
 import type { MediaRegion } from '../../utils/svg-scaler';
+import { useImageZoom } from '../../shared/hooks/useImageZoom';
+import { useZoomRaster } from '../../shared/hooks/useZoomRaster';
+import { cappedUu, chromeUu, editorChrome, hoverGrowth, type EditorSizeScale } from './editor-sizes';
 import {
   RotateCcw,
   Save,
@@ -29,6 +38,9 @@ import {
   Settings2,
   X,
   ZoomIn,
+  ZoomOut,
+  Mouse,
+  MousePointer2,
   Spline,
   Anchor,
   Triangle,
@@ -220,6 +232,40 @@ export const SvgEdit = ({
   const imageRef = useRef<SVGImageElement>(null);
   const shift = useRef(false);
 
+  /**
+   * Zoom/pan of the editing surface. The surface is the only thing that scales, so `Ctrl`+scroll
+   * magnifies photo pixels instead of running the browser's page zoom (which only made the text grow).
+   */
+  const zoom = useImageZoom({ imageWidth: w, imageHeight: h });
+  /**
+   * Sharper raster as the user zooms in. Skipped for pitch crops: those are already served at native
+   * resolution, and the API cannot combine a crop with `targetWidth`.
+   */
+  const rasterUrlFor = useCallback(
+    (targetWidth: number) => getMediaFileUrl(mediaId, versionStamp, false, { targetWidth }),
+    [mediaId, versionStamp],
+  );
+  const rasterTargetWidth = useZoomRaster({
+    renderWidth: zoom.renderWidth,
+    originalWidth: mediaWidth,
+    zoomed: zoom.isZoomed,
+    enabled: !mediaRegion,
+    resolveUrl: rasterUrlFor,
+  });
+
+  /** Bridge between screen-space sizes and SVG user units — see `editor-sizes.ts`. */
+  const size = useMemo<EditorSizeScale>(
+    () => ({ unitPerCssPx: zoom.unitPerCssPx, zoom: zoom.zoom }),
+    [zoom.unitPerCssPx, zoom.zoom],
+  );
+  /** Editing chrome (dots, handles, hit areas, toolbars): constant on screen at every zoom level. */
+  const chrome = useCallback(
+    (relativeUu: number, minCss: number, maxCss: number) => chromeUu(size, relativeUu, minCss, maxCss),
+    [size],
+  );
+  /** Published geometry (route line, labels, bolts, sibling routes): fit-time look, growth-capped. */
+  const capped = useCallback((relativeUu: number) => cappedUu(size, relativeUu), [size]);
+
   const readOnlyPointsRef = useRef(
     (readOnlySvgs ?? []).map((svg) => parsePath(svg.path ?? '').map((p, ix) => ({ ...p, ix }))).flat(),
   );
@@ -271,18 +317,18 @@ export const SvgEdit = ({
   });
   const [activeTab, setActiveTab] = useState<EditorTab>('segment');
   const [draggingOverlay, setDraggingOverlay] = useState<OverlaySelection | null>(null);
+  /** Point index the pointer is over — its dot and handles grow so a grab is never a guess. */
+  const [hoveredPoint, setHoveredPoint] = useState<number | null>(null);
   const dragOffsetRef = useRef<Coords>({ x: 0, y: 0 });
   const anchorsRef = useRef(initialAnchors ?? []);
   const tradBelayStationsRef = useRef(initialTradBelayStations ?? []);
   const textsRef = useRef(initialTexts ?? []);
-  const [zoomMode, setZoomMode] = useState(false);
   const suppressNextSvgClickRef = useRef(false);
   const isDraggingPointRef = useRef(false);
   /** Drag-miss guard: true when the current press moved far enough to count as a drag, even if no point was hit. */
   const didDragRef = useRef(false);
   const pointerDownPosRef = useRef<{ x: number; y: number } | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
   const dispatchRef = useRef(dispatch);
   dispatchRef.current = dispatch;
 
@@ -354,6 +400,12 @@ export const SvgEdit = ({
 
     const onPointerDown = (e: PointerEvent) => {
       if (e.button !== 0) return;
+      /**
+       * A click always follows its own gesture, so any suppression still set here is stale. Clearing it
+       * matters: a stale flag would otherwise be *consumed* by the next pointer-up, and that gesture's
+       * click would then be treated as a tap and add a point.
+       */
+      suppressNextSvgClickRef.current = false;
       pointerDownPosRef.current = { x: e.clientX, y: e.clientY };
       didDragRef.current = false;
       if (isDraggingPointRef.current) return;
@@ -405,15 +457,18 @@ export const SvgEdit = ({
         dispatchRef.current({ action: 'idle' });
         return;
       }
+      /**
+       * Never add a point after a drag gesture — e.g. the user tried to grab an existing point but missed
+       * it, or dragged the surface to pan it. This is checked *before* the tap suppression below, so a
+       * leftover flag from an earlier gesture can't turn this drag into a tap that adds a point.
+       */
+      if (wasPressed && dragged) {
+        suppressNextSvgClickRef.current = true;
+        return;
+      }
       // Tap — add point or place overlay
       if (suppressNextSvgClickRef.current) {
         suppressNextSvgClickRef.current = false;
-        return;
-      }
-      // Never add a point after a drag gesture — e.g. the user tried to grab an
-      // existing point but missed it.
-      if (wasPressed && dragged) {
-        suppressNextSvgClickRef.current = true;
         return;
       }
       const target = document.elementFromPoint(e.clientX, e.clientY);
@@ -543,6 +598,29 @@ export const SvgEdit = ({
     'inline-flex items-center gap-1.5 rounded-md px-2 py-1.5 transition-colors disabled:pointer-events-none disabled:opacity-35',
     designContract.typography.uiCompact,
   );
+
+  /** Floating-toolbar chrome — constant on screen, so it stays readable at every zoom level. */
+  const toolbarStrokeW = chrome(0.001 * w, editorChrome.toolbarStroke.min, editorChrome.toolbarStroke.max);
+  const toolbarDividerW = chrome(0.0008 * w, editorChrome.toolbarStroke.min, editorChrome.toolbarStroke.max);
+  /** Distance between a marker (point/bolt/label) and its floating toolbar. */
+  const toolbarGap = chrome(0.008 * w, 12, 18);
+  /**
+   * Read-only sibling topo (other routes' dashed lines and their route-number badges). Screen-space, so
+   * it reads like the published topo at any zoom instead of growing into big black number plates.
+   */
+  const readOnlySizes: ReadOnlySvgSizes = {
+    lineStroke: chrome(0.003 * w, editorChrome.readOnly.lineStroke.min, editorChrome.readOnly.lineStroke.max),
+    dash: chrome(0.006 * w, editorChrome.readOnly.dash.min, editorChrome.readOnly.dash.max),
+    anchorDotR: chrome(0.006 * w, editorChrome.readOnly.anchorDotR.min, editorChrome.readOnly.anchorDotR.max),
+    badgeR: chrome(0.012 * w, editorChrome.readOnly.badgeR.min, editorChrome.readOnly.badgeR.max),
+    badgeFontSize: chrome(0.015 * w, editorChrome.readOnly.badgeFontSize.min, editorChrome.readOnly.badgeFontSize.max),
+    badgeAnchorR: chrome(0.005 * w, editorChrome.readOnly.badgeAnchorR.min, editorChrome.readOnly.badgeAnchorR.max),
+  };
+  /**
+   * Sibling topo split into two layers: lines/arrows first (so the route being edited stays on top and
+   * its drag targets keep receiving clicks), number plates last (so no line can run across a number).
+   */
+  const readOnlyLayers = parseReadOnlySvgs(readOnlySvgs, w, h, capped(0.00072 * w), readOnlySizes);
   const toolBtnOff = 'text-slate-500 hover:bg-surface-raised-hover hover:text-slate-200';
 
   const fieldClass = cn(
@@ -731,17 +809,67 @@ export const SvgEdit = ({
                   )}
                 </div>
                 <div className='flex shrink-0 flex-nowrap items-center gap-1.5 self-start pt-0.5 sm:pt-0'>
+                  <div
+                    className={cn(
+                      'inline-flex shrink-0 items-center overflow-hidden rounded-full border transition-colors',
+                      zoom.isZoomed
+                        ? 'border-brand bg-brand/20 text-brand'
+                        : cn(pageActionIconBtnGlass, 'text-slate-400'),
+                    )}
+                  >
+                    <button
+                      type='button'
+                      title='Zoom out (-)'
+                      aria-label='Zoom out'
+                      disabled={!zoom.canZoomOut}
+                      className='inline-flex h-8 w-8 shrink-0 items-center justify-center transition-colors disabled:pointer-events-none disabled:opacity-40'
+                      onClick={zoom.zoomOut}
+                    >
+                      <ZoomOut size={14} strokeWidth={2.25} />
+                    </button>
+                    <button
+                      type='button'
+                      title='Zoom to fit (0)'
+                      aria-label='Zoom to fit'
+                      className={cn(
+                        'inline-flex h-8 min-w-12 shrink-0 items-center justify-center px-1 font-mono tabular-nums',
+                        designContract.typography.uiCompact,
+                      )}
+                      onClick={zoom.zoomToFit}
+                    >
+                      {Math.round(zoom.percentOfNative)}%
+                    </button>
+                    <button
+                      type='button'
+                      title='Zoom in (+)'
+                      aria-label='Zoom in'
+                      disabled={!zoom.canZoomIn}
+                      className='inline-flex h-8 w-8 shrink-0 items-center justify-center transition-colors disabled:pointer-events-none disabled:opacity-40'
+                      onClick={zoom.zoomIn}
+                    >
+                      <ZoomIn size={14} strokeWidth={2.25} />
+                    </button>
+                  </div>
                   <button
                     type='button'
-                    title={zoomMode ? 'Fit to screen' : 'Zoom and pan'}
-                    aria-label={zoomMode ? 'Fit to screen' : 'Zoom and pan'}
+                    title={
+                      zoom.wheelZooms
+                        ? 'Scroll wheel zooms the image — click to let it scroll/pan instead (Ctrl+scroll always zooms)'
+                        : 'Scroll wheel scrolls/pans — click to make it zoom the image (Ctrl+scroll always zooms)'
+                    }
+                    aria-label={zoom.wheelZooms ? 'Scroll wheel zooms the image' : 'Scroll wheel scrolls the image'}
+                    aria-pressed={zoom.wheelZooms}
                     className={cn(
                       pageActionIconBtn,
-                      zoomMode ? 'border-brand bg-brand/20 text-brand shadow-sm' : pageActionIconBtnGlass,
+                      zoom.wheelZooms ? 'border-brand bg-brand/20 text-brand shadow-sm' : pageActionIconBtnGlass,
                     )}
-                    onClick={() => setZoomMode(!zoomMode)}
+                    onClick={zoom.toggleWheelZoom}
                   >
-                    <ZoomIn size={14} strokeWidth={2.25} />
+                    {zoom.wheelZooms ? (
+                      <Mouse size={14} strokeWidth={2.25} />
+                    ) : (
+                      <MousePointer2 size={14} strokeWidth={2.25} />
+                    )}
                   </button>
                   <button
                     type='button'
@@ -866,46 +994,67 @@ export const SvgEdit = ({
           </div>
 
           <div
-            ref={containerRef}
+            ref={zoom.containerRef}
             className={cn(
-              'border-surface-border relative w-full min-w-0 cursor-crosshair bg-black select-none',
-              zoomMode ? 'overflow-auto' : 'overflow-hidden',
+              'border-surface-border relative w-full min-w-0 bg-black select-none',
+              /**
+               * Pan affordance: dragging the surface moves the photo (`useImageZoom`), so the grab
+               * cursors appear as soon as there is something to pan.
+               */
+              zoom.isPanning ? 'cursor-grabbing' : zoom.isZoomed ? 'cursor-grab' : 'cursor-crosshair',
+              zoom.isZoomed ? 'overflow-auto' : 'overflow-hidden',
             )}
-            style={zoomMode ? { maxHeight: '100dvh' } : undefined}
+            style={zoom.isZoomed ? { maxHeight: '100dvh' } : undefined}
           >
             <svg
               ref={svgRef}
               viewBox={`0 0 ${w} ${h}`}
               onClick={handleOnClick}
               onMouseMove={(e) => dispatch({ action: 'mouse-move', ...getMouseCoords(e, true) })}
-              className={cn(
-                'block select-none',
-                zoomMode ? 'h-auto' : 'h-auto w-full',
-                draggingOverlay && 'cursor-grabbing',
-              )}
+              className={cn('block h-auto select-none', draggingOverlay && 'cursor-grabbing')}
               style={{
                 // Let browser handle pinch-to-zoom and pan natively.
                 // We use a non-passive touchstart listener to call preventDefault()
                 // when touching a point, which stops scroll/pan for that touch only.
                 touchAction: 'auto',
-                ...(zoomMode ? { width: 'min(1920px, 150vw)', maxWidth: 'none' } : undefined),
+                /**
+                 * The surface is sized explicitly instead of `w-full`: `renderWidth` follows the
+                 * container while fitted and grows past it when zoomed (the wrapper then scrolls,
+                 * which is the native pan). Wheel/Ctrl+wheel zooming lives in `useImageZoom`.
+                 */
+                width: zoom.renderWidth > 0 ? `${Math.round(zoom.renderWidth)}px` : '100%',
+                maxWidth: 'none',
               }}
             >
               <image
                 ref={imageRef}
-                xlinkHref={getMediaFileUrl(mediaId, versionStamp, false, { mediaRegion })}
+                /**
+                 * A pitch crop is served at native resolution, so it needs no `targetWidth`. A full
+                 * photo starts as the standard web image and upgrades to a sharper variant once the
+                 * user zooms past it (`rasterTargetWidth === 0` keeps the parameterless URL).
+                 */
+                xlinkHref={getMediaFileUrl(
+                  mediaId,
+                  versionStamp,
+                  false,
+                  mediaRegion
+                    ? { mediaRegion }
+                    : rasterTargetWidth > 0
+                      ? { targetWidth: rasterTargetWidth }
+                      : undefined,
+                )}
                 width='100%'
                 height='100%'
               />
-              {parseReadOnlySvgs(readOnlySvgs, w, h, 0.00072 * w)}
+              {readOnlyLayers.shapes}
 
               {activeTab === 'segment' ? (
                 <>
-                  <path d={path} fill='none' stroke={black} strokeWidth={0.003 * w} pointerEvents='none' />
-                  <path d={path} fill='none' stroke='#FF0000' strokeWidth={0.002 * w} pointerEvents='none' />
+                  <path d={path} fill='none' stroke={black} strokeWidth={capped(0.003 * w)} pointerEvents='none' />
+                  <path d={path} fill='none' stroke='#FF0000' strokeWidth={capped(0.002 * w)} pointerEvents='none' />
                 </>
               ) : (
-                <path d={path} fill='none' stroke={black} strokeWidth={0.003 * w} pointerEvents='none' />
+                <path d={path} fill='none' stroke={black} strokeWidth={capped(0.003 * w)} pointerEvents='none' />
               )}
 
               {/* Floating point toolbar — rendered AFTER points so toolbar buttons are clickable */}
@@ -916,14 +1065,16 @@ export const SvgEdit = ({
                   const isFirst = activePoint === 0;
                   const isLast = activePoint === points.length - 1;
                   const isCurve = !isFirst && isCubicPoint(ap);
-                  const btnH = 0.02 * w;
-                  const btnW = 0.03 * w;
-                  const gap = 0.004 * w;
+                  // Screen-space toolbar: stays finger-sized when zoomed in, but can't become a
+                  // billboard either (see `editor-sizes.ts`).
+                  const btnH = chrome(0.02 * w, editorChrome.toolbarHeight.min, editorChrome.toolbarHeight.max);
+                  const btnW = btnH * 1.5;
+                  const gap = btnH * 0.2;
                   const showAnchor = !isBouldering && isLast && points.length > 1;
                   const btnCount = isFirst ? 1 : isLast && points.length > 1 ? (showAnchor ? 3 : 2) : 2;
                   const totalW = btnW * btnCount + gap * (btnCount - 1);
                   // Position toolbar to the right of the point, close to it
-                  const gapX = 0.008 * w;
+                  const gapX = toolbarGap;
                   let toolbarX = ap.x + gapX;
                   // Guard: if toolbar would overflow the right edge, flip to the left side
                   if (toolbarX + totalW > w) {
@@ -947,7 +1098,7 @@ export const SvgEdit = ({
                         rx={btnH / 2}
                         fill='rgba(0,0,0,0.7)'
                         stroke='rgba(255,255,255,0.15)'
-                        strokeWidth={0.001 * w}
+                        strokeWidth={toolbarStrokeW}
                         pointerEvents='none'
                       />
                       {!isFirst && (
@@ -984,7 +1135,7 @@ export const SvgEdit = ({
                             x2={toolbarX + btnW}
                             y2={toolbarY + btnH * 0.8}
                             stroke='rgba(255,255,255,0.15)'
-                            strokeWidth={0.0008 * w}
+                            strokeWidth={toolbarDividerW}
                             pointerEvents='none'
                           />
                         </>
@@ -1028,7 +1179,7 @@ export const SvgEdit = ({
                             x2={toolbarX + btnW * 2 + gap}
                             y2={toolbarY + btnH * 0.8}
                             stroke='rgba(255,255,255,0.15)'
-                            strokeWidth={0.0008 * w}
+                            strokeWidth={toolbarDividerW}
                             pointerEvents='none'
                           />
                         </>
@@ -1071,17 +1222,37 @@ export const SvgEdit = ({
 
               {activeTab === 'segment' &&
                 (() => {
-                  /** Large enough to grab easily; hollow + stroke keeps the photo visible inside. */
-                  const cubicHandleR = 0.004 * w;
-                  const cubicHandleStrokeW = 0.00185 * w;
-                  const cubicGuideStrokeW = 0.0014 * w;
-                  const cubicDash = Math.max(4, 0.004 * w);
+                  /** Screen-space sizes: grabbable at any zoom, without covering the photo detail. */
+                  const cubicHandleR = chrome(0.004 * w, editorChrome.cubicR.min, editorChrome.cubicR.max);
+                  const cubicHandleStrokeW = chrome(
+                    0.00185 * w,
+                    editorChrome.cubicStroke.min,
+                    editorChrome.cubicStroke.max,
+                  );
+                  const cubicGuideStrokeW = chrome(
+                    0.0014 * w,
+                    editorChrome.cubicGuideStroke.min,
+                    editorChrome.cubicGuideStroke.max,
+                  );
+                  const cubicDash = cubicHandleR;
 
                   /** Wider invisible targets so handles aren't blocked by guide lines or thin strokes. */
-                  const vertexHitR = 0.012 * w;
-                  const cubicHitR = 0.008 * w;
+                  const vertexHitR = chrome(0.012 * w, editorChrome.vertexHitR.min, editorChrome.vertexHitR.max);
+                  const cubicHitR = chrome(0.008 * w, editorChrome.cubicHitR.min, editorChrome.cubicHitR.max);
 
                   return points.map((p, i) => {
+                    /**
+                     * The dot is small so it doesn't hide the rock, which makes the *hover/active* state
+                     * carry the affordance instead: whatever the pointer is over (or dragging) grows, so
+                     * it is always obvious what a grab will pick up.
+                     */
+                    const boosted = hoveredPoint === i || (state.mode === 'drag-point' && activePoint === i);
+                    const handleBoost = boosted ? hoverGrowth : 1;
+                    const vertexR = chrome(
+                      i === points.length - 1 && hasAnchor ? 0.008 * w : 0.005 * w,
+                      i === points.length - 1 && hasAnchor ? editorChrome.vertexAnchorR.min : editorChrome.vertexR.min,
+                      i === points.length - 1 && hasAnchor ? editorChrome.vertexAnchorR.max : editorChrome.vertexR.max,
+                    );
                     const handles = isCubicPoint(p) && (
                       <g>
                         <line
@@ -1121,11 +1292,13 @@ export const SvgEdit = ({
                             e.preventDefault();
                             dispatch({ action: 'drag-cubic', index: i, c: 0 });
                           }}
+                          onMouseEnter={() => setHoveredPoint(i)}
+                          onMouseLeave={() => setHoveredPoint(null)}
                         />
                         <circle
                           cx={p.c[0].x}
                           cy={p.c[0].y}
-                          r={cubicHandleR}
+                          r={cubicHandleR * handleBoost}
                           fill={curveHandleFill}
                           stroke={curveHandleStroke}
                           strokeWidth={cubicHandleStrokeW}
@@ -1145,11 +1318,13 @@ export const SvgEdit = ({
                             e.preventDefault();
                             dispatch({ action: 'drag-cubic', index: i, c: 1 });
                           }}
+                          onMouseEnter={() => setHoveredPoint(i)}
+                          onMouseLeave={() => setHoveredPoint(null)}
                         />
                         <circle
                           cx={p.c[1].x}
                           cy={p.c[1].y}
-                          r={cubicHandleR}
+                          r={cubicHandleR * handleBoost}
                           fill={curveHandleFill}
                           stroke={curveHandleStroke}
                           strokeWidth={cubicHandleStrokeW}
@@ -1163,7 +1338,7 @@ export const SvgEdit = ({
                         <circle
                           cx={p.x}
                           cy={p.y}
-                          r={i === points.length - 1 && hasAnchor ? 0.008 * w : 0.005 * w}
+                          r={vertexR * (boosted ? hoverGrowth : 1)}
                           fill={activePoint === i ? '#00FF00' : '#FF0000'}
                           stroke={black}
                           pointerEvents='none'
@@ -1181,6 +1356,8 @@ export const SvgEdit = ({
                             e.preventDefault();
                             dispatch({ action: 'drag-point', index: i });
                           }}
+                          onMouseEnter={() => setHoveredPoint(i)}
+                          onMouseLeave={() => setHoveredPoint(null)}
                         />
                         {handles}
                       </g>
@@ -1193,16 +1370,20 @@ export const SvgEdit = ({
                 // Visual extent: x ± r+sw, y - r-sw to y + 3r+sw (sw = 3*scale*2 for bg stroke)
                 // With scale = 0.00072*w: r ≈ 0.0043*w, sw ≈ 0.0043*w (bg stroke * 2)
                 // Full extent: x ± 0.0086*w, y - 0.0086*w to y + 0.0172*w
-                // Use a generous rect centered on the visual center
-                const hitHalfW = 0.009 * w;
-                const hitHalfH = 0.013 * w;
+                // The hitbox is sized in screen space instead, so it stays grabbable on a phone and
+                // never balloons past the icon when zoomed in.
+                const hitHalfW = chrome(0.009 * w, editorChrome.rappelHit.min / 2, editorChrome.rappelHit.max / 2);
+                const hitHalfH = Math.max(
+                  chrome(0.013 * w, editorChrome.rappelHit.min / 2, editorChrome.rappelHit.max / 2 + 4),
+                  capped(0.026 * w),
+                );
                 const hitX = a.x - hitHalfW;
-                const hitY = a.y - hitHalfH + 0.004 * w; // shift down slightly to cover stem
+                const hitY = a.y - hitHalfH + capped(0.004 * w); // shift down slightly to cover stem
                 const hitW = hitHalfW * 2;
                 const hitH = hitHalfH * 2;
-                const delBtnH = 0.02 * w;
-                const delBtnW = 0.03 * w;
-                const gapX = 0.008 * w;
+                const delBtnH = chrome(0.02 * w, editorChrome.toolbarHeight.min, editorChrome.toolbarHeight.max);
+                const delBtnW = delBtnH * 1.5;
+                const gapX = toolbarGap;
                 let toolbarX = a.x + gapX;
                 if (toolbarX + delBtnW > w) {
                   toolbarX = a.x - gapX - delBtnW;
@@ -1217,7 +1398,7 @@ export const SvgEdit = ({
                       backgroundColor={'black'}
                       bolted={true}
                       color={activeTab === 'anchors' ? '#FF0000' : 'white'}
-                      scale={0.00072 * w}
+                      scale={capped(0.00072 * w)}
                       thumb={false}
                       x={a.x}
                       y={a.y}
@@ -1245,7 +1426,7 @@ export const SvgEdit = ({
                           rx={delBtnH / 2}
                           fill='rgba(0,0,0,0.7)'
                           stroke='rgba(255,255,255,0.15)'
-                          strokeWidth={0.001 * w}
+                          strokeWidth={toolbarStrokeW}
                           pointerEvents='none'
                         />
                         <g
@@ -1279,16 +1460,19 @@ export const SvgEdit = ({
                 );
               })}
               {tradBelayStations.map((a, i) => {
-                // Same hitbox as bolts — covers the full Rappel icon (circle + stem)
-                const hitHalfW = 0.009 * w;
-                const hitHalfH = 0.013 * w;
+                // Same hitbox as bolts — covers the full Rappel icon (circle + stem), in screen space
+                const hitHalfW = chrome(0.009 * w, editorChrome.rappelHit.min / 2, editorChrome.rappelHit.max / 2);
+                const hitHalfH = Math.max(
+                  chrome(0.013 * w, editorChrome.rappelHit.min / 2, editorChrome.rappelHit.max / 2 + 4),
+                  capped(0.026 * w),
+                );
                 const hitX = a.x - hitHalfW;
-                const hitY = a.y - hitHalfH + 0.004 * w; // shift down slightly to cover stem
+                const hitY = a.y - hitHalfH + capped(0.004 * w); // shift down slightly to cover stem
                 const hitW = hitHalfW * 2;
                 const hitH = hitHalfH * 2;
-                const delBtnH = 0.02 * w;
-                const delBtnW = 0.03 * w;
-                const gapX = 0.008 * w;
+                const delBtnH = chrome(0.02 * w, editorChrome.toolbarHeight.min, editorChrome.toolbarHeight.max);
+                const delBtnW = delBtnH * 1.5;
+                const gapX = toolbarGap;
                 let toolbarX = a.x + gapX;
                 if (toolbarX + delBtnW > w) {
                   toolbarX = a.x - gapX - delBtnW;
@@ -1303,7 +1487,7 @@ export const SvgEdit = ({
                       backgroundColor={'black'}
                       bolted={false}
                       color={activeTab === 'trad' ? '#FF0000' : 'white'}
-                      scale={0.00072 * w}
+                      scale={capped(0.00072 * w)}
                       thumb={false}
                       x={a.x}
                       y={a.y}
@@ -1331,7 +1515,7 @@ export const SvgEdit = ({
                           rx={delBtnH / 2}
                           fill='rgba(0,0,0,0.7)'
                           stroke='rgba(255,255,255,0.15)'
-                          strokeWidth={0.001 * w}
+                          strokeWidth={toolbarStrokeW}
                           pointerEvents='none'
                         />
                         <g
@@ -1365,15 +1549,16 @@ export const SvgEdit = ({
                 );
               })}
               {texts.map((t, i) => {
-                const fs = 0.03 * w;
+                // Labels are published geometry: fit-time size, capped so they can't dominate when zoomed.
+                const fs = capped(0.03 * w);
                 const pad = fs * 0.45;
                 const tw = Math.max(fs * (t.txt.length || 1) * 0.55, fs * 2);
                 const th = fs * 1.35;
-                const btnH = 0.02 * w;
-                const btnW = 0.03 * w;
-                const gap = 0.004 * w;
+                const btnH = chrome(0.02 * w, editorChrome.toolbarHeight.min, editorChrome.toolbarHeight.max);
+                const btnW = btnH * 1.5;
+                const gap = btnH * 0.2;
                 const totalW = btnW * 2 + gap;
-                const gapY = 0.006 * w;
+                const gapY = toolbarGap;
                 let toolbarX = t.x;
                 if (toolbarX + totalW > w) toolbarX = w - totalW;
                 const toolbarY = t.y + gapY;
@@ -1412,7 +1597,7 @@ export const SvgEdit = ({
                           rx={btnH / 2}
                           fill='rgba(0,0,0,0.7)'
                           stroke='rgba(255,255,255,0.15)'
-                          strokeWidth={0.001 * w}
+                          strokeWidth={toolbarStrokeW}
                           pointerEvents='none'
                         />
                         {/* Edit button */}
@@ -1449,7 +1634,7 @@ export const SvgEdit = ({
                           x2={toolbarX + btnW}
                           y2={toolbarY + btnH * 0.8}
                           stroke='rgba(255,255,255,0.15)'
-                          strokeWidth={0.0008 * w}
+                          strokeWidth={toolbarDividerW}
                           pointerEvents='none'
                         />
                         {/* Delete button */}
@@ -1483,6 +1668,8 @@ export const SvgEdit = ({
                   </g>
                 );
               })}
+              {/* Number plates last: neither a sibling route nor the route being edited can cross a number. */}
+              {readOnlyLayers.badges}
             </svg>
           </div>
 

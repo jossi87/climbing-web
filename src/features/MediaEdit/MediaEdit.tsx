@@ -86,6 +86,12 @@ const CONNECTION_TYPE_OPTIONS: { value: MediaConnectionType; label: string }[] =
 
 const MediaEdit = () => {
   const { getAccessTokenSilently } = useAuth0();
+  /**
+   * Access token getter for the dropzone/embed widgets. Auth0's method resolves `undefined` when it
+   * cannot mint a token, while the API layer models "no token" as `null`; normalise once here and hand
+   * the widgets one stable callback (they use it as an effect dependency).
+   */
+  const getAccessToken = useCallback(async () => (await getAccessTokenSilently()) ?? null, [getAccessTokenSilently]);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { mediaId } = useParams();
@@ -477,7 +483,8 @@ const MediaEdit = () => {
     };
 
     try {
-      const token = await getAccessTokenSilently();
+      // Auth0 may resolve `undefined`; the API layer expects `string | null`.
+      const token = (await getAccessTokenSilently()) ?? null;
 
       if (isAddMode) {
         for (let i = 0; i < uploadItems.length; i++) {
@@ -904,7 +911,7 @@ const MediaEdit = () => {
             <MediaDropzoneEmbed
               onFilesAdded={handleFilesAdded}
               onEmbedAdded={handleEmbedAdded}
-              getAccessToken={getAccessTokenSilently}
+              getAccessToken={getAccessToken}
             />
           </Card>
         )}

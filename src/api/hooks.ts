@@ -179,7 +179,9 @@ export function usePostData<TVariables, TData = Response>(
   const mutationKey = useKey(options.mutationKey, urlSuffix);
 
   const mutationFn: MutationFunction<TData, TVariables> = async (variables) => {
-    const accessToken = isAuthenticated ? await getAccessTokenSilently() : null;
+    // `getAccessTokenSilently` may resolve `undefined` when no token can be minted; the API layer
+    // models "no token" as `null`.
+    const accessToken = isAuthenticated ? ((await getAccessTokenSilently()) ?? null) : null;
 
     const url = createUrl(variables);
     const createBody = options.createBody ?? JSON.stringify;
@@ -239,7 +241,7 @@ export function useData<TQueryData = unknown, TData = TQueryData>(
     let accessToken: string | null = null;
     if (isAuthenticated) {
       try {
-        accessToken = await getAccessTokenSilently();
+        accessToken = (await getAccessTokenSilently()) ?? null;
       } catch {
         accessToken = null;
       }
@@ -309,7 +311,7 @@ export function useActivity({
       let accessToken: string | null = null;
       if (isAuthenticated) {
         try {
-          accessToken = await getAccessTokenSilently();
+          accessToken = (await getAccessTokenSilently()) ?? null;
         } catch {
           accessToken = null;
         }

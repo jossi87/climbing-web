@@ -34,6 +34,7 @@ export {
   getMediaFileUrl,
   getMediaFileUrlSrcSet,
   getTieredMinDimension,
+  pickMediaRasterTier,
   numberWithCommas,
   convertFromDateToString,
   convertFromStringToDate,

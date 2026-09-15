@@ -50,8 +50,8 @@ type Props = {
   }) => void;
   /** Optional extra content rendered below the dropzone/embed area */
   children?: ReactNode;
-  /** Access token for authenticated API calls (needed for Instagram scraping) */
-  getAccessToken?: () => Promise<string>;
+  /** Access token for authenticated API calls (needed for Instagram scraping). `null` = no token. */
+  getAccessToken?: () => Promise<string | null>;
 };
 
 export const MediaDropzoneEmbed = ({ onFilesAdded, onEmbedAdded, children, getAccessToken }: Props) => {

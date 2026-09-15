@@ -20,8 +20,8 @@ type Props = {
     instagramSelectedMediaIndex?: number;
   }) => void;
   stack?: boolean;
-  /** Access token for authenticated API calls (needed for Instagram scraping) */
-  getAccessToken?: () => Promise<string>;
+  /** Access token for authenticated API calls (needed for Instagram scraping). `null` = no token. */
+  getAccessToken?: () => Promise<string | null>;
 };
 
 /**

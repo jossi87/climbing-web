@@ -169,7 +169,8 @@ const ProfileSettings = () => {
                     emailVisibleToAll,
                   });
                   if (avatar?.file) {
-                    const token = await getAccessTokenSilently();
+                    // Auth0 may resolve `undefined`; the API layer expects `string | null`.
+                    const token = (await getAccessTokenSilently()) ?? null;
                     await postMediaImage(
                       token,
                       {
