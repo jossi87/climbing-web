@@ -12,6 +12,7 @@ import Leaflet from '../../shared/components/Leaflet/Leaflet';
 import Media from '../../shared/components/Media/Media';
 import Todo from '../../shared/components/Todo/Todo';
 import GetCenterFromDegrees from '../../utils/map-utils';
+import { getCoordinatesCenter } from '../../utils/mapCenter';
 import { openMap } from '../../utils/openMap';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { Stars, LockSymbol } from '../../shared/ui/Indicators';
@@ -464,6 +465,12 @@ const Sector = () => {
     return [...parkingMarkers, ...problemMarkers];
   }, [parkingMarkers, problemMarkers]);
 
+  /**
+   * Parent-area coordinates — an area may have coordinates while its sectors have neither parking, outline
+   * nor located problems. The map tab then still renders (centered on the area, without any markers).
+   */
+  const areaMapCenter = getCoordinatesCenter(data?.areaCoordinates);
+
   const tabs = useMemo(() => {
     if (!data) return [] as { id: string; label: string; icon: LucideIcon; hasMedia?: boolean }[];
     const t: { id: string; label: string; icon: LucideIcon; hasMedia?: boolean }[] = [];
@@ -475,7 +482,7 @@ const Sector = () => {
       (tr) => (tr.media ?? []).length > 0 || (tr.description ?? '').trim().length > 0,
     );
 
-    if (markers.length > 0 || hasOutlineOnMap || hasApproachOrDescent) {
+    if (markers.length > 0 || hasOutlineOnMap || hasApproachOrDescent || areaMapCenter) {
       t.push({
         id: 'map',
         label: 'Map',
@@ -492,7 +499,7 @@ const Sector = () => {
       t.push({ id: 'activity', label: 'Activity', icon: Clock });
     }
     return t;
-  }, [data, markers, meta.isClimbing]);
+  }, [areaMapCenter, data, markers, meta.isClimbing]);
 
   /** Path segments: `/sector/:id`, `/sector/:id/overview`, `/sector/:id/map`, …; numeric segment = media deep link (tab highlights overview). */
   const effectiveTab = useMemo(() => {
@@ -596,11 +603,9 @@ const Sector = () => {
     return [0, 0];
   })();
 
-  const defaultCenter =
-    data.parking && data.parking.latitude && data.parking.longitude
-      ? { lat: data.parking.latitude, lng: data.parking.longitude }
-      : meta.defaultCenter;
-  const defaultZoom = data.parking ? 15 : meta.defaultZoom;
+  const parkingCenter = getCoordinatesCenter(data.parking);
+  const defaultCenter = parkingCenter ?? areaMapCenter ?? meta.defaultCenter;
+  const defaultZoom = parkingCenter ? 15 : areaMapCenter ? 14 : meta.defaultZoom;
   let outlines: ComponentProps<typeof Leaflet>['outlines'] = undefined;
   let descentCount = 0;
   let ascentCount = 0;

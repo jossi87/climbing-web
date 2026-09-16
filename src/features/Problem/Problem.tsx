@@ -13,6 +13,7 @@ import {
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
 import GetCenterFromDegrees from '../../utils/map-utils';
+import { getCoordinatesCenter } from '../../utils/mapCenter';
 
 import { openMap } from '../../utils/openMap';
 import Media from '../../shared/components/Media/Media';
@@ -228,6 +229,12 @@ function ProblemLoaded({
       url: data.sectorId ? '/sector/' + data.sectorId : undefined,
     });
 
+  /**
+   * Parent-area coordinates — the map falls back to these when neither the problem nor the sector is
+   * geolocated, so an area that only has coordinates for the area itself still gets a map.
+   */
+  const areaMapCenter = getCoordinatesCenter(data.areaCoordinates);
+
   const [conditionLat, conditionLng] = (() => {
     if (data.coordinates?.latitude && data.coordinates?.longitude)
       return [+data.coordinates.latitude, +data.coordinates.longitude];
@@ -239,6 +246,7 @@ function ProblemLoaded({
     }
     if (data.sectorParking?.latitude && data.sectorParking?.longitude)
       return [+data.sectorParking.latitude, +data.sectorParking.longitude];
+    if (areaMapCenter) return [areaMapCenter.lat, areaMapCenter.lng];
     return [meta.defaultCenter.lat || 0, meta.defaultCenter.lng || 0];
   })();
 
@@ -269,7 +277,12 @@ function ProblemLoaded({
     (tr) => (tr.media ?? []).length > 0 || (tr.description ?? '').trim().length > 0,
   );
   const hasSectorOutline = (data.sectorOutline?.length ?? 0) > 0;
-  const showMapTab = markers.length > 0 || hasTrails || (hasSectorOutline && !data.coordinates);
+  const showMapTab = markers.length > 0 || hasTrails || (hasSectorOutline && !data.coordinates) || !!areaMapCenter;
+  /**
+   * Initial zoom when `autoZoom` has no bounds to fit (no/single marker). Area-level coordinates cover more
+   * ground than problem or sector coordinates, so the area fallback gets a wider view.
+   */
+  const mapDefaultZoom = markers.length > 0 || hasTrails || hasSectorOutline ? 16 : 14;
 
   /** `/problem/:id`, `/problem/:id/overview`, and `/problem/:id/map` — same pattern as profile pages. */
   const activeTab = useMemo<'overview' | 'map'>(() => {
@@ -720,7 +733,7 @@ function ProblemLoaded({
                   }
                   trails={trails}
                   defaultCenter={{ lat: conditionLat, lng: conditionLng }}
-                  defaultZoom={16}
+                  defaultZoom={mapDefaultZoom}
                   showSatelliteImage={meta.isBouldering}
                   clusterMarkers={false}
                   flyToId={null}

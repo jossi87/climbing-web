@@ -1269,6 +1269,7 @@ export type components = {
             /** Format: int32 */
             areaSunToHour?: number;
             areaName?: string;
+            areaCoordinates?: components["schemas"]["Coordinates"];
             /** Format: int32 */
             id?: number;
             trash?: boolean;
@@ -1424,6 +1425,7 @@ export type components = {
             areaLockedAdmin?: boolean;
             areaLockedSuperadmin?: boolean;
             areaName?: string;
+            areaCoordinates?: components["schemas"]["Coordinates"];
             areaAccessInfo?: string;
             areaAccessClosed?: string;
             areaNoDogsAllowed?: boolean;

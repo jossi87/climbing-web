@@ -27,6 +27,7 @@ import { ActionMenuChip, Card, NotFoundCard, PageCardBreadcrumbRow } from '../..
 import { TradGearMarker } from '../../shared/ui/TradGearMarker';
 import { climbingRouteUsesPassiveGear, formatRouteTypeLabel } from '../../utils/routeTradGear';
 import { formatFaDisplay, compactFaDisplay } from '../../utils/firstAscentDisplay';
+import { getCoordinatesCenter } from '../../utils/mapCenter';
 import {
   ChevronRight,
   Plus,
@@ -623,7 +624,9 @@ const Area = () => {
     const t: { id: string; label: string; icon: typeof LayoutDashboard }[] = [];
     if (!data) return t;
     t.push({ id: 'overview', label: 'Overview', icon: LayoutDashboard });
-    const hasMapContent = markers.length > 0 || outlines.length > 0 || trails.length > 0;
+    /** Map is also useful without markers: an area may only have coordinates for the area itself. */
+    const hasMapContent =
+      markers.length > 0 || outlines.length > 0 || trails.length > 0 || !!getCoordinatesCenter(data.coordinates);
     if (hasMapContent) t.push({ id: 'map', label: 'Map', icon: MapIcon });
     if (data.sectors?.length) {
       const problemCount = countAreaProblems(data);
@@ -722,6 +725,9 @@ const Area = () => {
   }
 
   if (!data) return <Loading />;
+
+  /** `/area/:id` map center: the area's own coordinates when geolocated, otherwise the app default. */
+  const areaMapCenter = getCoordinatesCenter(data.coordinates);
 
   const orderableMedia: ComponentProps<typeof Media>['orderableMedia'] = [];
   const carouselMedia: ComponentProps<typeof Media>['carouselMedia'] = [];
@@ -935,12 +941,8 @@ const Area = () => {
                     outlines={showProblemsOnMap ? undefined : outlines}
                     trails={showProblemsOnMap ? undefined : trails}
                     rocks={showProblemsOnMap ? uniqueRocks : undefined}
-                    defaultCenter={
-                      data.coordinates?.latitude && data.coordinates?.longitude
-                        ? { lat: data.coordinates.latitude, lng: data.coordinates.longitude }
-                        : meta.defaultCenter
-                    }
-                    defaultZoom={data.coordinates ? 14 : meta.defaultZoom}
+                    defaultCenter={areaMapCenter ?? meta.defaultCenter}
+                    defaultZoom={areaMapCenter ? 14 : meta.defaultZoom}
                     showSatelliteImage={false}
                     clusterMarkers={showProblemsOnMap}
                     flyToId={null}
