@@ -56,6 +56,11 @@
    */
   --shadow-app-card: 0 28px 64px -22px rgba(0, 0, 0, 0.78), 0 0 0 1px rgba(255, 255, 255, 0.058);
   --spacing-container: 1400px;
+  /**
+   * Height of the app header (`h-header`, 52px). `.app-shell-main` subtracts it from `100svh` to reserve the
+   * first screen for page content — keep in sync with the header's own `h-header` (see `Header.tsx` / `twInk.ts`).
+   */
+  --spacing-header: 3.25rem;
   --spacing-thumbnail-w: 85px;
   --spacing-thumbnail-h: 80px;
   --spacing-footer-stack: 280px;
@@ -408,6 +413,24 @@ html[data-theme='light']
       margin-right: 0;
       width: 100%;
     }
+  }
+
+  /**
+   * App shell content column (`<main>` in `App.tsx`) — reserves the rest of the first screen, header excluded.
+   *
+   * Why: the shell is `min-h-screen` + `flex-col` with a `grow` content column, so while a route is still loading
+   * (lazy route chunk → `<Loading/>` fallback, or any short first paint) `grow` expands the content column to the
+   * bottom of the viewport and **pins the footer inside the first screen**. The moment the route content lands the
+   * footer is pushed out of the viewport, and Chrome books the whole visible footer area as a layout shift:
+   * measured 0.11–0.30 CLS on a 412x823 mobile profile (`/areas` 0.30, `/activity` 0.17, `/regions/bouldering` 0.11)
+   * against today's production build. Reserving the space up front keeps the footer below the fold from the very
+   * first paint, so nothing below the loading state can move.
+   *
+   * `svh` (not `vh`/`dvh`): the small viewport height does not change when the mobile URL bar hides/shows, so this
+   * reservation never triggers a reflow of its own.
+   */
+  .app-shell-main {
+    min-height: calc(100svh - var(--spacing-header));
   }
 
   .search-input {

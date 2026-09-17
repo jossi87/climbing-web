@@ -26,9 +26,14 @@ const App = () => {
           behind the nav, and samples the page content (cards, images) when the nav is over data.
         */}
         <div aria-hidden className={appShellLightBackdropStripClass} role='presentation' />
+        {/*
+          `app-shell-main` reserves the first screen (viewport minus header) for page content. Without it the shell's
+          `min-h-screen` + `grow` pin the footer inside the first viewport while a route is loading, and pushing it
+          out again once the content lands cost 0.11–0.30 CLS on mobile. See `.app-shell-main` in `index.css`.
+        */}
         <main
           id='main-content'
-          className='max-w-container relative z-[46] mx-auto flex w-full min-w-0 grow flex-col px-4 pt-0 pb-10 sm:px-6 sm:pt-0 sm:pb-10 lg:px-8 lg:pt-4 lg:pb-6 xl:pt-5 xl:pb-8'
+          className='app-shell-main max-w-container relative z-[46] mx-auto flex w-full min-w-0 grow flex-col px-4 pt-0 pb-10 sm:px-6 sm:pt-0 sm:pb-10 lg:px-8 lg:pt-4 lg:pb-6 xl:pt-5 xl:pb-8'
         >
           <Suspense
             fallback={

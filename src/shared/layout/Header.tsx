@@ -211,7 +211,7 @@ const Header = () => {
         role='presentation'
       />
       <div className='relative z-10'>
-        <div className='max-w-container mx-auto h-13 px-4'>
+        <div className='max-w-container h-header mx-auto px-4'>
           <div className='flex h-full items-center justify-between gap-x-4'>
             <div className='flex h-full min-w-0 flex-1 items-center gap-4'>
               <Link

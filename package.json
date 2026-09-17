@@ -13,7 +13,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@tailwindcss/vite": "^4.3.3",
-    "@tanstack/react-query-devtools": "^5.103.0",
+    "@tanstack/react-query-devtools": "^5.103.1",
     "@types/leaflet": "^1.9.22",
     "@types/node": "^26.5.1",
     "@types/react": "^19.3.0",
@@ -40,8 +40,8 @@
   "dependencies": {
     "@auth0/auth0-react": "^2.25.0",
     "@react-leaflet/core": "^3.0.0",
-    "@sentry/react": "^10.74.0",
-    "@tanstack/react-query": "^5.103.0",
+    "@sentry/react": "^10.75.0",
+    "@tanstack/react-query": "^5.103.1",
     "clsx": "^2.1.1",
     "flat": "^6.0.1",
     "heic2any": "^0.0.4",
@@ -51,7 +51,7 @@
     "leaflet.markercluster": "^1.5.3",
     "linkify-react": "^4.3.3",
     "linkifyjs": "^4.3.3",
-    "lucide-react": "^1.46.0",
+    "lucide-react": "^1.47.0",
     "lz-string": "^1.5.0",
     "pannellum": "^2.5.7",
     "react": "^19.3.0",

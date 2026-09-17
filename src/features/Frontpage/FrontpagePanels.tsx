@@ -1,4 +1,4 @@
-import { Fragment, type ReactNode } from 'react';
+import { Fragment, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Camera, Check, MessageSquare, Plus } from 'lucide-react';
 import Linkify from 'linkify-react';
@@ -364,6 +364,12 @@ function LocationInline({
  */
 const FEED_MOBILE_CAP = 5;
 const MEDIA_MOBILE_CAP = 6;
+/**
+ * Item counts the loading skeleton reserves (the WS maximum). Loaded panels pad back up to these with invisible
+ * spacers when a bucket returns fewer entries — see {@link feedRowSpacers}.
+ */
+const FEED_SKELETON_ROWS = 8;
+const MEDIA_SKELETON_TILES = 12;
 
 /**
  * Render an inline list of climber names as `Link`s to `/user/{id}`. English list join (`A`, `A & B`, `A, B & C`).
@@ -459,6 +465,7 @@ function FirstAscentsPanel({ items, isBouldering }: { items: FirstAscent[]; isBo
               </li>
             );
           })}
+          {feedRowSpacers(items.length)}
         </ul>
       )}
     </PanelCard>
@@ -521,6 +528,7 @@ function RecentAscentsPanel({ items }: { items: Ascent[] }) {
               </li>
             );
           })}
+          {feedRowSpacers(items.length)}
         </ul>
       )}
     </PanelCard>
@@ -660,6 +668,7 @@ function NewestMediaPanel({ items }: { items: NewestMedia[] }) {
               </Link>
             );
           })}
+          {mediaTileSpacers(tiles.length)}
         </div>
       )}
     </PanelCard>
@@ -797,8 +806,8 @@ function CommentsPanel({ items }: { items: LastComment[] }) {
  * matches the smaller subline / byline. Total content = ~32px mobile / ~33px sm+, matching the real row to the px
  * (was 35px before the headline was pinned to feed sizing).
  */
-const SkeletonFeedRow = ({ hideOnMobile = false }: { hideOnMobile?: boolean }) => (
-  <div className={cn(rowClass, 'animate-pulse', hideOnMobile && 'max-sm:hidden')}>
+const SkeletonFeedRow = ({ hideOnMobile = false, spacer = false }: { hideOnMobile?: boolean; spacer?: boolean }) => (
+  <div className={cn(rowClass, spacer ? 'invisible' : 'animate-pulse', hideOnMobile && 'max-sm:hidden')}>
     <div className='skeleton-bar h-8 w-8 shrink-0 rounded-full' />
     <div className={rowGridClass}>
       <div className={cn(rowLineClass, 'min-h-[17px] sm:min-h-[18px]')}>
@@ -814,11 +823,12 @@ const SkeletonFeedRow = ({ hideOnMobile = false }: { hideOnMobile?: boolean }) =
 );
 
 /** Newest Media — square tile placeholder; `hideOnMobile` mirrors `MEDIA_MOBILE_CAP`. */
-const SkeletonMediaTile = ({ hideOnMobile }: { hideOnMobile: boolean }) => (
+const SkeletonMediaTile = ({ hideOnMobile, spacer = false }: { hideOnMobile: boolean; spacer?: boolean }) => (
   <div
     className={cn(
       mediaTileSize,
-      'border-surface-border relative animate-pulse overflow-hidden rounded-lg border',
+      'border-surface-border relative overflow-hidden rounded-lg border',
+      spacer ? 'invisible' : 'animate-pulse',
       hideOnMobile && 'hidden sm:block',
     )}
   >
@@ -862,6 +872,36 @@ const SkeletonCommentRow = ({ index }: { index: number }) => (
   </div>
 );
 
+/**
+ * **Fill the gap between a thin payload and the reserved skeleton height.**
+ *
+ * The skeleton reserves the WS maximum (8 rows / 12 tiles), but a small region returns far fewer entries in one or
+ * more buckets — and every logged-in visitor browses *their own* region (`FrontpageController` →
+ * `getAuthenticatedFrontpage(userId)`), so a large share of mobile sessions gets a sparse payload. Without padding
+ * the panels collapse on settle and drag everything after them (footer included) up the page under the user's finger:
+ * measured **0.29 CLS** on the mobile frontpage, the same value CrUX reports for `/`
+ * (`node scripts/cwv-probe.mjs --sparse=2 --scroll=950 https://brattelinjer.no/`).
+ *
+ * `spacer` cells keep the skeleton's geometry but drop the pulse, so the reserved rows/tiles are never visible and a
+ * fuller payload can still grow the panel. The Comments panel is the last one in the stack, so it needs no padding:
+ * its growth/shrink only moves the footer, which `FrontpagePanels`' stack `min-height` already holds in place.
+ */
+const feedRowSpacers = (count: number) =>
+  Array.from({ length: Math.max(0, FEED_SKELETON_ROWS - count) }, (_, i) => {
+    const index = count + i;
+    return (
+      <li key={`pad-${index}`} className={index >= FEED_MOBILE_CAP ? 'max-sm:hidden' : undefined}>
+        <SkeletonFeedRow spacer />
+      </li>
+    );
+  });
+
+const mediaTileSpacers = (count: number) =>
+  Array.from({ length: Math.max(0, MEDIA_SKELETON_TILES - count) }, (_, i) => {
+    const index = count + i;
+    return <SkeletonMediaTile key={`pad-${index}`} hideOnMobile={index >= MEDIA_MOBILE_CAP} spacer />;
+  });
+
 /* ──────────────────────────── Public component ──────────────────────────── */
 
 type Props = {
@@ -900,6 +940,26 @@ export const FrontpagePanels = ({ frontpage, isLoading = false }: Props) => {
    *  the skeleton would briefly show "Newest Routes" before swapping to "Newest Boulders" on a bouldering site). */
   const isBouldering = !!useMeta()?.isBouldering;
 
+  /**
+   * **Skeleton height reservation.** The loading skeleton always reserves the maximum the WS returns (8 / 8 / 12 / 4
+   * entries), but a small region returns far less in one or more buckets — and every logged-in visitor browses their
+   * *own* region (`getAuthenticatedFrontpage(userId)`), so a large share of mobile sessions gets a sparse payload.
+   * Without this the panels collapse on settle and drag everything below them — footer included — up the page:
+   * measured **0.29 CLS** on the mobile frontpage with a sparse payload
+   * (`node scripts/cwv-probe.mjs --sparse=2 --scroll=950 https://brattelinjer.no/`), the same value CrUX reports for `/`.
+   *
+   * The height is read from the rendered skeleton (no magic numbers, and it tracks the responsive grid) and applied as
+   * `min-height` to the loaded stack — so a fuller payload can still grow, but a thinner one can no longer shrink it.
+   * Measured in a layout effect, i.e. before the browser paints the skeleton.
+   */
+  const stackRef = useRef<HTMLDivElement>(null);
+  const [reservedHeight, setReservedHeight] = useState<number>();
+  useLayoutEffect(() => {
+    if (isLoading && stackRef.current) {
+      setReservedHeight(stackRef.current.getBoundingClientRect().height);
+    }
+  }, [isLoading]);
+
   if (isLoading || !frontpage) {
     /**
      * Skeleton bodies live inside the **same `PanelCard`** the loaded state uses, so the panel frame (header,
@@ -907,7 +967,7 @@ export const FrontpagePanels = ({ frontpage, isLoading = false }: Props) => {
      * counts mirror what the WS returns: 8 / 8 / 12 / 4. Anything smaller and the layout visibly jumps on settle.
      */
     return (
-      <div className={panelStackClass}>
+      <div ref={stackRef} className={panelStackClass}>
         <div className={panelPairGridClass}>
           <PanelCard
             icon={<Check size={13} strokeWidth={2.25} />}
@@ -915,7 +975,7 @@ export const FrontpagePanels = ({ frontpage, isLoading = false }: Props) => {
             seeAllLabel='See more'
             seeMoreCategory='ticks'
           >
-            {[...Array(8)].map((_, i) => (
+            {[...Array(FEED_SKELETON_ROWS)].map((_, i) => (
               <SkeletonFeedRow key={i} hideOnMobile={i >= FEED_MOBILE_CAP} />
             ))}
           </PanelCard>
@@ -928,7 +988,7 @@ export const FrontpagePanels = ({ frontpage, isLoading = false }: Props) => {
             seeAllLabel='See more'
             seeMoreCategory='fa'
           >
-            {[...Array(8)].map((_, i) => (
+            {[...Array(FEED_SKELETON_ROWS)].map((_, i) => (
               <SkeletonFeedRow key={i} hideOnMobile={i >= FEED_MOBILE_CAP} />
             ))}
           </PanelCard>
@@ -941,7 +1001,7 @@ export const FrontpagePanels = ({ frontpage, isLoading = false }: Props) => {
           bodyClassName='p-3 sm:p-4'
         >
           <div className='grid grid-cols-3 gap-2 sm:grid-cols-4 sm:gap-2.5 md:grid-cols-6 md:gap-3'>
-            {[...Array(12)].map((_, i) => (
+            {[...Array(MEDIA_SKELETON_TILES)].map((_, i) => (
               <SkeletonMediaTile key={i} hideOnMobile={i >= MEDIA_MOBILE_CAP} />
             ))}
           </div>
@@ -966,7 +1026,11 @@ export const FrontpagePanels = ({ frontpage, isLoading = false }: Props) => {
   const { fas, ticks, media, comments } = readBuckets(frontpage);
 
   return (
-    <div className={panelStackClass}>
+    <div
+      className={panelStackClass}
+      /** See `reservedHeight`: keeps the stack from collapsing under a sparse payload. */
+      style={reservedHeight ? { minHeight: reservedHeight } : undefined}
+    >
       {/* Recent Ascents leads — higher cadence and chronologically "what just happened", so it earns the left/top slot. First Ascents follow as the rarer, more curated companion. */}
       <div className={panelPairGridClass}>
         <RecentAscentsPanel items={ticks} />
