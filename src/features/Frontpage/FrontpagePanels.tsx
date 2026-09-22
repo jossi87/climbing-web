@@ -209,18 +209,40 @@ const timeAgoClass =
  *   slate-400 → location (left subline; the "where")
  *   slate-500 → climber + timestamp (right column; quieter context)
  *
- * `max-w-[55%]` caps how much the name can steal from the location on narrow panels. `leading-tight` keeps the
- * line box at 15px so it doesn't out-grow the location `<p>` (see {@link timeAgoClass}).
+ * **Box = whatever the location leaves behind** (`min-w-0` + the default `flex-shrink: 1`) — *not* a fixed share of
+ * the row. The previous `shrink-0 max-w-[55%]` capped the byline at 55% even when the location needed only a sliver
+ * of the row, so a two-climber list lost its last name to an ellipsis with ~45% of the row sitting empty to the
+ * right of it (user report: `Kristian Sørensen & …` with room for a full three-word name). Sharing the shrink with
+ * the location means: names fit → they render in full, right-aligned; names don't fit → both sides truncate and the
+ * "…" is pinned to the row edge, never floating mid-row.
+ *
+ * `leading-tight` keeps the line box at 15px so it doesn't out-grow the location `<p>` (see {@link timeAgoClass}).
+ * The Comments panel re-adds a capped, non-shrinking variant at its call site — there the byline shares line 2 with
+ * the **wrapping** comment body, which has to keep its own share of the row.
  */
 const bylineRightClass =
-  'shrink-0 max-w-[55%] truncate whitespace-nowrap text-right text-[11px] font-normal leading-tight tracking-tight text-slate-500 sm:text-[12px]';
+  'min-w-0 truncate whitespace-nowrap text-right text-[11px] font-normal leading-tight tracking-tight text-slate-500 sm:text-[12px]';
 /**
- * **Expanded hit box for problem name links** — `inline-block` with `py-0.5 -my-0.5` adds 4px of invisible padding
- * top and bottom that grows the clickable area without changing the visual spacing (the negative margin cancels the
- * padding's effect on layout). Combined with the reduced `space-y` between lines, this makes the links much easier
- * to tap without making the row feel taller.
+ * **Expanded hit box for inline links in the feed rows** — `py-0.5` adds 4px of invisible padding top and bottom
+ * that grows the clickable area. On a non-replaced inline element vertical padding does **not** feed into the line
+ * box, so the row keeps exactly the height the skeleton reserves (see {@link SkeletonFeedRow}).
+ *
+ * **Deliberately *not* `inline-block`.** Every feed cell is `truncate` (`overflow: hidden` + `text-overflow:
+ * ellipsis`), and Chrome resolves the ellipsis against the last **non-atomic** inline: an atomic inline that doesn't
+ * fit whole is cut *before* its box and the rest of the cell is left blank. With `inline-block` climber names the FA
+ * byline rendered as `Kristian Sørensen & …` followed by ~45% of empty row (the "looks weird" report), and a long
+ * single-link route name lost its ellipsis altogether. Plain inline text is cut at the clip edge, so the "…" always
+ * lands exactly where the cell ends.
+ *
+ * Tap area is unchanged in practice: these links live in cells that clip overflow, so on a 15–17px line box the
+ * padding was only partly hittable either way.
  */
-const problemLinkClass = cn(designContract.typography.feed.routeTitle, 'inline-block py-0.5 -my-0.5');
+const hitBoxLink = 'py-0.5';
+/**
+ * Route-name link inside the truncating headline `<p>` — same hit box, so long names ellipsize at the cell edge
+ * instead of being chopped without an ellipsis.
+ */
+const problemLinkClass = cn(designContract.typography.feed.routeTitle, hitBoxLink);
 
 /**
  * **Two-tier hierarchy** — bright headline, muted everything else (slate-50 headline, slate-400 secondary).
@@ -238,12 +260,6 @@ const sublineClass = 'm-0 min-w-0 truncate text-[11.5px] leading-tight text-slat
  */
 const commentBodyClass =
   'm-0 line-clamp-2 text-[11.5px] leading-tight text-slate-300 [overflow-wrap:anywhere] sm:text-[12px]';
-/**
- * **Expanded hit box for inline links** — `inline-block py-0.5 -my-0.5` adds 4px of invisible padding top and bottom
- * that grows the clickable area without changing the visual spacing (the negative margin cancels the padding's effect
- * on layout). Applied to climber names, area links, and any other inline link in the feed rows.
- */
-const hitBoxLink = 'inline-block py-0.5 -my-0.5';
 /** Climber-name links inside `NameList` — `slate-500` to match the trailing right-column tone (see {@link bylineRightClass}). */
 const nameLinkClass = cn('font-normal text-slate-500 antialiased transition-colors hover:text-brand', hitBoxLink);
 const mutedLocationLinkClass = cn(
@@ -758,11 +774,16 @@ function CommentsPanel({ items }: { items: LastComment[] }) {
                     <div className={rowLineClass}>
                       <p className={commentBodyClass}>{a.comment ? <Linkify>{a.comment}</Linkify> : null}</p>
                       {u ? (
-                        <span className={bylineRightClass}>
+                        <span className={cn(bylineRightClass, 'max-w-[55%] shrink-0')}>
                           {/*
                             Commenter name on the right (line 2) — same `slate-500` byline tone as FA / Recent so
                             the trailing right column reads as one unified channel (timeAgo above, name below)
                             across all three feed panels.
+
+                            Unlike FA / Recent, this row's line 2 also holds the **wrapping** comment body, so the
+                            byline gets a fixed, non-shrinking share again (see {@link bylineRightClass}): without
+                            the cap a long comment squeezes the commenter's name to "Kri…" while the body still has
+                            room to wrap.
                           */}
                           <NameList users={[u]} />
                         </span>
