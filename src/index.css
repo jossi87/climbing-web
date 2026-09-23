@@ -428,9 +428,30 @@ html[data-theme='light']
    *
    * `svh` (not `vh`/`dvh`): the small viewport height does not change when the mobile URL bar hides/shows, so this
    * reservation never triggers a reflow of its own.
+   *
+   * **`lg` and up: no reservation at all.** The reservation is a first-paint shim, but it permanently costs a whole
+   * screen: `header + main == 100svh`, so the footer always begins *at* the fold (~246px of scroll for a footer that
+   * is never on screen) and, whenever the settled content is shorter than the reservation, the leftover is empty
+   * canvas above it. On a 4K/125% window (viewport 3054x1559, container capped at 1400) the frontpage needs ~1060px
+   * but reserved 1507px → ~400px dead band plus a fully hidden footer, which is what reads as "broken" on a big
+   * monitor. Measured in headless Chrome: `main` 1400x1507 border box (content box 1336x1455 — the numbers reported
+   * from the 4K session), `footerTop == innerHeight`, `scrollHeight = innerHeight + 246`.
+   *
+   * From `lg` up, `min-h-screen` + `grow` bottom-anchor the footer on their own (standard sticky footer): a short
+   * page fits the viewport exactly with no reservation, a tall page scrolls exactly as before (the reservation was
+   * already inert once content exceeded it). The CLS trade-off is negligible at that width: the same footer shift
+   * scores ~0.01 against a 3054x1559 viewport (impact fraction ≈ footer area / viewport area) versus ~0.4 on a
+   * 504x823 phone viewport — and the 0.11–0.30 numbers above were measured on the phone profile, where the
+   * reservation therefore stays.
    */
   .app-shell-main {
     min-height: calc(100svh - var(--spacing-header));
+  }
+
+  @media (min-width: 1024px) {
+    .app-shell-main {
+      min-height: auto;
+    }
   }
 
   .search-input {

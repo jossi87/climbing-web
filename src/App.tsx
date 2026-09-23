@@ -27,9 +27,11 @@ const App = () => {
         */}
         <div aria-hidden className={appShellLightBackdropStripClass} role='presentation' />
         {/*
-          `app-shell-main` reserves the first screen (viewport minus header) for page content. Without it the shell's
-          `min-h-screen` + `grow` pin the footer inside the first viewport while a route is loading, and pushing it
-          out again once the content lands cost 0.11–0.30 CLS on mobile. See `.app-shell-main` in `index.css`.
+          `.app-shell-main` reserves the first screen (viewport minus header) for page content **below `lg`**. Without
+          it the shell's `min-h-screen` + `grow` pin the footer inside the first viewport while a route is loading,
+          and pushing it out again once the content lands cost 0.11–0.30 CLS on mobile. From `lg` up `grow` alone
+          bottom-anchors the footer (a reservation there only added a dead band and hid the footer on tall screens).
+          See `.app-shell-main` in `index.css`.
         */}
         <main
           id='main-content'
