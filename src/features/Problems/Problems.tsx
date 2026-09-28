@@ -4,10 +4,11 @@ import { useMeta } from '../../shared/components/Meta/context';
 import { downloadTocXlsx, useAccessToken, useToc } from '../../api';
 import TableOfContents from '../../shared/components/TableOfContents';
 import { isFilterSectionActive, useFilterState } from './reducer';
-import { FilterContext, FilterForm } from '../../shared/components/FilterForm';
+import { describeFilterResult } from './filterSummary';
+import { ActiveFilterSummary, FilterContext, FilterForm } from '../../shared/components/FilterForm';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { ProblemsMap } from '../../shared/components/TableOfContents/ProblemsMap';
-import { Filter, Download, Edit, Trash2, Database } from 'lucide-react';
+import { Filter, Download, Database } from 'lucide-react';
 import { Card, SectionHeader } from '../../shared/ui';
 import {
   climbingRouteUsesPassiveGear,
@@ -75,9 +76,10 @@ type FilterArea = {
 
 export const Problems = ({ filterOpen }: Props) => {
   const meta = useMeta();
-  const [state, dispatch] = useFilterState({
-    visible: !!filterOpen || window.innerWidth > 991,
-  });
+  // Collapsed by default (only the `/filter` route opens the panel on load): the header's “Showing n routes”
+  // line and the chips beside the Filter button already say what the list is filtered on, so the list gets the
+  // space back on every screen size.
+  const [state, dispatch] = useFilterState({ visible: !!filterOpen });
 
   const accessToken = useAccessToken();
   const { data: loadedData, status } = useToc();
@@ -89,18 +91,7 @@ export const Problems = ({ filterOpen }: Props) => {
     }
   }, [dispatch, loadedData, status]);
 
-  const {
-    totalRegions,
-    totalAreas,
-    totalSectors,
-    totalProblems,
-    filteredData,
-    filteredRegions,
-    filteredAreas,
-    filteredSectors,
-    filteredProblems,
-    visible,
-  } = state;
+  const { totalRegions, totalAreas, totalSectors, totalProblems, filteredData, visible } = state;
 
   if (status === 'pending' || totalProblems === 0) {
     return <Loading />;
@@ -115,6 +106,9 @@ export const Problems = ({ filterOpen }: Props) => {
   const closedFilterToggleClass = anyFilterActive
     ? 'border-brand-border bg-brand/20 text-brand hover:bg-brand/30 light:border-brand light:bg-brand/25 light:text-amber-800 light:hover:bg-brand/40'
     : 'border-surface-border bg-surface-raised hover:bg-surface-raised-hover text-slate-300 hover:text-slate-200';
+
+  /** The header subheader keeps listing what is available; this is how much of it survives the filter. */
+  const filterResult = anyFilterActive ? describeFilterResult(state, things) : undefined;
 
   const areas: FilterArea[] =
     filteredData?.regions?.flatMap((region) => {
@@ -213,62 +207,59 @@ export const Problems = ({ filterOpen }: Props) => {
 
       <div className='w-full min-w-0'>
         <Card flush className='min-w-0 border-0'>
-          <div className='flex flex-wrap items-start justify-between gap-3 p-4 sm:p-5'>
-            <SectionHeader title={title} icon={Database} subheader={totalDescription} />
-            <div className='flex items-center gap-2'>
-              <button
-                onClick={() => dispatch({ action: 'toggle-filter' })}
-                className={cn(
-                  'inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[12px] leading-none font-medium transition-colors sm:text-[13px]',
-                  visible ? 'bg-surface-hover border-surface-border text-slate-100' : closedFilterToggleClass,
-                )}
-              >
-                <Filter size={12} /> Filter
-              </button>
-              <button
-                onClick={() => {
-                  setIsSaving(true);
-                  downloadTocXlsx(accessToken).finally(() => {
-                    setIsSaving(false);
-                  });
-                }}
-                disabled={isSaving}
-                className='border-surface-border bg-surface-raised hover:bg-surface-raised-hover inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[12px] leading-none font-medium text-slate-300 transition-colors hover:text-slate-200 disabled:cursor-wait disabled:opacity-50 sm:text-[13px]'
-              >
-                <Download size={12} /> {isSaving ? 'Downloading...' : 'Download'}
-              </button>
+          <div className='space-y-3 p-4 sm:p-5'>
+            <div className='flex flex-wrap items-start justify-between gap-3'>
+              <SectionHeader
+                className='mb-0'
+                title={title}
+                icon={Database}
+                subheader={totalDescription}
+                description={
+                  filterResult && (
+                    <span
+                      className={cn(
+                        'tabular-nums',
+                        filterResult.tone === 'warning' && 'light:text-amber-800 font-medium text-amber-300/90',
+                      )}
+                    >
+                      {filterResult.text}
+                    </span>
+                  )
+                }
+              />
+              <div className='flex items-center gap-2'>
+                <button
+                  onClick={() => dispatch({ action: 'toggle-filter' })}
+                  className={cn(
+                    'inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[12px] leading-none font-medium transition-colors sm:text-[13px]',
+                    visible ? 'bg-surface-hover border-surface-border text-slate-100' : closedFilterToggleClass,
+                  )}
+                >
+                  <Filter size={12} /> Filter
+                </button>
+                <button
+                  onClick={() => {
+                    setIsSaving(true);
+                    downloadTocXlsx(accessToken).finally(() => {
+                      setIsSaving(false);
+                    });
+                  }}
+                  disabled={isSaving}
+                  className='border-surface-border bg-surface-raised hover:bg-surface-raised-hover inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[12px] leading-none font-medium text-slate-300 transition-colors hover:text-slate-200 disabled:cursor-wait disabled:opacity-50 sm:text-[13px]'
+                >
+                  <Download size={12} /> {isSaving ? 'Downloading...' : 'Download'}
+                </button>
+              </div>
             </div>
+
+            {/* The panel below *is* the filter UI while it is open; repeating the chips here would be noise. */}
+            {anyFilterActive && !visible && <ActiveFilterSummary />}
           </div>
 
           {visible && (
             <div className='px-4 pb-2 sm:px-5'>
               <div className='bg-surface-card rounded-lg p-4'>
                 <FilterForm />
-              </div>
-            </div>
-          )}
-
-          {!visible && filteredProblems > 0 && (
-            <div className='px-4 pb-2 sm:px-5'>
-              <div className='light:border-amber-600/35 light:bg-amber-100/65 flex flex-col justify-between gap-3 rounded-lg border border-orange-500/20 bg-orange-500/10 p-3 sm:flex-row sm:items-center'>
-                <div className='light:text-amber-900 text-[12px] text-orange-300 sm:text-[13px]'>
-                  Active filter hides{' '}
-                  {description(filteredRegions, filteredAreas, filteredSectors, filteredProblems, things)}.
-                </div>
-                <div className='flex shrink-0 flex-wrap items-center gap-2'>
-                  <button
-                    onClick={() => dispatch({ action: 'open-filter' })}
-                    className='light:border-amber-600/55 light:bg-amber-200/85 light:text-amber-900 light:hover:bg-amber-300/85 inline-flex h-8 items-center gap-1.5 rounded-full border border-orange-400/35 bg-orange-500/15 px-2.5 text-[12px] leading-none font-medium text-orange-300 transition-colors hover:bg-orange-500/25 sm:text-[13px]'
-                  >
-                    <Edit size={12} /> Edit filter
-                  </button>
-                  <button
-                    onClick={() => dispatch({ action: 'reset', section: 'all' })}
-                    className='border-surface-border bg-surface-raised hover:bg-surface-raised-hover light:border-slate-400/70 light:bg-slate-100 light:hover:bg-slate-200/80 inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[12px] leading-none font-medium text-slate-300 transition-colors hover:text-slate-200 sm:text-[13px]'
-                  >
-                    <Trash2 size={12} /> Clear
-                  </button>
-                </div>
               </div>
             </div>
           )}

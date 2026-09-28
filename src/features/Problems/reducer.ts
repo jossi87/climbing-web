@@ -7,11 +7,17 @@ import { captureSentryException, captureSentryMessage } from '../../utils/sentry
 import { applyFilterDiff, decodeFilterHash, encodeFilterHash, filterDiff } from './filterHash';
 
 type FilterResults = {
+  /** The catalogue with everything the active filter drops taken out — i.e. what the list renders. */
   filteredData: components['schemas']['Toc'];
-  filteredRegions: number;
-  filteredAreas: number;
-  filteredSectors: number;
-  filteredProblems: number;
+  /**
+   * How much the active filter **dropped**, so the UI reports “showing” as `total* - hidden*`.
+   * (Named after what it counts: these used to be `filtered*`, which read as “what survived filtering” and
+   * had the header claim “Showing 2437 of 2443 routes · 6 hidden” for a filter that showed 6 routes.)
+   */
+  hiddenRegions: number;
+  hiddenAreas: number;
+  hiddenSectors: number;
+  hiddenProblems: number;
 };
 
 type FilterInputs = {
@@ -437,10 +443,10 @@ const filter = (state: State): State => {
   return {
     ...state,
     filteredData,
-    filteredRegions: filteredOut.regions,
-    filteredAreas: filteredOut.areas,
-    filteredSectors: filteredOut.sectors,
-    filteredProblems: filteredOut.problems,
+    hiddenRegions: filteredOut.regions,
+    hiddenAreas: filteredOut.areas,
+    hiddenSectors: filteredOut.sectors,
+    hiddenProblems: filteredOut.problems,
   };
 };
 
@@ -902,10 +908,10 @@ export const useFilterState = (init?: Partial<UiState>) => {
 
     // Filtered data
     filteredData: {},
-    filteredRegions: 0,
-    filteredAreas: 0,
-    filteredSectors: 0,
-    filteredProblems: 0,
+    hiddenRegions: 0,
+    hiddenAreas: 0,
+    hiddenSectors: 0,
+    hiddenProblems: 0,
 
     // Customizations
     ...init,
