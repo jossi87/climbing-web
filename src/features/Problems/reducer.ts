@@ -1,11 +1,10 @@
-import { useCallback, useEffect, useReducer } from 'react';
+import { useCallback, useEffect, useReducer, useState } from 'react';
 import { neverGuard } from '../../utils/neverGuard';
 import { useGrades, useMeta } from '../../shared/components/Meta/context';
 import { itemLocalStorage } from '../../utils/use-local-storage';
 import type { components } from '../../@types/buldreinfo/swagger';
-import { flatten, unflatten } from 'flat';
 import { captureSentryException, captureSentryMessage } from '../../utils/sentry';
-import { decodeFilterHash, encodeFilterHash } from './filterHash';
+import { applyFilterDiff, decodeFilterHash, encodeFilterHash, filterDiff } from './filterHash';
 
 type FilterResults = {
   filteredData: components['schemas']['Toc'];
@@ -68,11 +67,6 @@ const DEFAULT_INITIAL_FILTER: FilterInputs = {
   filterSectorOrientations: {},
 } as const;
 
-const FLAT_FILTER: Readonly<Record<string, unknown>> = flatten(DEFAULT_INITIAL_FILTER);
-
-const FILTER_INPUT_KEYS: Readonly<string[]> = Object.keys(FLAT_FILTER);
-const FILTER_INPUT_KEYS_SET: Readonly<Set<string>> = new Set(FILTER_INPUT_KEYS);
-
 type FilterState = FilterInputs & FilterResults;
 
 type UiState = {
@@ -89,6 +83,33 @@ type DataState = {
 };
 
 export type State = UiState & DataState & FilterState;
+
+/**
+ * The filter selection carried by `state`, i.e. everything that a shared filter link reproduces.
+ *
+ * Enumerated explicitly instead of being derived from the state keys so that a field added to
+ * {@link FilterInputs} has to be added here too (the compiler enforces it) — the previous
+ * "pick the state entries whose *flattened* key matches a default key" approach silently dropped
+ * fields whose default is a non-empty object, so e.g. pitch filters could never be shared.
+ */
+export const filterInputsOf = (state: State): FilterInputs => ({
+  filterRegionIds: state.filterRegionIds,
+  filterAreaIds: state.filterAreaIds,
+  filterOnlySunOnWallAt: state.filterOnlySunOnWallAt,
+  filterOnlyShadeOnWallAt: state.filterOnlyShadeOnWallAt,
+  filterSectorOrientations: state.filterSectorOrientations,
+  filterGradeLow: state.filterGradeLow,
+  filterGradeHigh: state.filterGradeHigh,
+  filterFaYearLow: state.filterFaYearLow,
+  filterFaYearHigh: state.filterFaYearHigh,
+  filterStartingAltitudeLow: state.filterStartingAltitudeLow,
+  filterStartingAltitudeHigh: state.filterStartingAltitudeHigh,
+  filterTypes: state.filterTypes,
+  filterPitches: state.filterPitches,
+  filterHideTicked: state.filterHideTicked,
+  filterOnlyAdmin: state.filterOnlyAdmin,
+  filterOnlySuperAdmin: state.filterOnlySuperAdmin,
+});
 
 export type ResetField =
   | 'all'
@@ -793,18 +814,76 @@ const wrappedReducer: typeof reducer = (state, update) => {
 };
 
 const parseHash = (hash: string): Partial<FilterInputs> => {
-  const obj = decodeFilterHash(hash);
-  if (!obj) {
+  const diff = decodeFilterHash(hash);
+  if (!diff) {
     throw new Error('Invalid filter hash');
   }
-  // TODO: Validate the object
-  const unflattened: Partial<FilterInputs> = unflatten(obj, { object: true });
-  return unflattened;
+
+  return applyFilterDiff(diff, DEFAULT_INITIAL_FILTER) as Partial<FilterInputs>;
+};
+
+/** The filter selection stored on this device. */
+const selectionFromStorage = (): FilterInputs => ({
+  filterRegionIds: storageItems.regionIds.get(),
+  filterAreaIds: storageItems.areaIds.get(),
+  filterOnlySunOnWallAt: storageItems.onlySunOnWallAt.get(),
+  filterOnlyShadeOnWallAt: storageItems.onlyShadeOnWallAt.get(),
+  filterSectorOrientations: storageItems.sectorOrientations.get(),
+  filterGradeHigh: storageItems.gradeHigh.get(),
+  filterGradeLow: storageItems.gradeLow.get(),
+  filterFaYearHigh: storageItems.faYearHigh.get(),
+  filterFaYearLow: storageItems.faYearLow.get(),
+  filterStartingAltitudeHigh: storageItems.startingAltitudeHigh.get(),
+  filterStartingAltitudeLow: storageItems.startingAltitudeLow.get(),
+  filterHideTicked: storageItems.hideTicked.get(),
+  filterOnlyAdmin: storageItems.onlyAdmin.get(),
+  filterOnlySuperAdmin: storageItems.onlySuperAdmin.get(),
+  filterPitches: storageItems.pitches.get(),
+  filterTypes: storageItems.types.get(),
+});
+
+type InitialSelection = {
+  selection: FilterInputs;
+  /** The shared filter link (`#…`) the selection was read from, if the page was opened with one. */
+  sharedHash: string | null;
+  /** Set when the page was opened with a hash that is not a valid filter link. */
+  error: unknown;
+};
+
+/**
+ * Resolves the selection a page load starts from: a shared filter link when the URL has one,
+ * otherwise whatever this device remembered.
+ *
+ * This is deliberately resolved during the first render rather than from an effect: the effect
+ * that mirrors the state back into the URL runs before an effect that reads the hash, so
+ * loading from an effect meant the URL was reset to "no filters" first and the shared link was
+ * never read — the recipient ended up on their own (or, in a fresh browser, no) filters.
+ */
+const resolveInitialSelection = (): InitialSelection => {
+  const { hash } = window.location;
+
+  if (hash) {
+    try {
+      return {
+        selection: { ...DEFAULT_INITIAL_FILTER, ...parseHash(hash) },
+        sharedHash: hash,
+        error: null,
+      };
+    } catch (error) {
+      return { selection: selectionFromStorage(), sharedHash: hash, error };
+    }
+  }
+
+  return { selection: selectionFromStorage(), sharedHash: null, error: null };
 };
 
 export const useFilterState = (init?: Partial<UiState>) => {
   const { mapping } = useGrades();
   const { isAdmin, isSuperAdmin } = useMeta();
+
+  // Resolved once during the first render (see `resolveInitialSelection`), before the URL is
+  // written back and before anything is filtered.
+  const [initial] = useState(resolveInitialSelection);
 
   const [state, dispatch] = useReducer(wrappedReducer, {
     visible: false,
@@ -815,7 +894,11 @@ export const useFilterState = (init?: Partial<UiState>) => {
     totalProblems: 0,
     unfilteredData: {},
 
-    ...DEFAULT_INITIAL_FILTER,
+    ...initial.selection,
+    // Admin filters are dropped for visitors without the matching privileges, both when coming
+    // from a shared link and when coming from storage.
+    filterOnlyAdmin: isAdmin && !!initial.selection.filterOnlyAdmin,
+    filterOnlySuperAdmin: isSuperAdmin && !!initial.selection.filterOnlySuperAdmin,
 
     // Filtered data
     filteredData: {},
@@ -833,28 +916,24 @@ export const useFilterState = (init?: Partial<UiState>) => {
   }, [mapping]);
 
   useEffect(() => {
-    // Pull the input data out from the huge state object. This is pretty
-    // inefficient, but we could address this in the future by splitting the
-    // state into separate reducers instead of one giant object.
-    const inputState = Object.entries(state)
-      .filter(([key]) => FILTER_INPUT_KEYS_SET.has(key))
-      .reduce<Partial<FilterInputs>>((acc, [k, v]) => ({ ...acc, [k]: v }), {} satisfies Partial<FilterInputs>);
+    // Report how the page was opened. The selection itself was already read from the hash during
+    // the first render (`resolveInitialSelection`), so this is not affected by the URL being
+    // rewritten below.
+    if (initial.sharedHash) {
+      captureSentryMessage('filter-hash', { hash: initial.sharedHash });
+    }
+    if (initial.error) {
+      console.warn('Failed to parse filter hash', initial.error);
+      captureSentryException(initial.error, { hash: initial.sharedHash });
+    }
+  }, [initial]);
 
-    // We're trying to construct a minimal diff between the current filter and
-    // the default filter. The simplest way to do this is by flattening the two
-    // objects and comparing the keys (so we don't have to do any recursion).
-    const flattenedInput: Record<string, unknown> = flatten(inputState);
-    const minimalDiffEntries = Object.entries(flattenedInput).filter(([k, filterValue]) => {
-      if (!!filterValue && typeof filterValue === 'object') {
-        return Object.keys(filterValue).length > 0;
-      }
-
-      const defaultValue = FLAT_FILTER[k] ?? false;
-      return filterValue !== undefined && filterValue !== defaultValue;
-    });
-
-    const out = encodeFilterHash(Object.fromEntries(minimalDiffEntries));
-    history.replaceState(undefined, '', `#${out}`);
+  useEffect(() => {
+    // Mirror the filter state into the URL so the address bar (and therefore a copied URL) always
+    // reproduces what is on screen. Only the fields that deviate from the defaults are encoded,
+    // so an unfiltered page ends up with an empty hash again.
+    const out = encodeFilterHash(filterDiff(filterInputsOf(state), DEFAULT_INITIAL_FILTER));
+    window.history.replaceState(undefined, '', `#${out}`);
   }, [state]);
 
   const loadFromHash = useCallback(
@@ -892,43 +971,6 @@ export const useFilterState = (init?: Partial<UiState>) => {
       window.removeEventListener('hashchange', onHashChange);
     };
   }, [loadFromHash]);
-
-  const loadFromLocalStorage = useCallback(() => {
-    const partial: Partial<FilterInputs> = {
-      // Information about the filters
-      filterRegionIds: storageItems.regionIds.get(),
-      filterAreaIds: storageItems.areaIds.get(),
-      filterOnlySunOnWallAt: storageItems.onlySunOnWallAt.get(),
-      filterOnlyShadeOnWallAt: storageItems.onlyShadeOnWallAt.get(),
-      filterSectorOrientations: storageItems.sectorOrientations.get(),
-      filterGradeHigh: storageItems.gradeHigh.get(),
-      filterGradeLow: storageItems.gradeLow.get(),
-      filterFaYearHigh: storageItems.faYearHigh.get(),
-      filterFaYearLow: storageItems.faYearLow.get(),
-      filterStartingAltitudeHigh: storageItems.startingAltitudeHigh.get(),
-      filterStartingAltitudeLow: storageItems.startingAltitudeLow.get(),
-      filterHideTicked: storageItems.hideTicked.get(),
-      filterOnlyAdmin: isAdmin && storageItems.onlyAdmin.get(),
-      filterOnlySuperAdmin: isSuperAdmin && storageItems.onlySuperAdmin.get(),
-      filterPitches: storageItems.pitches.get(),
-      filterTypes: storageItems.types.get(),
-    };
-
-    dispatch({ action: 'init-filter-state', ...partial });
-  }, [isAdmin, isSuperAdmin]);
-
-  useEffect(() => {
-    if (window.location.hash) {
-      captureSentryMessage('filter-hash', { hash: window.location.hash });
-      loadFromHash(window.location.hash).catch((e) => {
-        window.history.replaceState(undefined, '', '');
-        console.warn(e);
-        loadFromLocalStorage();
-      });
-    } else {
-      loadFromLocalStorage();
-    }
-  }, [loadFromHash, loadFromLocalStorage]);
 
   return [state, dispatch] as const;
 };
