@@ -3,7 +3,7 @@ import { Loading } from '../../shared/ui/StatusWidgets';
 import { useMeta } from '../../shared/components/Meta/context';
 import { downloadTocXlsx, useAccessToken, useToc } from '../../api';
 import TableOfContents from '../../shared/components/TableOfContents';
-import { useFilterState } from './reducer';
+import { isFilterSectionActive, useFilterState } from './reducer';
 import { FilterContext, FilterForm } from '../../shared/components/FilterForm';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { ProblemsMap } from '../../shared/components/TableOfContents/ProblemsMap';
@@ -15,6 +15,7 @@ import {
   formatRouteTypeLabel,
 } from '../../utils/routeTradGear';
 import { formatFaDisplay } from '../../utils/firstAscentDisplay';
+import { cn } from '../../lib/utils';
 
 type Props = { filterOpen?: boolean };
 
@@ -108,6 +109,12 @@ export const Problems = ({ filterOpen }: Props) => {
   const title = meta.isBouldering ? 'Problems' : 'Routes';
   const things = meta.isBouldering ? 'problems' : 'routes';
   const totalDescription = description(totalRegions, totalAreas, totalSectors, totalProblems, things);
+
+  /** Any filter section deviating from the defaults — brand “on” affordance for the toolbar toggle. */
+  const anyFilterActive = isFilterSectionActive(state, 'all');
+  const closedFilterToggleClass = anyFilterActive
+    ? 'border-brand-border bg-brand/20 text-brand hover:bg-brand/30 light:border-brand light:bg-brand/25 light:text-amber-800 light:hover:bg-brand/40'
+    : 'border-surface-border bg-surface-raised hover:bg-surface-raised-hover text-slate-300 hover:text-slate-200';
 
   const areas: FilterArea[] =
     filteredData?.regions?.flatMap((region) => {
@@ -211,11 +218,10 @@ export const Problems = ({ filterOpen }: Props) => {
             <div className='flex items-center gap-2'>
               <button
                 onClick={() => dispatch({ action: 'toggle-filter' })}
-                className={
-                  visible
-                    ? 'bg-surface-hover border-surface-border inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[12px] leading-none font-medium text-slate-100 transition-colors sm:text-[13px]'
-                    : 'border-surface-border bg-surface-raised hover:bg-surface-raised-hover inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[12px] leading-none font-medium text-slate-300 transition-colors hover:text-slate-200 sm:text-[13px]'
-                }
+                className={cn(
+                  'inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[12px] leading-none font-medium transition-colors sm:text-[13px]',
+                  visible ? 'bg-surface-hover border-surface-border text-slate-100' : closedFilterToggleClass,
+                )}
               >
                 <Filter size={12} /> Filter
               </button>

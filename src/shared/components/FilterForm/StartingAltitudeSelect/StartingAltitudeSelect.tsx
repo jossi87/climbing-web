@@ -1,6 +1,10 @@
 import { useFilter } from '../context';
 import { ChevronDown } from 'lucide-react';
 
+/**
+ * `0` is the "no bound" value for both ends of the range (see the problems reducer), so
+ * each select offers an explicit "Any" option instead of a bound that is not applied.
+ */
 export const StartingAltitudeSelect = () => {
   const { filterStartingAltitudeLow, filterStartingAltitudeHigh, dispatch } = useFilter();
 
@@ -8,8 +12,9 @@ export const StartingAltitudeSelect = () => {
   const maxAlt = 1000;
   const step = 25;
 
-  const low = filterStartingAltitudeLow ?? minAlt;
-  const high = filterStartingAltitudeHigh ?? maxAlt;
+  // Bounds used to build the option lists (the other select's *effective* bound).
+  const low = filterStartingAltitudeLow || minAlt;
+  const high = filterStartingAltitudeHigh || maxAlt;
 
   const altitudeRange = Array.from({ length: (maxAlt - minAlt) / step + 1 }, (_, i) => minAlt + i * step);
 
@@ -19,7 +24,7 @@ export const StartingAltitudeSelect = () => {
         <div className='relative flex-1'>
           <select
             className='bg-surface-nav border-surface-border type-body focus:border-brand w-full appearance-none rounded-md border px-3 py-1.5 pr-8 focus:outline-none'
-            value={low}
+            value={filterStartingAltitudeLow}
             onChange={(e) => {
               dispatch({
                 action: 'set-starting-altitude',
@@ -27,8 +32,10 @@ export const StartingAltitudeSelect = () => {
               });
             }}
           >
+            <option value={0}>Any</option>
+            {/* Inclusive bounds (`<=` / `>=`) so “500m – 500m” is selectable; 0m stays the “Any” option. */}
             {altitudeRange
-              .filter((value) => value < high)
+              .filter((value) => value > minAlt && value <= high)
               .map((alt) => (
                 <option key={alt} value={alt}>
                   {alt}m
@@ -43,7 +50,7 @@ export const StartingAltitudeSelect = () => {
         <div className='relative flex-1'>
           <select
             className='bg-surface-nav border-surface-border type-body focus:border-brand w-full appearance-none rounded-md border px-3 py-1.5 pr-8 focus:outline-none'
-            value={high}
+            value={filterStartingAltitudeHigh}
             onChange={(e) => {
               dispatch({
                 action: 'set-starting-altitude',
@@ -52,12 +59,13 @@ export const StartingAltitudeSelect = () => {
             }}
           >
             {altitudeRange
-              .filter((value) => value > low)
+              .filter((value) => value > minAlt && value >= low)
               .map((alt) => (
                 <option key={alt} value={alt}>
                   {alt}m
                 </option>
               ))}
+            <option value={0}>Any</option>
           </select>
           <ChevronDown
             size={14}

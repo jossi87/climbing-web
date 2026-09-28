@@ -37,6 +37,15 @@ type FilterInputs = {
   filterOnlySuperAdmin: boolean;
 };
 
+/**
+ * Default (unfiltered) state of the filter form.
+ *
+ * `0` is the "no bound" value for both numeric ranges (`filterFaYear*` and
+ * `filterStartingAltitude*`). Code that applies the ranges must therefore treat `0` as
+ * "unbounded" (using `||`, not `??`) — otherwise an unset bound is compared as a real
+ * year/altitude and hides every row (e.g. "FA year from 1990" while `filterFaYearHigh`
+ * is still 0 matches nothing).
+ */
 const DEFAULT_INITIAL_FILTER: FilterInputs = {
   filterRegionIds: {},
   filterAreaIds: {},
@@ -45,7 +54,7 @@ const DEFAULT_INITIAL_FILTER: FilterInputs = {
   filterFaYearLow: 0,
   filterFaYearHigh: 0,
   filterStartingAltitudeLow: 0,
-  filterStartingAltitudeHigh: 1000,
+  filterStartingAltitudeHigh: 0,
   filterHideTicked: false,
   filterPitches: {
     'Single-pitch': false,
@@ -93,6 +102,56 @@ export type ResetField =
   | 'types'
   | 'grades'
   | 'starting-altitude';
+
+/** Filter form sections, in the order they are rendered (`'all'` is the header's “Clear filter”). */
+export const FILTER_SECTIONS = [
+  'regions',
+  'areas',
+  'grades',
+  'fa-year',
+  'starting-altitude',
+  'options',
+  'types',
+  'pitches',
+  'orientations',
+  'conditions',
+] as const satisfies readonly ResetField[];
+
+/**
+ * Whether a filter section currently differs from the unfiltered defaults.
+ *
+ * Drives the “this filter is on” highlight and the reset button of each group header in the
+ * filter form — the sections are the only place that knows the defaults, so the check lives here
+ * next to {@link DEFAULT_INITIAL_FILTER} rather than being re-implemented in the UI.
+ */
+export const isFilterSectionActive = (state: State, section: ResetField): boolean => {
+  switch (section) {
+    case 'all':
+      return FILTER_SECTIONS.some((s) => isFilterSectionActive(state, s));
+    case 'regions':
+      return Object.keys(state.filterRegionIds).length > 0;
+    case 'areas':
+      return Object.keys(state.filterAreaIds).length > 0;
+    case 'grades':
+      return !!state.filterGradeLow || !!state.filterGradeHigh;
+    case 'fa-year':
+      return !!state.filterFaYearLow || !!state.filterFaYearHigh;
+    case 'starting-altitude':
+      return !!state.filterStartingAltitudeLow || !!state.filterStartingAltitudeHigh;
+    case 'options':
+      return state.filterHideTicked || state.filterOnlyAdmin || state.filterOnlySuperAdmin;
+    case 'types':
+      return Object.values(state.filterTypes).some(Boolean);
+    case 'pitches':
+      return state.filterPitches['Single-pitch'] || state.filterPitches['Multi-pitch'];
+    case 'orientations':
+      return Object.values(state.filterSectorOrientations).some(Boolean);
+    case 'conditions':
+      return !!state.filterOnlySunOnWallAt || !!state.filterOnlyShadeOnWallAt;
+    default:
+      return neverGuard(section, false);
+  }
+};
 
 export type Update =
   | { action: 'set-data'; data: components['schemas']['Toc'] }
@@ -269,17 +328,25 @@ const filter = (state: State): State => {
                         }
 
                         if (filterFaYearLow || filterFaYearHigh) {
-                          const low = filterFaYearLow ?? Number.MIN_SAFE_INTEGER;
-                          const high = filterFaYearHigh ?? Number.MAX_SAFE_INTEGER;
-                          if (!problem.faYear || problem.faYear < low || problem.faYear > high) {
+                          // 0 means "no bound" — widen it instead of comparing against 0.
+                          const low = filterFaYearLow || Number.MIN_SAFE_INTEGER;
+                          const high = filterFaYearHigh || Number.MAX_SAFE_INTEGER;
+                          const matchesYear = (year?: number) => !!year && year >= low && year <= high;
+                          // The year shown for a problem is its aid ascent (FA) year when it has
+                          // one and its first free ascent (FFA) year otherwise; the years offered
+                          // in the filter come from `problem.fa_date` (`ffaYear`). Matching only
+                          // `faYear` would hide (almost) everything — it is 0 unless the problem
+                          // has a registered aid ascent.
+                          if (!matchesYear(problem.faYear) && !matchesYear(problem.ffaYear)) {
                             filteredOut.problems += 1;
                             return false;
                           }
                         }
 
                         if (filterStartingAltitudeLow || filterStartingAltitudeHigh) {
-                          const low = filterStartingAltitudeLow ?? Number.MIN_SAFE_INTEGER;
-                          const high = filterStartingAltitudeHigh ?? Number.MAX_SAFE_INTEGER;
+                          // 0 means "no bound" on either side of the range.
+                          const low = filterStartingAltitudeLow || Number.MIN_SAFE_INTEGER;
+                          const high = filterStartingAltitudeHigh || Number.MAX_SAFE_INTEGER;
                           const actualAlt: number =
                             ((problem.startingAltitude ?? 0) > 0
                               ? problem.startingAltitude

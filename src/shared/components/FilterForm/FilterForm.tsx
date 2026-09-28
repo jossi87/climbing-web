@@ -4,6 +4,7 @@ import { getLocales } from '../../../api';
 import { useMeta } from '../Meta';
 import { useFilter } from './context';
 import type { ResetField } from '../../../features/Problems/reducer';
+import { isFilterSectionActive } from '../../../features/Problems/reducer';
 import { YearSelect } from './YearSelect';
 import { hours } from '../../../utils/hours';
 import { StartingAltitudeSelect } from './StartingAltitudeSelect';
@@ -38,12 +39,29 @@ type GroupHeaderProps = {
 };
 
 const GroupHeader = ({ title, reset, buttons }: GroupHeaderProps) => {
-  const { dispatch } = useFilter();
+  const filter = useFilter();
+  const { dispatch } = filter;
+  // A section only shows its reset button (and the brand “on” ink) while it actually restricts the list.
+  const active = isFilterSectionActive(filter, reset);
 
   return (
-    <div className='border-surface-border mb-3 flex items-center justify-between border-b py-2'>
-      <h5 className={cn('m-0', designContract.typography.label)}>{title}</h5>
-      <div className='flex items-center gap-2'>
+    <div
+      className={cn(
+        'mb-3 flex items-center justify-between gap-3 border-b py-2',
+        active ? 'border-brand-border' : 'border-surface-border',
+      )}
+    >
+      <h5
+        className={cn(
+          'm-0 flex min-w-0 items-center gap-1.5',
+          designContract.typography.label,
+          active && 'text-brand light:text-amber-700',
+        )}
+      >
+        {active && <span aria-hidden className='bg-brand light:bg-amber-700 h-1.5 w-1.5 shrink-0 rounded-full' />}
+        {title}
+      </h5>
+      <div className='flex shrink-0 items-center gap-1.5'>
         {buttons
           ?.filter((b): b is NonNullable<typeof b> => !!b)
           ?.map(({ icon: IconComponent, onClick }, idx) => (
@@ -51,19 +69,26 @@ const GroupHeader = ({ title, reset, buttons }: GroupHeaderProps) => {
               key={idx}
               type='button'
               onClick={onClick}
-              className='p-1 opacity-70 transition-colors hover:opacity-100'
+              className='p-1 text-slate-500 transition-colors hover:text-slate-200'
             >
               <IconComponent size={14} />
             </button>
           ))}
-        <button
-          type='button'
-          onClick={() => dispatch({ action: 'reset', section: reset })}
-          className='p-1 text-slate-500 transition-colors hover:text-red-400'
-          title='Reset'
-        >
-          <Trash2 size={14} />
-        </button>
+        {active && (
+          <button
+            type='button'
+            onClick={() => dispatch({ action: 'reset', section: reset })}
+            className={cn(
+              'border-brand-border bg-brand/18 text-brand hover:bg-brand/30 inline-flex h-6 w-6 shrink-0 items-center justify-center',
+              'rounded-md border transition-colors',
+              'light:border-brand light:bg-brand/25 light:text-amber-800 light:hover:bg-brand/45 light:hover:text-amber-900',
+            )}
+            title={`Reset ${title}`}
+            aria-label={`Reset ${title}`}
+          >
+            <Trash2 size={13} />
+          </button>
+        )}
       </div>
     </div>
   );
@@ -137,6 +162,7 @@ const CheckboxLabel = ({ label, checked, onChange, disabled = false }: CheckboxL
 
 export const FilterForm = () => {
   const meta = useMeta();
+  const filterState = useFilter();
   const {
     unfilteredData,
     filterRegionIds,
@@ -151,9 +177,11 @@ export const FilterForm = () => {
     filterHideTicked,
     filterPitches,
     filterTypes,
-    filteredProblems,
     dispatch,
-  } = useFilter();
+  } = filterState;
+
+  /** Any section deviating from the defaults — drives the header's “Clear filter”. */
+  const anyFilterActive = isFilterSectionActive(filterState, 'all');
 
   const disciplineOptions = meta.types
     .sort((a, b) => (a.subType ?? '').localeCompare(b.subType ?? '', getLocales()))
@@ -184,7 +212,7 @@ export const FilterForm = () => {
       <div className='border-surface-border flex items-center justify-between border-b pb-4'>
         <h3 className='type-h2 m-0'>Filter</h3>
         <div className='flex items-center gap-2'>
-          {filteredProblems > 0 && (
+          {anyFilterActive && (
             <button
               type='button'
               onClick={() => dispatch({ action: 'reset', section: 'all' })}
