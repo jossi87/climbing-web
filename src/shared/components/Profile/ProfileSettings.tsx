@@ -1,4 +1,4 @@
-import { useState, type FC } from 'react';
+import { useState, useRef, type FC } from 'react';
 import { useMeta } from '../Meta/context';
 import { useProfile, postMediaImage } from '../../../api';
 import type { components } from '../../../@types/buldreinfo/swagger';
@@ -6,6 +6,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { type DropzoneOptions, useDropzone } from 'react-dropzone';
 import { Save, X, Upload, Loader2, Globe, Settings as SettingsIcon, Lock } from 'lucide-react';
 import { cn } from '../../../lib/utils';
+import { convertHeicToJpeg, isHeicFile } from '../../../utils/heic';
 import { designContract } from '../../../design/contract';
 import { Card, SectionHeader } from '../../ui';
 
@@ -61,20 +62,43 @@ const ProfileSettings = () => {
     const [emailVisibleToAll, setEmailVisibleToAll] = useState(!!d?.emailVisibleToAll);
     const [avatar, setAvatar] = useState<{ file: File; preview: string } | null>(null);
     const [isSaving, setIsSaving] = useState(false);
+    const [isPreparingAvatar, setIsPreparingAvatar] = useState(false);
+    /** Blob URL of the current preview, so it can be released when it is replaced or cleared. */
+    const avatarPreviewUrlRef = useRef<string | null>(null);
 
-    const onDrop: DropzoneOptions['onDrop'] = (acceptedFiles) => {
-      if (acceptedFiles.length > 0) {
-        setAvatar({
-          file: acceptedFiles[0],
-          preview: URL.createObjectURL(acceptedFiles[0]),
-        });
+    /** Replace or clear the avatar, releasing the previous preview blob URL. */
+    const updateAvatar = (next: { file: File; preview: string } | null) => {
+      if (avatarPreviewUrlRef.current) {
+        URL.revokeObjectURL(avatarPreviewUrlRef.current);
+      }
+      avatarPreviewUrlRef.current = next ? next.preview : null;
+      setAvatar(next);
+    };
+
+    const onDrop: DropzoneOptions['onDrop'] = async (acceptedFiles) => {
+      const [file] = acceptedFiles;
+      if (!file) return;
+      setIsPreparingAvatar(true);
+      try {
+        // The API decodes avatars with ImageIO, so HEIC/HEIF is converted to JPEG in the browser.
+        const prepared = isHeicFile(file) ? await convertHeicToJpeg(file) : file;
+        updateAvatar({ file: prepared, preview: URL.createObjectURL(prepared) });
+      } finally {
+        setIsPreparingAvatar(false);
       }
     };
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
       onDrop,
       maxFiles: 1,
-      accept: { 'image/jpeg': [], 'image/png': [] },
+      // Extensions are listed because Windows reports an empty `File.type` for .heic/.heif,
+      // and react-dropzone falls back to extension matching only when it is declared here.
+      accept: {
+        'image/jpeg': ['.jpg', '.jpeg', '.jfif'],
+        'image/png': ['.png'],
+        'image/heic': ['.heic'],
+        'image/heif': ['.heif'],
+      },
     });
 
     const hasChanges =
@@ -134,7 +158,7 @@ const ProfileSettings = () => {
                     alt='Preview'
                   />
                   <button
-                    onClick={() => setAvatar(null)}
+                    onClick={() => updateAvatar(null)}
                     className='absolute -top-2 -right-2 rounded-full bg-red-500 p-1 shadow-lg transition-colors hover:bg-red-600'
                   >
                     <X size={14} />
@@ -148,12 +172,21 @@ const ProfileSettings = () => {
                     isDragActive
                       ? 'border-brand-border bg-surface-raised'
                       : 'border-surface-border bg-surface-card hover:border-slate-500',
+                    isPreparingAvatar && 'pointer-events-none cursor-wait opacity-60',
                   )}
                 >
                   <input {...getInputProps()} />
-                  <Upload className='mx-auto mb-2 text-slate-500' size={24} />
+                  {isPreparingAvatar ? (
+                    <Loader2 className='mx-auto mb-2 animate-spin text-slate-500' size={24} />
+                  ) : (
+                    <Upload className='mx-auto mb-2 text-slate-500' size={24} />
+                  )}
                   <p className='text-xs text-slate-400'>
-                    {isDragActive ? 'Drop image here' : 'Drop avatar here, or click to select'}
+                    {isPreparingAvatar
+                      ? 'Preparing image…'
+                      : isDragActive
+                        ? 'Drop image here'
+                        : 'Drop avatar here, or click to select'}
                   </p>
                 </div>
               )}

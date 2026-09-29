@@ -1,12 +1,32 @@
 import { useState, useCallback, type ReactNode } from 'react';
-import { useDropzone, ErrorCode, type FileRejection } from 'react-dropzone';
+import { useDropzone, ErrorCode, type Accept, type FileRejection } from 'react-dropzone';
 import { Upload, Loader2, AlertCircle, X } from 'lucide-react';
 import { cn } from '../../../lib/utils';
+import { convertHeicToJpeg, isHeicFile } from '../../../utils/heic';
 import MediaEmbedder from './MediaEmbedder';
 
 const MAX_IMAGE_SIZE_MB = 100;
 const MAX_VIDEO_SIZE_MB = 800;
 const MAX_VIDEO_SIZE_BYTES = MAX_VIDEO_SIZE_MB * 1024 * 1024;
+
+/**
+ * Every accepted MIME type declares its file extensions. Browsers on Windows report an empty
+ * `File.type` for `.heic`/`.heif` (no MIME association for the extension), and react-dropzone
+ * only falls back to matching by extension when that extension is listed here — without it the
+ * files are rejected as "Unsupported file type" before the HEIC→JPEG conversion can run.
+ */
+const ACCEPT: Accept = {
+  'image/jpeg': ['.jpg', '.jpeg', '.jfif'],
+  'image/png': ['.png'],
+  'image/heic': ['.heic'],
+  'image/heif': ['.heif'],
+  'video/mp4': ['.mp4'],
+  'video/webm': ['.webm'],
+  'video/quicktime': ['.mov'],
+};
+
+/** Fallback for files the browser reports without a usable MIME type (camera-roll uploads). */
+const PREVIEWABLE_EXTENSION = /\.(jpe?g|jfif|png|webp|gif|heic|heif|mp4|m4v|mov|webm)$/i;
 
 const formatFileSizeMb = (bytes: number) => {
   const mb = bytes / (1024 * 1024);
@@ -64,21 +84,19 @@ export const MediaDropzoneEmbed = ({ onFilesAdded, onEmbedAdded, children, getAc
       if (acceptedFiles.length === 0) return;
       setIsConverting(true);
       try {
+        // HEIC/HEIF is converted in the browser: the backend has no HEIF decoder. Matching by
+        // name as well as MIME type is required because Windows reports an empty `File.type`.
         const processedFiles = await Promise.all(
-          acceptedFiles.map(async (file) => {
-            if (file.type === 'image/heic' || file.type === 'image/heif') {
-              const { default: heic2any } = await import('heic2any');
-              const result = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.8 });
-              const jpegBlobs = Array.isArray(result) ? result : [result];
-              return new File(jpegBlobs, file.name.replace(/\.heic|\.heif/i, '.jpeg'), { type: 'image/jpeg' });
-            }
-            return file;
-          }),
+          acceptedFiles.map(async (file) => (isHeicFile(file) ? await convertHeicToJpeg(file) : file)),
         );
         const newItems = await Promise.all(
           processedFiles.map(async (file) => {
             let preview: string | undefined;
-            if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
+            if (
+              file.type.startsWith('image/') ||
+              file.type.startsWith('video/') ||
+              PREVIEWABLE_EXTENSION.test(file.name)
+            ) {
               preview = URL.createObjectURL(file);
             }
             return { file, preview };
@@ -94,15 +112,7 @@ export const MediaDropzoneEmbed = ({ onFilesAdded, onEmbedAdded, children, getAc
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: {
-      'image/jpeg': [],
-      'image/png': [],
-      'image/heic': [],
-      'image/heif': [],
-      'video/mp4': [],
-      'video/webm': [],
-      'video/quicktime': [],
-    },
+    accept: ACCEPT,
     maxSize: MAX_VIDEO_SIZE_BYTES,
     noClick: isConverting,
     noKeyboard: isConverting,
