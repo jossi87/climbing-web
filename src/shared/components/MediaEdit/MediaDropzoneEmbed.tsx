@@ -2,7 +2,8 @@ import { useState, useCallback, type ReactNode } from 'react';
 import { useDropzone, ErrorCode, type Accept, type FileRejection } from 'react-dropzone';
 import { Upload, Loader2, AlertCircle, X } from 'lucide-react';
 import { cn } from '../../../lib/utils';
-import { convertHeicToJpeg, isHeicFile } from '../../../utils/heic';
+import { convertHeicToJpeg, heicConversionFailureReason, isHeicFile } from '../../../utils/heic';
+import { captureSentryException } from '../../../utils/sentry';
 import MediaEmbedder from './MediaEmbedder';
 
 const MAX_IMAGE_SIZE_MB = 100;
@@ -53,6 +54,15 @@ export type DropzoneFile = {
   preview?: string;
 };
 
+/** A file that could not be added: refused by the dropzone, or a HEIC that failed to convert. */
+type DropProblem = {
+  fileName: string;
+  reason: string;
+};
+
+/** Alert row: a {@link DropProblem} plus a stable React key. */
+type DropProblemRow = DropProblem & { key: string };
+
 type Props = {
   /** Called when files are dropped/selected */
   onFilesAdded: (files: DropzoneFile[]) => void;
@@ -77,32 +87,42 @@ type Props = {
 export const MediaDropzoneEmbed = ({ onFilesAdded, onEmbedAdded, children, getAccessToken }: Props) => {
   const [isConverting, setIsConverting] = useState(false);
   const [rejections, setRejections] = useState<FileRejection[]>([]);
+  const [conversionErrors, setConversionErrors] = useState<DropProblem[]>([]);
 
   const onDrop = useCallback(
     async (acceptedFiles: File[], fileRejections: FileRejection[]) => {
       setRejections(fileRejections);
+      setConversionErrors([]);
       if (acceptedFiles.length === 0) return;
       setIsConverting(true);
       try {
         // HEIC/HEIF is converted in the browser: the backend has no HEIF decoder. Matching by
         // name as well as MIME type is required because Windows reports an empty `File.type`.
-        const processedFiles = await Promise.all(
-          acceptedFiles.map(async (file) => (isHeicFile(file) ? await convertHeicToJpeg(file) : file)),
-        );
-        const newItems = await Promise.all(
-          processedFiles.map(async (file) => {
+        // Files are handled one at a time so a single failure cannot discard the other files
+        // (an unhandled rejection here used to abort the whole drop) and so several large HEICs
+        // are not decoded at once.
+        const newItems: DropzoneFile[] = [];
+        const failed: DropProblem[] = [];
+        for (const file of acceptedFiles) {
+          try {
+            const prepared = isHeicFile(file) ? await convertHeicToJpeg(file) : file;
             let preview: string | undefined;
             if (
-              file.type.startsWith('image/') ||
-              file.type.startsWith('video/') ||
-              PREVIEWABLE_EXTENSION.test(file.name)
+              prepared.type.startsWith('image/') ||
+              prepared.type.startsWith('video/') ||
+              PREVIEWABLE_EXTENSION.test(prepared.name)
             ) {
-              preview = URL.createObjectURL(file);
+              preview = URL.createObjectURL(prepared);
             }
-            return { file, preview };
-          }),
-        );
-        onFilesAdded(newItems);
+            newItems.push({ file: prepared, preview });
+          } catch (error) {
+            console.warn(error);
+            captureSentryException(error, { fileName: file.name, fileSize: file.size, fileType: file.type });
+            failed.push({ fileName: file.name, reason: heicConversionFailureReason(error) });
+          }
+        }
+        if (newItems.length > 0) onFilesAdded(newItems);
+        if (failed.length > 0) setConversionErrors(failed);
       } finally {
         setIsConverting(false);
       }
@@ -117,6 +137,16 @@ export const MediaDropzoneEmbed = ({ onFilesAdded, onEmbedAdded, children, getAc
     noClick: isConverting,
     noKeyboard: isConverting,
   });
+
+  /** Dropzone rejections and failed HEIC conversions, rendered as one alert. */
+  const problems: DropProblemRow[] = [
+    ...rejections.map((rejection) => ({
+      key: `${rejection.file.name}-${rejection.file.size}-${rejection.file.lastModified}`,
+      fileName: rejection.file.name,
+      reason: describeRejection(rejection),
+    })),
+    ...conversionErrors.map((failure, index) => ({ ...failure, key: `${failure.fileName}-${index}` })),
+  ];
 
   return (
     <div className='space-y-4'>
@@ -160,26 +190,29 @@ export const MediaDropzoneEmbed = ({ onFilesAdded, onEmbedAdded, children, getAc
         <MediaEmbedder addMedia={onEmbedAdded} stack getAccessToken={getAccessToken} />
       </div>
 
-      {/* Rejection alerts */}
-      {rejections.length > 0 && (
+      {/* Rejected files and failed conversions */}
+      {problems.length > 0 && (
         <div role='alert' className='bg-surface-raised flex items-start gap-3 rounded-xl border border-red-500/35 p-3'>
           <AlertCircle className='mt-0.5 shrink-0 text-red-500' size={18} />
           <div className='min-w-0 flex-1 space-y-1'>
             <p className='text-[13px] font-semibold text-red-500'>
-              {rejections.length === 1 ? 'File could not be added' : `${rejections.length} files could not be added`}
+              {problems.length === 1 ? 'File could not be added' : `${problems.length} files could not be added`}
             </p>
             <ul className='space-y-0.5 text-[12px] leading-snug text-slate-300'>
-              {rejections.map((r) => (
-                <li key={`${r.file.name}-${r.file.size}-${r.file.lastModified}`} className='break-words'>
-                  <span className='font-medium text-slate-200'>{r.file.name}</span>
-                  <span className='text-slate-400'> — {describeRejection(r)}</span>
+              {problems.map((problem) => (
+                <li key={problem.key} className='break-words'>
+                  <span className='font-medium text-slate-200'>{problem.fileName}</span>
+                  <span className='text-slate-400'> — {problem.reason}</span>
                 </li>
               ))}
             </ul>
           </div>
           <button
             type='button'
-            onClick={() => setRejections([])}
+            onClick={() => {
+              setRejections([]);
+              setConversionErrors([]);
+            }}
             className='hover:bg-surface-raised-hover -mr-1 shrink-0 rounded-lg p-1 text-slate-400 transition-colors hover:text-slate-200'
             aria-label='Dismiss'
           >

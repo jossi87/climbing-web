@@ -4,9 +4,10 @@ import { useProfile, postMediaImage } from '../../../api';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { useAuth0 } from '@auth0/auth0-react';
 import { type DropzoneOptions, useDropzone } from 'react-dropzone';
-import { Save, X, Upload, Loader2, Globe, Settings as SettingsIcon, Lock } from 'lucide-react';
+import { Save, X, Upload, Loader2, Globe, Settings as SettingsIcon, Lock, AlertCircle } from 'lucide-react';
 import { cn } from '../../../lib/utils';
-import { convertHeicToJpeg, isHeicFile } from '../../../utils/heic';
+import { convertHeicToJpeg, heicConversionFailureReason, isHeicFile } from '../../../utils/heic';
+import { captureSentryException } from '../../../utils/sentry';
 import { designContract } from '../../../design/contract';
 import { Card, SectionHeader } from '../../ui';
 
@@ -63,6 +64,7 @@ const ProfileSettings = () => {
     const [avatar, setAvatar] = useState<{ file: File; preview: string } | null>(null);
     const [isSaving, setIsSaving] = useState(false);
     const [isPreparingAvatar, setIsPreparingAvatar] = useState(false);
+    const [avatarError, setAvatarError] = useState<string | null>(null);
     /** Blob URL of the current preview, so it can be released when it is replaced or cleared. */
     const avatarPreviewUrlRef = useRef<string | null>(null);
 
@@ -78,11 +80,17 @@ const ProfileSettings = () => {
     const onDrop: DropzoneOptions['onDrop'] = async (acceptedFiles) => {
       const [file] = acceptedFiles;
       if (!file) return;
+      setAvatarError(null);
       setIsPreparingAvatar(true);
       try {
         // The API decodes avatars with ImageIO, so HEIC/HEIF is converted to JPEG in the browser.
         const prepared = isHeicFile(file) ? await convertHeicToJpeg(file) : file;
         updateAvatar({ file: prepared, preview: URL.createObjectURL(prepared) });
+      } catch (error) {
+        // Without this the rejection would surface as an unhandled promise rejection (Sentry).
+        console.warn(error);
+        captureSentryException(error, { fileName: file.name, fileSize: file.size, fileType: file.type });
+        setAvatarError(heicConversionFailureReason(error));
       } finally {
         setIsPreparingAvatar(false);
       }
@@ -189,6 +197,12 @@ const ProfileSettings = () => {
                         : 'Drop avatar here, or click to select'}
                   </p>
                 </div>
+              )}
+              {avatarError && (
+                <p role='alert' className='flex items-start gap-2 text-xs break-words text-red-500'>
+                  <AlertCircle className='mt-0.5 shrink-0' size={14} />
+                  <span>{avatarError}</span>
+                </p>
               )}
             </div>
 
