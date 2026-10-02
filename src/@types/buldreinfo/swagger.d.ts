@@ -109,6 +109,25 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/users/merge-dismissals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get user pairs marked as "not merge candidates" (superadmin) */
+        get: operations["getMergeDismissals"];
+        put?: never;
+        /** Mark two users as "not merge candidates" so they are no longer suggested for merging (superadmin) */
+        post: operations["postMergeDismissal"];
+        /** Undo marking two users as "not merge candidates" (superadmin) */
+        delete: operations["deleteMergeDismissal"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/trails": {
         parameters: {
             query?: never;
@@ -1670,6 +1689,12 @@ export type components = {
             emails?: string[];
             regions?: components["schemas"]["AdminRegion"][];
         };
+        MergeDismissal: {
+            /** Format: int32 */
+            userId1?: number;
+            /** Format: int32 */
+            userId2?: number;
+        };
         Trash: {
             /** Format: int32 */
             idArea?: number;
@@ -2428,6 +2453,68 @@ export interface operations {
             query: {
                 keepUserId: number;
                 deleteUserId: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getMergeDismissals: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MergeDismissal"][];
+                };
+            };
+        };
+    };
+    postMergeDismissal: {
+        parameters: {
+            query: {
+                userId1: number;
+                userId2: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deleteMergeDismissal: {
+        parameters: {
+            query: {
+                userId1: number;
+                userId2: number;
             };
             header?: never;
             path?: never;

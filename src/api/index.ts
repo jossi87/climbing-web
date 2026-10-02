@@ -7,6 +7,8 @@ export {
   downloadUsersTicks,
   postComment,
   postMergeUsers,
+  postMergeDismissal,
+  deleteMergeDismissal,
   postUserRename,
   postProblem,
   postProblemSvg,

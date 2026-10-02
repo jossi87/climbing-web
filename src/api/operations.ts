@@ -135,6 +135,27 @@ export function postUserRename(
   }).then((response) => ensureOkResponse(response, url));
 }
 
+/**
+ * Mark two users as "not merge candidates" so the pair stops being suggested for merging. Ids may be passed in any
+ * order - the backend stores the pair canonically.
+ */
+export function postMergeDismissal(accessToken: string | null, userId1: number, userId2: number): Promise<Response> {
+  const url = `/users/merge-dismissals?userId1=${userId1}&userId2=${userId2}`;
+  return makeAuthenticatedRequest(accessToken, url, {
+    method: 'POST',
+    ...invalidateQueriesAfter,
+  }).then((response) => ensureOkResponse(response, url));
+}
+
+/** Undo {@link postMergeDismissal} so the pair is suggested for merging again. */
+export function deleteMergeDismissal(accessToken: string | null, userId1: number, userId2: number): Promise<Response> {
+  const url = `/users/merge-dismissals?userId1=${userId1}&userId2=${userId2}`;
+  return makeAuthenticatedRequest(accessToken, url, {
+    method: 'DELETE',
+    ...invalidateQueriesAfter,
+  }).then((response) => ensureOkResponse(response, url));
+}
+
 export function postProblem(
   accessToken: string | null,
   sectorId: number,

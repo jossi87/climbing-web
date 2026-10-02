@@ -16,7 +16,13 @@ import { useRedirect } from '../utils/useRedirect';
 import { makeAuthenticatedRequest, useAccessToken, mediaIdentityId, mediaIdentityVersionStamp } from './utils';
 import type { FetchOptions } from './types';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { postMergeUsers, postPermissions, postUserRename } from './operations';
+import {
+  deleteMergeDismissal,
+  postMergeDismissal,
+  postMergeUsers,
+  postPermissions,
+  postUserRename,
+} from './operations';
 import { captureSentryException } from '../utils/sentry';
 import { type MediaRegion, calculateMediaRegion, isPathVisible, scaleCoordsJson, scalePath } from '../utils/svg-scaler';
 import type { SvgType } from '../utils/svg-helpers';
@@ -812,10 +818,17 @@ export function useUsers() {
     staleTime: 30 * 1000,
   });
 
+  const mergeDismissals = useData<Success<'getMergeDismissals'>>(`/users/merge-dismissals`, {
+    queryKey: [`/users/merge-dismissals`],
+    enabled: isAuthenticated,
+    staleTime: 30 * 1000,
+  });
+
   const merge = useCallback(
     (keepUserId: number, deleteUserId: number): Promise<void> =>
       postMergeUsers(accessToken, keepUserId, deleteUserId).then(() => {
         void client.invalidateQueries({ queryKey: [`/users`] });
+        void client.invalidateQueries({ queryKey: [`/users/merge-dismissals`] });
       }),
     [accessToken, client],
   );
@@ -828,10 +841,33 @@ export function useUsers() {
     [accessToken, client],
   );
 
+  /** Mark a pair as "not merge candidates" so it stops showing up in the merge suggestions. */
+  const dismiss = useCallback(
+    (userId1: number, userId2: number): Promise<void> =>
+      postMergeDismissal(accessToken, userId1, userId2).then(() => {
+        void client.invalidateQueries({ queryKey: [`/users/merge-dismissals`] });
+        void client.invalidateQueries({ queryKey: [`/users`] });
+      }),
+    [accessToken, client],
+  );
+
+  /** Undo {@link dismiss} so the pair is suggested for merging again. */
+  const restore = useCallback(
+    (userId1: number, userId2: number): Promise<void> =>
+      deleteMergeDismissal(accessToken, userId1, userId2).then(() => {
+        void client.invalidateQueries({ queryKey: [`/users/merge-dismissals`] });
+        void client.invalidateQueries({ queryKey: [`/users`] });
+      }),
+    [accessToken, client],
+  );
+
   return {
     ...result,
     merge,
     rename,
+    mergeDismissals,
+    dismiss,
+    restore,
   };
 }
 

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
   ArrowRight,
+  Ban,
   Calendar,
   Check,
   GitMerge,
@@ -10,6 +11,7 @@ import {
   Mail,
   MapPin,
   Pencil,
+  RotateCcw,
   UserCog,
   Users as UsersIcon,
   X,
@@ -24,6 +26,7 @@ import type { components } from '../../@types/buldreinfo/swagger';
 
 type AdminUser = components['schemas']['AdminUser'];
 type AdminRegion = components['schemas']['AdminRegion'];
+type MergeDismissal = components['schemas']['MergeDismissal'];
 
 /** Form field captions — readable on `surface-card`. */
 const fieldLabelClass = cn(designContract.typography.label, 'text-slate-300');
@@ -41,6 +44,22 @@ const normalizeName = (value?: string) =>
     .replace(/ø/g, 'oe')
     .replace(/å/g, 'aa')
     .replace(/[^a-z0-9]/g, '');
+
+/** Canonical key for an unordered pair of user ids (smallest id first), matching how the backend stores a dismissal. */
+const pairKey = (a: number, b: number) => (a <= b ? `${a}:${b}` : `${b}:${a}`);
+
+/**
+ * Identity carried by an email address: the part before "@", lowercased and stripped of any "+tag" suffix, so
+ * "Jostein.Oygarden+brattelinjer@gmail.com" and "jostein.oygarden@esmartsystems.com" both yield "jostein.oygarden".
+ * Placeholder addresses generated for accounts without an email are ignored (they would group complete strangers).
+ */
+const emailLocalPart = (email?: string) => {
+  if (!email) return '';
+  const at = email.indexOf('@');
+  if (at <= 0) return '';
+  if (email.slice(at + 1).toLowerCase() === 'missing-email.com') return '';
+  return email.slice(0, at).toLowerCase().split('+')[0].trim();
+};
 
 /** Region url may or may not carry a protocol. */
 const withScheme = (url?: string) => (!url ? '' : /^https?:\/\//i.test(url) ? url : `https://${url}`);
@@ -102,25 +121,38 @@ function isNameVariant(a: string[], b: string[]): boolean {
 }
 
 /**
- * Merge suggestions = users whose names are the same person's name written in different ways (see {@link isNameVariant}).
- * Accounts with no region associations (e.g. users added manually when tagging photos) are always candidates. When both
- * accounts have region(s) they must share at least one region to be suggested together. Connected components are used so
- * a chain A-B (share R1) + B-C (share R2) is suggested as one group.
+ * Merge suggestions = users whose names are the same person's name written in different ways (see {@link isNameVariant}),
+ * or whose email addresses share the same local part (see {@link emailLocalPart} - a much stronger identity signal, so
+ * the region guard is skipped for those). Accounts with no region associations (e.g. users added manually when tagging
+ * photos) are always candidates. When both accounts have region(s) they must share at least one region to be suggested
+ * together. Connected components are used so a chain A-B (share R1) + B-C (share R2) is suggested as one group. Pairs
+ * the superadmin marked as "not merge candidates" (`dismissedPairs`) are never connected.
  */
-function buildGroups(data: AdminUser[]): UserGroup[] {
+function buildGroups(data: AdminUser[], dismissedPairs: ReadonlySet<string>): UserGroup[] {
   const tokenLists = data.map((user) => nameTokens(user.name));
   const regionIds = data.map(
     (user) => new Set((user.regions ?? []).map((r) => r.id).filter((id): id is number => !!id)),
   );
 
+  const isDismissed = (a: number, b: number) => dismissedPairs.has(pairKey(data[a].userId ?? 0, data[b].userId ?? 0));
+
   // Bucket by the first-name initial so we never compare names that cannot be the same person.
   const byInitial = new Map<string, number[]>();
-  data.forEach((_, index) => {
+  // Bucket by email local part so duplicate sign-ups are found even when the written names differ completely.
+  const byEmailLocalPart = new Map<string, number[]>();
+  data.forEach((user, index) => {
     const initial = tokenLists[index][0]?.[0];
-    if (!initial) return;
-    const arr = byInitial.get(initial) ?? [];
-    arr.push(index);
-    byInitial.set(initial, arr);
+    if (initial) {
+      const arr = byInitial.get(initial) ?? [];
+      arr.push(index);
+      byInitial.set(initial, arr);
+    }
+    for (const localPart of new Set((user.emails ?? []).map(emailLocalPart))) {
+      if (!localPart) continue;
+      const arr = byEmailLocalPart.get(localPart) ?? [];
+      arr.push(index);
+      byEmailLocalPart.set(localPart, arr);
+    }
   });
 
   const parent = data.map((_, i) => i);
@@ -144,11 +176,24 @@ function buildGroups(data: AdminUser[]): UserGroup[] {
         const a = bucket[i];
         const b = bucket[j];
         if (!isNameVariant(tokenLists[a], tokenLists[b])) continue;
+        if (isDismissed(a, b)) continue;
         // Region guard: both accounts with regions must share one; region-less accounts are always candidates.
         const sharesRegion = [...regionIds[a]].some((id) => regionIds[b].has(id));
         if (regionIds[a].size === 0 || regionIds[b].size === 0 || sharesRegion) {
           union(a, b);
         }
+      }
+    }
+  }
+
+  // Same email local part means the same person, no matter how the name is spelled or which region they signed up in.
+  for (const bucket of byEmailLocalPart.values()) {
+    for (let i = 0; i < bucket.length; i++) {
+      for (let j = i + 1; j < bucket.length; j++) {
+        const a = bucket[i];
+        const b = bucket[j];
+        if (isDismissed(a, b)) continue;
+        union(a, b);
       }
     }
   }
@@ -185,17 +230,26 @@ const Users = () => {
   const [mergeUserIds, setMergeUserIds] = useState<ReadonlySet<number>>(new Set());
   const [renameUser, setRenameUser] = useState<AdminUser | null>(null);
   const [isMerging, setIsMerging] = useState(false);
-  const { data = [], isLoading: loading, merge, rename } = useUsers();
+  const [showDismissed, setShowDismissed] = useState(false);
+  const [isDismissing, setIsDismissing] = useState(false);
+  const { data = [], isLoading: loading, merge, rename, mergeDismissals, dismiss, restore } = useUsers();
 
-  const groups = useMemo(() => buildGroups(data), [data]);
+  const dismissals = useMemo(() => mergeDismissals.data ?? [], [mergeDismissals.data]);
+  const dismissedPairs = useMemo(
+    () => new Set(dismissals.map((pair) => pairKey(pair.userId1 ?? 0, pair.userId2 ?? 0))),
+    [dismissals],
+  );
+  const usersById = useMemo(() => new Map(data.map((user) => [user.userId ?? 0, user])), [data]);
+
+  const groups = useMemo(() => buildGroups(data, dismissedPairs), [data, dismissedPairs]);
 
   const matches = (user: AdminUser) => {
-    // Not clever - just a plain substring check against the user id or the name (first + last name). Names that are
-    // actually emails (e.g. stored in firstname) are matched too, so searching "@" works.
+    // Not clever - just a plain substring check against the user id, the name (first + last name) or any email.
     const q = normalize(query);
     if (!q) return true;
     if (String(user.userId ?? 0).includes(q)) return true;
-    return (user.name ?? '').toLowerCase().includes(q);
+    if ((user.name ?? '').toLowerCase().includes(q)) return true;
+    return (user.emails ?? []).some((email) => email.toLowerCase().includes(q));
   };
 
   const filteredUsers = query ? data.filter(matches) : data;
@@ -265,7 +319,45 @@ const Users = () => {
     }
   };
 
-  const renderUser = (user: AdminUser) => {
+  /**
+   * Persist "these two accounts are NOT duplicates" so the pair stops being suggested. Reversible via
+   * {@link restore} (the dismissed-pairs dialog), which is why no confirmation is asked for.
+   */
+  const dismissPairs = async (pairs: Array<[number, number]>) => {
+    const pending = pairs.filter(([a, b]) => a > 0 && b > 0 && a !== b && !dismissedPairs.has(pairKey(a, b)));
+    if (pending.length === 0 || isDismissing) return;
+    setIsDismissing(true);
+    try {
+      await Promise.all(pending.map(([a, b]) => dismiss(a, b)));
+      // Drop any account involved from the merge selection - its partners are gone from the suggestions.
+      setMergeUserIds((prev) => {
+        if (pending.every(([a, b]) => !prev.has(a) && !prev.has(b))) return prev;
+        const next = new Set(prev);
+        for (const [a, b] of pending) {
+          next.delete(a);
+          next.delete(b);
+        }
+        return next;
+      });
+    } catch (error) {
+      console.error(error);
+      alert(error instanceof Error ? error.message : String(error));
+    } finally {
+      setIsDismissing(false);
+    }
+  };
+
+  /** Mark one account as not a duplicate of the other accounts in its group (the group may survive without it). */
+  const dismissUser = (user: AdminUser, group: UserGroup) => {
+    const userId = user.userId ?? 0;
+    const pairs = group.users
+      .map((other) => other.userId ?? 0)
+      .filter((otherId) => otherId > 0 && otherId !== userId)
+      .map((otherId) => [userId, otherId] as [number, number]);
+    void dismissPairs(pairs);
+  };
+
+  const renderUser = (user: AdminUser, group?: UserGroup) => {
     const userId = user.userId ?? 0;
     const isKeep = userId === keepUserId;
     const isMergee = mergeUserIds.has(userId);
@@ -421,6 +513,18 @@ const Users = () => {
             )}
             Merge
           </button>
+          {group && (
+            <button
+              type='button'
+              disabled={isDismissing}
+              title={`Mark ${user.name ?? 'this account'} as NOT a duplicate of the other account(s) here`}
+              onClick={() => dismissUser(user, group)}
+              className='border-surface-border/60 bg-surface-card inline-flex w-full items-center justify-center gap-1 rounded-md border px-1.5 py-1.5 text-[10px] font-semibold text-slate-500 transition-colors hover:border-slate-500 hover:text-slate-200 disabled:cursor-not-allowed disabled:opacity-50'
+            >
+              <Ban size={10} aria-hidden />
+              Not dupe
+            </button>
+          )}
         </div>
       </div>
     );
@@ -481,12 +585,24 @@ const Users = () => {
               </div>
               <SearchInput
                 type='text'
-                placeholder='Search users (name or id)...'
+                placeholder='Search users (name, email or id)...'
                 onChange={(e) => setQuery(e.target.value)}
                 value={query}
                 onClear={() => setQuery('')}
                 className='bg-surface-raised border-surface-border focus:border-surface-border placeholder:text-slate-500'
               />
+              <button
+                type='button'
+                onClick={() => setShowDismissed(true)}
+                title='Browse accounts you have marked as NOT merge candidates, and undo mistakes'
+                className='border-surface-border/60 bg-surface-raised hover:border-surface-border mt-2 inline-flex w-full items-center justify-between gap-1.5 rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold text-slate-400 transition-colors hover:text-slate-100'
+              >
+                <span className='inline-flex items-center gap-1.5'>
+                  <Ban size={12} aria-hidden />
+                  Not merge candidates
+                </span>
+                <span className='text-[10px] font-medium text-slate-500'>{dismissals.length}</span>
+              </button>
             </div>
           </div>
         </div>
@@ -496,8 +612,8 @@ const Users = () => {
               <div className='px-4 py-16 text-center sm:px-5 sm:py-20'>
                 <p className={designContract.typography.label}>No merge suggestions found</p>
                 <p className='mt-2 text-[11px] text-slate-500'>
-                  Accounts with the same name that share a region are suggested here. Switch to &quot;All users&quot; to
-                  browse everything.
+                  Accounts with the same name that share a region, or the same email address, are suggested here. Switch
+                  to &quot;All users&quot; to browse everything.
                 </p>
               </div>
             ) : (
@@ -511,7 +627,7 @@ const Users = () => {
                       <span className='text-[10px] font-medium text-slate-500'>{group.users.length} accounts</span>
                     </div>
                     <div className='grid grid-cols-1 gap-2 p-3 pt-1 sm:grid-cols-2 sm:p-4 sm:pt-1 lg:grid-cols-3'>
-                      {group.users.map(renderUser)}
+                      {group.users.map((user) => renderUser(user, group))}
                     </div>
                   </section>
                 ))}
@@ -523,7 +639,7 @@ const Users = () => {
             </div>
           ) : (
             <div className='grid grid-cols-1 gap-2 p-3 sm:grid-cols-2 sm:p-4 lg:grid-cols-3'>
-              {filteredUsers.map(renderUser)}
+              {filteredUsers.map((user) => renderUser(user))}
             </div>
           )}
         </div>
@@ -631,6 +747,14 @@ const Users = () => {
           user={renameUser}
           onRename={(firstname, lastname) => rename(renameUser.userId ?? 0, firstname, lastname)}
           onClose={() => setRenameUser(null)}
+        />
+      )}
+      {showDismissed && (
+        <DismissedPairsDialog
+          dismissals={dismissals}
+          usersById={usersById}
+          onRestore={restore}
+          onClose={() => setShowDismissed(false)}
         />
       )}
     </div>
@@ -787,6 +911,136 @@ const RenameUserDialog = ({ user, onRename, onClose }: RenameUserDialogProps) =>
           >
             {isSaving ? <Loader2 size={14} className='animate-spin' /> : <Check size={14} />}
             {isSaving ? 'Saving…' : 'Save name'}
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+};
+
+type DismissedPairsDialogProps = {
+  dismissals: MergeDismissal[];
+  usersById: Map<number, AdminUser>;
+  onRestore: (userId1: number, userId2: number) => Promise<void>;
+  onClose: () => void;
+};
+
+/**
+ * Modal listing every pair of accounts the superadmin has marked as "not merge candidates", each with an undo action so
+ * a mistake can be reversed without touching the database. Pairs whose accounts no longer exist are simply not listed.
+ */
+const DismissedPairsDialog = ({ dismissals, usersById, onRestore, onClose }: DismissedPairsDialogProps) => {
+  const [busyKey, setBusyKey] = useState<string | null>(null);
+  /** Backdrop closes only when the press itself started on the backdrop - never when a drag began inside the dialog. */
+  const pointerDownOnBackdrop = useRef(false);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      onClose();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [onClose]);
+
+  const handleRestore = async (pair: MergeDismissal) => {
+    setBusyKey(pairKey(pair.userId1 ?? 0, pair.userId2 ?? 0));
+    try {
+      await onRestore(pair.userId1 ?? 0, pair.userId2 ?? 0);
+    } catch (error) {
+      console.error(error);
+      alert(error instanceof Error ? error.message : String(error));
+    } finally {
+      setBusyKey(null);
+    }
+  };
+
+  const renderAccount = (account?: AdminUser) => (
+    <div className='flex min-w-0 flex-1 items-center gap-2'>
+      <Avatar name={account?.name} mediaIdentity={account?.mediaIdentity} size='micro' />
+      <div className='min-w-0'>
+        <p className='truncate text-[11px] font-semibold text-slate-200'>{account?.name ?? 'Unknown user'}</p>
+        <p className='truncate text-[10px] font-medium text-slate-500'>
+          #{account?.userId ?? '?'}
+          {account?.emails?.[0] ? ` · ${account.emails[0]}` : ''}
+        </p>
+      </div>
+    </div>
+  );
+
+  return createPortal(
+    <div
+      className='animate-in fade-in fixed inset-0 z-200 flex h-dvh min-h-dvh w-full items-center justify-center bg-black/80 p-4 backdrop-blur-sm duration-200'
+      role='dialog'
+      aria-modal='true'
+      aria-labelledby='dismissed-pairs-modal-title'
+      onMouseDown={(e) => {
+        pointerDownOnBackdrop.current = e.target === e.currentTarget;
+      }}
+      onClick={() => {
+        if (!pointerDownOnBackdrop.current) return;
+        pointerDownOnBackdrop.current = false;
+        onClose();
+      }}
+    >
+      <div className='bg-surface-card border-surface-border flex max-h-[85dvh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border shadow-2xl'>
+        <div className='border-surface-border bg-surface-raised flex shrink-0 items-center justify-between border-b px-4 py-3 sm:px-5'>
+          <h3 id='dismissed-pairs-modal-title' className='type-label flex min-w-0 items-center gap-2 text-slate-200'>
+            <Ban size={16} className='shrink-0 text-slate-400' />
+            <span className='truncate'>Not merge candidates</span>
+            <span className='shrink-0 text-[10px] font-medium text-slate-500'>{dismissals.length}</span>
+          </h3>
+          <button
+            type='button'
+            onClick={onClose}
+            disabled={busyKey !== null}
+            className='hover:bg-surface-raised-hover -mr-1 shrink-0 rounded-lg p-1.5 opacity-70 transition-colors hover:opacity-100 disabled:pointer-events-none disabled:opacity-40'
+            aria-label='Close'
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        <div className='min-h-0 flex-1 overflow-y-auto'>
+          {dismissals.length === 0 ? (
+            <p className='px-4 py-10 text-center text-[11px] text-slate-500'>
+              No account pairs have been marked as &quot;not merge candidates&quot;.
+            </p>
+          ) : (
+            <ul className='divide-surface-border/40 divide-y'>
+              {dismissals.map((pair) => {
+                const key = pairKey(pair.userId1 ?? 0, pair.userId2 ?? 0);
+                const busy = busyKey === key;
+                return (
+                  <li key={key} className='flex items-center gap-2 px-4 py-2.5 sm:px-5'>
+                    {renderAccount(usersById.get(pair.userId1 ?? 0))}
+                    <ArrowRight size={12} className='shrink-0 text-slate-500' aria-hidden />
+                    {renderAccount(usersById.get(pair.userId2 ?? 0))}
+                    <button
+                      type='button'
+                      disabled={busyKey !== null}
+                      onClick={() => handleRestore(pair)}
+                      title='Undo: let these two accounts be suggested for merging again'
+                      className='border-surface-border/60 bg-surface-raised hover:border-surface-border inline-flex shrink-0 items-center gap-1 rounded-md border px-2 py-1 text-[10px] font-semibold text-slate-400 transition-colors hover:text-slate-100 disabled:cursor-not-allowed disabled:opacity-50'
+                    >
+                      {busy ? (
+                        <Loader2 size={11} className='animate-spin' aria-hidden />
+                      ) : (
+                        <RotateCcw size={11} aria-hidden />
+                      )}
+                      Undo
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+
+        <div className='border-surface-border bg-surface-raised flex shrink-0 justify-end gap-2 border-t px-3 py-3 sm:px-5'>
+          <button type='button' onClick={onClose} className='modal-action-cancel'>
+            Close
           </button>
         </div>
       </div>
