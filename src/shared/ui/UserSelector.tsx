@@ -1,14 +1,15 @@
 import { useMemo, useRef, useState, useCallback } from 'react';
 import CreatableSelect from 'react-select/creatable';
-import type { GroupBase, SelectInstance, StylesConfig } from 'react-select';
+import type { FormatOptionLabelMeta, GroupBase, SelectInstance, StylesConfig } from 'react-select';
 import { useUserSearch } from '../../api';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { themedSelectStyles } from './reactSelectStyles';
+import { Avatar } from './Avatar/Avatar';
 
 type UserOption = {
   value?: string | number;
   label?: string;
-} & components['schemas']['User'];
+} & components['schemas']['UserSearchResult'];
 
 type MultiUserProps = {
   placeholder: string;
@@ -181,6 +182,31 @@ const menuProps = {
 };
 const selectClassPrefix = 'user-select';
 
+/**
+ * Two-line option row: avatar, name and `#123` on top, the user's regions underneath. Options created
+ * inline ("Create …") only carry a label, so they fall back to the name. The collapsed control value
+ * stays the plain name.
+ */
+const formatUserOption = (option: UserOption, meta: FormatOptionLabelMeta<UserOption>): React.ReactNode => {
+  const name = option.name ?? option.label ?? '';
+  if (meta.context === 'value') {
+    return name;
+  }
+  const regions = option.regions?.join(', ');
+  return (
+    <div className='flex min-w-0 items-center gap-2'>
+      <Avatar name={option.name} mediaIdentity={option.mediaIdentity} size='mini' />
+      <div className='min-w-0 flex-1'>
+        <div className='flex items-baseline justify-between gap-2'>
+          <div className='truncate'>{name}</div>
+          {option.id ? <span className='text-[11px] font-normal tabular-nums opacity-60'>#{option.id}</span> : null}
+        </div>
+        {regions && <div className='truncate text-[11px] leading-snug opacity-60'>{regions}</div>}
+      </div>
+    </div>
+  );
+};
+
 export const UserSelector = ({
   placeholder,
   value: photographerName,
@@ -250,6 +276,7 @@ export const UserSelector = ({
           isClearable
           blurInputOnSelect
           menuIsOpen={menuIsOpen}
+          formatOptionLabel={formatUserOption}
           value={selectedOption}
           className={required && isEmpty ? 'user-select--required' : ''}
           onInputChange={(newValue) => setSearchInput(newValue)}
@@ -323,6 +350,7 @@ export const UsersSelector = ({
           classNamePrefix={selectClassPrefix}
           styles={styles}
           isMulti
+          formatOptionLabel={formatUserOption}
           isClearable
           blurInputOnSelect
           menuIsOpen={menuIsOpen}

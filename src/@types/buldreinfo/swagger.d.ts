@@ -1397,6 +1397,7 @@ export type components = {
             pageViews?: string;
             lockedAdmin?: boolean;
             lockedSuperadmin?: boolean;
+            regions?: string[];
         };
         ProfileIdentity: {
             /** Format: int32 */
@@ -1688,6 +1689,13 @@ export type components = {
             lastLogin?: string;
             emails?: string[];
             regions?: components["schemas"]["AdminRegion"][];
+        };
+        UserSearchResult: {
+            /** Format: int32 */
+            id?: number;
+            name?: string;
+            mediaIdentity?: components["schemas"]["MediaIdentity"];
+            regions?: string[];
         };
         MergeDismissal: {
             /** Format: int32 */
@@ -3335,7 +3343,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["User"][];
+                    "application/json": components["schemas"]["UserSearchResult"][];
                 };
             };
         };

@@ -46,6 +46,16 @@ function getSearchFallbackMeta(kind: SearchEntityKind): { Icon: LucideIcon; labe
   }
 }
 
+/**
+ * The server builds user hits as `/user/{id}`, so parse the id back out rather than widening the
+ * shared `Search` payload. It is rendered as `#1041` in the slot where the other hit kinds show
+ * their view count — users have none — and it is what tells two same-named climbers apart.
+ */
+function getUserIdFromPath(url?: string | null): number | null {
+  const match = /^\/user\/(\d+)$/.exec(url ?? '');
+  return match ? Number(match[1]) : null;
+}
+
 const SEARCH_THUMB_PX = 44;
 
 const FALLBACK_THUMB_CLASS = 'border-white/5 bg-surface-nav transition-colors group-hover:border-brand-border';
@@ -198,6 +208,8 @@ const SearchBox = () => {
               const fallbackMeta = getSearchFallbackMeta(entityKind);
               const FallbackIcon = fallbackMeta.Icon;
               const userInitialsFallback = entityKind === 'user' && !result.externalUrl && !imageSrc;
+              const userId = entityKind === 'user' ? getUserIdFromPath(result.url) : null;
+              const userRegions = entityKind === 'user' ? (result.regions ?? []) : [];
 
               return (
                 <button
@@ -277,10 +289,24 @@ const SearchBox = () => {
                           </>
                         )}
                       </div>
-                      {result.pageViews && (
-                        <span className='text-xs font-normal text-slate-400 tabular-nums'>{result.pageViews}</span>
+                      {userId ? (
+                        <span className='text-xs font-normal text-slate-400 tabular-nums'>#{userId}</span>
+                      ) : (
+                        result.pageViews && (
+                          <span className='text-xs font-normal text-slate-400 tabular-nums'>{result.pageViews}</span>
+                        )
                       )}
                     </div>
+                    {userRegions.length > 0 && (
+                      <div
+                        className={cn(
+                          'truncate text-sm text-slate-500 group-hover:text-slate-400',
+                          twInk.lightGroupHoverSlate700,
+                        )}
+                      >
+                        {userRegions.join(', ')}
+                      </div>
+                    )}
                     {result.breadcrumb && (
                       <div
                         className={cn(
