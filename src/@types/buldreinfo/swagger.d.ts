@@ -1409,6 +1409,7 @@ export type components = {
             mediaIdentity?: components["schemas"]["MediaIdentity"];
             emails?: string[];
             userRegions?: components["schemas"]["UserRegion"][];
+            activityRegions?: string[];
             lastActivity?: string;
         };
         UserRegion: {
@@ -1689,6 +1690,7 @@ export type components = {
             lastLogin?: string;
             emails?: string[];
             regions?: components["schemas"]["AdminRegion"][];
+            activityRegions?: string[];
         };
         UserSearchResult: {
             /** Format: int32 */

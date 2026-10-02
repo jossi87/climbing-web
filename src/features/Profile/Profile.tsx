@@ -95,14 +95,8 @@ const Profile = () => {
   const disciplines = profile.disciplines;
 
   const fullName = [identity?.firstname ?? '', identity?.lastname ?? ''].filter(Boolean).join(' ');
-  const regions = Array.from(
-    new Set(
-      (identity?.userRegions ?? [])
-        .filter((r) => r.activity)
-        .map((r) => r.name)
-        .filter(Boolean),
-    ),
-  ).sort();
+  // The canonical region list: only regions with activity (fa + tick + aid FA), most ascents first.
+  const regions = identity?.activityRegions ?? [];
 
   const numMedia = (kpis?.numImageTags ?? 0) + (kpis?.numVideoTags ?? 0);
   const numCaptured = (kpis?.numImagesCreated ?? 0) + (kpis?.numVideosCreated ?? 0);

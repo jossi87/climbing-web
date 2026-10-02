@@ -365,6 +365,7 @@ const Users = () => {
     const canEditName = user.canEditName === true;
     const emails = user.emails ?? [];
     const regions = user.regions ?? [];
+    const activityRegions = user.activityRegions ?? [];
     const profile = profileUrl(user, regions[0]);
     const linkProps = { href: profile, target: '_blank', rel: 'noopener noreferrer' };
     return (
@@ -434,15 +435,16 @@ const Users = () => {
                 </span>
               </p>
             )}
-            {regions.length > 0 && (
+            {activityRegions.length > 0 && (
               <p
+                title='Regions where this user has activity (most ascents first)'
                 className={cn(
                   'mt-0.5 flex min-w-0 items-start gap-1 text-[10px] leading-snug text-slate-500',
                   twInk.lightTextSlate700,
                 )}
               >
                 <MapPin size={9} className='mt-px shrink-0' aria-hidden />
-                <span className='min-w-0 break-words'>{regions.map((region) => region.url).join(', ')}</span>
+                <span className='min-w-0 break-words'>{activityRegions.join(', ')}</span>
               </p>
             )}
           </div>
