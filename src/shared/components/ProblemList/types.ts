@@ -1,3 +1,5 @@
+import { normalizeSubType } from '../../../utils/routeTradGear';
+
 export type Row = {
   element: React.ReactNode;
   areaName: string;
@@ -11,6 +13,12 @@ export type Row = {
   ticked: boolean;
   rock: string;
   subType: string;
+  /**
+   * Profile lists only: the discipline the row belongs to (`type.group` — 'Bouldering' | 'Climbing' | 'Ice').
+   * When present, {@link ProblemList} offers a multi-select discipline filter (default: all). Lists without a
+   * discipline (sector / area) simply render no such control.
+   */
+  discipline?: string;
   /** Multi-pitch route count (only exposed for user todo lists; used for the "Only multipitch" filter). */
   numPitches?: number;
   /** Sector/area lists: used with {@link rowListTypeKey} for Broken grouping. */
@@ -25,9 +33,12 @@ export type Row = {
   };
 };
 
-/** Matches sector type summaries: Projects (grade 0), Broken, else subtype or «Boulders». */
+/**
+ * Matches sector type summaries: Projects (grade 0), Broken, else the subtype — or «Boulder» when the problem has no
+ * subtype (`type.subType` is null for plain boulders, see {@link normalizeSubType}).
+ */
 export function rowListTypeKey(row: Row): string {
   if (row.broken) return 'Broken';
   if (row.gradeWeight === 0) return 'Projects';
-  return row.subType || 'Boulders';
+  return normalizeSubType(row.subType) || 'Boulder';
 }

@@ -1945,7 +1945,10 @@ export type components = {
             nr?: number;
             name?: string;
             grade?: string;
+            /** Format: int32 */
+            gradeWeight?: number;
             subType?: string;
+            group?: string;
             /** Format: int32 */
             numPitches?: number;
             coordinates?: components["schemas"]["Coordinates"];
@@ -1980,6 +1983,7 @@ export type components = {
             subType?: string;
             /** Format: int32 */
             numPitches?: number;
+            group?: string;
             /** Format: int32 */
             idProblem?: number;
             /** Format: int32 */

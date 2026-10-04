@@ -3,6 +3,7 @@ import { neverGuard } from '../../../utils/neverGuard';
 import type { DispatchUpdate } from '../FilterForm/GradeSelect/GradeSelect';
 import { rowListTypeKey, type Row } from './types';
 import { useGrades } from '../Meta';
+import { distinctDisciplineGroups } from '../Profile/profileDiscipline';
 import { getLocales } from '../../../api';
 import { useLocalStorage, useSessionStorage } from '../../../utils/use-local-storage';
 
@@ -20,6 +21,8 @@ type UiState = {
   onlyFa: boolean;
   onlyMultipitch: boolean;
   types: Record<string, boolean>;
+  /** Profile lists: enabled state per `type.group` discipline (`Row.discipline`). Not persisted — every visit starts with all disciplines. */
+  disciplines: Record<string, boolean>;
 };
 
 type DerivedState = {
@@ -29,6 +32,14 @@ type DerivedState = {
   uniqueRocks: string[];
   uniqueSectors: string[];
   uniqueTypes: string[];
+  /** Ordered disciplines found on the rows; empty for lists without a discipline facet (sector / area). */
+  uniqueDisciplines: string[];
+  /**
+   * True while the visible rows stay within one grade system — i.e. at most one discipline is enabled.
+   * `useGrades()` only knows the requesting site's own grade system, so a mixed list must not be
+   * grade-filtered or grade-sorted (see {@link ProblemList} and the grade range below).
+   */
+  gradeComparable: boolean;
   containsFa: boolean;
   containsTicked: boolean;
   containsMultipitch: boolean;
@@ -45,6 +56,8 @@ type Update =
   | { action: 'only-multipitch'; onlyMultipitch?: UiState['onlyMultipitch'] }
   | { action: 'init-types'; typeNames: string[] }
   | { action: 'type'; type: string; enabled: boolean }
+  | { action: 'init-disciplines'; disciplines: string[] }
+  | { action: 'discipline'; discipline: string; enabled: boolean }
   | { action: 'reset'; defaultOrder: OrderOption };
 
 const uiStateReducer = (state: UiState, update: Update): UiState => {
@@ -127,10 +140,40 @@ const uiStateReducer = (state: UiState, update: Update): UiState => {
       };
     }
 
+    case 'discipline': {
+      const nextDisciplines = {
+        ...state.disciplines,
+        [update.discipline]: update.enabled,
+      };
+      /** Never leave the list without any discipline — unticking the last one resets to “all disciplines”. */
+      const anyEnabled = Object.values(nextDisciplines).some(Boolean);
+      return {
+        ...state,
+        disciplines: anyEnabled
+          ? nextDisciplines
+          : Object.fromEntries(Object.keys(nextDisciplines).map((discipline) => [discipline, true])),
+      };
+    }
+
+    case 'init-disciplines': {
+      const nextDisciplines: Record<string, boolean> = {};
+      for (const discipline of update.disciplines) {
+        nextDisciplines[discipline] = state.disciplines[discipline] ?? true;
+      }
+      return {
+        ...state,
+        disciplines: nextDisciplines,
+      };
+    }
+
     case 'reset': {
       const defaultTypes: Record<string, boolean> = {};
       for (const typeName of Object.keys(state.types)) {
         defaultTypes[typeName] = true;
+      }
+      const defaultDisciplines: Record<string, boolean> = {};
+      for (const discipline of Object.keys(state.disciplines)) {
+        defaultDisciplines[discipline] = true;
       }
       return {
         ...state,
@@ -142,6 +185,7 @@ const uiStateReducer = (state: UiState, update: Update): UiState => {
         onlyFa: false,
         onlyMultipitch: false,
         types: defaultTypes,
+        disciplines: defaultDisciplines,
       };
     }
 
@@ -232,13 +276,14 @@ export const useProblemListState = ({
 
   const { mapping, easyToHard } = useGrades();
   const typeNames = useMemo(() => [...new Set(rows.map(rowListTypeKey))].sort(), [rows]);
+  /** Profile lists only: the `type.group` disciplines present on the rows (ordered Bouldering → Climbing → Ice). */
+  const disciplineNames = useMemo(() => distinctDisciplineGroups(rows.map((row) => row.discipline)), [rows]);
 
   const validGradeLow = storedGradeLow !== null && easyToHard.includes(storedGradeLow) ? storedGradeLow : null;
   const validGradeHigh = storedGradeHigh !== null && easyToHard.includes(storedGradeHigh) ? storedGradeHigh : null;
 
-  const [{ gradeLow, gradeHigh, hideTicked, onlyFa, onlyMultipitch, order, groupBy, types }, dispatch] = useReducer(
-    uiStateReducer,
-    {
+  const [{ gradeLow, gradeHigh, hideTicked, onlyFa, onlyMultipitch, order, groupBy, types, disciplines }, dispatch] =
+    useReducer(uiStateReducer, {
       gradeLow: validGradeLow ?? undefined,
       gradeHigh: validGradeHigh ?? undefined,
       order: CLEANED_ORDER[storedOrderBy as OrderOption] ?? defaultOrder,
@@ -254,8 +299,12 @@ export const useProblemListState = ({
         },
         {} as Record<string, boolean>,
       ),
-    },
-  );
+      /** Disciplines are not persisted either — “ALL” is the default for every visit. */
+      disciplines: rows.reduce(
+        (acc, row) => (row.discipline ? { ...acc, [row.discipline]: true } : acc),
+        {} as Record<string, boolean>,
+      ),
+    });
 
   useEffect(() => setStoredHideTicked(hideTicked), [hideTicked, setStoredHideTicked]);
   useEffect(() => setStoredOnlyFa(onlyFa), [onlyFa, setStoredOnlyFa]);
@@ -265,6 +314,25 @@ export const useProblemListState = ({
   useEffect(() => setStoredGradeHigh(gradeHigh ?? null), [gradeHigh, setStoredGradeHigh]);
   useEffect(() => setStoredTypes((prev) => ({ ...prev, ...types })), [types, setStoredTypes]);
   useEffect(() => dispatch({ action: 'init-types', typeNames }), [typeNames]);
+  useEffect(() => dispatch({ action: 'init-disciplines', disciplines: disciplineNames }), [disciplineNames]);
+
+  /**
+   * Grade controls are only offered while the visible list stays within one grade system. `useGrades()`
+   * describes the requesting site's own system only, whereas a multi-discipline profile list also holds
+   * grades from other systems (French / WI on buldreinfo). While mixed, the stored grade range is parked:
+   * it is kept (so it comes back when narrowing to one discipline) but not applied — applying it would
+   * silently drop every row whose grade is unknown to this site's `mapping`.
+   */
+  const gradeComparable = useMemo(
+    () => disciplineNames.filter((discipline) => disciplines[discipline] !== false).length <= 1,
+    [disciplineNames, disciplines],
+  );
+
+  /** A persisted grade sort cannot order a mixed list (weights come from different grade systems) — fall back to the default order. */
+  useEffect(() => {
+    if (gradeComparable) return;
+    if (order === 'grade-asc' || order === 'grade-desc') dispatch({ action: 'order-by', order: defaultOrder });
+  }, [defaultOrder, gradeComparable, order]);
 
   const [filtered, uniqueAreas, uniqueRocks, uniqueSectors, uniqueTypes] = useMemo(() => {
     const areas = new Set<string>();
@@ -275,9 +343,16 @@ export const useProblemListState = ({
     const filterByType = !Object.values(types).every((v) => {
       return !v;
     });
+    const filterByDiscipline = !Object.values(disciplines).every((v) => {
+      return !v;
+    });
 
-    const indexLow = mapping[gradeLow ?? easyToHard[0]];
-    const indexHigh = mapping[gradeHigh ?? easyToHard[easyToHard.length - 1]];
+    const lowestGrade = gradeComparable ? (gradeLow ?? easyToHard[0]) : easyToHard[0];
+    const highestGrade = gradeComparable
+      ? (gradeHigh ?? easyToHard[easyToHard.length - 1])
+      : easyToHard[easyToHard.length - 1];
+    const indexLow = mapping[lowestGrade];
+    const indexHigh = mapping[highestGrade];
 
     const filtered = rows
       .filter((problem) => {
@@ -295,13 +370,27 @@ export const useProblemListState = ({
           (hideTicked ? !problem.ticked : true) &&
           (onlyFa ? problem.fa : true) &&
           (onlyMultipitch ? (problem.numPitches ?? 0) > 1 : true) &&
-          (filterByType ? !!types[tKey] : true)
+          (filterByType ? !!types[tKey] : true) &&
+          (filterByDiscipline && problem.discipline ? !!disciplines[problem.discipline] : true)
         );
       })
       .sort(SORTS[order]);
 
     return [filtered, [...areas].sort(), [...rocks].sort(), [...sectors].sort(), [...typeNames].sort()];
-  }, [easyToHard, gradeHigh, gradeLow, hideTicked, mapping, onlyFa, onlyMultipitch, order, rows, types]);
+  }, [
+    disciplines,
+    easyToHard,
+    gradeComparable,
+    gradeHigh,
+    gradeLow,
+    hideTicked,
+    mapping,
+    onlyFa,
+    onlyMultipitch,
+    order,
+    rows,
+    types,
+  ]);
 
   return {
     dispatch,
@@ -315,6 +404,7 @@ export const useProblemListState = ({
     onlyFa,
     onlyMultipitch,
     types,
+    disciplines,
 
     // Derived state
     filtered,
@@ -323,6 +413,8 @@ export const useProblemListState = ({
     uniqueRocks,
     uniqueSectors,
     uniqueTypes,
+    uniqueDisciplines: disciplineNames,
+    gradeComparable,
     containsFa: !!rows.find(({ fa }) => !!fa),
     containsTicked: !!rows.find(({ ticked }) => !!ticked),
     containsMultipitch: !!rows.find(({ numPitches }) => (numPitches ?? 0) > 1),

@@ -3,12 +3,13 @@ import { createPortal } from 'react-dom';
 import AccordionContainer from './AccordionContainer';
 import { rowListTypeKey, type Row } from './types';
 import { type GroupOption, type OrderOption, type State, useProblemListState } from './state';
-import { ChevronDown, Filter, FolderTree, ArrowDownWideNarrow, RotateCcw } from 'lucide-react';
+import { ChevronDown, Filter, FolderTree, ArrowDownWideNarrow, RotateCcw, Check, Layers } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 import { activityFilterChipBase, activityFilterChipOn } from '../../../design/activityFilterChips';
 import { twInk } from '../../../design/twInk';
 import { useGrades } from '../Meta';
+import { disciplineGroupLabel } from '../Profile/profileDiscipline';
 import { FormSwitch } from '../../ui';
 import { ProblemListCompactContext } from './compactViewContext';
 
@@ -203,6 +204,10 @@ const ToolbarDropdown = <T extends string>({
   value,
   options,
   onSelect,
+  checkedValues,
+  onToggleValue,
+  displayText,
+  displayShortText,
   compact,
   fullWidth,
   className: wrapperClassName,
@@ -212,9 +217,22 @@ const ToolbarDropdown = <T extends string>({
 }: {
   label: string;
   icon?: React.ComponentType<{ size?: number; className?: string }>;
-  value: T;
+  /** Single-select: the currently selected option. Omit in multi-select mode (see `checkedValues`). */
+  value?: T;
   options: ToolbarDropdownOption<T>[];
-  onSelect: (v: T) => void;
+  /** Single-select handler. Omit in multi-select mode. */
+  onSelect?: (v: T) => void;
+  /**
+   * Multi-select: the options currently enabled. When set, the menu stays open on click and each option
+   * renders as a checkbox — the chip text then comes from `displayText` / `displayShortText`.
+   */
+  checkedValues?: T[];
+  /** Multi-select: toggles a single option (the menu stays open). */
+  onToggleValue?: (v: T) => void;
+  /** Chip text override (multi-select) — otherwise derived from `value`. */
+  displayText?: string;
+  /** Short chip text override (dense/compact toolbar) — otherwise derived from `value`. */
+  displayShortText?: string;
   compact?: boolean;
   fullWidth?: boolean;
   className?: string;
@@ -225,6 +243,7 @@ const ToolbarDropdown = <T extends string>({
   /** Called when the dropdown is opened — used to close sibling panels (e.g. the filter). */
   onOpen?: () => void;
 }) => {
+  const isMulti = !!checkedValues;
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -236,9 +255,9 @@ const ToolbarDropdown = <T extends string>({
     width: number;
     maxHeight: number;
   } | null>(null);
-  const selected = options.find((opt) => opt.value === value);
-  const shortLabel = selected?.shortText ?? selected?.text ?? '';
-  const fullLabel = selected?.text ?? '';
+  const selected = value !== undefined ? options.find((opt) => opt.value === value) : undefined;
+  const shortLabel = displayShortText ?? selected?.shortText ?? selected?.text ?? displayText ?? '';
+  const fullLabel = displayText ?? selected?.text ?? '';
   const displayLabel = compact || fullWidth ? shortLabel : fullLabel;
 
   useEffect(() => {
@@ -298,8 +317,8 @@ const ToolbarDropdown = <T extends string>({
           if (!isOpen) onOpen?.();
           setIsOpen((v) => !v);
         }}
-        aria-label={`${label}: ${selected?.text ?? ''}`}
-        title={selected?.text ? `${label}: ${selected.text}` : label}
+        aria-label={`${label}: ${fullLabel}`}
+        title={fullLabel ? `${label}: ${fullLabel}` : label}
         className={cn(
           variant === 'ghost'
             ? 'inline-flex h-8 w-full min-w-0 items-center justify-start gap-1.5 rounded-lg px-2 text-[13px] leading-none font-medium transition-colors sm:px-2.5 sm:text-[14px]'
@@ -405,25 +424,47 @@ const ToolbarDropdown = <T extends string>({
               }}
             >
               <div className='divide-surface-border/40 divide-y'>
-                {options.map((opt) => (
-                  <button
-                    ref={opt.value === value ? selectedOptionRef : null}
-                    key={opt.key}
-                    type='button'
-                    onClick={() => {
-                      onSelect(opt.value);
-                      setIsOpen(false);
-                    }}
-                    className={cn(
-                      'w-full px-3 py-2.5 text-left text-[13px] leading-snug transition-colors sm:px-3.5 sm:text-[14px]',
-                      opt.value === value
-                        ? 'bg-surface-raised-hover font-medium text-slate-50'
-                        : 'hover:bg-surface-raised-hover text-slate-300 hover:text-slate-50',
-                    )}
-                  >
-                    {opt.text}
-                  </button>
-                ))}
+                {options.map((opt) => {
+                  const checked = checkedValues ? checkedValues.includes(opt.value) : opt.value === value;
+                  return (
+                    <button
+                      ref={checked ? selectedOptionRef : null}
+                      key={opt.key}
+                      type='button'
+                      role={isMulti ? 'menuitemcheckbox' : undefined}
+                      aria-checked={isMulti ? checked : undefined}
+                      onClick={() => {
+                        if (isMulti) {
+                          /** Multi-select keeps the menu open so several options can be toggled in one go. */
+                          onToggleValue?.(opt.value);
+                          return;
+                        }
+                        onSelect?.(opt.value);
+                        setIsOpen(false);
+                      }}
+                      className={cn(
+                        'w-full px-3 py-2.5 text-left text-[13px] leading-snug transition-colors sm:px-3.5 sm:text-[14px]',
+                        isMulti && 'flex items-center gap-2',
+                        checked
+                          ? 'bg-surface-raised-hover font-medium text-slate-50'
+                          : 'hover:bg-surface-raised-hover text-slate-300 hover:text-slate-50',
+                      )}
+                    >
+                      {isMulti ? (
+                        <>
+                          <Check
+                            size={13}
+                            strokeWidth={2.5}
+                            className={cn('shrink-0', checked ? problemListToolbarChipBrandInk : 'text-transparent')}
+                          />
+                          <span className='min-w-0 flex-1 truncate'>{opt.text}</span>
+                        </>
+                      ) : (
+                        opt.text
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>,
             document.body,
@@ -541,11 +582,14 @@ export const ProblemList = ({
     onlyFa,
     onlyMultipitch,
     types,
+    disciplines,
     filtered,
     uniqueAreas,
     uniqueRocks,
     uniqueSectors,
     uniqueTypes,
+    uniqueDisciplines,
+    gradeComparable,
     containsFa,
     containsTicked,
     containsMultipitch,
@@ -558,7 +602,35 @@ export const ProblemList = ({
     filterPreferenceBucket,
   });
 
-  const orderByOptions = ORDER_BY_OPTIONS[mode].filter((opt) => !excludedSortOptions?.includes(opt.value));
+  /**
+   * Profile lists put a discipline on every row — with 2+ present, the discipline filter leads the toolbar
+   * (left of Group) and defaults to “All”. Sector/area lists have none and render no such control.
+   */
+  const disciplineOptions = useMemo(
+    () =>
+      uniqueDisciplines.map((discipline) => ({
+        key: discipline,
+        text: disciplineGroupLabel(discipline),
+        value: discipline,
+      })),
+    [uniqueDisciplines],
+  );
+  const enabledDisciplines = uniqueDisciplines.filter((discipline) => disciplines[discipline] !== false);
+  const allDisciplinesEnabled = enabledDisciplines.length === uniqueDisciplines.length;
+  const enabledDisciplineLabels = enabledDisciplines.map(disciplineGroupLabel);
+  /** Dense chip summary: “All”, the single discipline, or “Bouldering +2”. */
+  const disciplineShortLabel = allDisciplinesEnabled
+    ? 'All'
+    : enabledDisciplineLabels.length === 1
+      ? enabledDisciplineLabels[0]
+      : `${enabledDisciplineLabels[0]} +${enabledDisciplineLabels.length - 1}`;
+
+  const orderByOptions = ORDER_BY_OPTIONS[mode].filter(
+    (opt) =>
+      !excludedSortOptions?.includes(opt.value) &&
+      /** Grade sorting compares `gradeWeight`s from this site's grade system only — unavailable on a mixed list. */
+      (gradeComparable || (opt.value !== 'grade-asc' && opt.value !== 'grade-desc')),
+  );
   const maxGradeIndex = Math.max(easyToHard.length - 1, 0);
 
   /** Grade range options: content grades plus the current selection (so a stale persisted value still renders). */
@@ -582,15 +654,15 @@ export const ProblemList = ({
   const showListControls = allRows.length >= MIN_ROWS_FOR_LIST_CONTROLS;
 
   const hasActiveFilters =
-    gradeLow !== undefined ||
-    gradeHigh !== undefined ||
+    /** A parked grade range (mixed disciplines) is not applied, so it must not light up the Filter chip. */
+    (gradeComparable && (gradeLow !== undefined || gradeHigh !== undefined)) ||
     Object.values(types).some((v) => !v) ||
     hideTicked ||
     onlyFa ||
     onlyMultipitch;
 
-  /** Anything deviates from the defaults — drives the Reset button visibility (sort/group included). */
-  const hasChanges = hasActiveFilters || order !== defaultOrder || groupBy !== 'none';
+  /** Anything deviates from the defaults — drives the Reset button visibility (sort/group/discipline included). */
+  const hasChanges = hasActiveFilters || order !== defaultOrder || groupBy !== 'none' || !allDisciplinesEnabled;
 
   if (!allRows?.length) {
     return null;
@@ -664,6 +736,22 @@ export const ProblemList = ({
       <div className={designContract.layout.problemListToolbarRow}>
         {showListControls && (
           <>
+            {disciplineOptions.length > 1 && (
+              <ToolbarDropdown
+                className='relative min-w-0 shrink-0 md:max-w-[15rem]'
+                label='Discipline'
+                icon={Layers}
+                displayText={allDisciplinesEnabled ? 'All disciplines' : enabledDisciplineLabels.join(', ')}
+                displayShortText={disciplineShortLabel}
+                checkedValues={enabledDisciplines}
+                onToggleValue={(discipline) =>
+                  dispatch({ action: 'discipline', discipline, enabled: disciplines[discipline] === false })
+                }
+                options={disciplineOptions}
+                changed={!allDisciplinesEnabled}
+                onOpen={() => setFilterShowing(false)}
+              />
+            )}
             {groupByOptions.length > 1 && (
               <ToolbarDropdown
                 className='relative min-w-0 shrink-0 md:max-w-[12rem]'
@@ -763,8 +851,11 @@ export const ProblemList = ({
         role='region'
         aria-label='List filters'
       >
-        {/** Show the grade range only when it can actually filter (2+ distinct grades) or a grade filter is already active. */}
-        {(gradeRangeOptions.length > 1 || gradeLow !== undefined || gradeHigh !== undefined) && (
+        {/**
+         * Show the grade range only when it can actually filter (2+ distinct grades) or a grade filter is already
+         * active — and only while the list stays within one grade system (`gradeComparable`).
+         */}
+        {gradeComparable && (gradeRangeOptions.length > 1 || gradeLow !== undefined || gradeHigh !== undefined) && (
           <div className='flex flex-wrap items-center gap-x-3 gap-y-2'>
             <GradeRangeControl
               low={currentLow}
@@ -776,6 +867,12 @@ export const ProblemList = ({
             />
           </div>
         )}
+        {/** Mixed disciplines park the persisted range (kept, not applied) — say so instead of showing a dead control. */}
+        {!gradeComparable && (gradeLow !== undefined || gradeHigh !== undefined) ? (
+          <span className={cn(designContract.typography.meta, 'text-slate-500')}>
+            Grade range and grade sorting apply within a single discipline.
+          </span>
+        ) : null}
         {allTypes.length > 1 && (
           <div className='flex flex-wrap items-center gap-x-4 gap-y-1.5'>
             {allTypes.map((type) => (

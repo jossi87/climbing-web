@@ -48,6 +48,7 @@ type TodoItem = {
   grade: string;
   gradeWeight: number;
   subType: string;
+  group: string;
   numPitches: number;
   coordinates?: { latitude: number; longitude: number };
   problemLockedAdmin: boolean;
@@ -246,8 +247,9 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
             sectorLockedSuperadmin: !!sector.lockedSuperadmin,
             problemName: problem.name ?? '',
             grade: problem.grade ?? '',
-            gradeWeight: resolveGradeId(problem.grade ?? 'n/a'),
+            gradeWeight: problem.gradeWeight ?? resolveGradeId(problem.grade ?? 'n/a'),
             subType: problem.subType ?? '',
+            group: problem.group ?? '',
             numPitches: problem.numPitches ?? 0,
             coordinates:
               problem.coordinates?.latitude != null && problem.coordinates?.longitude != null
@@ -277,62 +279,62 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
   }
 
   return (
-    <>
-      <div className='space-y-4'>
-        <ProblemList
-          key={`user/${userId}/todo`}
-          storageKey={`user/${userId}/todo`}
-          mode='user'
-          defaultOrder='name'
-          excludedSortOptions={['date']}
-          contentBeforeList={(filteredRows) => {
-            // Compute area-level markers from the filtered rows so the map updates when filtering
-            const filteredAreaMarkers = computeFilteredAreaMarkers(filteredRows);
-            if (filteredAreaMarkers.length === 0) return null;
-            return (
-              <div className='-mx-4 mb-3 h-[35vh] w-[calc(100%+2rem)] min-w-0 overflow-hidden sm:-mx-6 sm:w-[calc(100%+3rem)]'>
-                <Leaflet
-                  key={'todo-inline=' + userId + '-areas'}
-                  autoZoom={true}
-                  height='100%'
-                  markers={filteredAreaMarkers}
-                  defaultCenter={defaultCenter}
-                  defaultZoom={defaultZoom}
-                  showSatelliteImage={false}
-                  clusterMarkers={true}
-                  flyToId={null}
-                />
-              </div>
-            );
-          }}
-          rows={items.map((item) => ({
-            element: <TodoListItem key={`todo-${item.id}-${item.nr ?? 'n'}`} item={item} />,
-            areaName: item.areaName,
-            sectorName: item.sectorName,
-            name: item.problemName,
-            nr: item.nr,
-            grade: item.grade,
-            gradeWeight: item.gradeWeight,
-            stars: 0,
-            numTicks: 0,
-            ticked: false,
-            rock: '',
-            subType: item.subType,
-            numPitches: item.numPitches,
-            num: item.todoId,
-            fa: false,
-            faDate: null,
-            marker: item.coordinates
-              ? {
-                  coordinates: item.coordinates,
-                  label: item.problemName,
-                  url: '/problem/' + item.id,
-                }
-              : undefined,
-          }))}
-        />
-      </div>
-    </>
+    <div className='space-y-4'>
+      <ProblemList
+        key={`user/${userId}/todo`}
+        storageKey={`user/${userId}/todo`}
+        mode='user'
+        defaultOrder='name'
+        excludedSortOptions={['date']}
+        contentBeforeList={(filteredRows) => {
+          // Compute area-level markers from the filtered rows so the map updates when filtering
+          const filteredAreaMarkers = computeFilteredAreaMarkers(filteredRows);
+          if (filteredAreaMarkers.length === 0) return null;
+          return (
+            <div className='-mx-4 mb-3 h-[35vh] w-[calc(100%+2rem)] min-w-0 overflow-hidden sm:-mx-6 sm:w-[calc(100%+3rem)]'>
+              <Leaflet
+                key={'todo-inline=' + userId + '-areas'}
+                autoZoom={true}
+                height='100%'
+                markers={filteredAreaMarkers}
+                defaultCenter={defaultCenter}
+                defaultZoom={defaultZoom}
+                showSatelliteImage={false}
+                clusterMarkers={true}
+                flyToId={null}
+              />
+            </div>
+          );
+        }}
+        rows={items.map((item) => ({
+          element: <TodoListItem key={`todo-${item.id}-${item.nr ?? 'n'}`} item={item} />,
+          areaName: item.areaName,
+          sectorName: item.sectorName,
+          name: item.problemName,
+          nr: item.nr,
+          grade: item.grade,
+          gradeWeight: item.gradeWeight,
+          stars: 0,
+          numTicks: 0,
+          ticked: false,
+          rock: '',
+          subType: item.subType,
+          /** Drives the toolbar's multi-select discipline filter (defaults to all). */
+          discipline: item.group,
+          numPitches: item.numPitches,
+          num: item.todoId,
+          fa: false,
+          faDate: null,
+          marker: item.coordinates
+            ? {
+                coordinates: item.coordinates,
+                label: item.problemName,
+                url: '/problem/' + item.id,
+              }
+            : undefined,
+        }))}
+      />
+    </div>
   );
 };
 

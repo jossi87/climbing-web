@@ -1,14 +1,14 @@
 import { Link } from 'react-router-dom';
 import Chart from '../Chart/Chart';
 import ProblemList from '../ProblemList';
-import { rowListTypeKey, type Row } from '../ProblemList/types';
+import type { Row } from '../ProblemList/types';
 import Leaflet from '../Leaflet/Leaflet';
 import { LockSymbol, Stars } from '../../ui/Indicators';
 import { Loading } from '../../ui/StatusWidgets';
 import { useProfileAscents } from '../../../api';
 import { useMeta } from '../Meta';
 import type { components } from '../../../@types/buldreinfo/swagger';
-import { AlertCircle, ExternalLink } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { NoPersonalGradeBadge } from '../../ui/NoPersonalGradeBadge';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
@@ -18,6 +18,7 @@ import {
   climbingRouteUsesPassiveGear,
   formatPassiveGearMarkerLine,
   formatRouteTypeLabel,
+  normalizeSubType,
 } from '../../../utils/routeTradGear';
 import { ProfileRowTextSep } from './ProfileRowTextSep';
 import {
@@ -133,8 +134,6 @@ type ProfileStatisticsProps = {
 
 /** Overview sub-component — renders a card per discipline with grade distribution chart. */
 const ProfileOverview = ({ disciplines }: { disciplines: components['schemas']['ProfileDiscipline'][] }) => {
-  const currentUrl = window.location.href;
-
   if (!disciplines.length) {
     return <div className='py-10 text-center text-slate-500'>No discipline data available.</div>;
   }
@@ -146,10 +145,6 @@ const ProfileOverview = ({ disciplines }: { disciplines: components['schemas']['
         const totalAscents = gradeDist.reduce((sum, g) => sum + (g.fa ?? 0) + (g.tick ?? 0), 0);
         const totalFas = gradeDist.reduce((sum, g) => sum + (g.fa ?? 0), 0);
         const totalTicks = gradeDist.reduce((sum, g) => sum + (g.tick ?? 0), 0);
-        // Normalize both URLs by stripping trailing slash and known tab segments (/overview, /ascents, etc.)
-        // so that /user/1 and /user/1/overview are treated as the same page.
-        const normalizeUrl = (url: string) => url.replace(/\/?(overview|ascents|todo|media|captured|map)?\/?$/, '');
-        const isCurrentPage = !!d.url && normalizeUrl(d.url) === normalizeUrl(currentUrl);
 
         return (
           <div key={d.discipline ?? 'unknown'} className='overflow-hidden'>
@@ -157,17 +152,6 @@ const ProfileOverview = ({ disciplines }: { disciplines: components['schemas']['
             <div className='bg-surface-raised px-4 py-3 sm:px-5'>
               <div className='flex min-w-0 items-center gap-2'>
                 <h3 className='type-h3 shrink-0 truncate font-semibold text-slate-100'>{d.discipline ?? 'Unknown'}</h3>
-                {d.url && !isCurrentPage && (
-                  <a
-                    href={d.url}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='inline-flex shrink-0 items-center justify-center rounded-md p-1.5 text-slate-400 transition-colors hover:bg-white/10 hover:text-slate-200'
-                    aria-label='Open external link'
-                  >
-                    <ExternalLink size={16} strokeWidth={2} />
-                  </a>
-                )}
               </div>
               <div className='mt-1 text-[13px] text-slate-400'>
                 <span className='tabular-nums'>
@@ -303,124 +287,130 @@ const ProfileAscentsView = ({ userId }: { userId: number }) => {
   }
 
   return (
-    <>
-      <ProblemList
-        key={`user/${userId}/ascents`}
-        storageKey={`user/${userId}`}
-        mode='user'
-        defaultOrder='date'
-        leadingBottomClassName='mb-2 sm:mb-2.5'
-        contentBeforeList={(filteredRows) => {
-          type TypeBucket = { count: number; numFa: number };
-          const buckets = new Map<string, TypeBucket>();
-          for (const row of filteredRows) {
-            const key = rowListTypeKey(row);
-            const prev = buckets.get(key) ?? { count: 0, numFa: 0 };
-            prev.count += 1;
-            if (row.fa) prev.numFa += 1;
-            buckets.set(key, prev);
-          }
-          const ascentTypeSummaries = [...buckets.entries()]
-            .map(([header, { count, numFa }]) => ({ key: header, header, count, numFa }))
-            .filter((s) => s.count > 0)
-            .sort((a, b) => a.header.localeCompare(b.header, undefined, { sensitivity: 'base' }));
+    <ProblemList
+      key={`user/${userId}/ascents`}
+      storageKey={`user/${userId}`}
+      mode='user'
+      defaultOrder='date'
+      leadingBottomClassName='mb-2 sm:mb-2.5'
+      contentBeforeList={(filteredRows) => {
+        type TypeBucket = { count: number; numFa: number };
+        const buckets = new Map<string, TypeBucket>();
+        for (const row of filteredRows) {
+          /**
+           * Ascents are summarised per problem type (`type.subType`). A problem without a subtype is a plain boulder
+           * (`null = Boulder`) — the ascents API spells that as the literal `'null'`, which {@link normalizeSubType}
+           * folds into “Boulder”. Never folded into the grade-based «Projects» bucket that the type filter
+           * (`rowListTypeKey`) uses.
+           */
+          const key = normalizeSubType(row.subType) || 'Boulder';
+          const prev = buckets.get(key) ?? { count: 0, numFa: 0 };
+          prev.count += 1;
+          if (row.fa) prev.numFa += 1;
+          buckets.set(key, prev);
+        }
+        const ascentTypeSummaries = [...buckets.entries()]
+          .map(([header, { count, numFa }]) => ({ key: header, header, count, numFa }))
+          .filter((s) => s.count > 0)
+          .sort((a, b) => a.header.localeCompare(b.header, undefined, { sensitivity: 'base' }));
 
-          const typeSummaryBlock =
-            ascentTypeSummaries.length > 1 ? (
-              <div
-                className='min-w-0'
-                role='status'
-                aria-label={ascentTypeSummaries
-                  .map((s) =>
-                    s.numFa > 0 ? `${s.header}: ${s.count} ascents (${s.numFa} FA)` : `${s.header}: ${s.count} ascents`,
-                  )
-                  .join('. ')}
-              >
-                <div className='flex flex-wrap items-center gap-x-4 gap-y-2.5 text-[13px] leading-snug sm:gap-x-6 sm:text-sm'>
-                  {ascentTypeSummaries.map((s, i) => (
-                    <div
-                      key={s.key}
-                      className={cn(
-                        'inline-flex max-w-full min-w-0 items-center gap-x-2 sm:whitespace-nowrap',
-                        i > 0 && 'border-surface-border border-l pl-3 sm:pl-4',
-                      )}
-                      title={
-                        s.numFa > 0
-                          ? `${s.header}: ${s.count} ascents (${s.numFa} FA)`
-                          : `${s.header}: ${s.count} ascents`
-                      }
-                    >
-                      <span className={cn('font-semibold text-slate-200', twInk.lightTextSlate800)}>{s.header}:</span>
-                      <span className={cn('text-slate-300 tabular-nums', twInk.lightTextSlate700)}>{s.count}</span>
-                      {s.numFa > 0 ? (
-                        <span className={cn('font-normal tabular-nums', designContract.ascentStatus.ticked)}>
-                          ({s.numFa} FA)
-                        </span>
-                      ) : null}
-                    </div>
-                  ))}
-                </div>
+        const typeSummaryBlock =
+          ascentTypeSummaries.length > 1 ? (
+            <div
+              className='min-w-0'
+              role='status'
+              aria-label={ascentTypeSummaries
+                .map((s) =>
+                  s.numFa > 0 ? `${s.header}: ${s.count} ascents (${s.numFa} FA)` : `${s.header}: ${s.count} ascents`,
+                )
+                .join('. ')}
+            >
+              <div className='flex flex-wrap items-center gap-x-4 gap-y-2.5 text-[13px] leading-snug sm:gap-x-6 sm:text-sm'>
+                {ascentTypeSummaries.map((s, i) => (
+                  <div
+                    key={s.key}
+                    className={cn(
+                      'inline-flex max-w-full min-w-0 items-center gap-x-2 sm:whitespace-nowrap',
+                      i > 0 && 'border-surface-border border-l pl-3 sm:pl-4',
+                    )}
+                    title={
+                      s.numFa > 0
+                        ? `${s.header}: ${s.count} ascents (${s.numFa} FA)`
+                        : `${s.header}: ${s.count} ascents`
+                    }
+                  >
+                    <span className={cn('font-semibold text-slate-200', twInk.lightTextSlate800)}>{s.header}:</span>
+                    <span className={cn('text-slate-300 tabular-nums', twInk.lightTextSlate700)}>{s.count}</span>
+                    {s.numFa > 0 ? (
+                      <span className={cn('font-normal tabular-nums', designContract.ascentStatus.ticked)}>
+                        ({s.numFa} FA)
+                      </span>
+                    ) : null}
+                  </div>
+                ))}
               </div>
-            ) : null;
+            </div>
+          ) : null;
 
-          // Compute area-level markers from the filtered rows so the map updates when filtering
-          const filteredAreaMarkers = computeFilteredAreaMarkers(filteredRows);
+        // Compute area-level markers from the filtered rows so the map updates when filtering
+        const filteredAreaMarkers = computeFilteredAreaMarkers(filteredRows);
 
-          const mapBlock =
-            filteredAreaMarkers.length > 0 ? (
-              <div className='-mx-4 mb-2 h-[35vh] w-[calc(100%+2rem)] min-w-0 overflow-hidden sm:-mx-6 sm:w-[calc(100%+3rem)]'>
-                <Leaflet
-                  key={'ticked-inline=' + userId + '-areas'}
-                  autoZoom={true}
-                  height='100%'
-                  markers={filteredAreaMarkers}
-                  defaultCenter={defaultCenter}
-                  defaultZoom={defaultZoom}
-                  showSatelliteImage={false}
-                  clusterMarkers={true}
-                  flyToId={null}
-                />
-              </div>
-            ) : null;
+        const mapBlock =
+          filteredAreaMarkers.length > 0 ? (
+            <div className='-mx-4 mb-2 h-[35vh] w-[calc(100%+2rem)] min-w-0 overflow-hidden sm:-mx-6 sm:w-[calc(100%+3rem)]'>
+              <Leaflet
+                key={'ticked-inline=' + userId + '-areas'}
+                autoZoom={true}
+                height='100%'
+                markers={filteredAreaMarkers}
+                defaultCenter={defaultCenter}
+                defaultZoom={defaultZoom}
+                showSatelliteImage={false}
+                clusterMarkers={true}
+                flyToId={null}
+              />
+            </div>
+          ) : null;
 
-          if (!typeSummaryBlock && !mapBlock) return null;
-          return (
-            <>
-              {mapBlock}
-              {typeSummaryBlock ? <div className='min-w-0'>{typeSummaryBlock}</div> : null}
-            </>
-          );
-        }}
-        rows={ascents.map((t) => ({
-          element: <TickListItem key={`${t.idProblem}-${t.idTickRepeat ?? '0'}-${t.dateHr ?? ''}`} tick={t} />,
-          areaName: t.areaName ?? '',
-          sectorName: t.sectorName ?? '',
-          name: t.name ?? '',
-          nr: t.nr ?? null,
-          grade: t.grade ?? '',
-          gradeWeight: t.gradeWeight ?? 0,
-          stars: t.stars ?? 0,
-          numTicks: 0,
-          ticked: false,
-          rock: '',
-          subType: t.subType ?? '',
-          num: t.num ?? 0,
-          fa: t.fa ?? false,
-          faDate: null,
-          marker:
-            t.coordinates?.latitude != null && t.coordinates?.longitude != null
-              ? {
-                  coordinates: {
-                    latitude: t.coordinates.latitude,
-                    longitude: t.coordinates.longitude,
-                  },
-                  label: t.name ?? '',
-                  url: '/problem/' + t.idProblem,
-                }
-              : undefined,
-        }))}
-      />
-    </>
+        if (!typeSummaryBlock && !mapBlock) return null;
+        return (
+          <>
+            {mapBlock}
+            {typeSummaryBlock ? <div className='min-w-0'>{typeSummaryBlock}</div> : null}
+          </>
+        );
+      }}
+      rows={ascents.map((t) => ({
+        element: <TickListItem key={`${t.idProblem}-${t.idTickRepeat ?? '0'}-${t.dateHr ?? ''}`} tick={t} />,
+        areaName: t.areaName ?? '',
+        sectorName: t.sectorName ?? '',
+        name: t.name ?? '',
+        nr: t.nr ?? null,
+        grade: t.grade ?? '',
+        gradeWeight: t.gradeWeight ?? 0,
+        stars: t.stars ?? 0,
+        numTicks: 0,
+        ticked: false,
+        rock: '',
+        subType: t.subType ?? '',
+        /** Drives the toolbar's multi-select discipline filter (defaults to all). */
+        discipline: t.group ?? '',
+        num: t.num ?? 0,
+        fa: t.fa ?? false,
+        faDate: null,
+        marker:
+          t.coordinates?.latitude != null && t.coordinates?.longitude != null
+            ? {
+                coordinates: {
+                  latitude: t.coordinates.latitude,
+                  longitude: t.coordinates.longitude,
+                },
+                label: t.name ?? '',
+                url: '/problem/' + t.idProblem,
+              }
+            : undefined,
+      }))}
+    />
   );
 };
 

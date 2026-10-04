@@ -24,7 +24,7 @@ import { useSector } from '../../api';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { ActionMenuChip, Card, NotFoundCard, PageCardBreadcrumbRow } from '../../shared/ui';
 import { TradGearMarker } from '../../shared/ui/TradGearMarker';
-import { climbingRouteUsesPassiveGear, formatRouteTypeLabel } from '../../utils/routeTradGear';
+import { climbingRouteUsesPassiveGear, formatRouteTypeLabel, normalizeSubType } from '../../utils/routeTradGear';
 import {
   tabBarButtonClassName,
   tabBarIconClassName,
@@ -582,7 +582,7 @@ const Sector = () => {
   const addPolygon = meta.isClimbing || markers.length === 0;
 
   const uniqueTypes = Array.from(
-    new Set((data.problems ?? []).map((p) => p.t?.subType).filter((p): p is string => !!p)),
+    new Set((data.problems ?? []).map((p) => normalizeSubType(p.t?.subType)).filter((p) => !!p)),
   );
   if ((data.problems ?? []).filter((p) => p.broken)?.length) uniqueTypes.push('Broken');
   if ((data.problems ?? []).filter((p) => p.gradeWeight === 0)?.length) uniqueTypes.push('Projects');
@@ -634,7 +634,7 @@ const Sector = () => {
 
   const sectorTypeSummaries = uniqueTypes
     .map((subType) => {
-      const header = subType ? subType : 'Boulders';
+      const header = normalizeSubType(subType) || 'Boulder';
       const problemsOfType =
         data.problems?.filter(
           (p) =>

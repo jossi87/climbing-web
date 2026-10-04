@@ -135,10 +135,13 @@ export const designContract = {
     /**
      * ProblemList chips above the card: like {@link activityToolbarActionsFrontpage} — **`md:w-auto`** so the parent
      * (`justify-end` + shared `px-4 sm:px-5` with the list card) can pin the cluster flush to the **right** inset.
-     * Full-width + `overflow-x-auto` only below `md` (one scrollable line on phones).
+     * Full-width + centered below `md`; the cluster **wraps onto a second line** rather than scrolling sideways once it
+     * no longer fits (narrow phones with Discipline / Group / Sort / Filter / Details / Reset all visible). The wider
+     * `gap-y` keeps wrapped lines visually separated; from `md` up the row stays content-sized and only wraps when the
+     * viewport is too narrow for the whole cluster.
      */
     problemListToolbarRow:
-      'no-scrollbar flex min-w-0 w-full max-w-full flex-nowrap items-center justify-center gap-0.5 overflow-x-auto sm:gap-1.5 md:ml-auto md:w-auto md:max-w-full md:flex-none md:justify-end md:overflow-visible',
+      'flex min-w-0 w-full max-w-full flex-wrap items-center justify-center gap-x-0.5 gap-y-1.5 sm:gap-x-1.5 sm:gap-y-2 md:ml-auto md:w-auto md:max-w-full md:flex-none md:justify-end',
     pageShell: 'max-w-container mx-auto space-y-6 px-4 py-6 text-left',
     pageHeaderRow:
       'border-surface-border flex flex-col justify-between gap-4 border-b pb-4 lg:flex-row lg:items-center',

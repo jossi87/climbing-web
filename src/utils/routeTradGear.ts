@@ -1,11 +1,20 @@
 /**
+ * The API spells “no subtype” in several ways: `null` / `''` when the problem’s `type.subtype` is unset, the literal
+ * string `'null'` (the backend glues `type.subtype` onto the pitch prefix for profile ascents, so a plain boulder
+ * arrives as `'null'`) and the legacy `'.'` placeholder from old imports. Anything else is a real subtype.
+ */
+export function normalizeSubType(subType?: string | null): string {
+  const s = (subType ?? '').trim();
+  return !s || s === '.' || s.toLowerCase() === 'null' ? '' : s;
+}
+
+/**
  * Route “type” labels in lists vs problem detail — see {@link formatRouteTypeLabel}.
  * Heuristic: trad gear when the combined label reads as Trad, Mixed, Aid (incl. Aid/Trad).
  */
 export function formatRouteTypeLabel(type?: string | null, subType?: string | null): string {
   const t = (type ?? '').trim();
-  const sRaw = (subType ?? '').trim();
-  const s = sRaw === '.' ? '' : sRaw;
+  const s = normalizeSubType(subType);
   if (!t && !s) return '';
   if (!t) return s;
   if (!s) return t;
