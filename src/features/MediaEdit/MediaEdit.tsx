@@ -566,12 +566,11 @@ const MediaEdit = () => {
             }
           }
         }
-        await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ['/media'] }),
-          queryClient.invalidateQueries({ queryKey: ['/problem'] }),
-          queryClient.invalidateQueries({ queryKey: ['/areas'] }),
-          queryClient.invalidateQueries({ queryKey: ['/sectors'] }),
-        ]);
+        // No invalidation here on purpose: every mutating call in this loop opts into the global
+        // DATA_MUTATION_EVENT sweep (`invalidateQueriesAfter` in api/operations.ts), which
+        // invalidates all cached queries — media/problem/area/sector payloads included. The keys
+        // once listed here were redundant with that sweep, and two of them never matched anything
+        // ('/problem' is really '/problems'; a ['/areas'] prefix match misses ['/areas/:id', ...]).
         if (connectionType === 'problem' && addEntityId) {
           navigate(`/problem/${addEntityId}`);
         } else if (connectionType === 'sector' && addEntityId) {
@@ -640,20 +639,20 @@ const MediaEdit = () => {
         // Embedded YouTube/Vimeo videos have no seekable frame picker; the "Update thumbnail
         // on save" toggle re-fetches the current provider thumbnail as part of this update.
         await putMedia(token, body, refreshEmbedThumb && isEmbedYoutubeVimeo);
-        await Promise.all([
-          queryClient.refetchQueries({
-            predicate: (q) => {
-              const key = q.queryKey;
-              if (!Array.isArray(key) || key[0] !== '/media') return false;
-              const meta = key[1];
-              if (meta == null || typeof meta !== 'object') return false;
-              return 'idMedia' in meta && (meta as { idMedia: number }).idMedia === mediaIdNum;
-            },
-          }),
-          queryClient.invalidateQueries({ queryKey: ['/problem'] }),
-          queryClient.invalidateQueries({ queryKey: ['/areas'] }),
-          queryClient.invalidateQueries({ queryKey: ['/sectors'] }),
-        ]);
+        // putMedia opts into the global DATA_MUTATION_EVENT sweep, so the problem/area/sector
+        // payloads are already invalidated (the key list removed here only duplicated that, and two
+        // of its keys could never match anything). The edited media is still re-fetched explicitly:
+        // invalidateQueries only refetches *active* queries, whereas refetchQueries covers every
+        // matching query, including one held by an observer that is no longer mounted.
+        await queryClient.refetchQueries({
+          predicate: (q) => {
+            const key = q.queryKey;
+            if (!Array.isArray(key) || key[0] !== '/media') return false;
+            const meta = key[1];
+            if (meta == null || typeof meta !== 'object') return false;
+            return 'idMedia' in meta && (meta as { idMedia: number }).idMedia === mediaIdNum;
+          },
+        });
         navigate(-1);
       }
     } catch (error) {

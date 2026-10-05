@@ -7,14 +7,17 @@ type Props = {
   children: ReactNode;
 };
 
+/** Module level on purpose: an inline `select` is a new function on every render, so React Query re-ran it each time. */
+const selectSortedFaYears = (data: Metadata) => {
+  if (data.faYears) {
+    data.faYears.sort((a, b) => a - b);
+  }
+  return data;
+};
+
 export const MetaProvider = ({ children }: Props) => {
   const { data: meta, isPending } = useData<Metadata>(`/meta`, {
-    select: (data) => {
-      if (data.faYears) {
-        data.faYears.sort((a, b) => a - b);
-      }
-      return data;
-    },
+    select: selectSortedFaYears,
     staleTime: Infinity,
   });
 

@@ -15,7 +15,7 @@ import { useLocalStorage } from '../utils/use-local-storage';
 import { useRedirect } from '../utils/useRedirect';
 import { makeAuthenticatedRequest, useAccessToken, mediaIdentityId, mediaIdentityVersionStamp } from './utils';
 import type { FetchOptions } from './types';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   deleteMergeDismissal,
   postMergeDismissal,
@@ -42,6 +42,17 @@ function useKey(customKey: readonly unknown[] | undefined, urlSuffix: string): r
     };
   }
   return key;
+}
+
+/**
+ * `select` for the Area/Sector/Problem GETs that may answer with `redirectUrl` for a hidden entity.
+ *
+ * Module level on purpose: React Query only reuses a `select` result while the function keeps the same identity, and
+ * an inline arrow is a new function on every render, so it re-ran on each render of the page.
+ */
+function selectEntityWithRedirect<T extends { redirectUrl?: string } | undefined | null>(data: T): T {
+  applyEntityRedirectUrl(data);
+  return data;
 }
 
 export { invalidateActivityAndFrontpageQueries } from './activityFeedInvalidation';
@@ -272,14 +283,22 @@ export function useData<TQueryData = unknown, TData = TQueryData>(
 
 export function useToc() {
   const [cachedData, _, writeCachedData] = useLocalStorage<components['schemas']['Toc']>('cache/toc', {});
+  const query = useData<components['schemas']['Toc']>('/toc', { placeholderData: cachedData });
 
-  return useData<components['schemas']['Toc']>('/toc', {
-    placeholderData: cachedData,
-    select(data) {
+  /**
+   * Persisted here rather than in `select`: an inline `select` gets a new identity on every render, so React Query
+   * re-ran it — `JSON.stringify` plus `localStorage.setItem` of the whole TOC — on every render of `/problems` and
+   * `/dangerous`. `writeCachedData` only writes to `localStorage` (never state), so its identity is stable and this
+   * effect is limited to real TOC loads. `isPlaceholderData` skips re-writing what was just read back from the cache.
+   */
+  const { data, isPlaceholderData } = query;
+  useEffect(() => {
+    if (data && !isPlaceholderData) {
       writeCachedData(data);
-      return data;
-    },
-  });
+    }
+  }, [data, isPlaceholderData, writeCachedData]);
+
+  return query;
 }
 
 export function useActivity({
@@ -381,10 +400,7 @@ export function useArea(id: number) {
   return useData<Success<'getArea'>>(`/areas/${id}`, {
     queryKey: [`/areas/${id}`, { id }],
     enabled: id > 0,
-    select(data) {
-      applyEntityRedirectUrl(data);
-      return data;
-    },
+    select: selectEntityWithRedirect,
   });
 }
 
@@ -404,10 +420,7 @@ export function useProblem(id: number, showHiddenMedia: boolean) {
   const problem = useData<Success<'getProblems'>>(`/problems?id=${id}&showHiddenMedia=${showHiddenMedia}`, {
     enabled: id > 0,
     queryKey: [`/problems`, { id, showHiddenMedia }],
-    select(data) {
-      applyEntityRedirectUrl(data);
-      return data;
-    },
+    select: selectEntityWithRedirect,
   });
   const toggleTodo = usePostData(`/todo?idProblem=${id}`, {
     mutationKey: [`/todo`, { id }],
@@ -526,8 +539,9 @@ export function useProfile(userId: number) {
       });
     },
     onError: () => {
+      // Roll back the optimistic onMutate patch if the write fails.
       client.refetchQueries({
-        queryKey: [`/profiles`, { id: -1 }],
+        queryKey: [`/profiles`, { id: userId, isAuthenticated }],
       });
     },
     onSettled: () => {
@@ -559,8 +573,9 @@ export function useProfile(userId: number) {
       });
     },
     onError: () => {
+      // Roll back the optimistic onMutate patch if the write fails.
       client.refetchQueries({
-        queryKey: [`/profiles`, { id: -1 }],
+        queryKey: [`/profiles`, { id: userId, isAuthenticated }],
       });
     },
   });
@@ -612,10 +627,7 @@ export function useSector(id: number | undefined) {
   return useData<Success<'getSectors'> | undefined>(`/sectors?id=${id}`, {
     enabled: !!id && id > 0,
     queryKey: [`/sectors`, { id }],
-    select(data) {
-      applyEntityRedirectUrl(data);
-      return data;
-    },
+    select: selectEntityWithRedirect,
   });
 }
 
