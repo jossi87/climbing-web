@@ -19,6 +19,7 @@ import {
   useSector,
 } from '../../api';
 import { getMediaFileUrl, mediaIdentityId, mediaIdentityVersionStamp } from '../../api/utils';
+import { useHlsVideo } from '../../shared/hooks/useHlsVideo';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { Card, FormSwitch } from '../../shared/ui';
 import { cn } from '../../lib/utils';
@@ -202,6 +203,14 @@ const MediaEdit = () => {
 
   const isVideo = !!m?.isMovie;
   const hasEmbed = !!m?.embedUrl;
+
+  // Movies are served as an HLS master playlist; hls.js plays it on every non-Safari browser. Only wire it up
+  // for the stored-movie preview below — the add-media previews use blob/CDN URLs and keep their own src.
+  const moviePreviewSrc =
+    isVideo && m
+      ? getMediaFileUrl(mediaIdentityId(m.identity), mediaIdentityVersionStamp(m.identity), !!m.isMovie)
+      : null;
+  useHlsVideo(videoRef, moviePreviewSrc);
 
   /** Whether the embed URL is an Instagram URL (not a YouTube/Vimeo iframe embed) */
   const isInstagramEmbed =
@@ -1048,11 +1057,6 @@ const MediaEdit = () => {
                     ) : isVideo ? (
                       <video
                         ref={videoRef}
-                        src={getMediaFileUrl(
-                          mediaIdentityId(m.identity),
-                          mediaIdentityVersionStamp(m.identity),
-                          !!m.isMovie,
-                        )}
                         className='w-full rounded-xl'
                         controls
                         onLoadedMetadata={handleLoadedMetadata}

@@ -2,6 +2,7 @@ import { useRef, useState, useEffect, type FC, type MouseEvent } from 'react';
 import { List } from 'lucide-react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { getMediaFileUrl, mediaIdentityId, mediaIdentityVersionStamp } from '../../../api';
+import { useHlsVideo } from '../../hooks/useHlsVideo';
 import { cn } from '../../../lib/utils';
 
 type Props = {
@@ -127,13 +128,16 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
 
   const currentChapter = currentChapterIndex >= 0 ? chapters[currentChapterIndex] : null;
 
+  // Movies are served as an HLS master playlist; hls.js fetches the manifest/segments (Safari plays it natively).
+  const videoSrc = getMediaFileUrl(mediaIdentityId(media.identity), mediaIdentityVersionStamp(media.identity), true);
+  useHlsVideo(videoRef, videoSrc);
+
   return (
     <div className={cn('group relative', className)} style={style}>
       <video
         key={mediaIdentityId(media.identity)}
         ref={videoRef}
         className='h-full w-full'
-        src={getMediaFileUrl(mediaIdentityId(media.identity), mediaIdentityVersionStamp(media.identity), true)}
         controls
         autoPlay={autoPlay}
         playsInline
