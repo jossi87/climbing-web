@@ -17,7 +17,11 @@ export type HlsQuality = {
   activeIndex: number | null;
   /** True while the player picks the rendition itself (adaptive, i.e. "Auto"). */
   isAuto: boolean;
-  /** Pin a rendition by index, or -1 to hand control back to adaptive ("Auto"). No-op on the native path. */
+  /**
+   * Pin a rendition by index, or -1 to hand control back to adaptive ("Auto"), which hls.js accepts here too.
+   * Takes effect from the next segment (hls.js `nextLevel`), so playback is never interrupted. No-op on the
+   * native path.
+   */
   setLevel: (index: number) => void;
 };
 
@@ -125,9 +129,20 @@ export function useHlsVideo(videoRef: RefObject<HTMLVideoElement | null>, src: s
   const setLevel = useCallback((index: number) => {
     const hls = hlsRef.current;
     if (!hls) return;
-    // currentLevel = -1 hands control back to ABR; any other value pins that rendition. Reflect the choice
-    // immediately; LEVEL_SWITCHED then confirms the rendition the player actually settled on.
-    hls.currentLevel = index;
+    // -1 hands control back to ABR; any other value pins that rendition. Reflect the choice immediately;
+    // LEVEL_SWITCHED then confirms the rendition the player actually settled on.
+    //
+    // Deliberately `nextLevel` and not `currentLevel`. hls.js implements the latter as an "immediate" switch:
+    // it aborts the in-flight fragment and flushes the buffer from 0 to infinity, i.e. it throws away the very
+    // segment being played, and hls.js documents the consequence itself — "playback will interrupt at least
+    // shortly to re-buffer and re-sync eventually". What that looked like here was a frozen picture with the
+    // audio still running until playback was nudged by a pause/play. `nextLevel` instead picks the first safe
+    // switch point ("without interrupting playback... flush parts of buffer (outside currently played fragment
+    // region)"), and its back-buffer cleanup keeps a second of video before the current fragment on purpose,
+    // "to avoid video freezing, that could happen if we flush keyframe of current video". Good enough here
+    // because the ladder's rungs are cut on the same segment boundaries, so the next segment simply arrives at
+    // the newly chosen quality.
+    hls.nextLevel = index;
     setState((prev) => ({
       ...prev,
       isAuto: index === -1,
