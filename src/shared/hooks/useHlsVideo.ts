@@ -17,21 +17,25 @@ export function useHlsVideo(videoRef: RefObject<HTMLVideoElement | null>, src: s
     const video = videoRef.current;
     if (!video || !src) return;
 
-    // Safari (and iOS WebViews) play HLS natively, so there is no reason to pull in hls.js there.
-    if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = src;
-      return () => {
-        video.removeAttribute('src');
-        video.load();
-      };
-    }
-
+    // Prefer hls.js (MSE) wherever it is available. On Windows, Chrome reports a truthy "maybe" for the native
+    // HLS MIME type even though `<video src="*.m3u8">` will not actually play, so checking `canPlayType` first
+    // silently handed the raw playlist to the element and the video stayed black. Only rely on the element's own
+    // HLS support where MSE is unavailable — i.e. Safari / iOS WebViews.
     if (Hls.isSupported()) {
       const hls = new Hls();
       hls.loadSource(src);
       hls.attachMedia(video);
       return () => {
         hls.destroy();
+      };
+    }
+
+    // Safari (and iOS WebViews) play HLS natively.
+    if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = src;
+      return () => {
+        video.removeAttribute('src');
+        video.load();
       };
     }
 
