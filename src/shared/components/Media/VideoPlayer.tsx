@@ -2,7 +2,7 @@ import { useRef, useState, useEffect, type FC, type MouseEvent } from 'react';
 import { List } from 'lucide-react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { getMediaFileUrl, mediaIdentityId, mediaIdentityVersionStamp } from '../../../api';
-import { useHlsVideo } from '../../hooks/useHlsVideo';
+import { useHlsVideo, type HlsQuality } from '../../hooks/useHlsVideo';
 import { cn } from '../../../lib/utils';
 
 type Props = {
@@ -12,6 +12,11 @@ type Props = {
   style?: React.CSSProperties;
   /** If set, seek to the chapter matching this problem ID on start */
   optProblemId?: number | null;
+  /**
+   * Receives the HLS quality state (available renditions + the one playing) so a parent — e.g. the media
+   * modal toolbar — can render the quality control. Called with `null` when this player tears down.
+   */
+  onQualityChange?: (quality: HlsQuality | null) => void;
 };
 
 type MediaProblem = components['schemas']['MediaProblem'];
@@ -31,7 +36,7 @@ function formatMs(ms: number): string {
   return `${minutes}:${String(seconds).padStart(2, '0')}`;
 }
 
-const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optProblemId }) => {
+const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optProblemId, onQualityChange }) => {
   const [currentTimeMs, setCurrentTimeMs] = useState(0);
   const [durationMs, setDurationMs] = useState(0);
   const [showChapters, setShowChapters] = useState(false);
@@ -130,7 +135,17 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
 
   // Movies are served as an HLS master playlist; hls.js fetches the manifest/segments (Safari plays it natively).
   const videoSrc = getMediaFileUrl(mediaIdentityId(media.identity), mediaIdentityVersionStamp(media.identity), true);
-  useHlsVideo(videoRef, videoSrc);
+  const { levels, activeIndex, isAuto, setLevel } = useHlsVideo(videoRef, videoSrc);
+
+  // Report the quality state up; the control itself is rendered by the parent's toolbar (see `MediaModal`).
+  // The cleanup reports `null` so the control disappears when this player goes away (modal switched to an image).
+  useEffect(() => {
+    onQualityChange?.({ levels, activeIndex, isAuto, setLevel });
+  }, [onQualityChange, levels, activeIndex, isAuto, setLevel]);
+
+  useEffect(() => {
+    return () => onQualityChange?.(null);
+  }, [onQualityChange]);
 
   return (
     <div className={cn('group relative', className)} style={style}>
@@ -168,7 +183,7 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
             'flex h-9 w-9 shrink-0 items-center justify-center rounded-full shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all active:scale-95 sm:h-11 sm:w-11',
             'cursor-pointer select-none',
             showChapters
-              ? 'bg-brand type-on-accent ring-2 ring-white/40'
+              ? 'btn-brand-solid ring-1 ring-black/20'
               : 'ring-surface-border/50 bg-slate-900 text-[#e2e8f0] hover:bg-slate-800 hover:text-[#f1f5f9]',
           )}
         >

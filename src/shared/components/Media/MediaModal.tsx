@@ -10,6 +10,8 @@ import {
   ChevronLeft,
   ChevronRight,
   MoreVertical,
+  Gauge,
+  Check,
   Paintbrush,
   ArrowLeft,
   ArrowRight,
@@ -43,6 +45,7 @@ import {
 } from '../../../api';
 import SvgViewer from '../SvgViewer';
 import VideoPlayer from './VideoPlayer';
+import type { HlsQuality } from '../../hooks/useHlsVideo';
 import { VideoPlayOverlayDisc } from './VideoThumbnailPlayOverlay';
 import { ZoomableImage } from './ZoomableImage';
 import { PannellumViewer } from './PannellumViewer';
@@ -243,12 +246,21 @@ const MediaModal = ({
   const accessToken = useAccessToken();
   const navigate = useNavigate();
 
+  /** Identity of the media on screen; scopes per-media UI (the quality menu) so swiping closes it. */
+  const mediaKey = mediaIdentityId(m.identity);
+
   const [showSidebar, setShowSidebar] = useLocalStorage('showSidebar', true);
   const [showInfo, setShowInfo] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [zoomMode, setZoomMode] = useState(false);
   const [showSvg, setShowSvg] = useState(true);
+  const [videoQuality, setVideoQuality] = useState<HlsQuality | null>(null);
+  /** `mediaKey` the quality menu is open for, or null when closed — swiping to another media closes it. */
+  const [qualityMenuFor, setQualityMenuFor] = useState<number | null>(null);
+  const showQualityMenu = qualityMenuFor === mediaKey;
+
+  const qualityControlRef = useRef<HTMLDivElement | null>(null);
 
   const [problemIdHovered, setProblemIdHovered] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -262,6 +274,23 @@ const MediaModal = ({
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  /** Dismiss the quality menu on outside click / Escape (same idiom as `ActionMenuChip`). */
+  useEffect(() => {
+    if (!showQualityMenu) return;
+    const onPointerDown = (event: Event) => {
+      if (!qualityControlRef.current?.contains(event.target as Node)) setQualityMenuFor(null);
+    };
+    const onEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setQualityMenuFor(null);
+    };
+    document.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('keydown', onEscape);
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown);
+      document.removeEventListener('keydown', onEscape);
+    };
+  }, [showQualityMenu]);
 
   /** Hide body/html scrollbar while modal is open (ref-counted, safe with nested ZoomableImage) */
   useScrollLock();
@@ -493,6 +522,13 @@ const MediaModal = ({
   const mediaMenuDeleteClass =
     'flex w-full items-center gap-3 px-4 py-2.5 text-left text-xs font-semibold text-red-400 transition-colors hover:bg-red-500/10';
 
+  /** Rendition currently playing, for the quality button's tooltip/label (null while adaptive or unreported). */
+  const activeQualityLabel = (() => {
+    const q = videoQuality;
+    if (!q || q.activeIndex == null) return null;
+    return q.levels.find((level) => level.index === q.activeIndex)?.label ?? null;
+  })();
+
   return (
     <div
       className='fixed inset-0 z-150 flex h-[100dvh] min-h-[100dvh] w-full max-w-[100vw] overflow-hidden bg-black select-none'
@@ -585,6 +621,80 @@ const MediaModal = ({
               >
                 <ListIcon size={17} strokeWidth={2} />
               </button>
+            )}
+
+            {/* Quality control — sits left of Info so it shares the modal's single toolbar row.
+                Only shown once the HLS manifest advertises more than one rendition; the native-HLS path
+                (Safari / iOS) reports none, so there the OS keeps owning rendition selection. */}
+            {videoQuality && videoQuality.levels.length > 1 && (
+              <div ref={qualityControlRef} className='relative inline-flex shrink-0'>
+                <button
+                  type='button'
+                  onClick={() => setQualityMenuFor(showQualityMenu ? null : mediaKey)}
+                  title={activeQualityLabel ? `Video quality: ${activeQualityLabel}` : 'Video quality'}
+                  aria-label={activeQualityLabel ? `Video quality: ${activeQualityLabel}` : 'Video quality'}
+                  aria-haspopup='true'
+                  aria-expanded={showQualityMenu}
+                  className={cn(
+                    'flex h-9 w-9 shrink-0 items-center justify-center rounded-full shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all active:scale-95 sm:h-11 sm:w-11',
+                    showQualityMenu
+                      ? 'btn-brand-solid ring-1 ring-black/20'
+                      : 'ring-surface-border/50 bg-slate-900 text-[#e2e8f0] hover:bg-slate-800 hover:text-[#f1f5f9]',
+                  )}
+                >
+                  <Gauge size={17} strokeWidth={2} />
+                </button>
+
+                {showQualityMenu && (
+                  /**
+                   * Marker class `media-modal-actions-menu` opts this panel out of the dark-chrome
+                   * `text-slate-*` neutralizer (see `index.css`); theme-aware `bg-surface-card` keeps its ink
+                   * readable in light mode, matching the ⋯ actions menu.
+                   */
+                  <div className='media-modal-actions-menu bg-surface-card border-surface-border animate-in fade-in zoom-in-95 absolute top-full right-0 z-180 mt-2 w-44 overflow-hidden rounded-2xl border py-2 shadow-2xl duration-200'>
+                    <div className='type-label border-surface-border/50 mb-1 border-b px-4 py-2'>Quality</div>
+
+                    {/* Auto — the adaptive default; ticked while the player picks renditions itself. */}
+                    <button
+                      type='button'
+                      onClick={() => {
+                        videoQuality.setLevel(-1);
+                        setQualityMenuFor(null);
+                      }}
+                      className={cn(mediaMenuItemClass, videoQuality.isAuto && 'bg-surface-raised')}
+                    >
+                      <span>Auto</span>
+                      {videoQuality.isAuto && (
+                        <Check size={14} strokeWidth={2} className='text-brand ml-auto shrink-0' />
+                      )}
+                    </button>
+
+                    <div className='bg-surface-border/50 my-1 h-px' />
+
+                    {/* Explicit renditions, highest first (mirrors the usual list ordering). */}
+                    {videoQuality.levels
+                      .slice()
+                      .reverse()
+                      .map((level) => {
+                        const isSelected = !videoQuality.isAuto && level.index === videoQuality.activeIndex;
+                        return (
+                          <button
+                            key={level.index}
+                            type='button'
+                            onClick={() => {
+                              videoQuality.setLevel(level.index);
+                              setQualityMenuFor(null);
+                            }}
+                            className={cn(mediaMenuItemClass, isSelected && 'bg-surface-raised')}
+                          >
+                            <span className='tabular-nums'>{level.label}</span>
+                            {isSelected && <Check size={14} strokeWidth={2} className='text-brand ml-auto shrink-0' />}
+                          </button>
+                        );
+                      })}
+                  </div>
+                )}
+              </div>
             )}
 
             <button
@@ -855,7 +965,12 @@ const MediaModal = ({
                   className='flex h-full min-h-0 w-full max-w-[100vw] items-center justify-center'
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <VideoPlayer media={m} optProblemId={optProblemId} className='h-full max-h-screen w-full' />
+                  <VideoPlayer
+                    media={m}
+                    optProblemId={optProblemId}
+                    className='h-full max-h-screen w-full'
+                    onQualityChange={setVideoQuality}
+                  />
                 </div>
               ) : (
                 <div
@@ -903,7 +1018,12 @@ const MediaModal = ({
                 className='flex h-full min-h-0 w-full max-w-[100vw] items-center justify-center'
                 onClick={(e) => e.stopPropagation()}
               >
-                <VideoPlayer media={m} optProblemId={optProblemId} className='h-full max-h-screen w-full' />
+                <VideoPlayer
+                  media={m}
+                  optProblemId={optProblemId}
+                  className='h-full max-h-screen w-full'
+                  onQualityChange={setVideoQuality}
+                />
               </div>
             ) : (
               <div
