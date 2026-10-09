@@ -16,8 +16,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-        with:
-          ref: 'a9859203dc2c281c9e681e7b5fdbcdf7f05f0cd3'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
