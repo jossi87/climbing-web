@@ -332,7 +332,11 @@ export function downloadFileWithProgress(
           }
         }
         if (!filename) {
-          const parts = fullUrl.split('/');
+          // Media downloads are answered with a redirect to the stored object, so the real name (extension included)
+          // is on the *final* URL — not on the API one, which ends in a bare `/file` and used to name every
+          // downloaded original "file". `responseURL` is empty only when nothing was followed, hence the fallback.
+          const resolvedUrl = xhr.responseURL || fullUrl;
+          const parts = resolvedUrl.split('/');
           filename = parts[parts.length - 1].split('?')[0] || 'download';
         }
         a.download = filename;
