@@ -43,6 +43,20 @@ type HlsQualityState = {
   isAuto: boolean;
 };
 
+/**
+ * The part of hls.js's error payload worth reporting. A stream that never starts otherwise leaves no trace at all:
+ * hls.js swallows its own diagnostics unless `debug` is enabled, so the console stays clean while the element sits
+ * on 0:00. `type` tells network from media from parsing, `details` names the case, and the URL says which rung is
+ * at fault; `fatal` separates "playback is over" from "the player worked around it".
+ */
+type HlsErrorData = {
+  fatal: boolean;
+  type: string;
+  details: string;
+  url?: string;
+  frag?: { url: string };
+};
+
 const EMPTY_STATE: HlsQualityState = { src: null, levels: [], activeIndex: null, isAuto: true };
 
 /**
@@ -98,12 +112,25 @@ export function useHlsVideo(videoRef: RefObject<HTMLVideoElement | null>, src: s
           prev.src === src ? { ...prev, activeIndex: data.level, isAuto: hls.autoLevelEnabled } : prev,
         );
       };
+      // Without this listener a stream that never starts is invisible: hls.js reports nothing to the console on its
+      // own, so a broken fragment simply leaves the element on 0:00. Logging the error and the URL it happened on is
+      // what makes such a report diagnosable.
+      const onError = (_event: unknown, data: HlsErrorData) => {
+        const diagnostic = { type: data.type, details: data.details, url: data.frag?.url ?? data.url, src };
+        if (data.fatal) {
+          console.error('[hls] fatal error, playback stopped', diagnostic);
+        } else {
+          console.warn('[hls] recovered from error', diagnostic);
+        }
+      };
       hls.on(Hls.Events.MANIFEST_PARSED, onManifestParsed);
       hls.on(Hls.Events.LEVEL_SWITCHED, onLevelSwitched);
+      hls.on(Hls.Events.ERROR, onError);
 
       return () => {
         hls.off(Hls.Events.MANIFEST_PARSED, onManifestParsed);
         hls.off(Hls.Events.LEVEL_SWITCHED, onLevelSwitched);
+        hls.off(Hls.Events.ERROR, onError);
         hls.destroy();
         hlsRef.current = null;
       };
