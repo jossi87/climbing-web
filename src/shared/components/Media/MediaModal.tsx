@@ -529,6 +529,15 @@ const MediaModal = ({
     return q.levels.find((level) => level.index === q.activeIndex)?.label ?? null;
   })();
 
+  /**
+   * Server-generated JPEG poster for this movie: the still the stage shows before a frame has been decoded. Shared by
+   * the tap-to-play branch and by `VideoPlayer`'s own `poster`, so both sides of the swap use the same image (and the
+   * same cache entry) and a slow start keeps the thumbnail instead of going black.
+   */
+  const moviePosterUrl = getMediaFileUrl(mediaIdentityId(m.identity), mediaIdentityVersionStamp(m.identity), false, {
+    targetWidth: 1080,
+  });
+
   return (
     <div
       className='fixed inset-0 z-150 flex h-[100dvh] min-h-[100dvh] w-full max-w-[100vw] overflow-hidden bg-black select-none'
@@ -969,6 +978,8 @@ const MediaModal = ({
                     media={m}
                     optProblemId={optProblemId}
                     className='h-full max-h-screen w-full'
+                    /* Same poster the branch above shows: the element keeps it up until the first frame. */
+                    poster={moviePosterUrl}
                     onQualityChange={setVideoQuality}
                   />
                 </div>
@@ -983,9 +994,7 @@ const MediaModal = ({
                 >
                   <img
                     className='h-full min-h-0 w-full min-w-0 object-contain opacity-90 transition-opacity group-hover:opacity-100'
-                    src={getMediaFileUrl(mediaIdentityId(m.identity), mediaIdentityVersionStamp(m.identity), false, {
-                      targetWidth: 1080,
-                    })}
+                    src={moviePosterUrl}
                     alt=''
                   />
                   <div className='pointer-events-none absolute inset-0 flex items-center justify-center'>
@@ -1022,6 +1031,8 @@ const MediaModal = ({
                   media={m}
                   optProblemId={optProblemId}
                   className='h-full max-h-screen w-full'
+                  /* Same poster the branch above shows: the element keeps it up until the first frame. */
+                  poster={moviePosterUrl}
                   onQualityChange={setVideoQuality}
                 />
               </div>
@@ -1042,9 +1053,7 @@ const MediaModal = ({
                  */}
                 <img
                   className='h-full min-h-0 w-full min-w-0 object-contain opacity-90 transition-opacity group-hover:opacity-100'
-                  src={getMediaFileUrl(mediaIdentityId(m.identity), mediaIdentityVersionStamp(m.identity), false, {
-                    targetWidth: 1080,
-                  })}
+                  src={moviePosterUrl}
                   alt=''
                 />
                 <div className='pointer-events-none absolute inset-0 flex items-center justify-center'>

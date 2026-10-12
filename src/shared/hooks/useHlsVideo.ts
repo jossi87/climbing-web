@@ -25,6 +25,34 @@ export type HlsQuality = {
   setLevel: (index: number) => void;
 };
 
+/**
+ * A failure that stopped the stream, flattened to what a player UI needs: which stage failed and on which URL.
+ * Produced from hls.js's error payload, or from the element's own `MediaError` on the paths where hls.js is not
+ * driving it (native Safari playback, or a browser without MSE at all).
+ */
+export type VideoPlaybackError = {
+  /** hls.js error type — `network` / `media` / `other` — or `media` for the element's own `MediaError`. */
+  type: string;
+  /** hls.js `ErrorDetails` name (e.g. `manifestLoadError`), or the element's `MediaError.code` name. */
+  details: string;
+  /** URL at fault: the fragment being fetched, or the playlist itself. */
+  url?: string;
+};
+
+/**
+ * Adaptive-playback state, the quality control, and the failure/retry affordance a player needs to explain a stream
+ * that will not start.
+ */
+export type HlsPlayback = HlsQuality & {
+  /** Fatal error that stopped the current stream, or null while it is healthy. */
+  error: VideoPlaybackError | null;
+  /**
+   * Load the current stream again from scratch. After a fatal error hls.js has stopped loading and offers no resume,
+   * so a fresh player — and, on the native path, a fresh `load()` — is the only recovery.
+   */
+  retry: () => void;
+};
+
 /** Prefer the playlist's NAME (e.g. "720p"); fall back to the decoded height. */
 function levelLabel(level: { name?: string; height?: number }): string {
   const name = level.name?.trim();
@@ -41,6 +69,8 @@ type HlsQualityState = {
   levels: HlsLevel[];
   activeIndex: number | null;
   isAuto: boolean;
+  /** Fatal error for this stream, or null while it is healthy. Cleared by `retry`. */
+  error: VideoPlaybackError | null;
 };
 
 /**
@@ -57,7 +87,15 @@ type HlsErrorData = {
   frag?: { url: string };
 };
 
-const EMPTY_STATE: HlsQualityState = { src: null, levels: [], activeIndex: null, isAuto: true };
+/** `MediaError.code` → name, so a failure on the native path reads like an hls.js `details` string. */
+const MEDIA_ERROR_CODES: Record<number, string> = {
+  1: 'MEDIA_ERR_ABORTED',
+  2: 'MEDIA_ERR_NETWORK',
+  3: 'MEDIA_ERR_DECODE',
+  4: 'MEDIA_ERR_SRC_NOT_SUPPORTED',
+};
+
+const EMPTY_STATE: HlsQualityState = { src: null, levels: [], activeIndex: null, isAuto: true, error: null };
 
 /**
  * ABR's bandwidth estimate before a single segment has been downloaded. hls.js otherwise seeds this from the
@@ -81,20 +119,36 @@ const INITIAL_BANDWIDTH_ESTIMATE_BPS = 10_000_000; // 10 Mbps
  *
  * Returns the available renditions plus the one currently playing, so callers can surface a quality control.
  */
-export function useHlsVideo(videoRef: RefObject<HTMLVideoElement | null>, src: string | null): HlsQuality {
+export function useHlsVideo(videoRef: RefObject<HTMLVideoElement | null>, src: string | null): HlsPlayback {
   const hlsRef = useRef<Hls | null>(null);
   const [state, setState] = useState<HlsQualityState>(EMPTY_STATE);
+  /** Bumped by `retry` to build the stream again from scratch. */
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video || !src) return;
+
+    /**
+     * Where hls.js is not driving the element there is nothing in between to notice a failure, so the element's own
+     * `error` event is the only signal that the playlist could not be loaded. Reported in the same shape as an hls.js
+     * error, so callers need a single failure branch.
+     */
+    const onElementError = () => {
+      const mediaError = video.error;
+      const details = mediaError ? (MEDIA_ERROR_CODES[mediaError.code] ?? `code ${mediaError.code}`) : 'unknown';
+      setState((prev) => (prev.src === src ? { ...prev, error: { type: 'media', details } } : prev));
+    };
 
     // Prefer hls.js (MSE) wherever it is available. On Windows, Chrome reports a truthy "maybe" for the native
     // HLS MIME type even though `<video src="*.m3u8">` will not actually play, so checking `canPlayType` first
     // silently handed the raw playlist to the element and the video stayed black. Only rely on the element's own
     // HLS support where MSE is unavailable — i.e. Safari / iOS WebViews.
     if (Hls.isSupported()) {
-      const hls = new Hls({ abrEwmaDefaultEstimate: INITIAL_BANDWIDTH_ESTIMATE_BPS });
+      // The optimistic bandwidth seed (see INITIAL_BANDWIDTH_ESTIMATE_BPS) belongs to a first, hopeful attempt. A
+      // retry only ever happens after that attempt died, so it gets hls.js's own conservative default instead —
+      // otherwise the retry would confidently pick the very rung that just failed.
+      const hls = new Hls(attempt === 0 ? { abrEwmaDefaultEstimate: INITIAL_BANDWIDTH_ESTIMATE_BPS } : undefined);
       hlsRef.current = hls;
       hls.loadSource(src);
       hls.attachMedia(video);
@@ -105,6 +159,7 @@ export function useHlsVideo(videoRef: RefObject<HTMLVideoElement | null>, src: s
           levels: hls.levels.map((level, index) => ({ index, label: levelLabel(level) })),
           activeIndex: null,
           isAuto: hls.autoLevelEnabled,
+          error: null,
         });
       };
       const onLevelSwitched = (_event: unknown, data: { level: number }) => {
@@ -119,6 +174,9 @@ export function useHlsVideo(videoRef: RefObject<HTMLVideoElement | null>, src: s
         const diagnostic = { type: data.type, details: data.details, url: data.frag?.url ?? data.url, src };
         if (data.fatal) {
           console.error('[hls] fatal error, playback stopped', diagnostic);
+          // hls.js has stopped loading and will not resume on its own, and the element is left on its last frame.
+          // Reporting it lets the player offer a reload instead of sitting on a frozen picture.
+          setState((prev) => (prev.src === src ? { ...prev, error: diagnostic } : prev));
         } else {
           console.warn('[hls] recovered from error', diagnostic);
         }
@@ -136,22 +194,17 @@ export function useHlsVideo(videoRef: RefObject<HTMLVideoElement | null>, src: s
       };
     }
 
-    // Safari (and iOS WebViews) play HLS natively.
-    if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = src;
-      return () => {
-        video.removeAttribute('src');
-        video.load();
-      };
-    }
-
-    // Last resort: let the browser try the URL directly (it simply will not play where HLS is unsupported).
+    // No hls.js: Safari (and iOS WebViews) play HLS natively, and anywhere else the element simply gets the raw
+    // playlist and fails on its own (see the MIME-type note above). Either way nothing sits in between to notice,
+    // so the element's `error` event is watched instead.
     video.src = src;
+    video.addEventListener('error', onElementError);
     return () => {
+      video.removeEventListener('error', onElementError);
       video.removeAttribute('src');
       video.load();
     };
-  }, [videoRef, src]);
+  }, [videoRef, src, attempt]);
 
   const setLevel = useCallback((index: number) => {
     const hls = hlsRef.current;
@@ -177,7 +230,22 @@ export function useHlsVideo(videoRef: RefObject<HTMLVideoElement | null>, src: s
     }));
   }, []);
 
+  const retry = useCallback(() => {
+    // Clear the failure and re-run the effect: its cleanup tears the current attachment down and the new attempt
+    // starts from an empty state (`EMPTY_STATE` again on the next render, because `state.src` is stamped per stream
+    // and a retry of the same URL keeps it).
+    setState((prev) => (prev.error ? { ...prev, error: null } : prev));
+    setAttempt((n) => n + 1);
+  }, []);
+
   // Until the current stream reports its own manifest, expose a clean adaptive state rather than the previous one.
   const current = state.src === src ? state : EMPTY_STATE;
-  return { levels: current.levels, activeIndex: current.activeIndex, isAuto: current.isAuto, setLevel };
+  return {
+    levels: current.levels,
+    activeIndex: current.activeIndex,
+    isAuto: current.isAuto,
+    setLevel,
+    error: current.error,
+    retry,
+  };
 }

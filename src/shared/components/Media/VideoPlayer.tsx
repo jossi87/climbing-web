@@ -3,6 +3,7 @@ import { List } from 'lucide-react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { getMediaFileUrl, mediaIdentityId, mediaIdentityVersionStamp } from '../../../api';
 import { useHlsVideo, type HlsQuality } from '../../hooks/useHlsVideo';
+import { VideoPlaybackOverlay, type VideoOverlayPhase } from './VideoPlaybackOverlay';
 import { cn } from '../../../lib/utils';
 
 type Props = {
@@ -12,6 +13,12 @@ type Props = {
   style?: React.CSSProperties;
   /** If set, seek to the chapter matching this problem ID on start */
   optProblemId?: number | null;
+  /**
+   * Poster (thumbnail JPEG) the element shows until the first frame is decoded. Keeps the stage from going black
+   * while a movie starts on a slow connection — normally the very image the caller displayed before swapping in
+   * this player.
+   */
+  poster?: string;
   /**
    * Receives the HLS quality state (available renditions + the one playing) so a parent — e.g. the media
    * modal toolbar — can render the quality control. Called with `null` when this player tears down.
@@ -36,7 +43,15 @@ function formatMs(ms: number): string {
   return `${minutes}:${String(seconds).padStart(2, '0')}`;
 }
 
-const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optProblemId, onQualityChange }) => {
+const VideoPlayer: FC<Props> = ({
+  media,
+  autoPlay = true,
+  className,
+  style,
+  optProblemId,
+  poster,
+  onQualityChange,
+}) => {
   const [currentTimeMs, setCurrentTimeMs] = useState(0);
   const [durationMs, setDurationMs] = useState(0);
   const [showChapters, setShowChapters] = useState(false);
@@ -45,9 +60,37 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
   const [hoverX, setHoverX] = useState(0);
   const [isHoveringSeekbar, setIsHoveringSeekbar] = useState(false);
 
+  /**
+   * Playback state for the start-up overlay. All of it is reported by the element rather than inferred from hls.js:
+   * only the element knows when a frame is really on screen, and a stream can be fetched, buffered and still leave
+   * the stage black while the decoder catches up.
+   */
+  const [hasStarted, setHasStarted] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isWaiting, setIsWaiting] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+  const [hasEnded, setHasEnded] = useState(false);
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const chaptersContainerRef = useRef<HTMLDivElement>(null);
   const hasSetTimestampRef = useRef<number | null>(null);
+
+  /**
+   * The modal swaps `media` in place instead of remounting this player — only the `<video>` element is keyed by the
+   * media id — so the start-up signals above would otherwise follow from one movie into the next and silence the
+   * overlay while the new one loads. Reset them during render, the same way `Media.tsx` clears its URL override, so
+   * the divergence is gone before React commits rather than after a flash of the previous movie's state.
+   */
+  const mediaId = mediaIdentityId(media.identity);
+  const startupMediaIdRef = useRef(mediaId);
+  if (startupMediaIdRef.current !== mediaId) {
+    startupMediaIdRef.current = mediaId;
+    setHasStarted(false);
+    setIsPlaying(false);
+    setIsWaiting(false);
+    setIsReady(false);
+    setHasEnded(false);
+  }
 
   const chapters: MediaProblem[] = (media.problems ?? [])
     .slice()
@@ -135,7 +178,7 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
 
   // Movies are served as an HLS master playlist; hls.js fetches the manifest/segments (Safari plays it natively).
   const videoSrc = getMediaFileUrl(mediaIdentityId(media.identity), mediaIdentityVersionStamp(media.identity), true);
-  const { levels, activeIndex, isAuto, setLevel } = useHlsVideo(videoRef, videoSrc);
+  const { levels, activeIndex, isAuto, setLevel, error: playbackError, retry } = useHlsVideo(videoRef, videoSrc);
 
   // Report the quality state up; the control itself is rendered by the parent's toolbar (see `MediaModal`).
   // The cleanup reports `null` so the control disappears when this player goes away (modal switched to an image).
@@ -147,29 +190,102 @@ const VideoPlayer: FC<Props> = ({ media, autoPlay = true, className, style, optP
     return () => onQualityChange?.(null);
   }, [onQualityChange]);
 
+  /**
+   * What the stage shows while the element is not simply playing. `null` leaves it completely uncovered, so healthy
+   * playback keeps the native controls — and their hit area — to itself.
+   *
+   * `blocked` is the case worth spelling out: before the first frame, a paused element that already has data means
+   * the browser refused the autoplay and is waiting for a gesture (an accepted `play()` clears `paused` right away).
+   * Showing that as "loading" is the ambiguity this overlay exists to remove, and showing it as "pause" is what used
+   * to make a start-up tap stop the movie.
+   */
+  const overlayPhase: VideoOverlayPhase | null = playbackError
+    ? 'error'
+    : !hasStarted
+      ? isReady && !isPlaying
+        ? 'blocked'
+        : 'loading'
+      : isPlaying
+        ? isWaiting
+          ? 'buffering'
+          : null
+        : hasEnded
+          ? null // The clip is over: the native control bar already offers the replay.
+          : 'paused';
+
+  /**
+   * The only thing a tap during start-up may do. Deliberately `play()` and never `pause()`: while the first fragment
+   * is in flight the element's own control already reads "pause", so a tap that toggled it would stop the very movie
+   * the user was trying to start.
+   */
+  const ensurePlaying = () => {
+    void videoRef.current?.play().catch(() => {
+      // Still refused (no gesture yet, data saver): the overlay stays up and the next tap tries again.
+    });
+  };
+
   return (
     <div className={cn('group relative', className)} style={style}>
       <video
-        key={mediaIdentityId(media.identity)}
+        key={mediaId}
         ref={videoRef}
         className='h-full w-full'
-        controls
+        /*
+         * No native controls until the first frame: before that they advertise a play/pause state the user cannot
+         * trust (and the start-up overlay covers them anyway). From the first frame on they are the app's controls,
+         * exactly as they always were.
+         */
+        controls={hasStarted && !playbackError}
         autoPlay={autoPlay}
         playsInline
+        poster={poster}
         onLoadedMetadata={() => {
           handleDurationChange();
+          const video = videoRef.current;
           // Attempt autoplay once metadata is loaded
-          if (autoPlay && videoRef.current) {
-            videoRef.current.play().catch(() => {
-              // Browser may block autoplay, that's fine
+          if (autoPlay && video) {
+            // `play()` clears `paused` outright, so claim the playing state now; the refusal below — or the element's
+            // own `pause` — hands it back, and the overlay then offers the tap that autoplay policies demand.
+            setIsPlaying(true);
+            void video.play().catch(() => {
+              // Autoplay refused (no gesture yet, data saver): the overlay reports it instead of a silent spinner.
+              setIsPlaying(false);
             });
           }
         }}
         onTimeUpdate={handleTimeUpdate}
-        onSeeked={handleSeeked}
-        onPlay={handleStart}
+        onSeeked={() => {
+          handleSeeked();
+          // `seeking`/`waiting` report a gap in the data; `seeked` says the element is supplied again.
+          setIsWaiting(false);
+        }}
+        onPlay={() => {
+          setIsPlaying(true);
+          setHasEnded(false);
+          handleStart();
+        }}
+        onPlaying={() => {
+          // The first `playing` event is the moment a frame is on screen — what every "is it loading?" question is
+          // really about. Only the element knows that, which is why the overlay is driven from here.
+          setHasStarted(true);
+          setIsPlaying(true);
+          setIsWaiting(false);
+        }}
+        onPause={() => setIsPlaying(false)}
+        onWaiting={() => setIsWaiting(true)}
+        onSeeking={() => setIsWaiting(true)}
+        onCanPlay={() => {
+          setIsReady(true);
+          setIsWaiting(false);
+        }}
+        onEnded={() => {
+          setIsPlaying(false);
+          setHasEnded(true);
+        }}
         onClick={(e: MouseEvent) => e.stopPropagation()}
       />
+
+      <VideoPlaybackOverlay phase={overlayPhase} onEnsurePlayback={ensurePlaying} onRetry={retry} />
 
       {/* Chapter overlay button (top-left, above native controls) — matches media modal toolbar icon style */}
       {hasMeaningfulChapters && (
