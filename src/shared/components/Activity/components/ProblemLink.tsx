@@ -6,7 +6,7 @@ import { tickCragLinkArea, tickCragLinkSector, tickFlags, tickProblemLink } from
 import { designContract } from '../../../../design/contract';
 import { cn } from '../../../../lib/utils';
 import { TradGearMarker } from '../../../ui/TradGearMarker';
-import { climbingRouteUsesPassiveGear, formatRouteTypeLabel } from '../../../../utils/routeTradGear';
+import { formatRouteTypeLabel } from '../../../../utils/routeTradGear';
 import { NO_PERSONAL_GRADE_LABEL, NoPersonalGradeBadge } from '../../../ui/NoPersonalGradeBadge';
 
 const feed = designContract.typography.feed;
@@ -64,10 +64,9 @@ export const ProblemLink = ({
   const isNoPersonalGrade = a.grade === NO_PERSONAL_GRADE_LABEL;
   /** Backend echoes `'No personal grade'` in the grade slot for ungraded ticks; render a calmer badge instead of the prominent grade highlight. */
   const showGrade = !!(a.grade && a.grade !== '.' && !isNoPersonalGrade);
-  const showSubtype = !!(a.problemSubtype && a.problemSubtype !== '.');
-  const subtypeForLabel = showSubtype ? a.problemSubtype : '';
-  const routeTypeLabel = formatRouteTypeLabel(type, subtypeForLabel);
-  const showPassiveGearIcon = climbingRouteUsesPassiveGear(routeTypeLabel);
+  const routeTypeLabel = formatRouteTypeLabel(type, a.problemSubtype);
+  /** Passive-gear glyph: driven by the DB flag (`problemTradGear`), never by the type/subtype text. */
+  const showPassiveGearIcon = !!a.problemTradGear;
   const hasLock = !!(
     a.areaLockedAdmin ||
     a.sectorLockedAdmin ||

@@ -24,7 +24,7 @@ import { useSector } from '../../api';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { ActionMenuChip, Card, NotFoundCard, PageCardBreadcrumbRow } from '../../shared/ui';
 import { TradGearMarker } from '../../shared/ui/TradGearMarker';
-import { climbingRouteUsesPassiveGear, formatRouteTypeLabel, normalizeSubType } from '../../utils/routeTradGear';
+import { formatRouteTypeLabel, routeTypeLabel } from '../../utils/routeTradGear';
 import {
   tabBarButtonClassName,
   tabBarIconClassName,
@@ -86,20 +86,16 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
   const { isClimbing, isBouldering } = useMeta();
   const compact = useProblemListCompact();
 
+  /** Passive-gear glyph: driven by the DB flag (`type.trad_gear`), never by the type/subtype text. */
+  const routeType = problem.t;
   const passiveGearAfterGrade =
-    isClimbing && problem.t
-      ? (() => {
-          const typeLabel = formatRouteTypeLabel(problem.t.type, problem.t.subType);
-          if (!typeLabel || !climbingRouteUsesPassiveGear(typeLabel)) return null;
-          return (
-            <TradGearMarker
-              line={typeLabel}
-              className={problemListTradGearWrapClass}
-              iconClassName={problemListTradGearIconClass}
-            />
-          );
-        })()
-      : null;
+    isClimbing && routeType?.tradGear ? (
+      <TradGearMarker
+        line={formatRouteTypeLabel(routeType.type, routeType.subType)}
+        className={problemListTradGearWrapClass}
+        iconClassName={problemListTradGearIconClass}
+      />
+    ) : null;
 
   const faLine = compact
     ? compactFaDisplay(problem.faUser, problem.faYear, problem.ffaUser, problem.ffaYear)
@@ -581,8 +577,9 @@ const Sector = () => {
   const isBouldering = meta.isBouldering;
   const addPolygon = meta.isClimbing || markers.length === 0;
 
+  /** Group keys are the DB type labels: `type.subtype`, or `type.type` when a subtype is left blank. */
   const uniqueTypes = Array.from(
-    new Set((data.problems ?? []).map((p) => normalizeSubType(p.t?.subType)).filter((p) => !!p)),
+    new Set((data.problems ?? []).map((p) => routeTypeLabel(p.t?.type, p.t?.subType)).filter((p): p is string => !!p)),
   );
   if ((data.problems ?? []).filter((p) => p.broken)?.length) uniqueTypes.push('Broken');
   if ((data.problems ?? []).filter((p) => p.gradeWeight === 0)?.length) uniqueTypes.push('Projects');
@@ -634,13 +631,13 @@ const Sector = () => {
 
   const sectorTypeSummaries = uniqueTypes
     .map((subType) => {
-      const header = normalizeSubType(subType) || 'Boulder';
+      const header = subType;
       const problemsOfType =
         data.problems?.filter(
           (p) =>
             (subType === 'Projects' && p.gradeWeight === 0) ||
             (subType === 'Broken' && p.broken) ||
-            (p.t?.subType === subType && p.gradeWeight !== 0),
+            (routeTypeLabel(p.t?.type, p.t?.subType) === subType && p.gradeWeight !== 0),
         ) ?? [];
       const numTicked = problemsOfType.filter((p) => p.ticked).length;
       return { key: header, header, count: problemsOfType.length, numTicked };
@@ -658,7 +655,7 @@ const Sector = () => {
       numTicks: p.numTicks ?? 0,
       ticked: p.ticked ?? false,
       rock: p.rock ?? '',
-      subType: p.t?.subType ?? '',
+      subType: routeTypeLabel(p.t?.type, p.t?.subType),
       broken: !!p.broken,
       num: 0,
       fa: !!(p.faUser || p.ffaUser),

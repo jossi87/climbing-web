@@ -36,6 +36,7 @@ import { designContract } from '../../design/contract';
 import { twInk } from '../../design/twInk';
 import { Card, FormSwitch, MarkdownFieldLabel, NotFoundCard, SectionHeader } from '../../shared/ui';
 import { ensureDatePickerStyles } from '../../utils/ensureDatePickerStyles';
+import { formatRouteTypeLabel } from '../../utils/routeTradGear';
 
 type Problem = components['schemas']['Problem'];
 
@@ -519,7 +520,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                       )}
                       {meta.types.map((t, i) => (
                         <option key={i} value={t.id}>
-                          {t.type + (t.subType ? ' - ' + t.subType : '')}
+                          {formatRouteTypeLabel(t.type, t.subType)}
                         </option>
                       ))}
                     </select>

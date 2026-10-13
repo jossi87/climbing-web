@@ -1,13 +1,15 @@
 import type { ReactNode } from 'react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 import { Loading } from '../../ui/StatusWidgets';
 import { useGradeDistribution } from '../../../api';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { Card } from '../../ui';
+import { formatRouteTypeLabel } from '../../../utils/routeTradGear';
 
 type Data = components['schemas']['GradeDistribution'][];
+type GradeDistributionRow = components['schemas']['GradeDistributionRow'];
 
 /**
  * Parse a hex colour from the API (e.g. `"#ff0000"`) into an rgba string with the given alpha.
@@ -52,6 +54,25 @@ const ChartGradeDistribution = ({
   const gradeDistribution = data ?? fetchedGradeDistribution;
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
 
+  /**
+   * Columns come from the types the API reports per grade (`GradeDistributionRow.types`), i.e. straight from
+   * `climbing.type` — not from a hard-coded Boulder/Sport/Trad/… list. Keyed by `type.id` so a type keeps one column
+   * across grades, ordered by id (the DB order).
+   */
+  const typeColumns = useMemo(() => {
+    const labels = new Map<number, string>();
+    for (const grade of gradeDistribution ?? []) {
+      for (const row of grade.rows ?? []) {
+        for (const t of row.types ?? []) {
+          const id = t.type?.id;
+          if (id == null || labels.has(id)) continue;
+          labels.set(id, formatRouteTypeLabel(t.type?.type, t.type?.subType));
+        }
+      }
+    }
+    return [...labels].map(([id, label]) => ({ id, label })).sort((a, b) => a.id - b.id);
+  }, [gradeDistribution]);
+
   if (!gradeDistribution) {
     return <Loading />;
   }
@@ -61,23 +82,14 @@ const ChartGradeDistribution = ({
   const axisTop = Math.ceil(maxValue / 5) * 5;
   const axisMid = Math.floor(axisTop / 2);
 
-  const categories = [
-    { key: 'numBoulder', label: 'Boulder' },
-    { key: 'numSport', label: 'Sport' },
-    { key: 'numTrad', label: 'Trad' },
-    { key: 'numMixed', label: 'Mixed' },
-    { key: 'numTopRope', label: 'Top Rope' },
-    { key: 'numAid', label: 'Aid' },
-    { key: 'numAidTrad', label: 'Aid/Trad' },
-    { key: 'numIce', label: 'Ice' },
-  ] as const;
+  const typeCount = (row: GradeDistributionRow, typeId: number) =>
+    (row.types ?? []).find((t) => t.type?.id === typeId)?.num ?? 0;
 
-  const activeCategories = categories.filter((cat) =>
-    activeGrade?.rows?.some((row) => ((row[cat.key as keyof typeof row] as number) ?? 0) > 0),
-  );
+  /** Only types present in the selected grade get a column — same rule as the previous hard-coded list. */
+  const activeColumns = typeColumns.filter((col) => !!activeGrade?.rows?.some((row) => typeCount(row, col.id) > 0));
 
   /** One type column === same as row sum — hide redundant Total; keep Total for 0 (fallback) or 2+ types. */
-  const showTotalColumn = activeCategories.length !== 1;
+  const showTotalColumn = activeColumns.length !== 1;
 
   const body = (
     <>
@@ -215,25 +227,23 @@ const ChartGradeDistribution = ({
                       Total
                     </th>
                   ) : null}
-                  {activeCategories.map((cat) => (
+                  {activeColumns.map((col) => (
                     <th
-                      key={cat.key}
+                      key={col.id}
                       className={cn(
                         designContract.typography.menuItem,
                         'px-1.5 py-0.5 text-left font-bold whitespace-nowrap text-slate-400',
                       )}
                     >
-                      {cat.label}
+                      {col.label}
                     </th>
                   ))}
                 </tr>
               </thead>
               <tbody className={embedded ? '' : 'divide-surface-border/15 divide-y'}>
                 {activeGrade.rows?.map((row, idx) => {
-                  const total = categories.reduce(
-                    (acc, cat) => acc + ((row[cat.key as keyof typeof row] as number) ?? 0),
-                    0,
-                  );
+                  /** Row sum from the API (`GradeDistributionRow.num`), including types the selected grade hides. */
+                  const total = row.num ?? 0;
                   return (
                     <tr key={idx} className='transition-colors'>
                       <td
@@ -254,11 +264,11 @@ const ChartGradeDistribution = ({
                           {total}
                         </td>
                       ) : null}
-                      {activeCategories.map((cat) => {
-                        const value = ((row[cat.key as keyof typeof row] as number) ?? 0) || 0;
+                      {activeColumns.map((col) => {
+                        const value = typeCount(row, col.id);
                         return (
                           <td
-                            key={cat.key}
+                            key={col.id}
                             className={cn(
                               designContract.typography.menuItem,
                               'px-1.5 py-1 text-left font-normal whitespace-nowrap text-slate-400 tabular-nums',

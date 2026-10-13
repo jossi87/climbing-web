@@ -14,12 +14,7 @@ import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 import { twInk } from '../../../design/twInk';
 import { TradGearMarker } from '../../ui/TradGearMarker';
-import {
-  climbingRouteUsesPassiveGear,
-  formatPassiveGearMarkerLine,
-  formatRouteTypeLabel,
-  normalizeSubType,
-} from '../../../utils/routeTradGear';
+import { formatPassiveGearMarkerLine, formatRouteTypeLabel } from '../../../utils/routeTradGear';
 import { ProfileRowTextSep } from './ProfileRowTextSep';
 import {
   profileRowRootClass,
@@ -50,7 +45,8 @@ const TickListItemInner = ({ tick }: TickListItemProps) => {
   const pitchCount = tick.numPitches ?? 0;
   const multiPitch = pitchCount > 1;
   const routeTypeLabel = formatRouteTypeLabel(undefined, tick.subType);
-  const showPassiveGear = routeTypeLabel !== '' && climbingRouteUsesPassiveGear(routeTypeLabel);
+  /** Passive-gear glyph: driven by the DB flag (`tradGear`), never by the type/subtype text. */
+  const showPassiveGear = !!tick.tradGear;
   const passiveGearLine = showPassiveGear ? formatPassiveGearMarkerLine(routeTypeLabel, tick.numPitches) : '';
 
   return (
@@ -298,12 +294,10 @@ const ProfileAscentsView = ({ userId }: { userId: number }) => {
         const buckets = new Map<string, TypeBucket>();
         for (const row of filteredRows) {
           /**
-           * Ascents are summarised per problem type (`type.subType`). A problem without a subtype is a plain boulder
-           * (`null = Boulder`) — the ascents API spells that as the literal `'null'`, which {@link normalizeSubType}
-           * folds into “Boulder”. Never folded into the grade-based «Projects» bucket that the type filter
-           * (`rowListTypeKey`) uses.
+           * Ascents are summarised per problem type, straight from the database (`type.subType`). Never folded into
+           * the grade-based «Projects» bucket that the type filter (`rowListTypeKey`) uses.
            */
-          const key = normalizeSubType(row.subType) || 'Boulder';
+          const key = row.subType;
           const prev = buckets.get(key) ?? { count: 0, numFa: 0 };
           prev.count += 1;
           if (row.fa) prev.numFa += 1;

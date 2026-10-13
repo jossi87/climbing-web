@@ -16,6 +16,8 @@ import {
   tickWhenGrade,
 } from './profileRowTypography';
 import { cn } from '../../../lib/utils';
+import { TradGearMarker } from '../../ui/TradGearMarker';
+import { formatPassiveGearMarkerLine, formatRouteTypeLabel } from '../../../utils/routeTradGear';
 import { ProfileRowTextSep } from './ProfileRowTextSep';
 import type { MarkerDef } from '../Leaflet/markers';
 import type { Row } from '../ProblemList/types';
@@ -48,6 +50,8 @@ type TodoItem = {
   grade: string;
   gradeWeight: number;
   subType: string;
+  /** Passive-gear flag from `type.trad_gear` — decides whether the wire glyph is rendered. */
+  tradGear: boolean;
   discipline: string;
   isBouldering: boolean;
   isRopeClimbing: boolean;
@@ -79,6 +83,11 @@ const TodoListItem = ({ item }: { item: TodoItem }) => (
         {' '}
         <span className={cn(tickWhenGrade, 'whitespace-nowrap tabular-nums')}>{item.grade}</span>
       </>
+    ) : null}
+    {item.tradGear ? (
+      <TradGearMarker
+        line={formatPassiveGearMarkerLine(formatRouteTypeLabel(undefined, item.subType), item.numPitches)}
+      />
     ) : null}
     {item.numPitches > 1 && (
       <>
@@ -252,6 +261,7 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
             grade: problem.grade ?? '',
             gradeWeight: problem.gradeWeight ?? resolveGradeId(problem.grade ?? 'n/a'),
             subType: problem.subType ?? '',
+            tradGear: !!problem.tradGear,
             discipline: problem.discipline ?? '',
             isBouldering: problem.isBouldering ?? false,
             isRopeClimbing: problem.isRopeClimbing ?? false,

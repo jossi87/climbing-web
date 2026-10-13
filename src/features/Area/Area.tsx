@@ -25,7 +25,7 @@ import ProblemList, { useProblemListCompact } from '../../shared/components/Prob
 import type { components } from '../../@types/buldreinfo/swagger';
 import { ActionMenuChip, Card, NotFoundCard, PageCardBreadcrumbRow } from '../../shared/ui';
 import { TradGearMarker } from '../../shared/ui/TradGearMarker';
-import { climbingRouteUsesPassiveGear, formatRouteTypeLabel } from '../../utils/routeTradGear';
+import { formatRouteTypeLabel, routeTypeLabel } from '../../utils/routeTradGear';
 import { formatFaDisplay, compactFaDisplay } from '../../utils/firstAscentDisplay';
 import { getCoordinatesCenter } from '../../utils/mapCenter';
 import {
@@ -162,20 +162,16 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
   const { isClimbing, isBouldering } = useMeta();
   const compact = useProblemListCompact();
 
+  /** Passive-gear glyph: driven by the DB flag (`type.trad_gear`), never by the type/subtype text. */
+  const routeType = problem.t;
   const passiveGearAfterGrade =
-    isClimbing && problem.t
-      ? (() => {
-          const typeLabel = formatRouteTypeLabel(problem.t.type, problem.t.subType);
-          if (!typeLabel || !climbingRouteUsesPassiveGear(typeLabel)) return null;
-          return (
-            <TradGearMarker
-              line={typeLabel}
-              className={problemListTradGearWrapClass}
-              iconClassName={problemListTradGearIconClass}
-            />
-          );
-        })()
-      : null;
+    isClimbing && routeType?.tradGear ? (
+      <TradGearMarker
+        line={formatRouteTypeLabel(routeType.type, routeType.subType)}
+        className={problemListTradGearWrapClass}
+        iconClassName={problemListTradGearIconClass}
+      />
+    ) : null;
 
   const faLine = compact
     ? compactFaDisplay(problem.faUser, problem.faYear, problem.ffaUser, problem.ffaYear)
@@ -688,7 +684,7 @@ const Area = () => {
           numTicks: p.numTicks ?? 0,
           ticked: p.ticked ?? false,
           rock: p.rock ?? '',
-          subType: p.t?.subType ?? '',
+          subType: routeTypeLabel(p.t?.type, p.t?.subType),
           broken: !!p.broken,
           num: p.nr ?? 0,
           fa: !!(p.faUser || p.ffaUser),

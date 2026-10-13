@@ -7,6 +7,7 @@ import type { ResetField } from '../../../features/Problems/reducer';
 import { isFilterSectionActive } from '../../../features/Problems/reducer';
 import { YearSelect } from './YearSelect';
 import { hours } from '../../../utils/hours';
+import { routeTypeLabel } from '../../../utils/routeTradGear';
 import { StartingAltitudeSelect } from './StartingAltitudeSelect';
 import { ChevronDown, Trash2, X, Maximize2, Minimize2 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
@@ -184,8 +185,8 @@ export const FilterForm = () => {
   const anyFilterActive = isFilterSectionActive(filterState, 'all');
 
   const disciplineOptions = meta.types
-    .sort((a, b) => (a.subType ?? '').localeCompare(b.subType ?? '', getLocales()))
-    .map((t) => ({ key: t.id, value: t.id, text: t.subType }));
+    .sort((a, b) => routeTypeLabel(a.type, a.subType).localeCompare(routeTypeLabel(b.type, b.subType), getLocales()))
+    .map((t) => ({ key: t.id, value: t.id, text: routeTypeLabel(t.type, t.subType) }));
 
   const compassDirectionOptions = meta.compassDirections.map((cd) => ({
     key: cd.id,

@@ -6,6 +6,7 @@ import Media from '../../shared/components/Media/Media';
 import { ExpandableMarkdown } from '../../shared/components/ExpandableMarkdown';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
+import { routeTypeLabel } from '../../utils/routeTradGear';
 import type { components } from '../../@types/buldreinfo/swagger';
 
 type Problem = components['schemas']['Problem'];
@@ -119,8 +120,11 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
 
   const freeDate = data.faDateHr || (!showAidBlock ? faAid?.dateHr : undefined);
 
+  /** DB type label for the facts row: `type.subtype`, or `type.type` when that subtype is blank. */
+  const typeLabel = routeTypeLabel(data.t?.type, data.t?.subType);
+
   const showFreeBlock =
-    mergedForFree.length > 0 || !!freeDate || !!data.originalGrade || (meta.isClimbing && !!data.t?.subType);
+    mergedForFree.length > 0 || !!freeDate || !!data.originalGrade || (meta.isClimbing && !!typeLabel);
 
   const routeParts = [
     data.startingAltitude ? `Alt ${data.startingAltitude}` : null,
@@ -170,11 +174,11 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
       </span>,
     );
   }
-  if (meta.isClimbing && data.t?.subType) {
+  if (meta.isClimbing && typeLabel) {
     freeRowBody.push(
       <span key='t' className={cn(factSegmentClass, 'gap-1')}>
         <Tag size={12} className={factIconClass} strokeWidth={2.25} aria-hidden />
-        {data.t.subType}
+        {typeLabel}
       </span>,
     );
   }

@@ -17,7 +17,7 @@ import { VideoProcessingPlaceholder } from '../../shared/components/Media/VideoP
 import { VideoThumbnailPlayOverlay } from '../../shared/components/Media/VideoThumbnailPlayOverlay';
 import { useRetryingMediaImage } from '../../shared/hooks/useRetryingMediaImage';
 import { activityShowHref, type ActivityShowCategory } from '../../shared/components/Activity/activityShowPreset';
-import { climbingRouteUsesPassiveGear, formatRouteTypeLabel } from '../../utils/routeTradGear';
+import { formatRouteTypeLabel } from '../../utils/routeTradGear';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 import type { components } from '../../@types/buldreinfo/swagger';
@@ -290,6 +290,7 @@ function ProblemTitleInline({
   problemId,
   problemName,
   problemSubtype,
+  problemTradGear,
   grade,
   problemLockedAdmin,
   problemLockedSuperadmin,
@@ -297,14 +298,15 @@ function ProblemTitleInline({
   problemId?: number;
   problemName?: string;
   problemSubtype?: string;
+  problemTradGear?: boolean;
   grade?: string;
   problemLockedAdmin?: boolean;
   problemLockedSuperadmin?: boolean;
 }) {
   /** `formatRouteTypeLabel` accepts `(type, subtype)`; on the frontpage we only have subtype, so type is empty.
-   *  `climbingRouteUsesPassiveGear` then decides whether the trad glyph belongs (true for trad / mixed / aid). */
+   *  The glyph itself is decided by the DB flag (`type.trad_gear` → `problemTradGear`), not by the label text. */
   const subtypeLabel = formatRouteTypeLabel('', problemSubtype);
-  const showTradIcon = climbingRouteUsesPassiveGear(subtypeLabel);
+  const showTradIcon = !!problemTradGear;
   return (
     <>
       <Link to={`/problem/${problemId ?? 0}`} className={problemLinkClass}>
@@ -460,6 +462,7 @@ function FirstAscentsPanel({ items, isBouldering }: { items: FirstAscent[]; isBo
                         problemId={a.problemId}
                         problemName={a.problemName}
                         problemSubtype={a.problemSubtype}
+                        problemTradGear={a.problemTradGear}
                         grade={a.grade}
                         problemLockedAdmin={a.problemLockedAdmin}
                         problemLockedSuperadmin={a.problemLockedSuperadmin}
@@ -523,6 +526,7 @@ function RecentAscentsPanel({ items }: { items: Ascent[] }) {
                         problemId={a.problemId}
                         problemName={a.problemName}
                         problemSubtype={a.problemSubtype}
+                        problemTradGear={a.problemTradGear}
                         grade={a.grade}
                         problemLockedAdmin={a.problemLockedAdmin}
                         problemLockedSuperadmin={a.problemLockedSuperadmin}

@@ -1,5 +1,3 @@
-import { normalizeSubType } from '../../../utils/routeTradGear';
-
 export type Row = {
   element: React.ReactNode;
   areaName: string;
@@ -34,11 +32,11 @@ export type Row = {
 };
 
 /**
- * Matches sector type summaries: Projects (grade 0), Broken, else the subtype — or «Boulder» when the problem has no
- * subtype (`type.subType` is null for plain boulders, see {@link normalizeSubType}).
+ * Matches sector type summaries: Projects (grade 0), Broken, else the label the list producer filled in from the
+ * database (`routeTypeLabel` → `type.subtype`, or `type.type` when that subtype is blank).
  */
 export function rowListTypeKey(row: Row): string {
   if (row.broken) return 'Broken';
   if (row.gradeWeight === 0) return 'Projects';
-  return normalizeSubType(row.subType) || 'Boulder';
+  return row.subType;
 }

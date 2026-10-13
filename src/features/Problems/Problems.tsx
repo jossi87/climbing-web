@@ -10,11 +10,7 @@ import type { components } from '../../@types/buldreinfo/swagger';
 import { ProblemsMap } from '../../shared/components/TableOfContents/ProblemsMap';
 import { Filter, Download, Database } from 'lucide-react';
 import { Card, SectionHeader } from '../../shared/ui';
-import {
-  climbingRouteUsesPassiveGear,
-  formatPassiveGearMarkerLine,
-  formatRouteTypeLabel,
-} from '../../utils/routeTradGear';
+import { formatPassiveGearMarkerLine, formatRouteTypeLabel } from '../../utils/routeTradGear';
 import { formatFaDisplay } from '../../utils/firstAscentDisplay';
 import { cn } from '../../lib/utils';
 
@@ -144,9 +140,11 @@ export const Problems = ({ filterOpen }: Props) => {
                           const metaParts: string[] = [];
                           let passiveGearTooltip: string | undefined;
                           if (meta.isClimbing) {
-                            const typeLine = formatRouteTypeLabel(problem.t?.type, problem.t?.subType);
-                            if (typeLine && climbingRouteUsesPassiveGear(typeLine)) {
-                              passiveGearTooltip = formatPassiveGearMarkerLine(typeLine, problem.numPitches);
+                            if (problem.t?.tradGear) {
+                              passiveGearTooltip = formatPassiveGearMarkerLine(
+                                formatRouteTypeLabel(problem.t.type, problem.t.subType),
+                                problem.numPitches,
+                              );
                             }
                             if ((problem.numPitches ?? 0) > 1) metaParts.push(`${problem.numPitches}p`);
                           }

@@ -12,6 +12,7 @@ import { designContract } from '../../design/contract';
 import { Card, SectionHeader } from '../../shared/ui';
 import { NoDogsAllowed } from '../../shared/components/Widgets/NoDogsAllowed';
 import { SunOnWall } from '../../shared/components/Widgets/ClimbingWidgets';
+import { routeTypeLabel } from '../../utils/routeTradGear';
 import { Markdown } from '../../shared/components/Markdown/Markdown';
 import type { MarkerDef } from '../../shared/components/Leaflet/markers';
 
@@ -119,7 +120,8 @@ const AreaPanel = ({
 
     for (const s of area.sectors ?? []) {
       for (const p of s.problems ?? []) {
-        const subType = p.t?.subType || p.t?.type || 'Unknown';
+        /** Straight from `type.subtype` / `type.type` — no name-based fallback. */
+        const subType = routeTypeLabel(p.t?.type, p.t?.subType);
         const isMulti = (p.numPitches ?? 0) > 1;
         if (isMulti) {
           multiPitch.set(subType, (multiPitch.get(subType) ?? 0) + 1);

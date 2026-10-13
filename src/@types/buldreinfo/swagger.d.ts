@@ -1177,6 +1177,7 @@ export type components = {
             problemGrade?: string;
             problemGradeColor?: string;
             problemSubtype?: string;
+            problemTradGear?: boolean;
             /** Format: int32 */
             nr?: number;
             /** Format: int32 */
@@ -1373,6 +1374,8 @@ export type components = {
             id?: number;
             type?: string;
             subType?: string;
+            isBolted?: boolean;
+            tradGear?: boolean;
         };
         Redirect: {
             /** Format: int32 */
@@ -1948,6 +1951,7 @@ export type components = {
             /** Format: int32 */
             gradeWeight?: number;
             subType?: string;
+            tradGear?: boolean;
             discipline?: string;
             isBouldering?: boolean;
             isRopeClimbing?: boolean;
@@ -2005,6 +2009,7 @@ export type components = {
             gradeWeight?: number;
             noPersonalGrade?: boolean;
             coordinates?: components["schemas"]["Coordinates"];
+            tradGear?: boolean;
             isBouldering?: boolean;
             isRopeClimbing?: boolean;
             isIceClimbing?: boolean;
@@ -2082,22 +2087,14 @@ export type components = {
             /** Format: int32 */
             id?: number;
             name?: string;
+            types?: components["schemas"]["GradeDistributionType"][];
             /** Format: int32 */
-            numBoulder?: number;
+            num?: number;
+        };
+        GradeDistributionType: {
+            type?: components["schemas"]["Type"];
             /** Format: int32 */
-            numSport?: number;
-            /** Format: int32 */
-            numTrad?: number;
-            /** Format: int32 */
-            numMixed?: number;
-            /** Format: int32 */
-            numTopRope?: number;
-            /** Format: int32 */
-            numAid?: number;
-            /** Format: int32 */
-            numAidTrad?: number;
-            /** Format: int32 */
-            numIce?: number;
+            num?: number;
         };
         Frontpage: {
             stats?: components["schemas"]["FrontpageStats"];
@@ -2118,6 +2115,7 @@ export type components = {
             problemLockedSuperadmin?: boolean;
             problemName?: string;
             problemSubtype?: string;
+            problemTradGear?: boolean;
             grade?: string;
             users?: components["schemas"]["User"][];
         };
@@ -2175,6 +2173,7 @@ export type components = {
             problemLockedSuperadmin?: boolean;
             problemName?: string;
             problemSubtype?: string;
+            problemTradGear?: boolean;
             grade?: string;
             u?: components["schemas"]["User"];
             repeat?: boolean;
@@ -2265,6 +2264,7 @@ export type components = {
             problemLockedSuperadmin?: boolean;
             problemName?: string;
             problemSubtype?: string;
+            problemTradGear?: boolean;
             grade?: string;
             media?: components["schemas"]["ActivityMedia"][];
             /** Format: int32 */

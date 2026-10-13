@@ -1,5 +1,6 @@
 import type { Metadata } from '../../shared/components/Meta/context';
 import { hours } from '../../utils/hours';
+import { routeTypeLabel } from '../../utils/routeTradGear';
 import type { State, Update } from './reducer';
 
 /**
@@ -181,7 +182,12 @@ export const describeActiveFilters = (state: State, meta: Metadata): ActiveFilte
     filters.push({
       id: 'types',
       label: 'Types',
-      value: formatNames(typeIds.map((id) => meta.types.find((type) => type.id === id)?.subType || `#${id}`)),
+      value: formatNames(
+        typeIds.map((id) => {
+          const type = meta.types.find((t) => t.id === id);
+          return (type ? routeTypeLabel(type.type, type.subType) : '') || `#${id}`;
+        }),
+      ),
       clear: { action: 'reset', section: 'types' },
     });
   }
