@@ -756,7 +756,6 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                 }))
               }
               height='100%'
-              showSatelliteImage={true}
               clusterMarkers={false}
             />
           </div>

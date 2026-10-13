@@ -20,6 +20,7 @@ import Polylines from './polylines';
 import MarkerClusterGroup from './ReactLeafletMarkerCluster';
 import UseControl from '../../../utils/use-leaflet-control';
 import type { components } from '../../../@types/buldreinfo/swagger';
+import { useMeta } from '../Meta/context';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 
@@ -38,43 +39,6 @@ function computeCenterFromDegrees(coords: number[][]): [number, number] | null {
   if (count === 0) return null;
   return [sumLat / count, sumLng / count];
 }
-
-type BaseLayerDef = {
-  /** Which default the provider answers: `satellite` for bouldering, `topo` otherwise; `street` is opt-in. */
-  kind: 'satellite' | 'topo' | 'street';
-  name: string;
-  url: string;
-  maxZoom: number;
-  attribution: string;
-};
-
-/**
- * Base map providers offered in the layer switcher. Keeping them as one list makes the map generic:
- * adding or removing a provider is a single entry here instead of another block of `<TileLayer>` JSX.
- */
-const BASE_LAYERS: BaseLayerDef[] = [
-  {
-    kind: 'satellite',
-    name: 'Norge i Bilder',
-    url: 'https://waapi.webatlas.no/maptiles/tiles/webatlas-orto-newup/wa_grid/{z}/{x}/{y}.jpeg?api_key=b8e36d51-119a-423b-b156-d744d54123d5',
-    maxZoom: 21,
-    attribution: '&copy; Geovekst',
-  },
-  {
-    kind: 'street',
-    name: 'OpenStreetMap',
-    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    maxZoom: 19,
-    attribution: '&copy; OpenStreetMap',
-  },
-  {
-    kind: 'topo',
-    name: 'Kartverket N50 topo',
-    url: 'https://cache.kartverket.no/v1/wmts/1.0.0/topo/default/webmercator/{z}/{y}/{x}.png',
-    maxZoom: 18,
-    attribution: '&copy; Kartverket',
-  },
-];
 
 /**
  * Kartverket WMS overlays drawn on top of every base layer: place names (“Stedsnavn”) and the road
@@ -138,7 +102,6 @@ type Props = {
     | undefined;
   trails?: TrailDef[] | null;
   rocks?: string[];
-  showSatelliteImage?: boolean;
   /** Bottom-right elevation labels toggle; hide on embedded TOC maps so it is not mistaken for page chrome. */
   showElevationControl?: boolean;
   /** Overlay rendered in the bottom-right corner, above the elevation button. */
@@ -201,7 +164,6 @@ const Leaflet = ({
   outlines,
   trails = null,
   rocks = [],
-  showSatelliteImage,
   showElevationControl = true,
   mapOverlay,
   children,
@@ -210,6 +172,8 @@ const Leaflet = ({
 }: Props) => {
   const [groupByRock, setGroupByRock] = useState(!!rocks?.length);
   const [showElevation, setShowElevation] = useState(false);
+  /** Base maps offered by the active region; the region's default is the one selected on load. */
+  const { maps } = useMeta();
 
   const opacity = 0.6;
   const addEventHandlers = !onMouseClick && !onMouseMove;
@@ -352,12 +316,8 @@ const Leaflet = ({
         </UseControlWrapper>
       )}
       <LayersControl>
-        {BASE_LAYERS.map((base) => (
-          <LayersControl.BaseLayer
-            key={base.name}
-            name={base.name}
-            checked={base.kind === (showSatelliteImage ? 'satellite' : 'topo')}
-          >
+        {maps.map((base) => (
+          <LayersControl.BaseLayer key={base.id} name={base.name} checked={base.isDefault}>
             <TileLayer maxZoom={base.maxZoom} attribution={base.attribution} url={base.url} />
           </LayersControl.BaseLayer>
         ))}

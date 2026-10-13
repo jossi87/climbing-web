@@ -359,7 +359,6 @@ const ProfileAscentsView = ({ userId }: { userId: number }) => {
                 markers={filteredAreaMarkers}
                 defaultCenter={defaultCenter}
                 defaultZoom={defaultZoom}
-                showSatelliteImage={false}
                 clusterMarkers={true}
                 flyToId={null}
               />

@@ -574,7 +574,6 @@ const Sector = () => {
     if (data.triviaMedia.length > 1) orderableMedia.push(...data.triviaMedia);
   }
 
-  const isBouldering = meta.isBouldering;
   const addPolygon = meta.isClimbing || markers.length === 0;
 
   /** Group keys are the DB type labels: `type.subtype`, or `type.type` when a subtype is left blank. */
@@ -1004,7 +1003,6 @@ const Sector = () => {
                     defaultZoom={defaultZoom}
                     onMouseClick={undefined}
                     onMouseMove={undefined}
-                    showSatelliteImage={isBouldering}
                     clusterMarkers={true}
                     rocks={uniqueRocks.length > 0 ? uniqueRocks : undefined}
                     flyToId={null}

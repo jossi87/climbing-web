@@ -939,7 +939,6 @@ const Area = () => {
                     rocks={showProblemsOnMap ? uniqueRocks : undefined}
                     defaultCenter={areaMapCenter ?? meta.defaultCenter}
                     defaultZoom={areaMapCenter ? 14 : meta.defaultZoom}
-                    showSatelliteImage={false}
                     clusterMarkers={showProblemsOnMap}
                     flyToId={null}
                     mapOverlay={

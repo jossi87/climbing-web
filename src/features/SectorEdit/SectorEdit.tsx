@@ -944,7 +944,6 @@ export const SectorEdit = ({ sector, area }: Props) => {
               onMouseClick={onMapMouseClick}
               onMouseMove={onMouseMove}
               height='100%'
-              showSatelliteImage={meta.isBouldering}
               clusterMarkers={false}
               rocks={undefined}
               flyToId={null}

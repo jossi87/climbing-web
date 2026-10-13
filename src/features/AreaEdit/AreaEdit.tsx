@@ -292,7 +292,6 @@ export const AreaEdit = () => {
                 .filter((s) => (s.outline ?? []).length > 0)
                 .map((s) => ({ background: true, outline: s.outline ?? [] }))}
               height='100%'
-              showSatelliteImage={false}
               clusterMarkers={false}
               flyToId={null}
             />

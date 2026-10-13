@@ -734,7 +734,6 @@ function ProblemLoaded({
                   trails={trails}
                   defaultCenter={{ lat: conditionLat, lng: conditionLng }}
                   defaultZoom={mapDefaultZoom}
-                  showSatelliteImage={meta.isBouldering}
                   clusterMarkers={false}
                   flyToId={null}
                 />

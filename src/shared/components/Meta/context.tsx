@@ -45,6 +45,15 @@ export type Metadata = {
     outline: components['schemas']['Coordinates'][];
     active: boolean;
   }[];
+  /** Base maps offered by the active region (`region_map`); exactly one entry has `isDefault`. */
+  maps: {
+    id: number;
+    name: string;
+    url: string;
+    attribution: string;
+    maxZoom: number;
+    isDefault: boolean;
+  }[];
   compassDirections: {
     id: number;
     direction: string;

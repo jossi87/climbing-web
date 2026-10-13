@@ -429,7 +429,6 @@ const Areas = () => {
               markers={markers}
               defaultCenter={meta.defaultCenter}
               defaultZoom={meta.defaultZoom}
-              showSatelliteImage={false}
               clusterMarkers={!showForDevelopers}
               flyToId={flyToId}
               onMarkerClick={handleMarkerClick}

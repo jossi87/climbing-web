@@ -2037,6 +2037,16 @@ export type components = {
             /** Format: double */
             lng?: number;
         };
+        Map: {
+            /** Format: int32 */
+            id?: number;
+            name?: string;
+            url?: string;
+            attribution?: string;
+            /** Format: int32 */
+            maxZoom?: number;
+            isDefault?: boolean;
+        };
         Meta: {
             title?: string;
             isAuthenticated?: boolean;
@@ -2058,6 +2068,7 @@ export type components = {
             url?: string;
             types?: components["schemas"]["Type"][];
             regions?: components["schemas"]["Region"][];
+            maps?: components["schemas"]["Map"][];
             compassDirections?: components["schemas"]["CompassDirection"][];
         };
         Region: {

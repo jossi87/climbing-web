@@ -315,7 +315,6 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
                 markers={filteredAreaMarkers}
                 defaultCenter={defaultCenter}
                 defaultZoom={defaultZoom}
-                showSatelliteImage={false}
                 clusterMarkers={true}
                 flyToId={null}
               />
