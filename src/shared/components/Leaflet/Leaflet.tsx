@@ -39,6 +39,53 @@ function computeCenterFromDegrees(coords: number[][]): [number, number] | null {
   return [sumLat / count, sumLng / count];
 }
 
+type BaseLayerDef = {
+  /** Which default the provider answers: `satellite` for bouldering, `topo` otherwise; `street` is opt-in. */
+  kind: 'satellite' | 'topo' | 'street';
+  name: string;
+  url: string;
+  maxZoom: number;
+  attribution: string;
+};
+
+/**
+ * Base map providers offered in the layer switcher. Keeping them as one list makes the map generic:
+ * adding or removing a provider is a single entry here instead of another block of `<TileLayer>` JSX.
+ */
+const BASE_LAYERS: BaseLayerDef[] = [
+  {
+    kind: 'satellite',
+    name: 'Norge i Bilder',
+    url: 'https://waapi.webatlas.no/maptiles/tiles/webatlas-orto-newup/wa_grid/{z}/{x}/{y}.jpeg?api_key=b8e36d51-119a-423b-b156-d744d54123d5',
+    maxZoom: 21,
+    attribution: '&copy; Geovekst',
+  },
+  {
+    kind: 'street',
+    name: 'OpenStreetMap',
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap',
+  },
+  {
+    kind: 'topo',
+    name: 'Kartverket N50 topo',
+    url: 'https://cache.kartverket.no/v1/wmts/1.0.0/topo/default/webmercator/{z}/{y}/{x}.png',
+    maxZoom: 18,
+    attribution: '&copy; Kartverket',
+  },
+];
+
+/**
+ * Kartverket WMS overlays drawn on top of every base layer: place names (“Stedsnavn”) and the road
+ * network (“Vegnett”). These were user-toggleable checkboxes that nobody ever changed, so they are
+ * now always on and no longer clutter the layer control.
+ */
+const WMS_OVERLAYS = [
+  { url: 'https://openwms.statkart.no/skwms1/wms.topo4', wmsLayer: 'Stedsnavn' },
+  { url: 'https://openwms.statkart.no/skwms1/wms.vegnett', wmsLayer: 'all' },
+];
+
 function MapEvent({
   onMouseClick,
   onMouseMove,
@@ -305,54 +352,24 @@ const Leaflet = ({
         </UseControlWrapper>
       )}
       <LayersControl>
-        <LayersControl.BaseLayer checked={showSatelliteImage} name='Norge i Bilder'>
-          <TileLayer
-            maxZoom={21}
-            attribution='&copy; Geovekst'
-            url='https://waapi.webatlas.no/maptiles/tiles/webatlas-orto-newup/wa_grid/{z}/{x}/{y}.jpeg?api_key=b8e36d51-119a-423b-b156-d744d54123d5'
-          />
-        </LayersControl.BaseLayer>
-
-        <LayersControl.BaseLayer name='OpenStreetMap'>
-          <TileLayer
-            maxZoom={19}
-            attribution='&copy; OpenStreetMap'
-            url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-          />
-        </LayersControl.BaseLayer>
-
-        <LayersControl.BaseLayer checked={!showSatelliteImage} name='Kartverket N50 topo'>
-          <TileLayer
-            maxZoom={18}
-            attribution='&copy; Kartverket'
-            url='https://cache.kartverket.no/v1/wmts/1.0.0/topo/default/webmercator/{z}/{y}/{x}.png'
-          />
-        </LayersControl.BaseLayer>
-
-        <LayersControl.Overlay checked={true} name='Stedsnavn'>
-          <WMSTileLayer
-            params={{
-              transparent: true,
-              format: 'image/png',
-              layers: 'Stedsnavn',
-              version: '1.3.0',
-            }}
-            url='https://openwms.statkart.no/skwms1/wms.topo4'
-          />
-        </LayersControl.Overlay>
-
-        <LayersControl.Overlay checked={true} name='Vegnett'>
-          <WMSTileLayer
-            params={{
-              transparent: true,
-              format: 'image/png',
-              layers: 'all',
-              version: '1.3.0',
-            }}
-            url='https://openwms.statkart.no/skwms1/wms.vegnett'
-          />
-        </LayersControl.Overlay>
+        {BASE_LAYERS.map((base) => (
+          <LayersControl.BaseLayer
+            key={base.name}
+            name={base.name}
+            checked={base.kind === (showSatelliteImage ? 'satellite' : 'topo')}
+          >
+            <TileLayer maxZoom={base.maxZoom} attribution={base.attribution} url={base.url} />
+          </LayersControl.BaseLayer>
+        ))}
       </LayersControl>
+
+      {WMS_OVERLAYS.map((overlay) => (
+        <WMSTileLayer
+          key={overlay.url}
+          url={overlay.url}
+          params={{ transparent: true, format: 'image/png', layers: overlay.wmsLayer, version: '1.3.0' }}
+        />
+      ))}
       <FeatureGroup>
         {markerGroup}
         <Polygons
