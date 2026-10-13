@@ -48,7 +48,10 @@ type TodoItem = {
   grade: string;
   gradeWeight: number;
   subType: string;
-  group: string;
+  discipline: string;
+  isBouldering: boolean;
+  isRopeClimbing: boolean;
+  isIceClimbing: boolean;
   numPitches: number;
   coordinates?: { latitude: number; longitude: number };
   problemLockedAdmin: boolean;
@@ -249,7 +252,10 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
             grade: problem.grade ?? '',
             gradeWeight: problem.gradeWeight ?? resolveGradeId(problem.grade ?? 'n/a'),
             subType: problem.subType ?? '',
-            group: problem.group ?? '',
+            discipline: problem.discipline ?? '',
+            isBouldering: problem.isBouldering ?? false,
+            isRopeClimbing: problem.isRopeClimbing ?? false,
+            isIceClimbing: problem.isIceClimbing ?? false,
             numPitches: problem.numPitches ?? 0,
             coordinates:
               problem.coordinates?.latitude != null && problem.coordinates?.longitude != null
@@ -319,8 +325,10 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
           ticked: false,
           rock: '',
           subType: item.subType,
-          /** Drives the toolbar's multi-select discipline filter (defaults to all). */
-          discipline: item.group,
+          discipline: item.discipline,
+          isBouldering: item.isBouldering,
+          isRopeClimbing: item.isRopeClimbing,
+          isIceClimbing: item.isIceClimbing,
           numPitches: item.numPitches,
           num: item.todoId,
           fa: false,

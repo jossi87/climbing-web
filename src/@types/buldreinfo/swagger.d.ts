@@ -1948,7 +1948,10 @@ export type components = {
             /** Format: int32 */
             gradeWeight?: number;
             subType?: string;
-            group?: string;
+            discipline?: string;
+            isBouldering?: boolean;
+            isRopeClimbing?: boolean;
+            isIceClimbing?: boolean;
             /** Format: int32 */
             numPitches?: number;
             coordinates?: components["schemas"]["Coordinates"];
@@ -1983,7 +1986,7 @@ export type components = {
             subType?: string;
             /** Format: int32 */
             numPitches?: number;
-            group?: string;
+            discipline?: string;
             /** Format: int32 */
             idProblem?: number;
             /** Format: int32 */
@@ -2002,6 +2005,9 @@ export type components = {
             gradeWeight?: number;
             noPersonalGrade?: boolean;
             coordinates?: components["schemas"]["Coordinates"];
+            isBouldering?: boolean;
+            isRopeClimbing?: boolean;
+            isIceClimbing?: boolean;
         };
         ProblemSearchResult: {
             /** Format: int32 */
@@ -2052,7 +2058,10 @@ export type components = {
         Region: {
             /** Format: int32 */
             id?: number;
-            group?: string;
+            discipline?: string;
+            isBouldering?: boolean;
+            isRopeClimbing?: boolean;
+            isIceClimbing?: boolean;
             name?: string;
             url?: string;
             active?: boolean;

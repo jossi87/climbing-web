@@ -3,7 +3,7 @@ import { neverGuard } from '../../../utils/neverGuard';
 import type { DispatchUpdate } from '../FilterForm/GradeSelect/GradeSelect';
 import { rowListTypeKey, type Row } from './types';
 import { useGrades } from '../Meta';
-import { distinctDisciplineGroups } from '../Profile/profileDiscipline';
+import { distinctDisciplines } from '../Profile/profileDiscipline';
 import { getLocales } from '../../../api';
 import { useLocalStorage, useSessionStorage } from '../../../utils/use-local-storage';
 
@@ -21,7 +21,7 @@ type UiState = {
   onlyFa: boolean;
   onlyMultipitch: boolean;
   types: Record<string, boolean>;
-  /** Profile lists: enabled state per `type.group` discipline (`Row.discipline`). Not persisted — every visit starts with all disciplines. */
+  /** Profile lists: enabled state per discipline name; not persisted. */
   disciplines: Record<string, boolean>;
 };
 
@@ -35,9 +35,8 @@ type DerivedState = {
   /** Ordered disciplines found on the rows; empty for lists without a discipline facet (sector / area). */
   uniqueDisciplines: string[];
   /**
-   * True while the visible rows stay within one grade system — i.e. at most one discipline is enabled.
-   * `useGrades()` only knows the requesting site's own grade system, so a mixed list must not be
-   * grade-filtered or grade-sorted (see {@link ProblemList} and the grade range below).
+   * False once rows span disciplines: `useGrades()` only knows this site's grade system, so a mixed list must not be
+   * grade-filtered or grade-sorted.
    */
   gradeComparable: boolean;
   containsFa: boolean;
@@ -276,8 +275,8 @@ export const useProblemListState = ({
 
   const { mapping, easyToHard } = useGrades();
   const typeNames = useMemo(() => [...new Set(rows.map(rowListTypeKey))].sort(), [rows]);
-  /** Profile lists only: the `type.group` disciplines present on the rows (ordered Bouldering → Climbing → Ice). */
-  const disciplineNames = useMemo(() => distinctDisciplineGroups(rows.map((row) => row.discipline)), [rows]);
+  /** Profile lists only: the disciplines present on the rows, ordered by the discipline flags (bouldering → rope → ice). */
+  const disciplineNames = useMemo(() => distinctDisciplines(rows), [rows]);
 
   const validGradeLow = storedGradeLow !== null && easyToHard.includes(storedGradeLow) ? storedGradeLow : null;
   const validGradeHigh = storedGradeHigh !== null && easyToHard.includes(storedGradeHigh) ? storedGradeHigh : null;

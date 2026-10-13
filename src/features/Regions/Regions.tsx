@@ -6,19 +6,20 @@ import { useMeta } from '../../shared/components/Meta/context';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 import { Card, SectionHeader } from '../../shared/ui';
+import { DISCIPLINE_TYPES, isDisciplineType } from '../../utils/discipline';
 
 const Regions = () => {
   const meta = useMeta();
   const { type } = useParams();
-  const selectedType = type ?? 'bouldering';
+  const selectedType = DISCIPLINE_TYPES.find((disciplineType) => disciplineType === type) ?? 'bouldering';
 
   if (!meta || !meta.regions || meta.regions.length === 0) return <Loading />;
 
-  const outlines = meta.regions
-    .filter((s) => s.group.toLowerCase() === selectedType)
-    .map((s) => ({ url: s.url, label: s.name, outline: s.outline }));
+  const regionsInSelectedType = meta.regions.filter((region) => isDisciplineType(region, selectedType));
 
-  const regionCount = meta.regions.filter((s) => s.group.toLowerCase() === selectedType).length;
+  const outlines = regionsInSelectedType.map((s) => ({ url: s.url, label: s.name, outline: s.outline }));
+
+  const regionCount = regionsInSelectedType.length;
   const description = `${regionCount} ${
     selectedType === 'bouldering' ? 'bouldering' : selectedType === 'climbing' ? 'rock climbing' : 'ice climbing'
   } regions`;
@@ -33,7 +34,7 @@ const Regions = () => {
           <SectionHeader title='Regions' icon={Globe} subheader={description} />
 
           <div className='flex items-center gap-1.5 overflow-x-auto pb-1'>
-            {['bouldering', 'climbing', 'ice'].map((id) => (
+            {DISCIPLINE_TYPES.map((id) => (
               <Link
                 key={id}
                 to={`/regions/${id}`}

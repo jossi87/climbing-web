@@ -5,6 +5,7 @@ import { FrontpageStats } from './FrontpageStats';
 import { RandomMediaCard } from './RandomMediaCard';
 import { FrontpagePanels } from './FrontpagePanels';
 import { designContract } from '../../design/contract';
+import { sameDiscipline } from '../../utils/discipline';
 
 /**
  * **Single `/frontpage` request** drives the entire page (stats, random media, four activity buckets). The endpoint
@@ -26,9 +27,9 @@ const Frontpage = () => {
   const randomMedia = frontpage?.randomMedia;
 
   const type = meta.isBouldering ? 'bouldering problems' : 'climbing routes';
-  /** Entries in meta.regions for the active region’s group (header region list scope). */
+  /** Entries in meta.regions for the active region’s discipline (header region list scope). */
   const activeRegion = meta.regions?.find((r) => r.active);
-  const numRegions = activeRegion ? (meta.regions?.filter((r) => r.group === activeRegion.group).length ?? 0) : 0;
+  const numRegions = activeRegion ? (meta.regions?.filter((r) => sameDiscipline(r, activeRegion)).length ?? 0) : 0;
   /** Matches `/regions/:type` tabs in Regions.tsx (bouldering | climbing | ice). */
   const regionsTo = `/regions/${meta.isIce ? 'ice' : meta.isBouldering ? 'bouldering' : 'climbing'}`;
   const description = `${numRegions} regions, ${stats?.areas ?? 0} areas, ${stats?.problems ?? 0} ${type}, ${stats?.ticks ?? 0} public ascents.`;

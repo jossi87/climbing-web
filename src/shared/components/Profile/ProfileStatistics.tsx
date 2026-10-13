@@ -393,8 +393,10 @@ const ProfileAscentsView = ({ userId }: { userId: number }) => {
         ticked: false,
         rock: '',
         subType: t.subType ?? '',
-        /** Drives the toolbar's multi-select discipline filter (defaults to all). */
-        discipline: t.group ?? '',
+        discipline: t.discipline ?? '',
+        isBouldering: t.isBouldering ?? false,
+        isRopeClimbing: t.isRopeClimbing ?? false,
+        isIceClimbing: t.isIceClimbing ?? false,
         num: t.num ?? 0,
         fa: t.fa ?? false,
         faDate: null,

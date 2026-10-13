@@ -13,12 +13,12 @@ export type Row = {
   ticked: boolean;
   rock: string;
   subType: string;
-  /**
-   * Profile lists only: the discipline the row belongs to (`type.group` — 'Bouldering' | 'Climbing' | 'Ice').
-   * When present, {@link ProblemList} offers a multi-select discipline filter (default: all). Lists without a
-   * discipline (sector / area) simply render no such control.
-   */
+  /** Profile lists only: discipline name shown in the filter; absent for sector / area lists. */
   discipline?: string;
+  /** Discipline flags — order the filter instead of comparing {@link discipline} names. */
+  isBouldering?: boolean;
+  isRopeClimbing?: boolean;
+  isIceClimbing?: boolean;
   /** Multi-pitch route count (only exposed for user todo lists; used for the "Only multipitch" filter). */
   numPitches?: number;
   /** Sector/area lists: used with {@link rowListTypeKey} for Broken grouping. */

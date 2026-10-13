@@ -36,7 +36,10 @@ export type Metadata = {
     subType: string;
   }[];
   regions: {
-    group: string;
+    discipline: string;
+    isBouldering: boolean;
+    isRopeClimbing: boolean;
+    isIceClimbing: boolean;
     name: string;
     url: string;
     outline: components['schemas']['Coordinates'][];

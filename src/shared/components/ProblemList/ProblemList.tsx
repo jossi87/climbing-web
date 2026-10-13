@@ -9,7 +9,6 @@ import { designContract } from '../../../design/contract';
 import { activityFilterChipBase, activityFilterChipOn } from '../../../design/activityFilterChips';
 import { twInk } from '../../../design/twInk';
 import { useGrades } from '../Meta';
-import { disciplineGroupLabel } from '../Profile/profileDiscipline';
 import { FormSwitch } from '../../ui';
 import { ProblemListCompactContext } from './compactViewContext';
 
@@ -602,28 +601,19 @@ export const ProblemList = ({
     filterPreferenceBucket,
   });
 
-  /**
-   * Profile lists put a discipline on every row — with 2+ present, the discipline filter leads the toolbar
-   * (left of Group) and defaults to “All”. Sector/area lists have none and render no such control.
-   */
+  /** Filter leading the toolbar when the profile rows span 2+ disciplines; ordered by their flags (see `utils/discipline`). */
   const disciplineOptions = useMemo(
-    () =>
-      uniqueDisciplines.map((discipline) => ({
-        key: discipline,
-        text: disciplineGroupLabel(discipline),
-        value: discipline,
-      })),
+    () => uniqueDisciplines.map((discipline) => ({ key: discipline, text: discipline, value: discipline })),
     [uniqueDisciplines],
   );
   const enabledDisciplines = uniqueDisciplines.filter((discipline) => disciplines[discipline] !== false);
   const allDisciplinesEnabled = enabledDisciplines.length === uniqueDisciplines.length;
-  const enabledDisciplineLabels = enabledDisciplines.map(disciplineGroupLabel);
   /** Dense chip summary: “All”, the single discipline, or “Bouldering +2”. */
   const disciplineShortLabel = allDisciplinesEnabled
     ? 'All'
-    : enabledDisciplineLabels.length === 1
-      ? enabledDisciplineLabels[0]
-      : `${enabledDisciplineLabels[0]} +${enabledDisciplineLabels.length - 1}`;
+    : enabledDisciplines.length === 1
+      ? enabledDisciplines[0]
+      : `${enabledDisciplines[0]} +${enabledDisciplines.length - 1}`;
 
   const orderByOptions = ORDER_BY_OPTIONS[mode].filter(
     (opt) =>
@@ -741,7 +731,7 @@ export const ProblemList = ({
                 className='relative min-w-0 shrink-0 md:max-w-[15rem]'
                 label='Discipline'
                 icon={Layers}
-                displayText={allDisciplinesEnabled ? 'All disciplines' : enabledDisciplineLabels.join(', ')}
+                displayText={allDisciplinesEnabled ? 'All disciplines' : enabledDisciplines.join(', ')}
                 displayShortText={disciplineShortLabel}
                 checkedValues={enabledDisciplines}
                 onToggleValue={(discipline) =>
