@@ -216,6 +216,23 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/regions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Update the outline (polygon) of the active region (superadmin only) */
+        post: operations["postRegionsOutline"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/profiles/theme": {
         parameters: {
             query?: never;
@@ -1401,6 +1418,9 @@ export type components = {
             lockedAdmin?: boolean;
             lockedSuperadmin?: boolean;
             regions?: string[];
+        };
+        RegionOutline: {
+            outline?: components["schemas"]["Coordinates"][];
         };
         ProfileIdentity: {
             /** Format: int32 */
@@ -2741,6 +2761,28 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Search"][];
                 };
+            };
+        };
+    };
+    postRegionsOutline: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegionOutline"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
