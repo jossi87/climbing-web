@@ -12,6 +12,7 @@ export {
   postUserRename,
   postProblem,
   postProblemSvg,
+  postRegionOutline,
   postSector,
   postTicks,
   postTrails,

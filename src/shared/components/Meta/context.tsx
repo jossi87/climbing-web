@@ -36,6 +36,7 @@ export type Metadata = {
     subType: string;
   }[];
   regions: {
+    id: number;
     discipline: string;
     isBouldering: boolean;
     isRopeClimbing: boolean;

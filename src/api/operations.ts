@@ -344,6 +344,24 @@ export function postSector(
     });
 }
 
+export function postRegionOutline(
+  accessToken: string | null,
+  outline: components['schemas']['Coordinates'][],
+): Promise<void> {
+  const url = `/regions`;
+  return makeAuthenticatedRequest(accessToken, url, {
+    method: 'POST',
+    body: JSON.stringify({ outline }),
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    ...invalidateQueriesAfter,
+  })
+    .then((response) => ensureOkResponse(response, url))
+    .then(() => undefined);
+}
+
 export function postTicks(
   accessToken: string | null,
   del: boolean,
