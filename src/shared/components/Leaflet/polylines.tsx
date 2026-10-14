@@ -188,6 +188,11 @@ export default function Polylines({ opacity: _opacity, trails }: Props) {
           id: c.id,
           elevation: c.elevation ?? 0,
         }));
+        // A trail without path points would make Leaflet's polylineCenter() throw
+        // "latlngs not passed" once the permanent Tooltip asks for its center.
+        if (coords.length === 0) {
+          return null;
+        }
         if (coords.length === 1) {
           return (
             <Circle key={coords[0].id} color={a.backgroundColor} center={[coords[0].lat, coords[0].lng]} radius={0.5} />

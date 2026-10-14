@@ -5,7 +5,7 @@ import type { components } from '../../../@types/buldreinfo/swagger';
 type Props = {
   opacity: number;
   outlines: {
-    outline: components['schemas']['Coordinates'][];
+    outline?: components['schemas']['Coordinates'][];
     background?: boolean;
     url?: string;
     label?: string;
@@ -16,11 +16,15 @@ type Props = {
 
 export default function Polygons({ opacity, outlines, addEventHandlers, showElevation }: Props) {
   const navigate = useNavigate();
-  if (!outlines || outlines.length === 0) {
+  // A brand new region/sector may not have an outline yet. Leaflet's polygonCenter() throws
+  // "latlngs not passed" for a Polygon with no points, which happens when a permanent Tooltip
+  // asks for its center. Drop geometry-less outlines so a missing outline degrades gracefully.
+  const drawable = (outlines ?? []).filter((o) => (o.outline?.length ?? 0) > 0);
+  if (drawable.length === 0) {
     return null;
   }
-  const polygons = outlines.map((o) => {
-    const positions = o.outline.map((c) => [c.latitude ?? 0, c.longitude ?? 0] as [number, number]);
+  const polygons = drawable.map((o) => {
+    const positions = (o.outline ?? []).map((c) => [c.latitude ?? 0, c.longitude ?? 0] as [number, number]);
     const key = positions.map((p) => p[0] + ',' + p[1]).join(' -> ');
     const handleClick = () => {
       if (addEventHandlers) {
@@ -61,10 +65,10 @@ export default function Polygons({ opacity, outlines, addEventHandlers, showElev
   });
   const elevations =
     showElevation &&
-    outlines
+    drawable
       .filter((o) => !o.background)
       .map((o) =>
-        o.outline
+        (o.outline ?? [])
           .filter((c) => (c.elevation ?? 0) > 0)
           .map((c) => (
             <CircleMarker key={c.id} radius={3} center={[c.latitude ?? 0, c.longitude ?? 0]}>

@@ -400,7 +400,7 @@ const SectorOutlines = ({ areas, showElevation }: Props & { showElevation: boole
   useEffect(() => {
     const bounds = latLngBounds([]);
     for (const outline of outlines) {
-      for (const c of outline.outline) {
+      for (const c of outline.outline ?? []) {
         if (typeof c.latitude === 'number' && typeof c.longitude === 'number') {
           bounds.extend([c.latitude, c.longitude]);
         }
