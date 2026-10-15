@@ -372,28 +372,32 @@ export const useProblemListState = ({
   /**
    * Grade sort key: every row's grade ranked within its own discipline — 0 is the hardest grade this list holds for
    * that discipline, 1 the second hardest, and so on. «Grade (hard → easy)» therefore walks the hardest grade of every
-   * discipline first, then the second hardest of every discipline, and so on. Inside one discipline the order follows
-   * the merged grade domain (`mapping`), which orders each grade system by weight — across systems that is a best
-   * effort. Rows without a grade (projects) rank below the easiest grade, so they come first in `grade-asc` and last
-   * in `grade-desc`.
+   * discipline first, then the second hardest of every discipline, and so on. Inside a discipline grades are ordered by
+   * their own `gradeWeight`; those weights are relative to the row's grade system, so merging several systems inside
+   * one discipline is a best effort — but it never mixes disciplines, which a plain `gradeWeight` sort did.
+   *
+   * The rows are the source of truth rather than the meta `mapping`: a profile list spans regions, so it can hold
+   * grades of systems the current region does not declare (e.g. bouldering grades on a rope region's page), and those
+   * have no entry in `mapping`. Rows without a grade (projects) rank below the easiest grade, so they come first in
+   * `grade-asc` and last in `grade-desc`.
    */
   const gradeRank = useMemo(() => {
-    const gradesByDiscipline = new Map<string, Set<string>>();
+    /** Discipline → grade label → the heaviest weight seen for it (one label of one system always weighs the same). */
+    const weightByDiscipline = new Map<string, Map<string, number>>();
     for (const row of rows) {
       if (!row.grade) continue;
       const discipline = row.discipline ?? '';
-      const grades = gradesByDiscipline.get(discipline) ?? new Set<string>();
-      grades.add(row.grade);
-      gradesByDiscipline.set(discipline, grades);
+      const weights = weightByDiscipline.get(discipline) ?? new Map<string, number>();
+      weights.set(row.grade, Math.max(weights.get(row.grade) ?? 0, row.gradeWeight));
+      weightByDiscipline.set(discipline, weights);
     }
 
     const rankByDiscipline = new Map<string, Map<string, number>>();
-    for (const [discipline, grades] of gradesByDiscipline) {
-      /** Grades the merged domain does not know are the weakest of their discipline, so they take the highest ranks. */
-      const hardToEasy = [...grades].sort(
-        (a, b) => (mapping[b] ?? -1) - (mapping[a] ?? -1) || a.localeCompare(b, getLocales()),
+    for (const [discipline, weights] of weightByDiscipline) {
+      const hardToEasy = [...weights].sort(
+        ([gradeA, weightA], [gradeB, weightB]) => weightB - weightA || gradeA.localeCompare(gradeB, getLocales()),
       );
-      rankByDiscipline.set(discipline, new Map(hardToEasy.map((grade, rank) => [grade, rank])));
+      rankByDiscipline.set(discipline, new Map(hardToEasy.map(([grade], rank) => [grade, rank])));
     }
 
     const rankByRow = new Map<Row, number>();
@@ -404,7 +408,7 @@ export const useProblemListState = ({
       rankByRow.set(row, rank ?? NO_GRADE_RANK);
     }
     return (row: Row) => rankByRow.get(row) ?? NO_GRADE_RANK;
-  }, [mapping, rows]);
+  }, [rows]);
 
   const [filtered, uniqueAreas, uniqueRocks, uniqueSectors, uniqueTypes] = useMemo(() => {
     const areas = new Set<string>();
