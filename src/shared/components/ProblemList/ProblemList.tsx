@@ -619,12 +619,8 @@ export const ProblemList = ({
       ? enabledDisciplines[0]
       : `${enabledDisciplines[0]} +${enabledDisciplines.length - 1}`;
 
-  const orderByOptions = ORDER_BY_OPTIONS[mode].filter(
-    (opt) =>
-      !excludedSortOptions?.includes(opt.value) &&
-      /** Grade sorting compares `gradeWeight`s from the rows' grade system only — unavailable on a mixed list. */
-      (gradeComparable || (opt.value !== 'grade-asc' && opt.value !== 'grade-desc')),
-  );
+  /** Grade sorting ranks each grade within its own discipline, so mixed lists keep it (see `useProblemListState`). */
+  const orderByOptions = ORDER_BY_OPTIONS[mode].filter((opt) => !excludedSortOptions?.includes(opt.value));
   const maxGradeIndex = Math.max(easyToHard.length - 1, 0);
 
   /** Grade range options: content grades plus the current selection (so a stale persisted value still renders). */
@@ -864,7 +860,7 @@ export const ProblemList = ({
         {/** Mixed grade systems (or disciplines) park the persisted range (kept, not applied) — say so instead of showing a dead control. */}
         {!gradeComparable && (gradeLow !== undefined || gradeHigh !== undefined) ? (
           <span className={cn(designContract.typography.meta, 'text-slate-500')}>
-            Grade range and grade sorting apply within a single grade system.
+            Grade range applies within a single grade system.
           </span>
         ) : null}
         {allTypes.length > 1 && (

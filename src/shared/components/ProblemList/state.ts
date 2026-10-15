@@ -5,6 +5,7 @@ import { rowListTypeKey, type Row } from './types';
 import { useGradeSystems, useGrades } from '../Meta';
 import { distinctDisciplines } from '../Profile/profileDiscipline';
 import { getLocales } from '../../../api';
+import { disciplineRank } from '../../../utils/discipline';
 import { useLocalStorage, useSessionStorage } from '../../../utils/use-local-storage';
 
 export type OrderOption =
@@ -36,7 +37,8 @@ type DerivedState = {
   uniqueDisciplines: string[];
   /**
    * False once rows span disciplines or grade systems: grades of another system carry weights relative to that
-   * system only, so a mixed list must not be grade-filtered or grade-sorted.
+   * system only, so a mixed list must not be grade-range filtered. Grade *sorting* stays available while mixed — it
+   * ranks each row's grade within its own discipline (see `useProblemListState`).
    */
   gradeComparable: boolean;
   /** Grade system shared by every row (`undefined` while mixed or unknown); drives `easyToHard` / `mapping`. */
@@ -200,7 +202,17 @@ const uiStateReducer = (state: UiState, update: Update): UiState => {
   }
 };
 
-const SORTS: Record<State['order'], (a: Row, b: Row) => number> = {
+/**
+ * Rank for a row the list cannot rank: below the easiest grade of its discipline, mirroring the old weight-0 rows
+ * (after every graded row in `grade-desc`, before them in `grade-asc`).
+ */
+const NO_GRADE_RANK = Number.MAX_SAFE_INTEGER;
+
+/**
+ * `gradeRank` supplies the round-robin grade rank of each row (see `useProblemListState`): every row's grade ranked
+ * within its own discipline, so equal ranks are the same «level» across disciplines. The other orders are row-local.
+ */
+const buildSorts = (gradeRank: (row: Row) => number): Record<State['order'], (a: Row, b: Row) => number> => ({
   name: (a, b) =>
     a.areaName.localeCompare(b.areaName, getLocales()) ||
     a.sectorName.localeCompare(b.sectorName, getLocales()) ||
@@ -219,15 +231,23 @@ const SORTS: Record<State['order'], (a: Row, b: Row) => number> = {
     return (a.faDate ?? '').localeCompare(b.faDate ?? '', getLocales()) || a.name.localeCompare(b.name, getLocales());
   },
 
-  'grade-desc': (a, b) => b.gradeWeight - a.gradeWeight || a.num - b.num || a.name.localeCompare(b.name, getLocales()),
+  'grade-desc': (a, b) =>
+    gradeRank(a) - gradeRank(b) ||
+    disciplineRank(a) - disciplineRank(b) ||
+    a.num - b.num ||
+    a.name.localeCompare(b.name, getLocales()),
 
-  'grade-asc': (a, b) => a.gradeWeight - b.gradeWeight || a.num - b.num || a.name.localeCompare(b.name, getLocales()),
+  'grade-asc': (a, b) =>
+    gradeRank(b) - gradeRank(a) ||
+    disciplineRank(a) - disciplineRank(b) ||
+    a.num - b.num ||
+    a.name.localeCompare(b.name, getLocales()),
 
   number: (a, b) => (a?.nr ?? 0) - (b?.nr ?? 0) || a.name.localeCompare(b.name, getLocales()),
 
   rating: (a, b) =>
-    b.stars - a.stars || b.gradeWeight - a.gradeWeight || a.num - b.num || a.name.localeCompare(b.name, getLocales()),
-} as const;
+    b.stars - a.stars || gradeRank(a) - gradeRank(b) || a.num - b.num || a.name.localeCompare(b.name, getLocales()),
+});
 
 const CLEANED_ORDER: Record<OrderOption, OrderOption> = {
   number: 'number',
@@ -337,11 +357,10 @@ export const useProblemListState = ({
   useEffect(() => dispatch({ action: 'init-disciplines', disciplines: disciplineNames }), [disciplineNames]);
 
   /**
-   * Grade controls are only offered while the visible list stays within one grade system and one discipline.
-   * `useGrades(gradeSystemId)` only knows that system's grades, so a list holding grades of another system must not
-   * be grade-filtered or grade-sorted. While mixed, the stored grade range is parked: it is kept (so it comes back
-   * when narrowing to one system) but not applied — applying it would silently drop every row whose grade is
-   * unknown to the active `mapping`.
+   * The grade range is only offered while the visible list stays within one grade system and one discipline: its
+   * options come from `useGrades(gradeSystemId)`, which only knows that system's grades, so filtering a list holding
+   * grades of another system would silently drop them. While mixed, the stored range is parked (kept, not applied, so
+   * it comes back when narrowing to one system). Grade *sorting* is not gated — see {@link gradeRank} below.
    */
   const gradeComparable = useMemo(
     () =>
@@ -350,11 +369,42 @@ export const useProblemListState = ({
     [disciplineNames, disciplines, gradeSystemId],
   );
 
-  /** A persisted grade sort cannot order a mixed list (weights come from different grade systems) — fall back to the default order. */
-  useEffect(() => {
-    if (gradeComparable) return;
-    if (order === 'grade-asc' || order === 'grade-desc') dispatch({ action: 'order-by', order: defaultOrder });
-  }, [defaultOrder, gradeComparable, order]);
+  /**
+   * Grade sort key: every row's grade ranked within its own discipline — 0 is the hardest grade this list holds for
+   * that discipline, 1 the second hardest, and so on. «Grade (hard → easy)» therefore walks the hardest grade of every
+   * discipline first, then the second hardest of every discipline, and so on. Inside one discipline the order follows
+   * the merged grade domain (`mapping`), which orders each grade system by weight — across systems that is a best
+   * effort. Rows without a grade (projects) rank below the easiest grade, so they come first in `grade-asc` and last
+   * in `grade-desc`.
+   */
+  const gradeRank = useMemo(() => {
+    const gradesByDiscipline = new Map<string, Set<string>>();
+    for (const row of rows) {
+      if (!row.grade) continue;
+      const discipline = row.discipline ?? '';
+      const grades = gradesByDiscipline.get(discipline) ?? new Set<string>();
+      grades.add(row.grade);
+      gradesByDiscipline.set(discipline, grades);
+    }
+
+    const rankByDiscipline = new Map<string, Map<string, number>>();
+    for (const [discipline, grades] of gradesByDiscipline) {
+      /** Grades the merged domain does not know are the weakest of their discipline, so they take the highest ranks. */
+      const hardToEasy = [...grades].sort(
+        (a, b) => (mapping[b] ?? -1) - (mapping[a] ?? -1) || a.localeCompare(b, getLocales()),
+      );
+      rankByDiscipline.set(discipline, new Map(hardToEasy.map((grade, rank) => [grade, rank])));
+    }
+
+    const rankByRow = new Map<Row, number>();
+    for (const row of rows) {
+      const ranks = rankByDiscipline.get(row.discipline ?? '');
+      /** A row without a grade (project) ranks below the easiest grade of its own discipline. */
+      const rank = row.grade ? ranks?.get(row.grade) : ranks?.size;
+      rankByRow.set(row, rank ?? NO_GRADE_RANK);
+    }
+    return (row: Row) => rankByRow.get(row) ?? NO_GRADE_RANK;
+  }, [mapping, rows]);
 
   const [filtered, uniqueAreas, uniqueRocks, uniqueSectors, uniqueTypes] = useMemo(() => {
     const areas = new Set<string>();
@@ -396,7 +446,7 @@ export const useProblemListState = ({
           (filterByDiscipline && problem.discipline ? !!disciplines[problem.discipline] : true)
         );
       })
-      .sort(SORTS[order]);
+      .sort(buildSorts(gradeRank)[order]);
 
     return [filtered, [...areas].sort(), [...rocks].sort(), [...sectors].sort(), [...typeNames].sort()];
   }, [
@@ -405,6 +455,7 @@ export const useProblemListState = ({
     gradeComparable,
     gradeHigh,
     gradeLow,
+    gradeRank,
     hideTicked,
     mapping,
     onlyFa,
