@@ -83,6 +83,7 @@
     "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
     "analyze": "vite build --mode analyze",
     "swagger": "openapi-typescript https://brattelinjer.no/api/v3/api-docs --output src/@types/buldreinfo/swagger.d.ts --export-type",
+    "swagger:local": "openapi-typescript http://localhost:8080/v3/api-docs --output src/@types/buldreinfo/swagger.d.ts --export-type",
     "validate": "npm run format:check && npm run lint && npm run type-check",
     "prepare": "husky"
   },

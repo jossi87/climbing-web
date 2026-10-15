@@ -2,7 +2,7 @@ import { type Dispatch, useEffect, useMemo, useReducer } from 'react';
 import { neverGuard } from '../../../utils/neverGuard';
 import type { DispatchUpdate } from '../FilterForm/GradeSelect/GradeSelect';
 import { rowListTypeKey, type Row } from './types';
-import { useGrades } from '../Meta';
+import { useGradeSystems, useGrades } from '../Meta';
 import { distinctDisciplines } from '../Profile/profileDiscipline';
 import { getLocales } from '../../../api';
 import { useLocalStorage, useSessionStorage } from '../../../utils/use-local-storage';
@@ -35,10 +35,16 @@ type DerivedState = {
   /** Ordered disciplines found on the rows; empty for lists without a discipline facet (sector / area). */
   uniqueDisciplines: string[];
   /**
-   * False once rows span disciplines: `useGrades()` only knows this site's grade system, so a mixed list must not be
-   * grade-filtered or grade-sorted.
+   * False once rows span disciplines or grade systems: grades of another system carry weights relative to that
+   * system only, so a mixed list must not be grade-filtered or grade-sorted.
    */
   gradeComparable: boolean;
+  /** Grade system shared by every row (`undefined` while mixed or unknown); drives `easyToHard` / `mapping`. */
+  gradeSystemId: number | undefined;
+  /** Grades of {@link gradeSystemId} ordered easy → hard, used for the grade range control. */
+  easyToHard: string[];
+  /** Grade label → index in {@link easyToHard}. */
+  mapping: Record<string, number>;
   containsFa: boolean;
   containsTicked: boolean;
   containsMultipitch: boolean;
@@ -273,7 +279,22 @@ export const useProblemListState = ({
   const [storedGradeHigh, setStoredGradeHigh] = useLocalStorage<string | null>(`${filterStorageKey}/gradeHigh`, null);
   const [storedTypes, setStoredTypes] = useLocalStorage<Record<string, boolean>>(`${filterStorageKey}/types`, {});
 
-  const { mapping, easyToHard } = useGrades();
+  const gradeSystems = useGradeSystems();
+
+  /**
+   * Grade system shared by the rows. `undefined` while the rows span several systems (weights are then relative to
+   * different systems) or while they have none and the region declares several; a region with a single system
+   * resolves rows without an explicit system to it.
+   */
+  const gradeSystemId = useMemo(() => {
+    const ids = new Set(rows.map((row) => row.gradeSystemId ?? 0));
+    if (ids.size > 1) return undefined;
+    const id = [...ids][0] ?? 0;
+    if (id > 0) return id;
+    return gradeSystems.length === 1 ? gradeSystems[0].id : undefined;
+  }, [gradeSystems, rows]);
+
+  const { mapping, easyToHard } = useGrades(gradeSystemId);
   const typeNames = useMemo(() => [...new Set(rows.map(rowListTypeKey))].sort(), [rows]);
   /** Profile lists only: the disciplines present on the rows, ordered by the discipline flags (bouldering → rope → ice). */
   const disciplineNames = useMemo(() => distinctDisciplines(rows), [rows]);
@@ -316,15 +337,17 @@ export const useProblemListState = ({
   useEffect(() => dispatch({ action: 'init-disciplines', disciplines: disciplineNames }), [disciplineNames]);
 
   /**
-   * Grade controls are only offered while the visible list stays within one grade system. `useGrades()`
-   * describes the requesting site's own system only, whereas a multi-discipline profile list also holds
-   * grades from other systems (French / WI on buldreinfo). While mixed, the stored grade range is parked:
-   * it is kept (so it comes back when narrowing to one discipline) but not applied — applying it would
-   * silently drop every row whose grade is unknown to this site's `mapping`.
+   * Grade controls are only offered while the visible list stays within one grade system and one discipline.
+   * `useGrades(gradeSystemId)` only knows that system's grades, so a list holding grades of another system must not
+   * be grade-filtered or grade-sorted. While mixed, the stored grade range is parked: it is kept (so it comes back
+   * when narrowing to one system) but not applied — applying it would silently drop every row whose grade is
+   * unknown to the active `mapping`.
    */
   const gradeComparable = useMemo(
-    () => disciplineNames.filter((discipline) => disciplines[discipline] !== false).length <= 1,
-    [disciplineNames, disciplines],
+    () =>
+      gradeSystemId !== undefined &&
+      disciplineNames.filter((discipline) => disciplines[discipline] !== false).length <= 1,
+    [disciplineNames, disciplines, gradeSystemId],
   );
 
   /** A persisted grade sort cannot order a mixed list (weights come from different grade systems) — fall back to the default order. */
@@ -350,8 +373,8 @@ export const useProblemListState = ({
     const highestGrade = gradeComparable
       ? (gradeHigh ?? easyToHard[easyToHard.length - 1])
       : easyToHard[easyToHard.length - 1];
-    const indexLow = mapping[lowestGrade];
-    const indexHigh = mapping[highestGrade];
+    const indexLow = mapping[lowestGrade] ?? 0;
+    const indexHigh = mapping[highestGrade] ?? Math.max(easyToHard.length - 1, 0);
 
     const filtered = rows
       .filter((problem) => {
@@ -414,6 +437,9 @@ export const useProblemListState = ({
     uniqueTypes,
     uniqueDisciplines: disciplineNames,
     gradeComparable,
+    gradeSystemId,
+    easyToHard,
+    mapping,
     containsFa: !!rows.find(({ fa }) => !!fa),
     containsTicked: !!rows.find(({ ticked }) => !!ticked),
     containsMultipitch: !!rows.find(({ numPitches }) => (numPitches ?? 0) > 1),

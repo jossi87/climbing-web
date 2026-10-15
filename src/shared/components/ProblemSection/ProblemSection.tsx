@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState, type ChangeEvent } from 'react';
 import type { components } from '../../../@types/buldreinfo/swagger';
-import { useMeta } from '../Meta';
+import { useGrades } from '../Meta';
 import { Hash, ChevronDown } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 
@@ -8,11 +8,13 @@ type ProblemSections = components['schemas']['ProblemSection'][];
 
 type Props = {
   sections: ProblemSections;
+  /** Grade system of the area — pitch grades must come from the same system as the problem grade. */
+  gradeSystemId?: number;
   onSectionsUpdated: (sections: ProblemSections) => void;
 };
 
-const ProblemSection = ({ sections: initSections, onSectionsUpdated }: Props) => {
-  const { grades } = useMeta();
+const ProblemSection = ({ sections: initSections, gradeSystemId, onSectionsUpdated }: Props) => {
+  const { easyToHard: grades } = useGrades(gradeSystemId);
   const [sections, setSections] = useState(initSections);
   const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
 
@@ -126,9 +128,9 @@ const ProblemSection = ({ sections: initSections, onSectionsUpdated }: Props) =>
                     value={s.grade ?? 'n/a'}
                     onChange={(e) => updateSection(index, 'grade', e.target.value)}
                   >
-                    {grades.map((g, i) => (
-                      <option key={i} value={g.grade} className='bg-surface-card'>
-                        {g.grade}
+                    {grades.map((g) => (
+                      <option key={g} value={g} className='bg-surface-card'>
+                        {g}
                       </option>
                     ))}
                   </select>

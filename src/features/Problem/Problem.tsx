@@ -484,7 +484,7 @@ function ProblemLoaded({
           grade={userTick?.noPersonalGrade ? NO_PERSONAL_GRADE_LABEL : (userTick?.suggestedGrade ?? data.grade ?? '')}
           gradeFa={data.originalGrade}
           gradeConsensus={data.grade}
-          grades={meta.grades}
+          gradeSystemId={data.gradeSystemId}
           stars={userTick != null ? (userTick.stars ?? -1) : undefined}
           repeats={userTick?.repeats}
           open={true}

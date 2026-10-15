@@ -50,7 +50,7 @@ import { VideoPlayOverlayDisc } from './VideoThumbnailPlayOverlay';
 import { ZoomableImage } from './ZoomableImage';
 import { PannellumViewer } from './PannellumViewer';
 import { Descent, Rappel } from '../../../utils/svg-utils';
-import { useMeta } from '../Meta';
+import { useGradeSystems, useMeta } from '../Meta';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { designContract } from '../../../design/contract';
 import { cn } from '../../../lib/utils';
@@ -242,7 +242,24 @@ const MediaModal = ({
   autoPlayVideo,
   optProblemId,
 }: Props) => {
-  const { isAdmin, isBouldering, grades } = useMeta();
+  const { isAdmin, isBouldering } = useMeta();
+  const gradeSystems = useGradeSystems();
+  /**
+   * Legend rows: every distinct compact label/colour pair across the region's grade systems — the topo line colour
+   * of a problem follows its own system's colour, so the legend has to cover all of them.
+   */
+  const gradeLegend = useMemo(() => {
+    const seen = new Set<string>();
+    return gradeSystems
+      .flatMap((system) => system.grades)
+      .filter((g) => g.labelCompact && g.color)
+      .filter((g) => {
+        const key = `${g.labelCompact}|${g.color}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+  }, [gradeSystems]);
   const accessToken = useAccessToken();
   const navigate = useNavigate();
 
@@ -1499,19 +1516,12 @@ const MediaModal = ({
                     Line Colors (Difficulty)
                   </h4>
                   <ul className='grid grid-cols-2 gap-4'>
-                    {grades
-                      .filter((g) => g.labelCompact && g.color)
-                      .filter(
-                        (g, i, arr) =>
-                          arr.findIndex((other) => other.labelCompact === g.labelCompact && other.color === g.color) ===
-                          i,
-                      )
-                      .map((g) => (
-                        <li key={g.id} className='flex items-center gap-3'>
-                          <div className='h-4 w-4 rounded shadow-lg' style={{ backgroundColor: g.color }} />
-                          <span className='text-xs font-bold text-slate-300'>{g.labelCompact}</span>
-                        </li>
-                      ))}
+                    {gradeLegend.map((g) => (
+                      <li key={`${g.labelCompact}|${g.color}`} className='flex items-center gap-3'>
+                        <div className='h-4 w-4 rounded shadow-lg' style={{ backgroundColor: g.color }} />
+                        <span className='text-xs font-bold text-slate-300'>{g.labelCompact}</span>
+                      </li>
+                    ))}
                   </ul>
                 </div>
               </div>

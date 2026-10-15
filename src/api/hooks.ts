@@ -304,7 +304,8 @@ export function useToc() {
 export function useActivity({
   idArea,
   idSector,
-  lowerGrade,
+  lowerGradeWeight,
+  lowerGradeSystemId,
   fa,
   comments,
   ticks,
@@ -312,7 +313,10 @@ export function useActivity({
 }: {
   idArea: number;
   idSector: number;
-  lowerGrade: number;
+  /** Real grade weight of the threshold (`0` = no grade filter). */
+  lowerGradeWeight: number;
+  /** Grade system the threshold belongs to; grades are only comparable within one system. */
+  lowerGradeSystemId: number;
   fa: boolean;
   comments: boolean;
   ticks: boolean;
@@ -322,8 +326,8 @@ export function useActivity({
   const authReady = !isLoading;
 
   const queryKey = useKey(
-    [`/activity`, { idArea, idSector, lowerGrade, fa, comments, ticks, media }],
-    `/activity?idArea=${idArea}&idSector=${idSector}&lowerGrade=${lowerGrade}&fa=${fa}&comments=${comments}&ticks=${ticks}&media=${media}`,
+    [`/activity`, { idArea, idSector, lowerGradeWeight, lowerGradeSystemId, fa, comments, ticks, media }],
+    `/activity?idArea=${idArea}&idSector=${idSector}&lowerGradeWeight=${lowerGradeWeight}&lowerGradeSystemId=${lowerGradeSystemId}&fa=${fa}&comments=${comments}&ticks=${ticks}&media=${media}`,
   );
 
   const query = useInfiniteQuery({
@@ -341,7 +345,7 @@ export function useActivity({
           accessToken = null;
         }
       }
-      const url = `/activity?idArea=${idArea}&idSector=${idSector}&lowerGrade=${lowerGrade}&fa=${fa}&comments=${comments}&ticks=${ticks}&media=${media}&offset=${pageParam}`;
+      const url = `/activity?idArea=${idArea}&idSector=${idSector}&lowerGradeWeight=${lowerGradeWeight}&lowerGradeSystemId=${lowerGradeSystemId}&fa=${fa}&comments=${comments}&ticks=${ticks}&media=${media}&offset=${pageParam}`;
       const res = await makeAuthenticatedRequest(accessToken, url);
       if (!res.ok) {
         throw await createHttpErrorFromResponse(res, url);

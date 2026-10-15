@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback, type ElementType } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo, type ElementType } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import Linkify from 'linkify-react';
 import {
@@ -33,6 +33,18 @@ import type { components } from '../../../@types/buldreinfo/swagger';
 type ActivitySchema = components['schemas']['Activity'];
 
 /**
+ * One entry of the “Lowest grade” menu: a grade of a specific system. The server-side filter compares the grade's
+ * real `weight` and only matches problems of that system, so a mixed feed can never be compared across systems.
+ */
+type GradeOption = { key: string; systemId: number; weight: number; grade: string };
+
+/** Sentinel for “no grade filter”. */
+const ALL_GRADE_OPTION: GradeOption = { key: 'all', systemId: 0, weight: 0, grade: '' };
+
+/** Button/empty-state label: for combined grades like `8 (7b+)` the parenthesised part is the readable one. */
+const shortGradeLabel = (grade: string) => (grade.includes('(') ? grade.split('(')[1].replace(')', '') : grade);
+
+/**
  * Latest-activity list + toolbar. `embedded={true}` drops the outer `Card flush` wrapper entirely so the feed renders
  * **inline** inside a parent panel (e.g. Area / Sector tab card) — no nested cards, no margin/border between the tab
  * strip and the feed. Used by the Area / Sector "Activity" tabs to keep the tab content flush with the tab strip,
@@ -56,13 +68,11 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
   const [searchParams, setSearchParams] = useSearchParams();
   const [initialPreset] = useState(() => parseActivityShowParam(searchParams.get(ACTIVITY_SHOW_PARAM)));
 
-  const [lowerGradeId, setLowerGradeId] = useState(0);
-  const [lowerGradeText, setLowerGradeText] = useState('n/a');
+  const [lowerGrade, setLowerGrade] = useState<GradeOption>(ALL_GRADE_OPTION);
   const [activityTypeFa, setActivityTypeFa] = useState(initialPreset?.fa ?? true);
   const [activityTypeTicks, setActivityTypeTicks] = useState(initialPreset?.ticks ?? true);
   const [activityTypeMedia, setActivityTypeMedia] = useState(initialPreset?.media ?? true);
   const [activityTypeComments, setActivityTypeComments] = useState(initialPreset?.comments ?? true);
-  const normalizedLowerGradeText = lowerGradeText === 'ALL' ? 'All' : lowerGradeText;
 
   /**
    * **Page-level vs. embedded** — when the feed is rendered standalone at `/activity` (no scope), it gets a full
@@ -117,6 +127,29 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
   }, [syncFilterUrl]);
 
   const meta = useMeta();
+
+  /** Region systems in the menu: the feed may hold problems of several systems, so offer every grade of every system. */
+  const gradeOptions = useMemo(() => {
+    const seen = new Set<string>();
+    const rest: GradeOption[] = [];
+    for (const system of meta.gradeSystems) {
+      for (const grade of system.grades) {
+        if (!grade.grade) continue;
+        const key = `${system.id}:${grade.grade}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        rest.push({ key, systemId: system.id, weight: grade.weight ?? 0, grade: grade.grade });
+      }
+    }
+    /** Hardest first with “All” pinned on top — the same reading order as the old id-based grade list. */
+    rest.sort((a, b) => b.weight - a.weight || a.grade.localeCompare(b.grade));
+    return [ALL_GRADE_OPTION, ...rest];
+  }, [meta.gradeSystems]);
+
+  /** Several systems in one menu need the system name next to the grade to stay unambiguous. */
+  const multiSystem = meta.gradeSystems.length > 1;
+  const lowerGradeLabel = lowerGrade.systemId === 0 ? 'All' : shortGradeLabel(lowerGrade.grade);
+
   const {
     data: activity,
     refetch,
@@ -128,7 +161,8 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
   } = useActivity({
     idArea,
     idSector,
-    lowerGrade: lowerGradeId,
+    lowerGradeWeight: lowerGrade.weight,
+    lowerGradeSystemId: lowerGrade.systemId,
     fa: activityTypeFa,
     comments: activityTypeComments,
     ticks: activityTypeTicks,
@@ -149,7 +183,7 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
       selectedGradeRef.current?.scrollIntoView({ block: 'center' });
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [isFilterOpen, lowerGradeId]);
+  }, [isFilterOpen, lowerGrade]);
 
   const handleFilterToggle = (type: string) => {
     if (type === 'fa') setActivityTypeFa(!activityTypeFa);
@@ -216,7 +250,7 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
             >
               <Filter size={12} className='shrink-0 text-slate-300' strokeWidth={2} />
               <span className={cn(designContract.typography.uiCompact, 'min-w-0 truncate text-slate-300')}>
-                {normalizedLowerGradeText === 'n/a' ? 'All' : normalizedLowerGradeText}
+                {lowerGradeLabel}
               </span>
               <ChevronDown
                 size={10}
@@ -231,41 +265,36 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
                   <span className={cn(designContract.typography.label, 'text-slate-400')}>Lowest grade</span>
                 </div>
                 <div className='border-surface-border/35 mb-1 border-t' />
-                {meta.grades
-                  .slice()
-                  .sort((a, b) => {
-                    if (a.id === 0) return -1;
-                    if (b.id === 0) return 1;
-                    return b.id - a.id;
-                  })
-                  .map((g) => (
-                    <button
-                      ref={g.id === lowerGradeId ? selectedGradeRef : null}
-                      key={g.id}
-                      type='button'
-                      className={cn(
-                        designContract.typography.menuItem,
-                        'flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left transition-colors',
-                        g.id === lowerGradeId
-                          ? cn(designContract.surfaces.controlActive, 'font-semibold')
-                          : 'hover:bg-surface-raised text-slate-400 hover:text-slate-300',
-                      )}
-                      onClick={() => {
-                        setLowerGradeId(g.id);
-                        setLowerGradeText(
-                          g.id === 0
-                            ? 'All'
-                            : g.grade?.includes('(')
-                              ? g.grade.split('(')[1].replace(')', '')
-                              : (g.grade ?? ''),
-                        );
-                        setIsFilterOpen(false);
-                        setTimeout(refetch, 10);
-                      }}
-                    >
-                      {g.id === 0 ? 'All' : g.grade} {g.id === lowerGradeId && <Check size={14} />}
-                    </button>
-                  ))}
+                {gradeOptions.map((option) => (
+                  <button
+                    ref={option.key === lowerGrade.key ? selectedGradeRef : null}
+                    key={option.key}
+                    type='button'
+                    className={cn(
+                      designContract.typography.menuItem,
+                      'flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left transition-colors',
+                      option.key === lowerGrade.key
+                        ? cn(designContract.surfaces.controlActive, 'font-semibold')
+                        : 'hover:bg-surface-raised text-slate-400 hover:text-slate-300',
+                    )}
+                    onClick={() => {
+                      setLowerGrade(option);
+                      setIsFilterOpen(false);
+                      setTimeout(refetch, 10);
+                    }}
+                  >
+                    <span className='min-w-0 truncate'>
+                      {option.systemId === 0 ? 'All' : option.grade}
+                      {multiSystem && option.systemId > 0 ? (
+                        <span className='text-slate-500'>
+                          {' '}
+                          · {meta.gradeSystems.find((system) => system.id === option.systemId)?.name}
+                        </span>
+                      ) : null}
+                    </span>
+                    {option.key === lowerGrade.key && <Check size={14} className='shrink-0' />}
+                  </button>
+                ))}
               </div>
             )}
           </div>

@@ -1,11 +1,10 @@
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import Leaflet from '../Leaflet/Leaflet';
 import { LockSymbol } from '../../ui/Indicators';
 import { useProfileTodo } from '../../../api';
 import { Loading } from '../../ui/StatusWidgets';
 import ProblemList from '../ProblemList';
-import { useMeta } from '../Meta';
 import {
   profileRowRootClass,
   tickCragLinkArea,
@@ -49,6 +48,7 @@ type TodoItem = {
   problemName: string;
   grade: string;
   gradeWeight: number;
+  gradeSystemId: number;
   subType: string;
   /** Passive-gear flag from `type.trad_gear` — decides whether the wire glyph is rendered. */
   tradGear: boolean;
@@ -211,33 +211,6 @@ function computeFilteredAreaMarkers(rows: Row[]): MarkerDef[] {
 
 const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) => {
   const { data } = useProfileTodo(userId);
-  const { grades } = useMeta();
-
-  const gradeToId = useMemo(() => {
-    const map: Record<string, number> = {};
-    for (const g of grades) {
-      if (g.grade) map[g.grade] = g.id;
-    }
-    return map;
-  }, [grades]);
-
-  const resolveGradeId = useCallback(
-    (gradeLabel: string) => {
-      if (gradeToId[gradeLabel] !== undefined) return gradeToId[gradeLabel];
-      const normalized = gradeLabel.trim().toLowerCase();
-      const normalizedNoSpaces = normalized.replace(/\s+/g, '');
-      for (const g of grades) {
-        const candidate = (g.grade ?? '').toLowerCase();
-        if (!candidate) continue;
-        if (candidate === normalized) return g.id;
-        if (candidate.includes(`(${normalized})`)) return g.id;
-        if (candidate.replace(/\s+/g, '') === normalizedNoSpaces) return g.id;
-        if (candidate.replace(/\s+/g, '').includes(`(${normalizedNoSpaces})`)) return g.id;
-      }
-      return 0;
-    },
-    [gradeToId, grades],
-  );
 
   const areas = useMemo(() => data?.areas ?? [], [data?.areas]);
 
@@ -259,7 +232,8 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
             sectorLockedSuperadmin: !!sector.lockedSuperadmin,
             problemName: problem.name ?? '',
             grade: problem.grade ?? '',
-            gradeWeight: problem.gradeWeight ?? resolveGradeId(problem.grade ?? 'n/a'),
+            gradeWeight: problem.gradeWeight ?? 0,
+            gradeSystemId: problem.gradeSystemId ?? 0,
             subType: problem.subType ?? '',
             tradGear: !!problem.tradGear,
             discipline: problem.discipline ?? '',
@@ -283,7 +257,7 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
           })),
         ),
       ),
-    [areas, resolveGradeId],
+    [areas],
   );
 
   if (!data) {
@@ -329,6 +303,7 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
           nr: item.nr,
           grade: item.grade,
           gradeWeight: item.gradeWeight,
+          gradeSystemId: item.gradeSystemId,
           stars: 0,
           numTicks: 0,
           ticked: false,

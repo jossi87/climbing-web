@@ -381,6 +381,7 @@ const ProfileAscentsView = ({ userId }: { userId: number }) => {
         nr: t.nr ?? null,
         grade: t.grade ?? '',
         gradeWeight: t.gradeWeight ?? 0,
+        gradeSystemId: t.gradeSystemId ?? 0,
         stars: t.stars ?? 0,
         numTicks: 0,
         ticked: false,

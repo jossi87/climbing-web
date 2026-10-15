@@ -12,7 +12,7 @@ import { UsersSelector } from '../../shared/ui/UserSelector';
 import RockSelector from '../../shared/components/RockSelector/RockSelector';
 import ProblemSection from '../../shared/components/ProblemSection/ProblemSection';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
-import { useMeta } from '../../shared/components/Meta/context';
+import { useGrades, useMeta } from '../../shared/components/Meta/context';
 import {
   convertFromDateToString,
   convertFromStringToDate,
@@ -130,6 +130,8 @@ const ProblemEdit = ({ problem, sector }: Props) => {
   const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
   const meta = useMeta();
+  /** Grades of the area this sector belongs to — a problem's grade must come from that system. */
+  const { easyToHard: grades } = useGrades(sector.gradeSystemId);
 
   const onFaDateChanged = useCallback((newFaDate: Date | undefined) => {
     if (!newFaDate) {
@@ -416,9 +418,9 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                     <option value='' disabled>
                       Select grade…
                     </option>
-                    {meta.grades.map((g, i) => (
-                      <option key={i} value={g.grade}>
-                        {g.grade}
+                    {grades.map((g) => (
+                      <option key={g} value={g}>
+                        {g}
                       </option>
                     ))}
                   </select>
@@ -655,6 +657,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                   <label className={labelClasses}>Pitches</label>
                   <ProblemSection
                     sections={data.sections ?? []}
+                    gradeSystemId={sector.gradeSystemId}
                     onSectionsUpdated={(sections) => setData((p) => ({ ...p, sections }))}
                   />
                 </div>

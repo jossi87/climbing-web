@@ -650,6 +650,7 @@ const Sector = () => {
       nr: p.nr ?? 0,
       grade: p.grade ?? '',
       gradeWeight: p.gradeWeight ?? 0,
+      gradeSystemId: p.gradeSystemId ?? 0,
       stars: p.stars ?? 0,
       numTicks: p.numTicks ?? 0,
       ticked: p.ticked ?? false,

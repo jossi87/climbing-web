@@ -1332,6 +1332,8 @@ export type components = {
             problemOrder?: components["schemas"]["SectorProblemOrder"][];
             externalLinks?: components["schemas"]["ExternalLink"][];
             pageViews?: string;
+            /** Format: int32 */
+            gradeSystemId?: number;
         };
         SectorJump: {
             /** Format: int32 */
@@ -1378,6 +1380,8 @@ export type components = {
             todo?: boolean;
             t?: components["schemas"]["Type"];
             danger?: boolean;
+            /** Format: int32 */
+            gradeSystemId?: number;
         };
         SectorProblemOrder: {
             /** Format: int32 */
@@ -1533,6 +1537,8 @@ export type components = {
             startingAltitude?: string;
             aspect?: string;
             descent?: string;
+            /** Format: int32 */
+            gradeSystemId?: number;
         };
         ProblemComment: {
             /** Format: int32 */
@@ -1643,6 +1649,8 @@ export type components = {
             triviaMedia?: components["schemas"]["Media"][];
             externalLinks?: components["schemas"]["ExternalLink"][];
             pageViews?: string;
+            /** Format: int32 */
+            gradeSystemId?: number;
         };
         AreaSector: {
             areaName?: string;
@@ -1980,6 +1988,8 @@ export type components = {
             numPitches?: number;
             coordinates?: components["schemas"]["Coordinates"];
             partners?: components["schemas"]["User"][];
+            /** Format: int32 */
+            gradeSystemId?: number;
         };
         ProfileTodoSector: {
             /** Format: int32 */
@@ -2033,6 +2043,8 @@ export type components = {
             isBouldering?: boolean;
             isRopeClimbing?: boolean;
             isIceClimbing?: boolean;
+            /** Format: int32 */
+            gradeSystemId?: number;
         };
         ProblemSearchResult: {
             /** Format: int32 */
@@ -2043,13 +2055,24 @@ export type components = {
             grade?: string;
             /** Format: int32 */
             numPitches?: number;
+            /** Format: int32 */
+            gradeSystemId?: number;
         };
         Grade: {
             /** Format: int32 */
             id?: number;
             grade?: string;
+            labelMajor?: string;
             labelCompact?: string;
+            /** Format: int32 */
+            weight?: number;
             color?: string;
+        };
+        GradeSystem: {
+            /** Format: int32 */
+            id?: number;
+            name?: string;
+            grades?: components["schemas"]["Grade"][];
         };
         LatLng: {
             /** Format: double */
@@ -2077,7 +2100,7 @@ export type components = {
             authenticatedName?: string;
             themePreference?: string;
             mediaIdentity?: components["schemas"]["MediaIdentity"];
-            grades?: components["schemas"]["Grade"][];
+            gradeSystems?: components["schemas"]["GradeSystem"][];
             faYears?: number[];
             /** Format: int32 */
             defaultZoom?: number;
@@ -2297,6 +2320,8 @@ export type components = {
             problemSubtype?: string;
             problemTradGear?: boolean;
             grade?: string;
+            /** Format: int32 */
+            gradeSystemId?: number;
             media?: components["schemas"]["ActivityMedia"][];
             /** Format: int32 */
             stars?: number;
@@ -3918,7 +3943,8 @@ export interface operations {
             query: {
                 idArea: number;
                 idSector: number;
-                lowerGrade?: number;
+                lowerGradeWeight?: number;
+                lowerGradeSystemId?: number;
                 fa?: boolean;
                 comments?: boolean;
                 ticks?: boolean;

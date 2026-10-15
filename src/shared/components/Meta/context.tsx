@@ -17,11 +17,18 @@ export type Metadata = {
   themePreference?: string;
   mediaIdentity?: components['schemas']['MediaIdentity'];
   title: string;
-  grades: {
+  /** Grade systems declared for the requesting region; each area pins one of them. */
+  gradeSystems: {
     id: number;
-    grade: string;
-    labelCompact?: string;
-    color?: string;
+    name: string;
+    grades: {
+      id: number;
+      grade: string;
+      labelMajor?: string;
+      labelCompact?: string;
+      weight?: number;
+      color?: string;
+    }[];
   }[];
   faYears: number[];
   defaultZoom: number;
@@ -71,21 +78,56 @@ export const useMeta = (): Metadata => {
   return metadata;
 };
 
-export const useGrades = () => {
-  const { grades } = useMeta();
+export type GradeSystem = Metadata['gradeSystems'][number];
+export type Grade = GradeSystem['grades'][number];
+
+/** Grade systems declared for the requesting region. */
+export const useGradeSystems = () => {
+  return useMeta().gradeSystems;
+};
+
+/** The grade system with the given id — `undefined` for a mixed list (`0`) or an unknown id. */
+export const useGradeSystem = (gradeSystemId: number | undefined) => {
+  const gradeSystems = useGradeSystems();
+  return useMemo(() => gradeSystems.find((system) => system.id === gradeSystemId), [gradeSystems, gradeSystemId]);
+};
+
+/**
+ * Grade domain used to filter/sort a list.
+ *
+ * Pass the grade system id of the rows when they are known to share one (single-system list, or the area/sector
+ * being edited). Without it — a region-wide list that may mix several systems — all grades of the region are
+ * merged, deduplicated by grade label and ordered by weight, which keeps each system's own order intact.
+ */
+export const useGrades = (gradeSystemId?: number) => {
+  const gradeSystems = useGradeSystems();
+  const system = useGradeSystem(gradeSystemId);
+
   return useMemo(() => {
     const easyToHard: string[] = [];
     const mapping: Record<string, number> = {};
     const idToGrade: Record<number, string> = {};
-    for (let i = 0; i < grades.length; i++) {
-      const { grade, id } = grades[i];
-      easyToHard.push(grade);
-      mapping[grade] = i;
-      idToGrade[id] = grade;
+    const color: Record<string, string> = {};
+    const weight: Record<string, number> = {};
+
+    const grades = (system ? [system] : gradeSystems)
+      .flatMap((entry) => entry.grades)
+      .filter(({ grade }) => grade !== undefined)
+      .sort((a, b) => (a.weight ?? 0) - (b.weight ?? 0));
+
+    for (const grade of grades) {
+      const label = grade.grade!;
+      /** Only the merged domain needs de-duplication; one system may legitimately repeat a label. */
+      if (!system && mapping[label] !== undefined) continue;
+      easyToHard.push(label);
+      mapping[label] = easyToHard.length - 1;
+      idToGrade[grade.id!] = label;
+      color[label] = grade.color ?? '';
+      weight[label] = grade.weight ?? 0;
     }
 
-    return { easyToHard, mapping, idToGrade };
-  }, [grades]);
+    return { easyToHard, mapping, idToGrade, color, weight };
+  }, [gradeSystems, system]);
 };
 
 export const useFaYears = () => {

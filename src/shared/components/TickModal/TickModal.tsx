@@ -10,7 +10,6 @@ import {
   useAccessToken,
 } from '../../../api';
 import DatePicker from 'react-datepicker';
-import type { components } from '../../../@types/buldreinfo/swagger';
 import {
   X,
   Check,
@@ -26,7 +25,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
-import { useMeta } from '../Meta/context';
+import { useGrades, useMeta } from '../Meta/context';
 import { ensureDatePickerStyles } from '../../../utils/ensureDatePickerStyles';
 import { NO_PERSONAL_GRADE_LABEL } from '../../ui/NoPersonalGradeBadge';
 
@@ -44,7 +43,8 @@ type TickModalProps = {
   idSector?: number;
   /** Area id — used to invalidate area cache after tick so the problem list reflects the new status. */
   idArea?: number;
-  grades: components['schemas']['Grade'][];
+  /** Grade system of the problem being ticked — its grades are offered in the dropdown. */
+  gradeSystemId?: number;
   comment: string;
   grade: string;
   gradeFa?: string | null;
@@ -62,7 +62,7 @@ const TickModal = ({
   idProblem,
   idSector,
   idArea,
-  grades,
+  gradeSystemId,
   comment: initialComment,
   grade: initialGrade,
   gradeFa,
@@ -73,6 +73,8 @@ const TickModal = ({
   enableTickRepeats,
 }: TickModalProps) => {
   const { isClimbing } = useMeta();
+  /** Grades of the problem's own system, easy → hard — the tick's personal grade must come from it. */
+  const { easyToHard: grades } = useGrades(gradeSystemId);
   const queryClient = useQueryClient();
   const accessToken = useAccessToken();
   const [comment, setComment] = useState(initialComment ?? '');
@@ -268,9 +270,9 @@ const TickModal = ({
                   className='bg-surface-nav border-surface-border type-body w-full cursor-pointer appearance-none rounded-xl border px-3 py-2.5 pr-9 transition-colors focus:border-white/20 focus:outline-none'
                 >
                   <option value={NO_PERSONAL_GRADE_LABEL}>I don't want to grade</option>
-                  {grades.map((g, i) => (
-                    <option key={i} value={g.grade}>
-                      {g.grade}
+                  {grades.map((g) => (
+                    <option key={g} value={g}>
+                      {g}
                     </option>
                   ))}
                 </select>

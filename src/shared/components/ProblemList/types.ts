@@ -6,6 +6,8 @@ export type Row = {
   nr: number | null;
   grade: string;
   gradeWeight: number;
+  /** Grade system the grade belongs to (0 when unknown) — rows from different systems are not comparable. */
+  gradeSystemId?: number;
   stars: number;
   numTicks: number;
   ticked: boolean;

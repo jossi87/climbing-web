@@ -1,5 +1,6 @@
 import { useEffect, useReducer, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { useGradeSystems } from '../../shared/components/Meta/context';
 import { useArea, usePostData } from '../../api';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { neverGuard } from '../../utils/neverGuard';
@@ -27,6 +28,7 @@ type State = Required<
     | 'sectors'
     | 'trash'
     | 'externalLinks'
+    | 'gradeSystemId'
   >
 >;
 
@@ -53,6 +55,7 @@ type Update =
       value: number | undefined;
     }
   | { action: 'set-coord'; key: 'latitude' | 'longitude'; value: string | number }
+  | { action: 'set-grade-system'; value: number }
   | { action: 'set-lat-lng'; lat: number; lng: number }
   | { action: 'set-sort'; sectorId: number; sorting: number }
   | { action: 'set-external-links'; externalLinks: ExternalLink[] };
@@ -80,6 +83,8 @@ const DEFAULT_STATE: State = {
   sectors: [],
   trash: false,
   externalLinks: [],
+  /** Seeded with the first grade system of the region; a saved area keeps the value the backend returns. */
+  gradeSystemId: 0,
 };
 
 const reducer = (state: State, update: Update): State => {
@@ -123,13 +128,19 @@ const reducer = (state: State, update: Update): State => {
       return { ...state, [update.key]: update.value };
     case 'set-external-links':
       return { ...state, externalLinks: update.externalLinks };
+    case 'set-grade-system':
+      return { ...state, gradeSystemId: update.value };
     default:
       return neverGuard(update, state);
   }
 };
 
 export const useAreaEdit = ({ areaId }: { areaId: number }) => {
-  const [state, dispatch] = useReducer(reducer, DEFAULT_STATE);
+  const gradeSystems = useGradeSystems();
+  const [state, dispatch] = useReducer(reducer, gradeSystems, (systems) => ({
+    ...DEFAULT_STATE,
+    gradeSystemId: systems[0]?.id ?? 0,
+  }));
   const { data, status, isLoading } = useArea(areaId);
   const queryClient = useQueryClient();
 
@@ -205,6 +216,10 @@ export const useAreaEdit = ({ areaId }: { areaId: number }) => {
     ),
     setExternalLinks: useCallback(
       (externalLinks: ExternalLink[]) => dispatch({ action: 'set-external-links', externalLinks }),
+      [],
+    ),
+    setGradeSystem: useCallback(
+      (value: number) => dispatch({ action: 'set-grade-system', value: value > 0 ? value : 0 }),
       [],
     ),
   };

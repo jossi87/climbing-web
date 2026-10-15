@@ -39,7 +39,11 @@ export const AreaEdit = () => {
     setVisibility,
     setNumber,
     setExternalLinks,
+    setGradeSystem,
   } = useAreaEdit({ areaId: +(areaId ?? 0) });
+
+  /** Only a region that declares several systems needs the area to pin one. */
+  const showGradeSystem = meta.gradeSystems.length > 1;
 
   const save = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
@@ -327,6 +331,29 @@ export const AreaEdit = () => {
             </div>
           </div>
         </Card>
+
+        {/* ── Grade system ── */}
+        {showGradeSystem && (
+          <Card>
+            <SectionHeader title='Grade system' icon={Hash} />
+            <div className='p-3 sm:p-5'>
+              <div className='space-y-2'>
+                <label className={labelClasses}>Grades used by this area</label>
+                <select
+                  className={inputClasses}
+                  value={data.gradeSystemId ?? 0}
+                  onChange={(e) => setGradeSystem(Number(e.target.value))}
+                >
+                  {meta.gradeSystems.map((system) => (
+                    <option key={system.id} value={system.id}>
+                      {system.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </Card>
+        )}
 
         {/* ── Sector order ── */}
         {safeSectorOrder.length > 1 && (

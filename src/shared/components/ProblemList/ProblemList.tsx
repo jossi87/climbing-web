@@ -8,7 +8,6 @@ import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 import { activityFilterChipBase, activityFilterChipOn } from '../../../design/activityFilterChips';
 import { twInk } from '../../../design/twInk';
-import { useGrades } from '../Meta';
 import { FormSwitch } from '../../ui';
 import { ProblemListCompactContext } from './compactViewContext';
 
@@ -540,7 +539,6 @@ export const ProblemList = ({
     const savedDetailed = window.localStorage.getItem(GLOBAL_VIEW_MODE_KEY);
     return savedDetailed !== '1';
   });
-  const { easyToHard, mapping } = useGrades();
 
   useEffect(() => {
     if (!enableViewModeToggle) return;
@@ -562,16 +560,6 @@ export const ProblemList = ({
     return [[...types].sort(), lookup];
   }, [allRows]);
 
-  /** Grade labels actually present in the current content (ordered by difficulty) — drives the grade range options. */
-  const contentGradeLabels = useMemo(() => {
-    const present = new Set<string>();
-    for (const row of allRows) {
-      const grade = row.grade;
-      if (grade && mapping[grade] !== undefined) present.add(grade);
-    }
-    return easyToHard.filter((grade) => present.has(grade));
-  }, [allRows, easyToHard, mapping]);
-
   const {
     gradeLow,
     gradeHigh,
@@ -589,6 +577,8 @@ export const ProblemList = ({
     uniqueTypes,
     uniqueDisciplines,
     gradeComparable,
+    easyToHard,
+    mapping,
     containsFa,
     containsTicked,
     containsMultipitch,
@@ -600,6 +590,20 @@ export const ProblemList = ({
     sortPreferenceBucket,
     filterPreferenceBucket,
   });
+
+  /**
+   * Grade labels actually present in the current content (ordered by difficulty) — drives the grade range options.
+   *
+   * Derived from the list state, which owns the grade domain (`easyToHard` / `mapping`) of the rows' grade system.
+   */
+  const contentGradeLabels = useMemo(() => {
+    const present = new Set<string>();
+    for (const row of allRows) {
+      const grade = row.grade;
+      if (grade && mapping[grade] !== undefined) present.add(grade);
+    }
+    return easyToHard.filter((grade) => present.has(grade));
+  }, [allRows, easyToHard, mapping]);
 
   /** Filter leading the toolbar when the profile rows span 2+ disciplines; ordered by their flags (see `utils/discipline`). */
   const disciplineOptions = useMemo(
@@ -618,7 +622,7 @@ export const ProblemList = ({
   const orderByOptions = ORDER_BY_OPTIONS[mode].filter(
     (opt) =>
       !excludedSortOptions?.includes(opt.value) &&
-      /** Grade sorting compares `gradeWeight`s from this site's grade system only — unavailable on a mixed list. */
+      /** Grade sorting compares `gradeWeight`s from the rows' grade system only — unavailable on a mixed list. */
       (gradeComparable || (opt.value !== 'grade-asc' && opt.value !== 'grade-desc')),
   );
   const maxGradeIndex = Math.max(easyToHard.length - 1, 0);
@@ -857,10 +861,10 @@ export const ProblemList = ({
             />
           </div>
         )}
-        {/** Mixed disciplines park the persisted range (kept, not applied) — say so instead of showing a dead control. */}
+        {/** Mixed grade systems (or disciplines) park the persisted range (kept, not applied) — say so instead of showing a dead control. */}
         {!gradeComparable && (gradeLow !== undefined || gradeHigh !== undefined) ? (
           <span className={cn(designContract.typography.meta, 'text-slate-500')}>
-            Grade range and grade sorting apply within a single discipline.
+            Grade range and grade sorting apply within a single grade system.
           </span>
         ) : null}
         {allTypes.length > 1 && (
