@@ -2042,9 +2042,9 @@ export type components = {
             gradeSystemId?: number;
             coordinates?: components["schemas"]["Coordinates"];
             tradGear?: boolean;
-            isBouldering?: boolean;
             isRopeClimbing?: boolean;
             isIceClimbing?: boolean;
+            isBouldering?: boolean;
         };
         ProblemSearchResult: {
             /** Format: int32 */
@@ -3746,6 +3746,7 @@ export interface operations {
                 isMovie: boolean;
                 versionStamp?: number;
                 original?: boolean;
+                download?: boolean;
                 targetWidth?: number;
                 minDimension?: number;
                 x?: number;
@@ -3759,7 +3760,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Redirects to the generated or cached static asset URL hosted on S3 Storage */
+            /** @description Redirects to the generated or cached static asset URL hosted on S3 Storage, or - with download=true - to a signed storage URL that saves the original under its own name */
             302: {
                 headers: {
                     [name: string]: unknown;
