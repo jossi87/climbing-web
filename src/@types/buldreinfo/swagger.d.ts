@@ -2038,13 +2038,13 @@ export type components = {
             /** Format: int32 */
             gradeWeight?: number;
             noPersonalGrade?: boolean;
+            /** Format: int32 */
+            gradeSystemId?: number;
             coordinates?: components["schemas"]["Coordinates"];
             tradGear?: boolean;
             isBouldering?: boolean;
             isRopeClimbing?: boolean;
             isIceClimbing?: boolean;
-            /** Format: int32 */
-            gradeSystemId?: number;
         };
         ProblemSearchResult: {
             /** Format: int32 */
@@ -2319,9 +2319,9 @@ export type components = {
             problemName?: string;
             problemSubtype?: string;
             problemTradGear?: boolean;
-            grade?: string;
             /** Format: int32 */
             gradeSystemId?: number;
+            grade?: string;
             media?: components["schemas"]["ActivityMedia"][];
             /** Format: int32 */
             stars?: number;
