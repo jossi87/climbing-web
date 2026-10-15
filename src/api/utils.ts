@@ -102,6 +102,7 @@ export function getMediaFileUrl(
   isMovie: boolean,
   options?: {
     original?: boolean;
+    download?: boolean;
     mediaRegion?: MediaRegion;
     targetWidth?: number;
     minDimension?: number;
@@ -110,6 +111,10 @@ export function getMediaFileUrl(
   let url = `/media/file?id=${id}&isMovie=${isMovie}&versionStamp=${versionStamp}`;
   if (options?.original) {
     url += '&original=true';
+    // Only meaningful with `original`: the API then answers with a signed storage URL whose response carries
+    // `Content-Disposition: attachment`, so the browser saves the file instead of playing it in the tab. See
+    // `downloadStoredFile` for why that response must not be fetched into memory first.
+    if (options.download) url += '&download=true';
   } else if (options?.mediaRegion) {
     const r = options.mediaRegion;
     url += `&x=${r.x}&y=${r.y}&width=${r.width}&height=${r.height}`;
@@ -353,4 +358,29 @@ export function downloadFileWithProgress(
     xhr.onerror = () => reject(new Error('Network error'));
     xhr.send();
   });
+}
+
+/**
+ * Save a stored file by handing its URL to the browser's own download machinery.
+ *
+ * {@link downloadFileWithProgress} keeps the entire response in memory first (`responseType: 'blob'`, then an
+ * object URL), which is fine for the small generated documents it is used for, but not for an original media
+ * upload: the untouched movie behind media 23263 is 731 MB, and a phone will refuse to hold a Blob that size —
+ * which is why "Download Original" silently did nothing on mobile while working on a desktop. Asking the API for
+ * the original with `download=true` ends in a storage URL that answers `Content-Disposition: attachment`, so a
+ * plain navigation streams the bytes to disk (and lets the browser resume them) without the app ever touching
+ * them.
+ *
+ * The API URL itself is left in the address of an anchor rather than assigned to `window.location`, so this is
+ * never treated as leaving the page — and passing the token as `access_token` mirrors how the API authenticates
+ * the client for URLs that are loaded by the browser rather than by `fetch`.
+ */
+export function downloadStoredFile(accessToken: string | null, fullUrl: string): void {
+  const separator = fullUrl.includes('?') ? '&' : '?';
+  const authenticatedUrl = `${fullUrl}${separator}access_token=${accessToken}`;
+  const a = document.createElement('a');
+  a.href = authenticatedUrl;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
 }

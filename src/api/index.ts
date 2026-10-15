@@ -32,6 +32,7 @@ export {
   getLocales,
   getBaseUrl,
   downloadFileWithProgress,
+  downloadStoredFile,
   useAccessToken,
   getUrl,
   getMediaFileUrl,

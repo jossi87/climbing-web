@@ -35,7 +35,7 @@ import {
 
 import { useLocalStorage } from '../../../utils/use-local-storage';
 import {
-  downloadFileWithProgress,
+  downloadStoredFile,
   getMediaFileUrl,
   getMediaFileUrlSrcSet,
   mediaIdentityId,
@@ -833,10 +833,11 @@ const MediaModal = ({
                     <button
                       type='button'
                       onClick={() =>
-                        downloadFileWithProgress(
+                        downloadStoredFile(
                           accessToken,
                           getMediaFileUrl(mediaIdentityId(m.identity), mediaIdentityVersionStamp(m.identity), isVideo, {
                             original: true,
+                            download: true,
                           }),
                         )
                       }
