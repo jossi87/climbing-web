@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { useMeta } from '../../shared/components/Meta/context';
 import { downloadTocXlsx, useAccessToken, useToc } from '../../api';
@@ -15,14 +16,6 @@ import { formatFaDisplay } from '../../utils/firstAscentDisplay';
 import { cn } from '../../lib/utils';
 
 type Props = { filterOpen?: boolean };
-
-const description = (
-  regions: number,
-  areas: number,
-  sectors: number,
-  problems: number,
-  kind: 'routes' | 'problems',
-): string => `${regions} regions, ${areas} areas, ${sectors} sectors, ${problems} ${kind}`;
 
 type FilterProblem = {
   id: number;
@@ -71,6 +64,7 @@ type FilterArea = {
 };
 
 export const Problems = ({ filterOpen }: Props) => {
+  const { t } = useTranslation();
   const meta = useMeta();
   // Collapsed by default (only the `/filter` route opens the panel on load): the header's “Showing n routes”
   // line and the chips beside the Filter button already say what the list is filtered on, so the list gets the
@@ -93,9 +87,15 @@ export const Problems = ({ filterOpen }: Props) => {
     return <Loading />;
   }
 
-  const title = meta.isBouldering ? 'Problems' : 'Routes';
+  const title = t(meta.isBouldering ? 'problems.titleBouldering' : 'problems.titleRoped');
+  /** Which noun the counts and the filter-result line inflect (`problems` vs `routes`). */
   const things = meta.isBouldering ? 'problems' : 'routes';
-  const totalDescription = description(totalRegions, totalAreas, totalSectors, totalProblems, things);
+  const totalDescription = t('problems.description', {
+    regions: t('counts.regions', { count: totalRegions }),
+    areas: t('counts.areas', { count: totalAreas }),
+    sectors: t('counts.sectors', { count: totalSectors }),
+    items: t(meta.isBouldering ? 'counts.problems' : 'counts.routes', { count: totalProblems }),
+  });
 
   /** Any filter section deviating from the defaults — brand “on” affordance for the toolbar toggle. */
   const anyFilterActive = isFilterSectionActive(state, 'all');
@@ -104,7 +104,7 @@ export const Problems = ({ filterOpen }: Props) => {
     : 'border-surface-border bg-surface-raised hover:bg-surface-raised-hover text-slate-300 hover:text-slate-200';
 
   /** The header subheader keeps listing what is available; this is how much of it survives the filter. */
-  const filterResult = anyFilterActive ? describeFilterResult(state, things) : undefined;
+  const filterResult = anyFilterActive ? describeFilterResult(t, state, things) : undefined;
 
   const areas: FilterArea[] =
     filteredData?.regions?.flatMap((region) => {
@@ -144,12 +144,15 @@ export const Problems = ({ filterOpen }: Props) => {
                               passiveGearTooltip = formatPassiveGearMarkerLine(
                                 formatRouteTypeLabel(problem.t.type, problem.t.subType),
                                 problem.numPitches,
+                                t,
                               );
                             }
-                            if ((problem.numPitches ?? 0) > 1) metaParts.push(`${problem.numPitches}p`);
+                            if ((problem.numPitches ?? 0) > 1) {
+                              metaParts.push(t('problems.metaPitches', { count: problem.numPitches ?? 0 }));
+                            }
                           }
                           if (problem.numTicks) {
-                            metaParts.push(`${problem.numTicks} asc${problem.numTicks === 1 ? '' : 's'}`);
+                            metaParts.push(t('problems.metaAscents', { count: problem.numTicks }));
                           }
                           const sAlt = problem.startingAltitude;
                           const cElev = problem.coordinates?.elevation;
@@ -161,7 +164,7 @@ export const Problems = ({ filterOpen }: Props) => {
                                 : null;
 
                           if (elev) {
-                            metaParts.push(`${elev.p}${Math.round(elev.v)}m a.s.l.`);
+                            metaParts.push(t('problems.metaAltitude', { mark: elev.p, meters: Math.round(elev.v) }));
                           }
                           const metaString = metaParts.length ? `(${metaParts.join(', ')})` : '';
                           const faText = formatFaDisplay(
@@ -200,7 +203,7 @@ export const Problems = ({ filterOpen }: Props) => {
 
   return (
     <FilterContext.Provider value={{ ...state, dispatch }}>
-      <title>{`${title} | ${meta?.title}`}</title>
+      <title>{t('meta.pageTitle', { page: title, site: meta.title })}</title>
       <meta name='description' content={totalDescription} />
 
       <div className='w-full min-w-0'>
@@ -233,7 +236,7 @@ export const Problems = ({ filterOpen }: Props) => {
                     visible ? 'bg-surface-hover border-surface-border text-slate-100' : closedFilterToggleClass,
                   )}
                 >
-                  <Filter size={12} /> Filter
+                  <Filter size={12} /> {t('filter.title')}
                 </button>
                 <button
                   onClick={() => {
@@ -245,7 +248,7 @@ export const Problems = ({ filterOpen }: Props) => {
                   disabled={isSaving}
                   className='border-surface-border bg-surface-raised hover:bg-surface-raised-hover inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[12px] leading-none font-medium text-slate-300 transition-colors hover:text-slate-200 disabled:cursor-wait disabled:opacity-50 sm:text-[13px]'
                 >
-                  <Download size={12} /> {isSaving ? 'Downloading...' : 'Download'}
+                  <Download size={12} /> {isSaving ? t('problems.downloading') : t('problems.download')}
                 </button>
               </div>
             </div>

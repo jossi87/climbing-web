@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 import type { components } from '../../@types/buldreinfo/swagger';
@@ -72,11 +73,12 @@ export function SectorProblemLink({
 
 /** Adjacent routes in the sector — matches Problem ascent metadata row typography. */
 export function ProblemNeighboursRow({ neighbours }: Props) {
+  const { t } = useTranslation();
   if (!neighbours?.length) return null;
 
   return (
     <p className={problemSurroundingsRowClass}>
-      <span className={problemSurroundingsLeadClass}>Neighbours:</span>
+      <span className={problemSurroundingsLeadClass}>{t('place.neighboursLead')}</span>
       <span className='inline-flex w-full min-w-0 flex-wrap items-baseline gap-x-4 gap-y-1 sm:flex-1'>
         {neighbours.map((n) => (
           <SectorProblemLink key={n.id} problem={n} relation='neighbour' />

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { LucideIcon } from 'lucide-react';
 import { History as ActivityIcon, Camera, Check, ChevronDown, Filter, MessageSquare, Plus } from 'lucide-react';
 import { designContract } from '../../../design/contract';
@@ -66,32 +67,41 @@ function ToolbarChipPlaceholder({
  * branch in {@link Activity}. The header uses the same `History as ActivityIcon` as the footer's `Activity` `NavCard`
  * so the icon language is consistent across the app.
  */
-export const ActivityFrontpageSuspenseFallback = () => (
-  <div className='w-full'>
-    <Card flush>
-      <div className={activityFrontpageToolbarClassName} aria-hidden>
-        <SectionHeader title='Activity' icon={ActivityIcon} className='mb-0 w-full md:w-auto' />
+export const ActivityFrontpageSuspenseFallback = () => {
+  const { t } = useTranslation();
+  return (
+    <div className='w-full'>
+      <Card flush>
+        <div className={activityFrontpageToolbarClassName} aria-hidden>
+          <SectionHeader title={t('activity.title')} icon={ActivityIcon} className='mb-0 w-full md:w-auto' />
 
-        <div className={designContract.layout.activityToolbarActionsFrontpage}>
-          <div className='relative shrink-0'>
-            <div
-              className={cn(activityFilterChipBase, activityFilterChipOn, 'min-w-0 max-sm:max-w-[min(100%,8.5rem)]')}
-            >
-              <Filter size={12} className='shrink-0 text-slate-300' strokeWidth={2} />
-              <span className={cn(designContract.typography.uiCompact, 'min-w-0 truncate text-slate-300')}>All</span>
-              <ChevronDown size={10} className='shrink-0 text-slate-300' strokeWidth={2} />
+          <div className={designContract.layout.activityToolbarActionsFrontpage}>
+            <div className='relative shrink-0'>
+              <div
+                className={cn(activityFilterChipBase, activityFilterChipOn, 'min-w-0 max-sm:max-w-[min(100%,8.5rem)]')}
+              >
+                <Filter size={12} className='shrink-0 text-slate-300' strokeWidth={2} />
+                <span className={cn(designContract.typography.uiCompact, 'min-w-0 truncate text-slate-300')}>
+                  {t('activity.allGrades')}
+                </span>
+                <ChevronDown size={10} className='shrink-0 text-slate-300' strokeWidth={2} />
+              </div>
             </div>
+            <ToolbarChipPlaceholder icon={Plus} label={t('activity.chipFa')} />
+            <ToolbarChipPlaceholder icon={Check} label={t('activity.chipTicks')} />
+            <ToolbarChipPlaceholder icon={Camera} label={t('activity.chipMedia')} />
+            <ToolbarChipPlaceholder
+              icon={MessageSquare}
+              label={t('activity.chipComments')}
+              labelNarrow={t('activity.chipCommentsShort')}
+            />
           </div>
-          <ToolbarChipPlaceholder icon={Plus} label='FA' />
-          <ToolbarChipPlaceholder icon={Check} label='Ticks' />
-          <ToolbarChipPlaceholder icon={Camera} label='Media' />
-          <ToolbarChipPlaceholder icon={MessageSquare} label='Comments' labelNarrow='Com' />
         </div>
-      </div>
-      <div className={activityToolbarDividerClassName} />
-      {[...Array(10)].map((_, i) => (
-        <ActivitySkeleton key={i} />
-      ))}
-    </Card>
-  </div>
-);
+        <div className={activityToolbarDividerClassName} />
+        {[...Array(10)].map((_, i) => (
+          <ActivitySkeleton key={i} />
+        ))}
+      </Card>
+    </div>
+  );
+};

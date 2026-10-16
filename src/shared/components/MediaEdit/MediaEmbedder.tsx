@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, Plus, Loader2, Image, Check } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
@@ -85,6 +86,7 @@ function stripInstagramUrlParams(url: string): string {
 }
 
 const MediaEmbedder = ({ addMedia, stack, getAccessToken }: Props) => {
+  const { t } = useTranslation();
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [instagramItems, setInstagramItems] = useState<InstagramMedia[] | null>(null);
@@ -106,7 +108,7 @@ const MediaEmbedder = ({ addMedia, stack, getAccessToken }: Props) => {
         const token = await getAccessToken();
         const results = await postMediaInstagramScrape(token, url.trim());
         if (results.length === 0) {
-          setInstagramError('No Instagram media found at this URL.');
+          setInstagramError(t('mediaEdit.embed.noMediaFound'));
           return;
         }
         if (results.length === 1) {
@@ -171,12 +173,12 @@ const MediaEmbedder = ({ addMedia, stack, getAccessToken }: Props) => {
       addMedia({ embedVideoUrl, embedThumbnailUrl, embedMilliseconds });
       setUrl('');
     } catch (error) {
-      const msg = error instanceof Error ? error.message : 'Failed to process URL';
+      const msg = error instanceof Error ? error.message : t('mediaEdit.embed.processFailed');
       setInstagramError(msg);
     } finally {
       setLoading(false);
     }
-  }, [url, addMedia, getAccessToken]);
+  }, [url, addMedia, getAccessToken, t]);
 
   const handleSelectInstagram = useCallback(
     (item: InstagramMedia) => {
@@ -209,7 +211,7 @@ const MediaEmbedder = ({ addMedia, stack, getAccessToken }: Props) => {
     setInstagramError(null);
   }, []);
 
-  const placeholder = 'YouTube / Vimeo / Instagram URL…';
+  const placeholder = t('mediaEdit.embed.urlPlaceholder');
 
   return (
     <div
@@ -251,7 +253,7 @@ const MediaEmbedder = ({ addMedia, stack, getAccessToken }: Props) => {
           )}
         >
           {loading ? <Loader2 size={14} className='animate-spin' /> : <Plus size={14} />}
-          Add
+          {t('mediaEdit.embed.add')}
         </button>
       </div>
 
@@ -259,7 +261,7 @@ const MediaEmbedder = ({ addMedia, stack, getAccessToken }: Props) => {
       {loading && isInstagramUrl(url) && !instagramItems && (
         <div className='mt-2 flex items-center gap-2 text-xs text-slate-400'>
           <Loader2 size={14} className='animate-spin' />
-          <span>Scraping Instagram post… this may take up to a minute</span>
+          <span>{t('mediaEdit.embed.scraping')}</span>
         </div>
       )}
 
@@ -268,7 +270,7 @@ const MediaEmbedder = ({ addMedia, stack, getAccessToken }: Props) => {
         <div className='mt-2 space-y-2'>
           <div className='flex items-center gap-2 text-xs font-medium text-slate-400'>
             <Image size={14} />
-            Select Instagram post(s) to add
+            {t('mediaEdit.embed.selectPosts')}
           </div>
           <div className='flex flex-wrap gap-3'>
             {instagramItems.map((item, idx) => {
@@ -291,7 +293,7 @@ const MediaEmbedder = ({ addMedia, stack, getAccessToken }: Props) => {
                     ) : (
                       <img
                         src={item.cdnUrl}
-                        alt={`Instagram post ${idx + 1}`}
+                        alt={t('mediaEdit.embed.postAlt', { number: idx + 1 })}
                         className='h-24 w-24 rounded-lg object-cover'
                         referrerPolicy='no-referrer'
                       />
@@ -308,7 +310,7 @@ const MediaEmbedder = ({ addMedia, stack, getAccessToken }: Props) => {
                     )}
                   >
                     {isSelected ? <Check size={12} /> : <Plus size={12} />}
-                    {isSelected ? 'Added' : 'Add'}
+                    {isSelected ? t('mediaEdit.embed.added') : t('mediaEdit.embed.add')}
                   </button>
                 </div>
               );
@@ -319,7 +321,7 @@ const MediaEmbedder = ({ addMedia, stack, getAccessToken }: Props) => {
             onClick={handleCancelInstagram}
             className='inline-flex items-center gap-1 rounded-lg border border-white/12 px-3 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:bg-slate-700'
           >
-            Cancel
+            {t('common.cancel')}
           </button>
         </div>
       )}

@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { CircleMarker, useMap } from 'react-leaflet';
 import { latLngBounds } from 'leaflet';
 import { Globe, Loader2, PenLine, RotateCcw, Save, Trash2, X } from 'lucide-react';
+import { Trans, useTranslation } from 'react-i18next';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { useMeta } from '../../shared/components/Meta/context';
@@ -36,6 +37,7 @@ const ZoomToOutline = ({ coordinates, enabled }: { coordinates: Coordinates[]; e
 };
 
 const Regions = () => {
+  const { t } = useTranslation();
   const meta = useMeta();
   const accessToken = useAccessToken();
   const { type } = useParams();
@@ -89,7 +91,7 @@ const Regions = () => {
       .catch((err) => {
         console.warn(err);
         captureSentryException(err);
-        setError('Could not save the outline. Please try again.');
+        setError(t('regions.saveOutlineError'));
       })
       .finally(() => setSaving(false));
   };
@@ -98,18 +100,23 @@ const Regions = () => {
     'inline-flex h-8 w-8 items-center justify-center rounded-lg border border-surface-border bg-surface-nav text-slate-300 transition-colors hover:bg-surface-raised-hover hover:text-slate-100 disabled:pointer-events-none disabled:opacity-40';
 
   const regionCount = regionsInSelectedType.length;
-  const description = `${regionCount} ${
-    selectedType === 'bouldering' ? 'bouldering' : selectedType === 'climbing' ? 'rock climbing' : 'ice climbing'
-  } regions`;
+  const description = t(
+    selectedType === 'bouldering'
+      ? 'regions.summaryBouldering'
+      : selectedType === 'climbing'
+        ? 'regions.summaryRockClimbing'
+        : 'regions.summaryIceClimbing',
+    { count: regionCount },
+  );
 
   return (
     <div className='w-full min-w-0'>
-      <title>{`Regions | ${meta?.title}`}</title>
+      <title>{t('meta.pageTitle', { page: t('regions.title'), site: meta.title })}</title>
       <meta name='description' content={description} />
 
       <Card flush className='min-w-0 border-0'>
         <div className='p-4 pb-3 sm:p-5 sm:pb-4'>
-          <SectionHeader title='Regions' icon={Globe} subheader={description} />
+          <SectionHeader title={t('regions.title')} icon={Globe} subheader={description} />
 
           <div className='flex items-center gap-2'>
             <div className='flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto pb-1'>
@@ -124,7 +131,11 @@ const Regions = () => {
                       : designContract.surfaces.segmentIdleRaised,
                   )}
                 >
-                  {id === 'bouldering' ? 'Bouldering' : id === 'climbing' ? 'Route Climbing' : 'Ice Climbing'}
+                  {id === 'bouldering'
+                    ? t('regions.typeBouldering')
+                    : id === 'climbing'
+                      ? t('regions.typeRockClimbing')
+                      : t('regions.typeIceClimbing')}
                 </Link>
               ))}
             </div>
@@ -132,8 +143,8 @@ const Regions = () => {
               <button
                 type='button'
                 onClick={startEditing}
-                title={`Edit outline of ${activeRegion.name}`}
-                aria-label={`Edit outline of ${activeRegion.name}`}
+                title={t('regions.editOutline', { name: activeRegion.name })}
+                aria-label={t('regions.editOutline', { name: activeRegion.name })}
                 className={cn(
                   designContract.controls.pageHeaderIconButton,
                   designContract.controls.pageHeaderIconButtonEdit,
@@ -146,9 +157,11 @@ const Regions = () => {
 
           {editing && activeRegion && (
             <p className={cn('mt-3 text-slate-400', designContract.typography.detailBody)}>
-              Editing the outline of <span className='font-semibold text-slate-200'>{activeRegion.name}</span> — click
-              the map to add points ({draft.length} {draft.length === 1 ? 'point' : 'points'}). Other regions stay
-              visible for context.
+              <Trans
+                i18nKey='regions.editingOutline'
+                values={{ name: activeRegion.name, points: t('counts.points', { count: draft.length }) }}
+                components={{ name: <span className='font-semibold text-slate-200' /> }}
+              />
             </p>
           )}
           {error && <p className='mt-2 text-[12px] font-medium text-red-400'>{error}</p>}
@@ -168,8 +181,8 @@ const Regions = () => {
                     type='button'
                     onClick={() => setDraft((prev) => prev.slice(0, -1))}
                     disabled={draft.length === 0}
-                    title='Undo last point'
-                    aria-label='Undo last point'
+                    title={t('regions.undoLastPoint')}
+                    aria-label={t('regions.undoLastPoint')}
                     className={overlayIconButton}
                   >
                     <RotateCcw size={15} />
@@ -178,8 +191,8 @@ const Regions = () => {
                     type='button'
                     onClick={() => setDraft([])}
                     disabled={draft.length === 0}
-                    title='Clear all points'
-                    aria-label='Clear all points'
+                    title={t('regions.clearAllPoints')}
+                    aria-label={t('regions.clearAllPoints')}
                     className={overlayIconButton}
                   >
                     <Trash2 size={15} />
@@ -191,7 +204,7 @@ const Regions = () => {
                     className={designContract.controls.savePrimary}
                   >
                     {saving ? <Loader2 className='animate-spin' size={15} /> : <Save size={15} />}
-                    Save
+                    {t('common.save')}
                   </button>
                   <button
                     type='button'
@@ -200,7 +213,7 @@ const Regions = () => {
                     className='border-surface-border bg-surface-nav hover:bg-surface-raised-hover inline-flex items-center gap-1.5 rounded-lg border px-4 py-2 text-[12px] font-semibold text-slate-300 transition-colors hover:text-slate-100 disabled:pointer-events-none disabled:opacity-45 sm:text-[13px]'
                   >
                     <X size={15} />
-                    Cancel
+                    {t('common.cancel')}
                   </button>
                 </div>
               ) : undefined

@@ -15,6 +15,8 @@ export type Metadata = {
   userId?: number;
   authenticatedName: string;
   themePreference?: string;
+  /** The user's stored UI language preference; unset until they pick one. */
+  languagePreference?: string;
   mediaIdentity?: components['schemas']['MediaIdentity'];
   title: string;
   /** Grade systems declared for the requesting region; each area pins one of them. */
@@ -33,6 +35,8 @@ export type Metadata = {
   faYears: number[];
   defaultZoom: number;
   defaultCenter: { lat: number; lng: number };
+  /** Default UI language of the region being viewed — not guaranteed to be one this bundle ships a catalog for. */
+  defaultLanguage: string;
   isBouldering: boolean;
   isClimbing: boolean;
   isIce: boolean;
@@ -65,6 +69,12 @@ export type Metadata = {
   compassDirections: {
     id: number;
     direction: string;
+  }[];
+  /** Every language the backend can serve; `LanguageSelect` intersects it with the shipped catalogs. */
+  languages: {
+    id: number;
+    code: string;
+    name: string;
   }[];
 };
 

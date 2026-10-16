@@ -1,4 +1,5 @@
 import { LockSymbol, Stars } from '../../../shared/ui/Indicators';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { MapPin, Spline, Camera, Film, Check, Bookmark } from 'lucide-react';
 import { cn } from '../../../lib/utils';
@@ -15,6 +16,7 @@ export const ProblemsOnRock = ({
   sectorId: number | undefined;
   rock: string | undefined;
 }) => {
+  const { t } = useTranslation();
   const problemsOnRock = useProblemsOnRock({ sectorId, rock });
 
   if (!problemsOnRock?.length || !rock) {
@@ -60,7 +62,7 @@ export const ProblemsOnRock = ({
             <Stars numStars={p.stars} size={12} />
             {p.coordinates && <MapPin size={10} className={problemId === p.id ? '' : 'opacity-70'} />}
             {p.hasTopo && (
-              <span title='Topo line' className='inline-flex'>
+              <span title={t('common.topoLine')} className='inline-flex'>
                 <Spline size={10} className={problemId === p.id ? '' : 'opacity-70'} aria-hidden />
               </span>
             )}

@@ -1,4 +1,5 @@
 import { useCallback, type FormEvent, type ChangeEvent } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
 import { useMeta } from '../../shared/components/Meta/context';
 import { Loading } from '../../shared/ui/StatusWidgets';
@@ -24,6 +25,7 @@ type ToggleProps = {
 };
 
 export const AreaEdit = () => {
+  const { t } = useTranslation();
   const meta = useMeta();
   const navigate = useNavigate();
   const { areaId } = useParams();
@@ -50,7 +52,7 @@ export const AreaEdit = () => {
       event.preventDefault();
       if (!data?.name) return;
 
-      if (!data.trash || confirm('Are you sure you want to move area to trash?')) {
+      if (!data.trash || confirm(t('areaEdit.confirmTrash'))) {
         performSave(data)
           .then(async (res) => {
             const path = spaPathFromRedirectResponse(res);
@@ -64,7 +66,7 @@ export const AreaEdit = () => {
           });
       }
     },
-    [areaId, data, navigate, performSave],
+    [areaId, data, navigate, performSave, t],
   );
 
   const handleNumberChange = (field: 'sunFromHour' | 'sunToHour') => (e: ChangeEvent<HTMLSelectElement>) => {
@@ -117,7 +119,12 @@ export const AreaEdit = () => {
 
   return (
     <div className='w-full min-w-0 pb-20'>
-      <title>{`${isNew ? 'Add area' : `Edit ${data.name}`} | ${meta?.title}`}</title>
+      <title>
+        {t('meta.pageTitle', {
+          page: isNew ? t('areas.addArea') : t('common.editNamed', { name: data.name ?? '' }),
+          site: meta?.title ?? '',
+        })}
+      </title>
 
       <form id='area-edit-form' onSubmit={save} className='mt-6 space-y-6'>
         {/* ── Basic info ── */}
@@ -128,11 +135,17 @@ export const AreaEdit = () => {
             description={
               isNew ? undefined : (
                 <>
-                  Contact{' '}
-                  <a href='mailto:jostein.oygarden@gmail.com' className='hover:text-brand font-semibold text-slate-200'>
-                    Jostein Øygarden
-                  </a>{' '}
-                  if you want to split area.
+                  <Trans
+                    i18nKey='areaEdit.contact'
+                    components={{
+                      link: (
+                        <a
+                          href='mailto:jostein.oygarden@gmail.com'
+                          className='hover:text-brand font-semibold text-slate-200'
+                        />
+                      ),
+                    }}
+                  />
                 </>
               )
             }
@@ -140,14 +153,14 @@ export const AreaEdit = () => {
           <div className='space-y-4 p-3 sm:p-5'>
             <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
               <div className='space-y-2'>
-                <label className={labelClasses}>Area name</label>
+                <label className={labelClasses}>{t('areaEdit.name')}</label>
                 <input
                   className={cn(inputClasses, !data.name && 'border-red-500/50')}
-                  placeholder='Enter name'
+                  placeholder={t('areaEdit.namePlaceholder')}
                   value={data.name ?? ''}
                   onChange={(e) => setString('name')(e, { value: e.target.value })}
                 />
-                {!data.name && <p className='ml-1 text-[11px] font-bold text-red-500'>Area name required</p>}
+                {!data.name && <p className='ml-1 text-[11px] font-bold text-red-500'>{t('areaEdit.nameRequired')}</p>}
               </div>
 
               <VisibilitySelectorField
@@ -161,17 +174,17 @@ export const AreaEdit = () => {
 
             <div className='flex flex-wrap gap-2 py-1 sm:gap-4'>
               <Toggle
-                label='For developers'
+                label={t('areaEdit.forDevelopers')}
                 checked={!!data.forDevelopers}
                 onChange={() => setBoolean('forDevelopers')(dummyEvent, { checked: !data.forDevelopers })}
               />
               <Toggle
-                label='No dogs allowed'
+                label={t('areaEdit.noDogsAllowed')}
                 checked={!!data.noDogsAllowed}
                 onChange={() => setBoolean('noDogsAllowed')(dummyEvent, { checked: !data.noDogsAllowed })}
               />
               <Toggle
-                label='Trash'
+                label={t('areaEdit.trash')}
                 checked={!!data.trash}
                 disabled={!data.id || data.id <= 0}
                 onChange={() => setBoolean('trash')(dummyEvent, { checked: !data.trash })}
@@ -181,13 +194,13 @@ export const AreaEdit = () => {
             {meta.isClimbing && (
               <div className='grid grid-cols-2 gap-4'>
                 <div className='space-y-2'>
-                  <label className={labelClasses}>Sun from hour</label>
+                  <label className={labelClasses}>{t('common.sunFromHour')}</label>
                   <select
                     className={inputClasses}
                     value={data.sunFromHour || ''}
                     onChange={handleNumberChange('sunFromHour')}
                   >
-                    <option value=''>Empty</option>
+                    <option value=''>{t('common.emptyOption')}</option>
                     {hours
                       .filter((h) => h.value > 0)
                       .map((h) => (
@@ -198,13 +211,13 @@ export const AreaEdit = () => {
                   </select>
                 </div>
                 <div className='space-y-2'>
-                  <label className={labelClasses}>Sun to hour</label>
+                  <label className={labelClasses}>{t('common.sunToHour')}</label>
                   <select
                     className={inputClasses}
                     value={data.sunToHour || ''}
                     onChange={handleNumberChange('sunToHour')}
                   >
-                    <option value=''>Empty</option>
+                    <option value=''>{t('common.emptyOption')}</option>
                     {hours
                       .filter((h) => h.value > 0)
                       .map((h) => (
@@ -218,10 +231,10 @@ export const AreaEdit = () => {
             )}
 
             <div className='space-y-2'>
-              <MarkdownFieldLabel className={labelClasses}>Description</MarkdownFieldLabel>
+              <MarkdownFieldLabel className={labelClasses}>{t('common.description')}</MarkdownFieldLabel>
               <textarea
                 className={cn(inputClasses, 'min-h-30 resize-none')}
-                placeholder='Enter description'
+                placeholder={t('areaEdit.descriptionPlaceholder')}
                 value={data.comment ?? ''}
                 onChange={(e) => setString('comment')(e, { value: e.target.value })}
               />
@@ -234,13 +247,13 @@ export const AreaEdit = () => {
                     inputClasses,
                     'border-red-500/25 pl-10 focus:border-red-400/45 focus:ring-1 focus:ring-red-400/15',
                   )}
-                  placeholder='Enter closed-reason...'
+                  placeholder={t('areaEdit.closedReasonPlaceholder')}
                   value={data.accessClosed ?? ''}
                   onChange={(e) => setString('accessClosed')(e, { value: e.target.value })}
                 />
                 <AlertTriangle className='absolute top-1/2 left-3 -translate-y-1/2 text-red-400/90' size={14} />
                 <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[11px] font-black tracking-tighter text-red-300/90 uppercase'>
-                  Area Closed
+                  {t('areaEdit.closedLabel')}
                 </span>
               </div>
               <div className='relative'>
@@ -249,13 +262,13 @@ export const AreaEdit = () => {
                     inputClasses,
                     'border-orange-500/25 pl-10 focus:border-orange-400/45 focus:ring-1 focus:ring-orange-400/15',
                   )}
-                  placeholder='Enter specific restrictions...'
+                  placeholder={t('areaEdit.restrictionsPlaceholder')}
                   value={data.accessInfo ?? ''}
                   onChange={(e) => setString('accessInfo')(e, { value: e.target.value })}
                 />
                 <Info className='absolute top-1/2 left-3 -translate-y-1/2 text-orange-400/90' size={14} />
                 <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[11px] font-black tracking-tighter text-orange-300/90 uppercase'>
-                  Restrictions
+                  {t('areaEdit.restrictions')}
                 </span>
               </div>
             </div>
@@ -273,7 +286,7 @@ export const AreaEdit = () => {
 
         {/* ── Map ── */}
         <Card>
-          <SectionHeader title='Map' icon={MapPin} />
+          <SectionHeader title={t('place.map')} icon={MapPin} />
           <div className='relative z-0 h-[35vh] min-h-[220px] w-full overflow-hidden sm:h-[40vh]'>
             <Leaflet
               autoZoom={true}
@@ -302,7 +315,7 @@ export const AreaEdit = () => {
           </div>
           <div className='grid grid-cols-1 gap-4 px-0 pb-3 sm:grid-cols-2 sm:px-0 sm:pb-5'>
             <div className='space-y-1'>
-              <label className={labelClasses}>Latitude</label>
+              <label className={labelClasses}>{t('common.latitude')}</label>
               <input
                 className={inputClasses}
                 inputMode='decimal'
@@ -316,7 +329,7 @@ export const AreaEdit = () => {
               />
             </div>
             <div className='space-y-1'>
-              <label className={labelClasses}>Longitude</label>
+              <label className={labelClasses}>{t('common.longitude')}</label>
               <input
                 className={inputClasses}
                 inputMode='decimal'
@@ -335,10 +348,10 @@ export const AreaEdit = () => {
         {/* ── Grade system ── */}
         {showGradeSystem && (
           <Card>
-            <SectionHeader title='Grade system' icon={Hash} />
+            <SectionHeader title={t('areaEdit.gradeSystem')} icon={Hash} />
             <div className='p-3 sm:p-5'>
               <div className='space-y-2'>
-                <label className={labelClasses}>Grades used by this area</label>
+                <label className={labelClasses}>{t('areaEdit.gradesUsed')}</label>
                 <select
                   className={inputClasses}
                   value={data.gradeSystemId ?? 0}
@@ -358,7 +371,7 @@ export const AreaEdit = () => {
         {/* ── Sector order ── */}
         {safeSectorOrder.length > 1 && (
           <Card>
-            <SectionHeader title='Sector order' icon={Hash} />
+            <SectionHeader title={t('areaEdit.sectorOrder')} icon={Hash} />
             <div className='p-3 sm:p-5'>
               <div className='space-y-1.5'>
                 {safeSectorOrder.map((s) => (
@@ -369,7 +382,7 @@ export const AreaEdit = () => {
                         type='number'
                         step={1}
                         defaultValue={s.sorting ?? 0}
-                        placeholder='Number'
+                        placeholder={t('common.number')}
                         className='bg-surface-nav border-surface-border focus:border-brand w-full rounded-l-lg border py-1.5 pr-2.5 pl-8 text-[13px] transition-colors focus:outline-none'
                         onChange={(e) => s.id != null && setSectorSort(s.id)(e, { value: e.target.value })}
                       />
@@ -391,7 +404,7 @@ export const AreaEdit = () => {
             onClick={() => navigate(+(areaId ?? -1) > 0 ? `/area/${areaId}` : `/areas`)}
             className='form-footer-cancel'
           >
-            Cancel
+            {t('common.cancel')}
           </button>
           <button
             type='submit'
@@ -400,7 +413,7 @@ export const AreaEdit = () => {
             className='type-label flex items-center gap-2 rounded-lg bg-emerald-400 px-8 py-2.5 text-slate-950 shadow-lg shadow-emerald-900/30 transition-all hover:bg-emerald-300 disabled:opacity-50'
           >
             {isSaving ? <Loader2 className='animate-spin' size={16} /> : <Save size={16} />}
-            Save Area
+            {t('areaEdit.save')}
           </button>
         </div>
       </form>

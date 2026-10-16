@@ -1,4 +1,7 @@
 import { type ComponentProps, type ReactNode, useMemo, useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
+import type { TranslationKey } from '../../../i18n';
 import { createPortal } from 'react-dom';
 import AccordionContainer from './AccordionContainer';
 import { rowListTypeKey, type Row } from './types';
@@ -53,38 +56,96 @@ type Props = {
   userListClassName?: string;
 };
 
-type OrderByOption = { key: string; text: string; shortText: string; value: OrderOption };
+/**
+ * Sort options hold translation keys instead of text: `t` is only available inside the component, and a
+ * module-scope table of English prose is exactly what would leak untranslated into a localized page.
+ */
+type OrderByOption = { key: string; textKey: TranslationKey; shortTextKey: TranslationKey; value: OrderOption };
 
 const ORDER_BY_OPTIONS: Record<'sector' | 'user', OrderByOption[]> = {
   sector: [
-    { key: 'name', text: 'Name', shortText: 'Name', value: 'name' },
-    { key: 'ascents', text: 'Ascents', shortText: 'Ascents', value: 'ascents' },
-    { key: 'first-ascent', text: 'First ascent', shortText: '1st asc.', value: 'first-ascent' },
-    { key: 'grade-asc', text: 'Grade (easy -> hard)', shortText: 'Easy→hard', value: 'grade-asc' },
-    { key: 'grade-desc', text: 'Grade (hard -> easy)', shortText: 'Hard→easy', value: 'grade-desc' },
-    { key: 'number', text: 'Number', shortText: 'Numbers', value: 'number' },
-    { key: 'rating', text: 'Rating', shortText: 'Stars', value: 'rating' },
+    { key: 'name', textKey: 'problemList.sortBy.name', shortTextKey: 'problemList.sortBy.name', value: 'name' },
+    {
+      key: 'ascents',
+      textKey: 'problemList.sortBy.ascents',
+      shortTextKey: 'problemList.sortBy.ascents',
+      value: 'ascents',
+    },
+    {
+      key: 'first-ascent',
+      textKey: 'problemList.sortBy.firstAscent',
+      shortTextKey: 'problemList.sortBy.firstAscentShort',
+      value: 'first-ascent',
+    },
+    {
+      key: 'grade-asc',
+      textKey: 'problemList.sortBy.gradeAsc',
+      shortTextKey: 'problemList.sortBy.gradeAscShort',
+      value: 'grade-asc',
+    },
+    {
+      key: 'grade-desc',
+      textKey: 'problemList.sortBy.gradeDesc',
+      shortTextKey: 'problemList.sortBy.gradeDescShort',
+      value: 'grade-desc',
+    },
+    {
+      key: 'number',
+      textKey: 'problemList.sortBy.number',
+      shortTextKey: 'problemList.sortBy.numberShort',
+      value: 'number',
+    },
+    {
+      key: 'rating',
+      textKey: 'problemList.sortBy.rating',
+      shortTextKey: 'problemList.sortBy.ratingShort',
+      value: 'rating',
+    },
   ],
   user: [
-    { key: 'name', text: 'Name', shortText: 'Name', value: 'name' },
-    { key: 'date', text: 'Date', shortText: 'Date', value: 'date' },
-    { key: 'grade-asc', text: 'Grade (easy -> hard)', shortText: 'Easy→hard', value: 'grade-asc' },
-    { key: 'grade-desc', text: 'Grade (hard -> easy)', shortText: 'Hard→easy', value: 'grade-desc' },
-    { key: 'rating', text: 'Rating', shortText: 'Stars', value: 'rating' },
+    { key: 'name', textKey: 'problemList.sortBy.name', shortTextKey: 'problemList.sortBy.name', value: 'name' },
+    { key: 'date', textKey: 'problemList.sortBy.date', shortTextKey: 'problemList.sortBy.date', value: 'date' },
+    {
+      key: 'grade-asc',
+      textKey: 'problemList.sortBy.gradeAsc',
+      shortTextKey: 'problemList.sortBy.gradeAscShort',
+      value: 'grade-asc',
+    },
+    {
+      key: 'grade-desc',
+      textKey: 'problemList.sortBy.gradeDesc',
+      shortTextKey: 'problemList.sortBy.gradeDescShort',
+      value: 'grade-desc',
+    },
+    {
+      key: 'rating',
+      textKey: 'problemList.sortBy.rating',
+      shortTextKey: 'problemList.sortBy.ratingShort',
+      value: 'rating',
+    },
   ],
-} as const;
+};
 
+/**
+ * Group builders. `t` arrives as the first argument (the table is module scope, so there is no hook in
+ * reach), and each header is built from `problemList.groupHeader` with the name as a placeholder — the
+ * `<Without area>` fallback is translated too, so nothing English is ever glued onto the number.
+ */
 const GROUP_BY: Record<
   GroupOption,
   (
+    t: TFunction,
     partialState: Pick<State, 'uniqueAreas' | 'uniqueRocks' | 'uniqueSectors' | 'uniqueTypes' | 'filtered'>,
   ) => ComponentProps<typeof AccordionContainer>['accordionRows']
 > = {
-  area: ({ uniqueAreas, filtered }) =>
+  area: (t, { uniqueAreas, filtered }) =>
     uniqueAreas.map((areaName) => {
       const list = filtered.filter((p) => p.areaName === areaName).map((p) => p.element);
       return {
-        label: `${areaName || '<Without area>'} (${list.length})`,
+        label: t('problemList.groupHeader', {
+          name: areaName || t('problemList.withoutArea'),
+          total: list.length,
+        }),
         length: list.length,
         content: <div className='flex flex-col gap-2'>{list}</div>,
       };
@@ -94,31 +155,40 @@ const GROUP_BY: Record<
     throw new Error('This should not have been called');
   },
 
-  rock: ({ uniqueRocks, filtered }) =>
+  rock: (t, { uniqueRocks, filtered }) =>
     uniqueRocks.map((rock) => {
       const list = filtered.filter((p) => p.rock === rock).map((p) => p.element);
       return {
-        label: `${rock || '<Without rock>'} (${list.length})`,
+        label: t('problemList.groupHeader', {
+          name: rock || t('problemList.withoutRock'),
+          total: list.length,
+        }),
         length: list.length,
         content: <div className='flex flex-col gap-2'>{list}</div>,
       };
     }),
 
-  sector: ({ uniqueSectors, filtered }) =>
+  sector: (t, { uniqueSectors, filtered }) =>
     uniqueSectors.map((sectorName) => {
       const list = filtered.filter((p) => p.sectorName === sectorName).map((p) => p.element);
       return {
         length: list.length,
-        label: `${sectorName || '<No sector>'} (${list.length})`,
+        label: t('problemList.groupHeader', {
+          name: sectorName || t('problemList.noSector'),
+          total: list.length,
+        }),
         content: <div className='flex flex-col gap-2'>{list}</div>,
       };
     }),
 
-  type: ({ uniqueTypes, filtered }) =>
+  type: (t, { uniqueTypes, filtered }) =>
     uniqueTypes.map((typeKey) => {
       const list = filtered.filter((p) => rowListTypeKey(p) === typeKey).map((p) => p.element);
       return {
-        label: `${typeKey || '<No type>'} (${list.length})`,
+        label: t('problemList.groupHeader', {
+          name: typeKey || t('problemList.noType'),
+          total: list.length,
+        }),
         length: list.length,
         content: <div className='flex flex-col gap-2'>{list}</div>,
       };
@@ -127,9 +197,10 @@ const GROUP_BY: Record<
 
 type GroupByOption = {
   key: string;
-  text: string;
-  /** Short label for dense toolbars (defaults to `text`). */
-  shortText?: string;
+  /** Translation keys; resolved in the component, where `t` is in scope (see `OrderByOption`). */
+  textKey: TranslationKey;
+  /** Short label for dense toolbars (defaults to `textKey`). */
+  shortTextKey?: TranslationKey;
   value: GroupOption;
   isApplicable: (state: Pick<State, 'uniqueAreas' | 'uniqueRocks' | 'uniqueSectors' | 'uniqueTypes'>) => boolean;
 };
@@ -137,36 +208,36 @@ type GroupByOption = {
 const GROUP_BY_OPTIONS: Record<GroupOption, GroupByOption> = {
   area: {
     key: 'area',
-    text: 'Area',
-    shortText: 'Area',
+    textKey: 'problemList.groupBy.area',
+    shortTextKey: 'problemList.groupBy.area',
     value: 'area',
     isApplicable: ({ uniqueAreas }) => uniqueAreas.length > 1,
   },
   none: {
     key: 'none',
-    text: 'None',
-    shortText: 'None',
+    textKey: 'problemList.groupBy.none',
+    shortTextKey: 'problemList.groupBy.none',
     value: 'none',
     isApplicable: () => true,
   },
   rock: {
     key: 'rock',
-    text: 'Rock',
-    shortText: 'Rock',
+    textKey: 'problemList.groupBy.rock',
+    shortTextKey: 'problemList.groupBy.rock',
     value: 'rock',
     isApplicable: ({ uniqueRocks }) => uniqueRocks.length > 1,
   },
   sector: {
     key: 'sector',
-    text: 'Sector',
-    shortText: 'Sector',
+    textKey: 'problemList.groupBy.sector',
+    shortTextKey: 'problemList.groupBy.sector',
     value: 'sector',
     isApplicable: ({ uniqueSectors }) => uniqueSectors.length > 1,
   },
   type: {
     key: 'type',
-    text: 'Type',
-    shortText: 'Type',
+    textKey: 'problemList.groupBy.type',
+    shortTextKey: 'problemList.groupBy.type',
     value: 'type',
     isApplicable: ({ uniqueTypes }) => uniqueTypes.length > 1,
   },
@@ -494,28 +565,31 @@ const GradeRangeControl = ({
   highOptions: ToolbarDropdownOption<string>[];
   onLowSelect: (next: string) => void;
   onHighSelect: (next: string) => void;
-}) => (
-  <div className='inline-flex flex-wrap items-center gap-1.5 sm:gap-2'>
-    <span className={cn(designContract.typography.meta, 'shrink-0 text-slate-500')}>Grade</span>
-    <ToolbarDropdown
-      compact
-      variant='ghost'
-      label='Lowest grade'
-      value={low}
-      options={lowOptions}
-      onSelect={onLowSelect}
-    />
-    <span className={cn(designContract.typography.meta, 'text-slate-500')}>to</span>
-    <ToolbarDropdown
-      compact
-      variant='ghost'
-      label='Highest grade'
-      value={high}
-      options={highOptions}
-      onSelect={onHighSelect}
-    />
-  </div>
-);
+}) => {
+  const { t } = useTranslation();
+  return (
+    <div className='inline-flex flex-wrap items-center gap-1.5 sm:gap-2'>
+      <span className={cn(designContract.typography.meta, 'shrink-0 text-slate-500')}>{t('problemList.grade')}</span>
+      <ToolbarDropdown
+        compact
+        variant='ghost'
+        label={t('problemList.gradeLow')}
+        value={low}
+        options={lowOptions}
+        onSelect={onLowSelect}
+      />
+      <span className={cn(designContract.typography.meta, 'text-slate-500')}>{t('problemList.gradeTo')}</span>
+      <ToolbarDropdown
+        compact
+        variant='ghost'
+        label={t('problemList.gradeHigh')}
+        value={high}
+        options={highOptions}
+        onSelect={onHighSelect}
+      />
+    </div>
+  );
+};
 
 export const ProblemList = ({
   rows: allRows,
@@ -533,6 +607,7 @@ export const ProblemList = ({
   leadingBottomClassName = 'mb-4 sm:mb-5',
   userListClassName,
 }: Props) => {
+  const { t } = useTranslation();
   const [showFilter, setFilterShowing] = useState(false);
   const [compactRows, setCompactRows] = useState<boolean>(() => {
     if (!enableViewModeToggle) return false;
@@ -614,13 +689,22 @@ export const ProblemList = ({
   const allDisciplinesEnabled = enabledDisciplines.length === uniqueDisciplines.length;
   /** Dense chip summary: “All”, the single discipline, or “Bouldering +2”. */
   const disciplineShortLabel = allDisciplinesEnabled
-    ? 'All'
+    ? t('problemList.disciplineAll')
     : enabledDisciplines.length === 1
       ? enabledDisciplines[0]
       : `${enabledDisciplines[0]} +${enabledDisciplines.length - 1}`;
 
-  /** Grade sorting ranks each grade within its own discipline, so mixed lists keep it (see `useProblemListState`). */
-  const orderByOptions = ORDER_BY_OPTIONS[mode].filter((opt) => !excludedSortOptions?.includes(opt.value));
+  /**
+   * Grade sorting ranks each grade within its own discipline, so mixed lists keep it (see `useProblemListState`).
+   * Option text is resolved here (`textKey` → `t`) because the tables are module scope.
+   */
+  const orderByOptions = useMemo(
+    () =>
+      ORDER_BY_OPTIONS[mode]
+        .filter((opt) => !excludedSortOptions?.includes(opt.value))
+        .map(({ textKey, shortTextKey, ...opt }) => ({ ...opt, text: t(textKey), shortText: t(shortTextKey) })),
+    [mode, excludedSortOptions, t],
+  );
   const maxGradeIndex = Math.max(easyToHard.length - 1, 0);
 
   /** Grade range options: content grades plus the current selection (so a stale persisted value still renders). */
@@ -660,14 +744,14 @@ export const ProblemList = ({
 
   const list = (() => {
     if (filtered.length === 0) {
-      return <div className='py-6 text-[13px] text-slate-500 md:text-[14px]'>Empty list.</div>;
+      return <div className='py-6 text-[13px] text-slate-500 md:text-[14px]'>{t('problemList.empty')}</div>;
     }
 
     if (groupBy && groupBy !== 'none') {
       const mapper = GROUP_BY[groupBy];
       return (
         <AccordionContainer
-          accordionRows={mapper({
+          accordionRows={mapper(t, {
             uniqueAreas,
             uniqueRocks,
             uniqueSectors,
@@ -694,7 +778,11 @@ export const ProblemList = ({
         uniqueTypes,
       }),
     )
-    .map(({ isApplicable: _, ...props }) => props);
+    .map(({ isApplicable: _, textKey, shortTextKey, ...props }) => ({
+      ...props,
+      text: t(textKey),
+      shortText: shortTextKey ? t(shortTextKey) : undefined,
+    }));
   const orderedGroupByOptions = [
     ...groupByOptions.filter((opt) => opt.value === 'none'),
     ...groupByOptions.filter((opt) => opt.value !== 'none'),
@@ -712,11 +800,11 @@ export const ProblemList = ({
   const viewToggleAction = enableViewModeToggle ? (
     <label
       className={cn(activityFilterChipBase, activityFilterChipOn, 'shrink-0 cursor-pointer items-center')}
-      title='Toggle detailed rows'
+      title={t('problemList.toggleDetails')}
     >
       <FormSwitch checked={!compactRows} onChange={() => setCompactRows((v) => !v)} size='compact' variant='ios' />
       <span className={cn(designContract.typography.uiCompact, 'whitespace-nowrap', problemListToolbarChipInk)}>
-        Details
+        {t('problemList.details')}
       </span>
     </label>
   ) : null;
@@ -729,9 +817,9 @@ export const ProblemList = ({
             {disciplineOptions.length > 1 && (
               <ToolbarDropdown
                 className='relative min-w-0 shrink-0 md:max-w-[15rem]'
-                label='Discipline'
+                label={t('problemList.discipline')}
                 icon={Layers}
-                displayText={allDisciplinesEnabled ? 'All disciplines' : enabledDisciplines.join(', ')}
+                displayText={allDisciplinesEnabled ? t('problemList.allDisciplines') : enabledDisciplines.join(', ')}
                 displayShortText={disciplineShortLabel}
                 checkedValues={enabledDisciplines}
                 onToggleValue={(discipline) =>
@@ -745,7 +833,7 @@ export const ProblemList = ({
             {groupByOptions.length > 1 && (
               <ToolbarDropdown
                 className='relative min-w-0 shrink-0 md:max-w-[12rem]'
-                label='Group'
+                label={t('problemList.group')}
                 icon={FolderTree}
                 value={groupBy}
                 options={orderedGroupByOptions}
@@ -756,7 +844,7 @@ export const ProblemList = ({
             )}
             <ToolbarDropdown
               className='relative min-w-0 shrink-0 md:max-w-[22rem]'
-              label='Sort'
+              label={t('problemList.sort')}
               icon={ArrowDownWideNarrow}
               value={order}
               options={orderedSortOptions}
@@ -767,7 +855,7 @@ export const ProblemList = ({
             <button
               type='button'
               aria-expanded={showFilter}
-              aria-label={showFilter ? 'Hide filter' : 'Show filter'}
+              aria-label={showFilter ? t('problemList.hideFilter') : t('problemList.showFilter')}
               onClick={() => setFilterShowing((v) => !v)}
               className={cn(
                 activityFilterChipBase,
@@ -791,14 +879,14 @@ export const ProblemList = ({
                   hasActiveFilters ? problemListToolbarChipChangedText : problemListToolbarChipInk,
                 )}
               >
-                Filter
+                {t('problemList.filter')}
               </span>
             </button>
             {hasChanges && (
               <button
                 type='button'
-                aria-label='Reset filters, sort and grouping'
-                title='Reset filters, sort and grouping'
+                aria-label={t('problemList.resetAll')}
+                title={t('problemList.resetAll')}
                 onClick={() => {
                   setFilterShowing(false);
                   dispatch({ action: 'reset', defaultOrder });
@@ -817,7 +905,7 @@ export const ProblemList = ({
                     problemListToolbarChipChangedText,
                   )}
                 >
-                  Reset
+                  {t('problemList.reset')}
                 </span>
               </button>
             )}
@@ -839,7 +927,7 @@ export const ProblemList = ({
           'border-surface-border/40 border-b',
         )}
         role='region'
-        aria-label='List filters'
+        aria-label={t('problemList.listFilters')}
       >
         {/**
          * Show the grade range only when it can actually filter (2+ distinct grades) or a grade filter is already
@@ -860,7 +948,7 @@ export const ProblemList = ({
         {/** Mixed grade systems (or disciplines) park the persisted range (kept, not applied) — say so instead of showing a dead control. */}
         {!gradeComparable && (gradeLow !== undefined || gradeHigh !== undefined) ? (
           <span className={cn(designContract.typography.meta, 'text-slate-500')}>
-            Grade range applies within a single grade system.
+            {t('problemList.singleGradeSystem')}
           </span>
         ) : null}
         {allTypes.length > 1 && (
@@ -885,7 +973,7 @@ export const ProblemList = ({
         {mode === 'user' && containsMultipitch && (
           <div className='flex flex-wrap gap-x-4 gap-y-1.5'>
             <ToggleLabel
-              label='Only multipitch'
+              label={t('problemList.onlyMultipitch')}
               checked={onlyMultipitch}
               onChange={() => dispatch({ action: 'only-multipitch' })}
             />
@@ -896,13 +984,17 @@ export const ProblemList = ({
           <div className='flex flex-wrap gap-x-4 gap-y-1.5'>
             {mode === 'sector' && containsTicked && (
               <ToggleLabel
-                label='Hide ticked'
+                label={t('filter.hideTicked')}
                 checked={hideTicked}
                 onChange={() => dispatch({ action: 'hide-ticked' })}
               />
             )}
             {mode === 'user' && containsFa && (
-              <ToggleLabel label='Only FA' checked={onlyFa} onChange={() => dispatch({ action: 'only-fa' })} />
+              <ToggleLabel
+                label={t('problemList.onlyFa')}
+                checked={onlyFa}
+                onChange={() => dispatch({ action: 'only-fa' })}
+              />
             )}
           </div>
         ) : null}

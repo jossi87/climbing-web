@@ -6,10 +6,12 @@ import TableOfContents from '../../shared/components/TableOfContents';
 import type { Success } from '../../@types/buldreinfo';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { AlertTriangle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Card, SectionHeader } from '../../shared/ui';
 import { ProblemsMap } from '../../shared/components/TableOfContents/ProblemsMap';
 
 const Dangerous = () => {
+  const { t } = useTranslation();
   const meta = useMeta();
   const { data } = useData<Success<'getDangerous'>>(`/dangerous`);
   const { data: tocData } = useToc();
@@ -23,9 +25,12 @@ const Dangerous = () => {
     [0, 0],
   );
 
-  const description = `${numProblems} ${
-    meta.isClimbing ? 'routes' : 'boulders'
-  } flagged as dangerous (located in ${numAreas} areas, ${numSectors} sectors)`;
+  /** Nested counted phrases: each part keeps its own plural form, so nothing is glued together in JS. */
+  const description = t('dangerous.summary', {
+    problems: t(meta.isClimbing ? 'dangerous.flaggedRoutes' : 'dangerous.flaggedBoulders', { count: numProblems }),
+    areas: t('counts.areas', { count: numAreas }),
+    sectors: t('counts.sectors', { count: numSectors }),
+  });
 
   const areas = safeData.map((area) => ({
     id: area.id ?? 0,
@@ -134,12 +139,17 @@ const Dangerous = () => {
 
   return (
     <div className='w-full min-w-0'>
-      <title>{`Dangerous | ${meta?.title}`}</title>
+      <title>{t('meta.pageTitle', { page: t('dangerous.title'), site: meta.title })}</title>
       <meta name='description' content={description} />
 
       <Card flush className='min-w-0 border-0'>
         <div className='p-4 pb-3 sm:p-5 sm:pb-4'>
-          <SectionHeader title='Dangerous' icon={AlertTriangle} subheader={description} className='mb-4 sm:mb-5' />
+          <SectionHeader
+            title={t('dangerous.title')}
+            icon={AlertTriangle}
+            subheader={description}
+            className='mb-4 sm:mb-5'
+          />
         </div>
         <div className='mb-2'>
           <ProblemsMap areas={mapAreas} />

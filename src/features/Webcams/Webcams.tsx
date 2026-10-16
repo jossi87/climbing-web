@@ -6,6 +6,7 @@ import { useMeta } from '../../shared/components/Meta';
 import { useData } from '../../api';
 import type { Success } from '../../@types/buldreinfo';
 import { Camera, CloudSun, ExternalLink, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { MarkerDef } from '../../shared/components/Leaflet/markers';
 import { Card, SectionHeader } from '../../shared/ui';
 import { cn } from '../../lib/utils';
@@ -25,6 +26,8 @@ type WebcamGroup = {
 };
 
 const CameraPanel = ({ camera, onClose }: { camera: WebcamGroup; onClose: () => void }) => {
+  const { t } = useTranslation();
+
   return (
     <div className='flex h-full flex-col overflow-hidden'>
       {/* Header with name, YR link, and close button */}
@@ -40,7 +43,7 @@ const CameraPanel = ({ camera, onClose }: { camera: WebcamGroup; onClose: () => 
               target='_blank'
               rel='noreferrer'
               className='hover:bg-surface-hover inline-flex items-center gap-1 rounded-md px-1.5 py-1 text-[11px] font-bold text-slate-500 no-underline transition-colors hover:text-slate-200'
-              title='Weather forecast on yr.no'
+              title={t('webcams.yrLinkTitle')}
             >
               <CloudSun size={12} />
               <span className='tracking-tighter uppercase'>yr.no</span>
@@ -50,7 +53,7 @@ const CameraPanel = ({ camera, onClose }: { camera: WebcamGroup; onClose: () => 
             type='button'
             onClick={onClose}
             className='hover:bg-surface-hover inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-slate-500 transition-colors hover:text-slate-200'
-            aria-label='Close camera panel'
+            aria-label={t('webcams.closeCameraPanel')}
           >
             <X size={14} />
           </button>
@@ -84,7 +87,7 @@ const CameraPanel = ({ camera, onClose }: { camera: WebcamGroup; onClose: () => 
             className='group flex items-center gap-2 px-1 py-1 text-[11px] font-bold text-slate-500 no-underline transition-colors hover:text-slate-200'
           >
             <ExternalLink size={12} className='text-slate-500 transition-colors group-hover:text-slate-400' />
-            Official Source
+            {t('webcams.officialSource')}
           </a>
         )}
       </div>
@@ -93,6 +96,7 @@ const CameraPanel = ({ camera, onClose }: { camera: WebcamGroup; onClose: () => 
 };
 
 const Webcams = () => {
+  const { t } = useTranslation();
   const meta = useMeta();
   const { data } = useData<Success<'getCameras'>>(`/webcams`);
   const { json } = useParams();
@@ -124,7 +128,7 @@ const Webcams = () => {
               longitude: c.lng ?? 0,
             },
             isCamera: true,
-            name: c.name ?? 'Unknown Camera',
+            name: c.name ?? t('webcams.unknownCamera'),
             urlYr: c.urlYr,
             urlOther: c.urlOther,
             feeds: [],
@@ -158,15 +162,18 @@ const Webcams = () => {
 
   return (
     <>
-      <title>{`Webcams | ${meta?.title}`}</title>
-      <meta name='description' content='Live webcams and camera feeds in climbing areas' />
+      <title>{t('meta.pageTitle', { page: t('webcams.title'), site: meta.title })}</title>
+      <meta name='description' content={t('webcams.description')} />
 
       <Card flush className='min-w-0 overflow-hidden border-0'>
         <div className='p-4 pb-3 sm:p-5 sm:pb-4'>
           <SectionHeader
-            title='Webcams'
+            title={t('webcams.title')}
             icon={Camera}
-            subheader={`${data.length} active feeds · ${markers.length} locations`}
+            subheader={t('webcams.subheader', {
+              feeds: t('counts.feeds', { count: data.length }),
+              locations: t('counts.locations', { count: markers.length }),
+            })}
           />
         </div>
 

@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { components } from '../../../@types/buldreinfo/swagger';
 
 type Props = {
@@ -47,6 +48,7 @@ function FaTickBar({
 }
 
 function Chart({ gradeDistribution: data }: Props) {
+  const { t } = useTranslation();
   const grades = data;
   const maxValue = Math.max(
     1,
@@ -56,7 +58,9 @@ function Chart({ gradeDistribution: data }: Props) {
   );
 
   if (!grades.length) {
-    return <div className='py-4 text-center text-[12px] text-slate-500 sm:text-[13px]'>No grade distribution yet.</div>;
+    return (
+      <div className='py-4 text-center text-[12px] text-slate-500 sm:text-[13px]'>{t('chart.noGradeDistribution')}</div>
+    );
   }
 
   return (
@@ -65,16 +69,16 @@ function Chart({ gradeDistribution: data }: Props) {
         <thead>
           <tr>
             <th className='w-px px-1 py-0.5 text-[12px] leading-none font-medium whitespace-nowrap text-slate-300 sm:px-1.5 sm:py-0.5 sm:text-[13px]'>
-              Grade
+              {t('chart.grade')}
             </th>
             <th className='w-px px-1 py-0.5 text-left text-[12px] leading-none font-medium whitespace-nowrap text-slate-300 sm:px-1.5 sm:py-0.5 sm:text-[13px]'>
-              FA
+              {t('chart.fa')}
             </th>
             <th className='w-px px-1 py-0.5 text-left text-[12px] leading-none font-medium whitespace-nowrap text-slate-300 sm:px-1.5 sm:py-0.5 sm:text-[13px]'>
-              Tick
+              {t('chart.tick')}
             </th>
             <th className='w-px px-1 py-0.5 text-left text-[12px] leading-none font-medium whitespace-nowrap text-slate-300 sm:px-1.5 sm:py-0.5 sm:text-[13px]'>
-              Total
+              {t('chart.total')}
             </th>
             <th className='w-full px-1 py-0.5 text-right sm:px-1.5' aria-hidden='true'>
               &nbsp;

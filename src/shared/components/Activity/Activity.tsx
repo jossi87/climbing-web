@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo, type ElementType } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
 import Linkify from 'linkify-react';
 import {
@@ -51,6 +52,7 @@ const shortGradeLabel = (grade: string) => (grade.includes('(') ? grade.split('(
  * matching the other tabs (map / distribution / top / todo).
  */
 const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSector: number; embedded?: boolean }) => {
+  const { t } = useTranslation();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
   const selectedGradeRef = useRef<HTMLButtonElement>(null);
@@ -148,7 +150,7 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
 
   /** Several systems in one menu need the system name next to the grade to stay unambiguous. */
   const multiSystem = meta.gradeSystems.length > 1;
-  const lowerGradeLabel = lowerGrade.systemId === 0 ? 'All' : shortGradeLabel(lowerGrade.grade);
+  const lowerGradeLabel = lowerGrade.systemId === 0 ? t('activity.allGrades') : shortGradeLabel(lowerGrade.grade);
 
   const {
     data: activity,
@@ -225,7 +227,7 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
       <div className={activityFrontpageToolbarClassName}>
         {!isScoped ? (
           <SectionHeader
-            title='Activity'
+            title={t('activity.title')}
             icon={ActivityIcon}
             /**
              * `mb-0` overrides `SectionHeader`'s default 24px bottom margin — the toolbar row supplies its own
@@ -262,7 +264,9 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
             {isFilterOpen && (
               <div className='bg-surface-card border-surface-border absolute top-full left-0 z-[100] mt-1.5 max-h-[min(18rem,70vh)] w-[min(17.5rem,calc(100vw-1.25rem))] overflow-y-auto rounded-xl border py-1.5 shadow-2xl md:right-0 md:left-auto md:w-56'>
                 <div className='border-surface-border/40 px-3 py-2'>
-                  <span className={cn(designContract.typography.label, 'text-slate-400')}>Lowest grade</span>
+                  <span className={cn(designContract.typography.label, 'text-slate-400')}>
+                    {t('activity.lowestGrade')}
+                  </span>
                 </div>
                 <div className='border-surface-border/35 mb-1 border-t' />
                 {gradeOptions.map((option) => (
@@ -284,7 +288,7 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
                     }}
                   >
                     <span className='min-w-0 truncate'>
-                      {option.systemId === 0 ? 'All' : option.grade}
+                      {option.systemId === 0 ? t('activity.allGrades') : option.grade}
                       {multiSystem && option.systemId > 0 ? (
                         <span className='text-slate-500'>
                           {' '}
@@ -299,25 +303,30 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
             )}
           </div>
 
-          <FilterButton active={activityTypeFa} onClick={() => handleFilterToggle('fa')} icon={Plus} label='FA' />
+          <FilterButton
+            active={activityTypeFa}
+            onClick={() => handleFilterToggle('fa')}
+            icon={Plus}
+            label={t('activity.chipFa')}
+          />
           <FilterButton
             active={activityTypeTicks}
             onClick={() => handleFilterToggle('ticks')}
             icon={Check}
-            label='Ticks'
+            label={t('activity.chipTicks')}
           />
           <FilterButton
             active={activityTypeMedia}
             onClick={() => handleFilterToggle('media')}
             icon={Camera}
-            label='Media'
+            label={t('activity.chipMedia')}
           />
           <FilterButton
             active={activityTypeComments}
             onClick={() => handleFilterToggle('comments')}
             icon={MessageSquare}
-            label='Comments'
-            labelNarrow='Com'
+            label={t('activity.chipComments')}
+            labelNarrow={t('activity.chipCommentsShort')}
           />
         </div>
       </div>
@@ -361,24 +370,26 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
 
 /** Shown when the feed has loaded and the API returned no rows (e.g. quiet sector or tight filters). */
 function ActivityEmptyState() {
+  const { t } = useTranslation();
   return (
     <div
       className={cn(designContract.typography.meta, 'px-4 py-10 text-center text-pretty md:px-5 md:py-12')}
       role='status'
     >
-      No activity yet.
+      {t('activity.empty')}
     </div>
   );
 }
 
 /** Initial load failed — avoid mislabeling as an empty feed. */
 function ActivityErrorState({ onRetry }: { onRetry: () => void }) {
+  const { t } = useTranslation();
   return (
     <div
       className={cn(designContract.typography.meta, 'px-4 py-10 text-center text-pretty md:px-5 md:py-12')}
       role='alert'
     >
-      <p className='light:text-slate-600 text-slate-400'>Couldn't load activity.</p>
+      <p className='light:text-slate-600 text-slate-400'>{t('activity.error')}</p>
       <button
         type='button'
         onClick={onRetry}
@@ -389,7 +400,7 @@ function ActivityErrorState({ onRetry }: { onRetry: () => void }) {
           twInk.lightHoverSlate800,
         )}
       >
-        Retry
+        {t('common.tryAgain')}
       </button>
     </div>
   );
@@ -403,6 +414,7 @@ type ActivitySeeMoreProps = {
 };
 
 function ActivitySeeMore({ show, loading, onFetchMore, embedded }: ActivitySeeMoreProps) {
+  const { t } = useTranslation();
   if (!show) return null;
   return (
     <div className={cn('flex justify-center px-4 pt-1 pb-3 md:px-5 md:pt-2 md:pb-4', embedded && 'rounded-b-xl')}>
@@ -420,7 +432,7 @@ function ActivitySeeMore({ show, loading, onFetchMore, embedded }: ActivitySeeMo
         )}
       >
         {loading ? <Loader2 size={14} className='animate-spin' strokeWidth={2.25} aria-hidden /> : null}
-        See more
+        {t('common.seeMore')}
       </button>
     </div>
   );

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createPortal } from 'react-dom';
 import { ChevronDown, Download, Loader2, type LucideIcon } from 'lucide-react';
 import { downloadFileWithProgress, getUrl, useAccessToken } from '../../api';
@@ -24,6 +25,7 @@ type Props = {
 
 /** Compact chip that opens a dropdown menu for related actions (PDF, Maps, etc). */
 export const ActionMenuChip = ({ label, title, icon: Icon = Download, items }: Props) => {
+  const { t } = useTranslation();
   const accessToken = useAccessToken();
   const rootRef = useRef<HTMLDivElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -160,7 +162,7 @@ export const ActionMenuChip = ({ label, title, icon: Icon = Download, items }: P
                       <Loader2 size={12} strokeWidth={2} className='text-brand shrink-0 animate-spin' />
                     ) : null}
                     <span className='min-w-0 truncate'>
-                      {isLoading && progress ? `Downloading ${progress}%` : item.label}
+                      {isLoading && progress ? t('actionMenu.downloading', { progress }) : item.label}
                     </span>
                   </button>
                 );

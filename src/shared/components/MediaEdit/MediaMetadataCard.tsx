@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createPortal } from 'react-dom';
 import { MessageSquare, Camera, Users, ChevronDown, Trash2 } from 'lucide-react';
 
@@ -120,11 +121,12 @@ const TrailRow = ({
   onRemove: () => void;
   selectedTrailIds?: Set<number>;
 }) => {
+  const { t } = useTranslation();
   const [showDropdown, setShowDropdown] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const handleRemove = () => {
-    if (window.confirm('Remove this trail from the list?')) {
+    if (window.confirm(t('mediaEdit.metadata.confirmRemoveTrail'))) {
       onRemove();
     }
   };
@@ -149,7 +151,9 @@ const TrailRow = ({
           )}
         >
           <span className='truncate'>
-            {selectedOption ? selectedOption.label : trail.trailName || trail.trailTitle || 'Select trail...'}
+            {selectedOption
+              ? selectedOption.label
+              : trail.trailName || trail.trailTitle || t('mediaEdit.metadata.selectTrail')}
           </span>
           <ChevronDown size={12} className='shrink-0 text-slate-500' />
         </button>
@@ -178,7 +182,7 @@ const TrailRow = ({
         type='button'
         onClick={handleRemove}
         className='shrink-0 rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-red-500/10 hover:text-red-400'
-        aria-label='Remove trail'
+        aria-label={t('mediaEdit.metadata.removeTrail')}
       >
         <Trash2 size={14} />
       </button>
@@ -201,6 +205,7 @@ export const MediaMetadataCard = ({
   onSectorChange,
   trailOptions,
 }: Props) => {
+  const { t } = useTranslation();
   const [problemSearchInputs, setProblemSearchInputs] = useState<Record<number, string>>({});
 
   const [sectorDropdownOpen, setSectorDropdownOpen] = useState(false);
@@ -273,7 +278,7 @@ export const MediaMetadataCard = ({
             />
             <input
               type='text'
-              placeholder='Description (optional)'
+              placeholder={t('mediaEdit.metadata.descriptionPlaceholder')}
               className='bg-surface-nav border-surface-border/80 focus:border-brand h-10 w-full rounded-xl border py-0 pr-3 pl-10 text-sm leading-none transition-[color,background-color,border-color,opacity] duration-100 outline-none placeholder:text-slate-500/85 placeholder:transition-opacity focus:ring-0 focus:outline-none focus:placeholder:opacity-0 focus-visible:ring-0'
               value={metadata.description}
               onChange={(e) => callbacks.onDescriptionChange(e.target.value)}
@@ -287,7 +292,7 @@ export const MediaMetadataCard = ({
               compact
               matchInputLeadStyle
               required
-              placeholder='Photographer (required)'
+              placeholder={t('mediaEdit.metadata.photographerPlaceholder')}
               value={metadata.photographer?.name}
               onUserUpdated={(u) =>
                 callbacks.onPhotographerChange(
@@ -303,7 +308,7 @@ export const MediaMetadataCard = ({
             <UsersSelector
               compact
               matchInputLeadStyle
-              placeholder='People in shot'
+              placeholder={t('mediaEdit.metadata.peopleInShotPlaceholder')}
               users={metadata.tagged}
               onUsersUpdated={(newUsers) => {
                 callbacks.onTaggedChange(
@@ -344,11 +349,11 @@ export const MediaMetadataCard = ({
                   />
                 ))}
               </div>
-              {hasEmptyProblem && (
-                <p className='text-xs text-red-400'>All problems must be selected from the search.</p>
+              {hasEmptyProblem && <p className='text-xs text-red-400'>{t('mediaEdit.metadata.errorEmptyProblem')}</p>}
+              {hasDuplicateTime && (
+                <p className='text-xs text-amber-400'>{t('mediaEdit.metadata.errorDuplicateTime')}</p>
               )}
-              {hasDuplicateTime && <p className='text-xs text-amber-400'>Duplicate timestamps are not allowed.</p>}
-              {hasNoProblems && <p className='text-xs text-red-400'>At least one problem is required.</p>}
+              {hasNoProblems && <p className='text-xs text-red-400'>{t('mediaEdit.metadata.errorNoProblems')}</p>}
             </div>
           )}
 
@@ -368,7 +373,7 @@ export const MediaMetadataCard = ({
                       onChange={(e) => callbacks.onAreaTriviaChange(a.areaId, e.target.checked)}
                       className='text-brand focus:ring-brand/50 h-4 w-4 rounded border-white/20 bg-slate-700 focus:ring-2'
                     />
-                    Trivia
+                    {t('mediaEdit.trivia')}
                   </label>
                 </div>
               ))}
@@ -435,7 +440,7 @@ export const MediaMetadataCard = ({
                         onChange={(e) => callbacks.onSectorTriviaChange(s.sectorId, e.target.checked)}
                         className='text-brand focus:ring-brand/50 h-4 w-4 rounded border-white/20 bg-slate-700 focus:ring-2'
                       />
-                      Trivia
+                      {t('mediaEdit.trivia')}
                     </label>
                   </div>
                 ))
@@ -449,7 +454,7 @@ export const MediaMetadataCard = ({
                       onClick={() => setSectorDropdownOpen(!sectorDropdownOpen)}
                       className='inline-flex items-center gap-1 text-slate-400 hover:text-slate-100'
                     >
-                      <span>Select sector...</span>
+                      <span>{t('mediaEdit.metadata.selectSector')}</span>
                       <ChevronDown size={12} className='text-slate-500' />
                     </button>
 
@@ -482,7 +487,8 @@ export const MediaMetadataCard = ({
           {connectionType === 'guestbook' && metadata.guestbook && (
             <div className='mt-4 space-y-2'>
               <div className='bg-surface-raised border-surface-border rounded-xl border p-3 text-sm text-slate-400'>
-                {metadata.guestbook.guestbookName ?? `Comment #${metadata.guestbook.guestbookId}`}
+                {metadata.guestbook.guestbookName ??
+                  t('mediaEdit.metadata.guestbookFallback', { id: metadata.guestbook.guestbookId })}
               </div>
             </div>
           )}
@@ -491,7 +497,7 @@ export const MediaMetadataCard = ({
           {connectionType === 'trail' && (
             <div className='mt-4 space-y-3'>
               <div className='space-y-2'>
-                {(metadata.trails ?? []).map((t, i) => {
+                {(metadata.trails ?? []).map((trail, i) => {
                   // Build set of trail IDs already selected in other rows (unique index constraint)
                   const selectedTrailIds = new Set(
                     (metadata.trails ?? []).map((other, j) => (j !== i ? other.trailId : 0)).filter((id) => id > 0),
@@ -499,7 +505,7 @@ export const MediaMetadataCard = ({
                   return trailOptions && trailOptions.length > 0 ? (
                     <TrailRow
                       key={i}
-                      trail={t}
+                      trail={trail}
                       trailOptions={trailOptions}
                       selectedTrailIds={selectedTrailIds}
                       onSelectTrail={(trailId: number, trailTitle: string, label?: string) => {
@@ -517,12 +523,12 @@ export const MediaMetadataCard = ({
                       key={i}
                       className='bg-surface-raised border-surface-border rounded-xl border p-3 text-sm text-slate-400'
                     >
-                      {t.trailName || t.trailTitle || `Trail #${t.trailId}`}
+                      {trail.trailName || trail.trailTitle || t('media.trail', { id: trail.trailId })}
                     </div>
                   );
                 })}
               </div>
-              {hasNoTrails && <p className='text-xs text-red-400'>At least one trail is required.</p>}
+              {hasNoTrails && <p className='text-xs text-red-400'>{t('mediaEdit.metadata.errorNoTrails')}</p>}
             </div>
           )}
         </>

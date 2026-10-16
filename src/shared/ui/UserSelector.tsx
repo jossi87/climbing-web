@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState, useCallback } from 'react';
+import { Trans } from 'react-i18next';
 import CreatableSelect from 'react-select/creatable';
 import type { FormatOptionLabelMeta, GroupBase, SelectInstance, StylesConfig } from 'react-select';
 import { useUserSearch } from '../../api';
@@ -296,7 +297,7 @@ export const UserSelector = ({
           formatCreateLabel={(inputValue) => {
             const trimmed = inputValue.trim();
             if (trimmed.length === 0) return null;
-            return <>Create &ldquo;{trimmed}&rdquo;</>;
+            return <Trans i18nKey='userSelector.create' values={{ name: trimmed }} />;
           }}
           placeholder={placeholder}
           onCreateOption={handleCreateOption}
@@ -371,7 +372,7 @@ export const UsersSelector = ({
           formatCreateLabel={(inputValue) => {
             const trimmed = inputValue.trim();
             if (trimmed.length === 0) return null;
-            return <>Create &ldquo;{trimmed}&rdquo;</>;
+            return <Trans i18nKey='userSelector.create' values={{ name: trimmed }} />;
           }}
           placeholder={placeholder}
           getOptionValue={(option) => option.label ?? ''}

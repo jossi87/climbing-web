@@ -1,4 +1,5 @@
 import { useRef, useEffect, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Marker, Tooltip, Popup, useMap } from 'react-leaflet';
 import {
   markerBlueIcon,
@@ -95,6 +96,7 @@ export default function Markers({
   onMarkerClick,
   activeMarkerPosition,
 }: Props) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const map = useMap();
   const markerRefs = useRef<Record<number, LeafletMarker | null>>({});
@@ -175,11 +177,11 @@ export default function Markers({
               ) : null}
               <button
                 type='button'
-                onClick={() => openMap(lat, lng, m.label || 'Parking')}
+                onClick={() => openMap(lat, lng, m.label || t('place.parking'))}
                 className='border-surface-border bg-surface-nav type-body inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[12px] leading-none font-semibold text-slate-200 no-underline transition-colors hover:border-white/15 hover:text-slate-100'
               >
                 <Navigation size={12} />
-                Navigate
+                {t('mapPopup.navigate')}
               </button>
             </div>
           </Popup>
@@ -251,7 +253,7 @@ export default function Markers({
                     <div className='flex items-center gap-2'>
                       <CloudSun size={14} className='text-slate-500 transition-colors group-hover:text-slate-300' />
                       <span className='text-[12px] font-bold text-slate-400 group-hover:text-slate-200'>
-                        Weather Forecast
+                        {t('mapPopup.weatherForecast')}
                       </span>
                     </div>
                     <span className='text-[11px] font-black tracking-tighter text-slate-500 uppercase'>yr.no</span>
@@ -265,7 +267,7 @@ export default function Markers({
                     className='group flex items-center gap-2.5 px-3 py-1.5 text-[12px] font-bold text-slate-500 no-underline transition-colors hover:text-slate-200'
                   >
                     <ExternalLink size={14} className='text-slate-500 transition-colors group-hover:text-slate-400' />
-                    Official Source
+                    {t('mapPopup.officialSource')}
                   </a>
                 )}
               </div>

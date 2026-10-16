@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo, type JSX } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   getMediaFileUrl,
   invalidateAllAreaQueries,
@@ -52,6 +53,7 @@ const pageActionIconBtnGreen =
 const DRAG_THRESHOLD_PX = 6;
 
 const MediaSvgEdit = () => {
+  const { t } = useTranslation();
   const meta = useMeta();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -763,17 +765,17 @@ const MediaSvgEdit = () => {
 
   return (
     <div className='w-full min-w-0 select-none'>
-      <title>{`Draw on image · #${mediaIdNum} | ${meta.title}`}</title>
+      <title>{t('meta.pageTitle', { page: `${t('mediaSvgEdit.title')} · #${mediaIdNum}`, site: meta.title })}</title>
       <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm'>
         <div className='divide-y divide-white/6'>
           <div className='p-2 sm:p-3'>
             <div className='flex min-w-0 flex-col gap-2'>
-              <span className='sr-only'>Media topo editor</span>
+              <span className='sr-only'>{t('mediaSvgEdit.srTitle')}</span>
               <div className='flex min-w-0 flex-row items-start justify-between gap-3'>
                 <div
                   className='flex min-w-0 flex-1 flex-wrap items-center gap-1'
                   role='tablist'
-                  aria-label='Topo editor sections'
+                  aria-label={t('svgEdit.sectionsAria')}
                 >
                   {/* Descent tab */}
                   <div
@@ -795,15 +797,15 @@ const MediaSvgEdit = () => {
                       )}
                       onClick={() => setActiveTab('descent')}
                     >
-                      <Spline size={14} strokeWidth={2} /> Descent
+                      <Spline size={14} strokeWidth={2} /> {t('common.descent')}
                     </button>
                     {descentSvg && (
                       <>
                         <div className='h-5 w-px bg-white/12' />
                         <button
                           type='button'
-                          title='Reset descent path'
-                          aria-label='Reset descent path'
+                          title={t('mediaSvgEdit.resetDescentPath')}
+                          aria-label={t('mediaSvgEdit.resetDescentPath')}
                           className='inline-flex items-center px-2 py-1.5 text-red-400 hover:text-red-300'
                           onClick={(e) => {
                             e.stopPropagation();
@@ -837,15 +839,15 @@ const MediaSvgEdit = () => {
                       )}
                       onClick={() => setActiveTab('bolted')}
                     >
-                      <Anchor size={14} strokeWidth={2} /> Bolts
+                      <Anchor size={14} strokeWidth={2} /> {t('svgEdit.bolts')}
                     </button>
                     {boltedSvgs.length > 0 && (
                       <>
                         <div className='h-5 w-px bg-white/12' />
                         <button
                           type='button'
-                          title='Reset all bolted rappels'
-                          aria-label='Reset all bolted rappels'
+                          title={t('mediaSvgEdit.resetBolts')}
+                          aria-label={t('mediaSvgEdit.resetBolts')}
                           className='inline-flex items-center px-2 py-1.5 text-red-400 hover:text-red-300'
                           onClick={(e) => {
                             e.stopPropagation();
@@ -877,15 +879,15 @@ const MediaSvgEdit = () => {
                       )}
                       onClick={() => setActiveTab('trad')}
                     >
-                      <Triangle size={14} strokeWidth={2} /> Trad
+                      <Triangle size={14} strokeWidth={2} /> {t('svgEdit.trad')}
                     </button>
                     {tradSvgs.length > 0 && (
                       <>
                         <div className='h-5 w-px bg-white/12' />
                         <button
                           type='button'
-                          title='Reset all trad rappels'
-                          aria-label='Reset all trad rappels'
+                          title={t('mediaSvgEdit.resetTrad')}
+                          aria-label={t('mediaSvgEdit.resetTrad')}
                           className='inline-flex items-center px-2 py-1.5 text-red-400 hover:text-red-300'
                           onClick={(e) => {
                             e.stopPropagation();
@@ -910,8 +912,8 @@ const MediaSvgEdit = () => {
                   >
                     <button
                       type='button'
-                      title='Zoom out (-)'
-                      aria-label='Zoom out'
+                      title={t('svgEdit.zoomOutTitle')}
+                      aria-label={t('svgEdit.zoomOut')}
                       disabled={!zoom.canZoomOut}
                       className='inline-flex h-8 w-8 shrink-0 items-center justify-center transition-colors disabled:pointer-events-none disabled:opacity-40'
                       onClick={zoom.zoomOut}
@@ -920,8 +922,8 @@ const MediaSvgEdit = () => {
                     </button>
                     <button
                       type='button'
-                      title='Zoom to fit (0) — scroll to zoom, Alt+scroll to scroll the page'
-                      aria-label='Zoom to fit'
+                      title={t('svgEdit.zoomFitTitle')}
+                      aria-label={t('svgEdit.zoomFit')}
                       className={cn(
                         'inline-flex h-8 min-w-12 shrink-0 items-center justify-center px-1 font-mono tabular-nums',
                         designContract.typography.uiCompact,
@@ -932,8 +934,8 @@ const MediaSvgEdit = () => {
                     </button>
                     <button
                       type='button'
-                      title='Zoom in (+)'
-                      aria-label='Zoom in'
+                      title={t('svgEdit.zoomInTitle')}
+                      aria-label={t('svgEdit.zoomIn')}
                       disabled={!zoom.canZoomIn}
                       className='inline-flex h-8 w-8 shrink-0 items-center justify-center transition-colors disabled:pointer-events-none disabled:opacity-40'
                       onClick={zoom.zoomIn}
@@ -943,8 +945,8 @@ const MediaSvgEdit = () => {
                   </div>
                   <button
                     type='button'
-                    title='Cancel'
-                    aria-label='Cancel and go back'
+                    title={t('common.cancel')}
+                    aria-label={t('mediaSvgEdit.cancelAria')}
                     className={cn(pageActionIconBtn, pageActionIconBtnGlass)}
                     onClick={() => navigate(-1)}
                   >
@@ -952,8 +954,8 @@ const MediaSvgEdit = () => {
                   </button>
                   <button
                     type='button'
-                    title='Save'
-                    aria-label='Save'
+                    title={t('common.save')}
+                    aria-label={t('common.save')}
                     className={cn(pageActionIconBtn, pageActionIconBtnGreen)}
                     onClick={handleSave}
                   >

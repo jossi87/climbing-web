@@ -1,3 +1,4 @@
+import type { TFunction } from 'i18next';
 import type { Metadata } from '../../shared/components/Meta/context';
 import { hours } from '../../utils/hours';
 import { routeTypeLabel } from '../../utils/routeTradGear';
@@ -32,9 +33,6 @@ export type FilterResultSummary = {
   tone: 'default' | 'warning';
 };
 
-/** “routes” → “route”, so a single match does not read “Showing 1 routes”. */
-const singular = (kind: 'routes' | 'problems'): string => (kind === 'routes' ? 'route' : 'problem');
-
 /**
  * The header line for how much of the catalogue the filter lets through.
  *
@@ -43,41 +41,61 @@ const singular = (kind: 'routes' | 'problems'): string => (kind === 'routes' ? '
  *
  * The shown count is `totalProblems - hiddenProblems` — `hiddenProblems` is what the filter *dropped*, so
  * reading it as the result inverts the line (the bug this replaced).
+ *
+ * `t` carries the noun as a counted phrase (a locale inflects “route”/“routes” itself — the singular/plural
+ * helper this replaced only knew English) and the wording of the empty case.
  */
 export const describeFilterResult = (
+  t: TFunction,
   { totalProblems, hiddenProblems }: Pick<State, 'totalProblems' | 'hiddenProblems'>,
   kind: 'routes' | 'problems',
 ): FilterResultSummary => {
   const shown = totalProblems - hiddenProblems;
   if (shown <= 0) {
-    return { text: `No ${kind} match the filter.`, tone: 'warning' };
+    return {
+      text: t(kind === 'routes' ? 'filterSummary.noMatchRoutes' : 'filterSummary.noMatchProblems'),
+      tone: 'warning',
+    };
   }
 
-  return { text: `Showing ${shown} ${shown === 1 ? singular(kind) : kind}`, tone: 'default' };
+  return {
+    text: t(kind === 'routes' ? 'filterSummary.showingRoutes' : 'filterSummary.showingProblems', { count: shown }),
+    tone: 'default',
+  };
 };
 
 /** How many names of a multi-select are spelled out before the rest collapses into “+n”. */
 const NAMES_SHOWN = 3;
 
-const formatNames = (names: string[]): string =>
+const formatNames = (t: TFunction, names: string[]): string =>
   names.length <= NAMES_SHOWN
     ? names.join(', ')
-    : `${names.slice(0, NAMES_SHOWN).join(', ')} +${names.length - NAMES_SHOWN}`;
+    : `${names.slice(0, NAMES_SHOWN).join(', ')} ${t('filterSummary.namesMore', { count: names.length - NAMES_SHOWN })}`;
 
 /**
  * “100 – 800 m”, “from 100 m” or “up to 800 m”.
  *
- * `0` is the “no bound” value of both numeric ranges (see the reducer's `DEFAULT_INITIAL_FILTER`), so it
- * never renders as a bound of its own — otherwise an unset side would read as “from 0”.
+ * `0`/`''` is the “no bound” value of every range (see the reducer's `DEFAULT_INITIAL_FILTER`), so an unset
+ * side never renders as a bound of its own — otherwise it would read as “from 0”.
+ *
+ * Grades are free text (`6a+`, `VIIIb`), so the bounds are not necessarily numbers; they arrive already
+ * carrying their unit, because the glue around them (“from”, “up to”, the dash) is locale wording: Czech says
+ * “od 100 m”, English “from 100 m”.
  */
-const formatRange = (low: number, high: number, unit = ''): string => {
-  const bound = (value: number) => `${value}${unit}`;
-  if (low && high) return `${bound(low)} – ${bound(high)}`;
-  return low ? `from ${bound(low)}` : `up to ${bound(high)}`;
+const formatRange = (
+  t: TFunction,
+  low: number | string | null | undefined,
+  high: number | string | null | undefined,
+  unit = '',
+): string => {
+  const bound = (value: number | string | null | undefined) => `${value}${unit}`;
+  if (low && high) return t('filterSummary.rangeLowHigh', { low: bound(low), high: bound(high) });
+  return low ? t('filterSummary.rangeFrom', { low: bound(low) }) : t('filterSummary.rangeUpTo', { high: bound(high) });
 };
 
 /** Hour dropdowns show “12:00”; the chip should read the same. */
-const formatHour = (hour: number): string => hours.find((h) => h.value === hour)?.text || `${hour}:00`;
+const formatHour = (t: TFunction, hour: number): string =>
+  hours.find((h) => h.value === hour)?.text || t('filterSummary.hour', { hour });
 
 /** Ids selected in a record of toggles (`filterTypes`, `filterSectorOrientations`). */
 const toggledIds = (record: Record<number, boolean>): number[] =>
@@ -91,8 +109,11 @@ const toggledIds = (record: Record<number, boolean>): number[] =>
  *
  * Only deviations from the defaults produce a chip — the same rule that decides whether a section shows its
  * “on” affordance in the form, so the two never disagree.
+ *
+ * `t` is passed in rather than resolved here: the labels are the filter sections' own wording (`filter.*`),
+ * and the values the short forms of `filterSummary.*`.
  */
-export const describeActiveFilters = (state: State, meta: Metadata): ActiveFilter[] => {
+export const describeActiveFilters = (t: TFunction, state: State, meta: Metadata): ActiveFilter[] => {
   const filters: ActiveFilter[] = [];
   const regions = state.unfilteredData?.regions ?? [];
 
@@ -112,8 +133,11 @@ export const describeActiveFilters = (state: State, meta: Metadata): ActiveFilte
   if (regionIds.length) {
     filters.push({
       id: 'regions',
-      label: 'Regions',
-      value: formatNames(regionIds.map((id) => regionNames.get(id) ?? `#${id}`)),
+      label: t('filter.regions'),
+      value: formatNames(
+        t,
+        regionIds.map((id) => regionNames.get(id) ?? `#${id}`),
+      ),
       clear: { action: 'reset', section: 'regions' },
     });
   }
@@ -122,8 +146,11 @@ export const describeActiveFilters = (state: State, meta: Metadata): ActiveFilte
   if (areaIds.length) {
     filters.push({
       id: 'areas',
-      label: 'Areas',
-      value: formatNames(areaIds.map((id) => areaNames.get(id) ?? `#${id}`)),
+      label: t('filter.areas'),
+      value: formatNames(
+        t,
+        areaIds.map((id) => areaNames.get(id) ?? `#${id}`),
+      ),
       clear: { action: 'reset', section: 'areas' },
     });
   }
@@ -132,13 +159,8 @@ export const describeActiveFilters = (state: State, meta: Metadata): ActiveFilte
   if (filterGradeLow || filterGradeHigh) {
     filters.push({
       id: 'grades',
-      label: 'Grade',
-      value:
-        filterGradeLow && filterGradeHigh
-          ? `${filterGradeLow} – ${filterGradeHigh}`
-          : filterGradeLow
-            ? `from ${filterGradeLow}`
-            : `up to ${filterGradeHigh}`,
+      label: t('filterSummary.grade'),
+      value: formatRange(t, filterGradeLow, filterGradeHigh),
       clear: { action: 'reset', section: 'grades' },
     });
   }
@@ -146,8 +168,8 @@ export const describeActiveFilters = (state: State, meta: Metadata): ActiveFilte
   if (state.filterFaYearLow || state.filterFaYearHigh) {
     filters.push({
       id: 'fa-year',
-      label: 'FA year',
-      value: formatRange(state.filterFaYearLow, state.filterFaYearHigh),
+      label: t('filterSummary.faYear'),
+      value: formatRange(t, state.filterFaYearLow, state.filterFaYearHigh),
       clear: { action: 'reset', section: 'fa-year' },
     });
   }
@@ -155,24 +177,32 @@ export const describeActiveFilters = (state: State, meta: Metadata): ActiveFilte
   if (state.filterStartingAltitudeLow || state.filterStartingAltitudeHigh) {
     filters.push({
       id: 'starting-altitude',
-      label: 'Altitude',
-      value: formatRange(state.filterStartingAltitudeLow, state.filterStartingAltitudeHigh, ' m'),
+      label: t('filterSummary.altitude'),
+      value: formatRange(t, state.filterStartingAltitudeLow, state.filterStartingAltitudeHigh, ' m'),
       clear: { action: 'reset', section: 'starting-altitude' },
     });
   }
 
   if (state.filterHideTicked) {
-    filters.push({ id: 'hide-ticked', value: 'Hide ticked', clear: { action: 'set-hide-ticked', checked: false } });
+    filters.push({
+      id: 'hide-ticked',
+      value: t('filter.hideTicked'),
+      clear: { action: 'set-hide-ticked', checked: false },
+    });
   }
 
   if (state.filterOnlyAdmin) {
-    filters.push({ id: 'only-admin', value: 'Only admin', clear: { action: 'set-only-admin', checked: false } });
+    filters.push({
+      id: 'only-admin',
+      value: t('filter.onlyAdmin'),
+      clear: { action: 'set-only-admin', checked: false },
+    });
   }
 
   if (state.filterOnlySuperAdmin) {
     filters.push({
       id: 'only-super-admin',
-      value: 'Only superadmin',
+      value: t('filter.onlySuperAdmin'),
       clear: { action: 'set-only-super-admin', checked: false },
     });
   }
@@ -181,10 +211,11 @@ export const describeActiveFilters = (state: State, meta: Metadata): ActiveFilte
   if (typeIds.length) {
     filters.push({
       id: 'types',
-      label: 'Types',
+      label: t('filter.types'),
       value: formatNames(
+        t,
         typeIds.map((id) => {
-          const type = meta.types.find((t) => t.id === id);
+          const type = meta.types.find((candidate) => candidate.id === id);
           return (type ? routeTypeLabel(type.type, type.subType) : '') || `#${id}`;
         }),
       ),
@@ -196,8 +227,10 @@ export const describeActiveFilters = (state: State, meta: Metadata): ActiveFilte
   if (pitches.length) {
     filters.push({
       id: 'pitches',
-      label: 'Pitches',
-      value: pitches.join(', '),
+      label: t('filter.pitches'),
+      value: pitches
+        .map((pitch) => t(pitch === 'Single-pitch' ? 'filter.pitchSingle' : 'filter.pitchMulti'))
+        .join(', '),
       clear: { action: 'reset', section: 'pitches' },
     });
   }
@@ -206,8 +239,9 @@ export const describeActiveFilters = (state: State, meta: Metadata): ActiveFilte
   if (orientationIds.length) {
     filters.push({
       id: 'orientations',
-      label: 'Orientation',
+      label: t('filter.orientation'),
       value: formatNames(
+        t,
         orientationIds.map(
           (id) => meta.compassDirections.find((direction) => direction.id === id)?.direction || `#${id}`,
         ),
@@ -220,8 +254,8 @@ export const describeActiveFilters = (state: State, meta: Metadata): ActiveFilte
   if (state.filterOnlySunOnWallAt) {
     filters.push({
       id: 'sun-on-wall-at',
-      label: 'Sun at',
-      value: formatHour(state.filterOnlySunOnWallAt),
+      label: t('filterSummary.sunAt'),
+      value: formatHour(t, state.filterOnlySunOnWallAt),
       clear: { action: 'set-only-sun-on-wall-at', hour: 0 },
     });
   }
@@ -229,8 +263,8 @@ export const describeActiveFilters = (state: State, meta: Metadata): ActiveFilte
   if (state.filterOnlyShadeOnWallAt) {
     filters.push({
       id: 'shade-on-wall-at',
-      label: 'Shade at',
-      value: formatHour(state.filterOnlyShadeOnWallAt),
+      label: t('filterSummary.shadeAt'),
+      value: formatHour(t, state.filterOnlyShadeOnWallAt),
       clear: { action: 'set-only-shade-on-wall-at', hour: 0 },
     });
   }

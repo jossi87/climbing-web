@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { CloudRain, Loader2 } from 'lucide-react';
 import { type TWeatherSymbolKey, weatherSymbolKeys } from '../../../yr';
@@ -41,6 +42,7 @@ type YrData = {
 };
 
 export const YrLink = ({ lat, lng }: { lat: number; lng: number }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
@@ -122,7 +124,9 @@ export const YrLink = ({ lat, lng }: { lat: number; lng: number }) => {
               </div>
             ))}
           </div>
-          <p className='border-surface-border border-t pt-2 text-center text-[12px] text-slate-500'>Forecast · yr.no</p>
+          <p className='border-surface-border border-t pt-2 text-center text-[12px] text-slate-500'>
+            {t('weather.forecastSource')}
+          </p>
         </div>
       )}
     </div>

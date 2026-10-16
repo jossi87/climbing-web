@@ -3,20 +3,25 @@ import { MetaProvider } from './shared/components/Meta';
 import Header from './shared/layout/Header';
 import Footer from './shared/layout/Footer';
 import { ThemeSync } from './shared/components/ThemeSync';
+import { LanguageSync } from './shared/components/LanguageSync';
 import { Suspense } from 'react';
 import { Loading } from './shared/ui/StatusWidgets';
 import { appShellLightBackdropStripClass } from './design/twInk';
+import { useTranslation } from 'react-i18next';
 
 const App = () => {
+  const { t } = useTranslation();
+
   return (
     <MetaProvider>
       <ThemeSync />
+      <LanguageSync />
       <div className='bg-surface-dark flex min-h-screen flex-col font-sans text-slate-300 antialiased'>
         <a
           href='#main-content'
           className='focus:border-brand-border focus:bg-surface-card focus:ring-brand-border/80 focus:ring-offset-surface-dark sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[10000] focus:inline-flex focus:rounded-md focus:border focus:px-4 focus:py-2.5 focus:text-sm focus:font-medium focus:text-slate-100 focus:shadow-lg focus:ring-2 focus:ring-offset-2 focus:outline-none'
         >
-          Skip to main content
+          {t('a11y.skipToContent')}
         </a>
         <Header />
         {/*

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Trash2, X } from 'lucide-react';
 import {
   activityFilterChipBase,
@@ -19,26 +20,28 @@ import { useFilter } from './context';
  * row is just chips plus the single bulk escape, “Clear all”.
  */
 export const ActiveFilterSummary = () => {
+  const { t } = useTranslation();
   const meta = useMeta();
   const filter = useFilter();
   const { dispatch } = filter;
 
-  const activeFilters = describeActiveFilters(filter, meta);
+  const activeFilters = describeActiveFilters(t, filter, meta);
   if (!activeFilters.length) {
     return null;
   }
 
   return (
-    <div role='group' aria-label='Active filter' className='flex flex-wrap items-center gap-2'>
+    <div role='group' aria-label={t('filter.activeFiltersGroup')} className='flex flex-wrap items-center gap-2'>
       {activeFilters.map(({ id, label, value, clear }) => {
         const text = activeFilterText({ label, value });
+        const removeLabel = t('filter.removeChip', { text });
         return (
           <button
             key={id}
             type='button'
             onClick={() => dispatch(clear)}
-            title={`Remove filter — ${text}`}
-            aria-label={`Remove filter — ${text}`}
+            title={removeLabel}
+            aria-label={removeLabel}
             className={cn(activityFilterChipBase, activityFilterChipOn, 'group max-w-full')}
           >
             {label && <span className='shrink-0 text-slate-400'>{`${label}:`}</span>}
@@ -59,7 +62,7 @@ export const ActiveFilterSummary = () => {
         className={cn(activityFilterChipBase, activityFilterChipOff)}
       >
         <Trash2 size={12} strokeWidth={2} aria-hidden className='shrink-0' />
-        Clear all
+        {t('filter.clearAll')}
       </button>
     </div>
   );

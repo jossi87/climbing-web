@@ -1,4 +1,5 @@
 import { type ReactNode } from 'react';
+import { Trans } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Mail, Calendar } from 'lucide-react';
 import { ClickableAvatar } from './Avatar/Avatar';
@@ -61,7 +62,9 @@ export const UserCard = ({ user, variant = 'default', metaAction }: UserCardProp
             variant === 'minimal' ? 'light:text-slate-600 text-slate-500' : 'text-slate-500 opacity-90',
           )}
         />
-        <span>Seen {user.lastLogin}</span>
+        <span>
+          <Trans i18nKey='users.seen' values={{ date: user.lastLogin ?? '' }} />
+        </span>
       </div>
       {metaAction ? <div className='mt-1 min-w-0'>{metaAction}</div> : null}
       {user.emails?.[0] && (

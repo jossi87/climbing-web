@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo, type MouseEventHandler, useReducer } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMeta } from '../../shared/components/Meta';
@@ -68,14 +69,16 @@ function mediaRegionsDiffer(a: MediaRegion | undefined | null, b: MediaRegion | 
 }
 
 const useIds = (): { problemId: number; pitch: number; mediaId: number } => {
+  const { t } = useTranslation();
   const { problemId, pitch, mediaId } = useParams();
-  if (!problemId || !pitch || !mediaId) throw new Error('Missing route parameters');
+  if (!problemId || !pitch || !mediaId) throw new Error(t('svgEdit.missingParams'));
   return { problemId: +problemId, pitch: +pitch, mediaId: +mediaId };
 };
 
 export const SvgEditLoader = () => {
   const { problemId, pitch, mediaId } = useIds();
   const meta = useMeta();
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [customMediaRegion, setCustomMediaRegion] = useState<MediaRegion | null>(null);
   const { data: problem } = useProblem(problemId, true);
@@ -154,7 +157,12 @@ export const SvgEditLoader = () => {
 
   return (
     <div className='w-full min-w-0'>
-      <title>{`${pitch > 0 ? `Pitch ${pitch} · ` : ''}Topo editor | ${meta.title}`}</title>
+      <title>
+        {t('meta.pageTitle', {
+          page: `${pitch > 0 ? t('svgEdit.pitchPrefix', { pitch }) : ''}${t('svgEdit.title')}`,
+          site: meta.title,
+        })}
+      </title>
       <SvgEdit
         key={JSON.stringify(data)}
         {...data}
@@ -215,6 +223,7 @@ export const SvgEdit = ({
   hasAnchor: initialHasAnchor,
   isBouldering,
 }: Props) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [customMediaRegion, setCustomMediaRegion] = useState<MediaRegion | undefined>(mediaRegion);
   const w = (mediaRegion ?? customMediaRegion)?.width || mediaWidth;
@@ -651,12 +660,12 @@ export const SvgEdit = ({
         <div className='divide-y divide-white/6'>
           <div className='p-2 sm:p-3'>
             <div className='flex min-w-0 flex-col gap-2'>
-              <span className='sr-only'>Topo editor</span>
+              <span className='sr-only'>{t('svgEdit.title')}</span>
               <div className='flex min-w-0 flex-row items-start justify-between gap-3'>
                 <div
                   className='flex min-w-0 flex-1 flex-wrap items-center gap-1'
                   role='tablist'
-                  aria-label='Topo editor sections'
+                  aria-label={t('svgEdit.sectionsAria')}
                 >
                   {/* Segment pill — simple Path tab with reset */}
                   <div
@@ -679,15 +688,15 @@ export const SvgEdit = ({
                       )}
                       onClick={() => setActiveTab('segment')}
                     >
-                      <Spline size={14} strokeWidth={2} /> Path
+                      <Spline size={14} strokeWidth={2} /> {t('mapEditor.path')}
                     </button>
                     {points.length > 0 && (
                       <>
                         <div className='h-5 w-px bg-white/12' />
                         <button
                           type='button'
-                          title='Reset segment path'
-                          aria-label='Reset segment path'
+                          title={t('svgEdit.resetSegmentPath')}
+                          aria-label={t('svgEdit.resetSegmentPath')}
                           className='inline-flex items-center px-2 py-1.5 text-red-400 hover:text-red-300'
                           onClick={(e) => {
                             e.stopPropagation();
@@ -709,13 +718,13 @@ export const SvgEdit = ({
                       className={editorTabClass('text')}
                       onClick={() => setActiveTab('text')}
                     >
-                      <Type size={14} strokeWidth={2} /> Text
+                      <Type size={14} strokeWidth={2} /> {t('svgEdit.text')}
                       {texts.length > 0 && (
                         <span
                           role='button'
                           tabIndex={0}
-                          title='Reset all text labels'
-                          aria-label='Reset all text labels'
+                          title={t('svgEdit.resetTexts')}
+                          aria-label={t('svgEdit.resetTexts')}
                           className='ml-0.5 inline-flex text-red-400 hover:text-red-300'
                           onClick={(e) => {
                             e.stopPropagation();
@@ -744,13 +753,13 @@ export const SvgEdit = ({
                       className={editorTabClass('anchors')}
                       onClick={() => setActiveTab('anchors')}
                     >
-                      <Anchor size={14} strokeWidth={2} /> Bolts
+                      <Anchor size={14} strokeWidth={2} /> {t('svgEdit.bolts')}
                       {anchors.length > 0 && (
                         <span
                           role='button'
                           tabIndex={0}
-                          title='Reset all anchors'
-                          aria-label='Reset all anchors'
+                          title={t('svgEdit.resetAnchors')}
+                          aria-label={t('svgEdit.resetAnchors')}
                           className='ml-0.5 inline-flex text-red-400 hover:text-red-300'
                           onClick={(e) => {
                             e.stopPropagation();
@@ -779,13 +788,13 @@ export const SvgEdit = ({
                       className={editorTabClass('trad')}
                       onClick={() => setActiveTab('trad')}
                     >
-                      <Triangle size={14} strokeWidth={2} /> Trad
+                      <Triangle size={14} strokeWidth={2} /> {t('svgEdit.trad')}
                       {tradBelayStations.length > 0 && (
                         <span
                           role='button'
                           tabIndex={0}
-                          title='Reset all trad belays'
-                          aria-label='Reset all trad belays'
+                          title={t('svgEdit.resetBelays')}
+                          aria-label={t('svgEdit.resetBelays')}
                           className='ml-0.5 inline-flex text-red-400 hover:text-red-300'
                           onClick={(e) => {
                             e.stopPropagation();
@@ -817,8 +826,8 @@ export const SvgEdit = ({
                   >
                     <button
                       type='button'
-                      title='Zoom out (-)'
-                      aria-label='Zoom out'
+                      title={t('svgEdit.zoomOutTitle')}
+                      aria-label={t('svgEdit.zoomOut')}
                       disabled={!zoom.canZoomOut}
                       className='inline-flex h-8 w-8 shrink-0 items-center justify-center transition-colors disabled:pointer-events-none disabled:opacity-40'
                       onClick={zoom.zoomOut}
@@ -827,8 +836,8 @@ export const SvgEdit = ({
                     </button>
                     <button
                       type='button'
-                      title='Zoom to fit (0) — scroll to zoom, Alt+scroll to scroll the page'
-                      aria-label='Zoom to fit'
+                      title={t('svgEdit.zoomFitTitle')}
+                      aria-label={t('svgEdit.zoomFit')}
                       className={cn(
                         'inline-flex h-8 min-w-12 shrink-0 items-center justify-center px-1 font-mono tabular-nums',
                         designContract.typography.uiCompact,
@@ -839,8 +848,8 @@ export const SvgEdit = ({
                     </button>
                     <button
                       type='button'
-                      title='Zoom in (+)'
-                      aria-label='Zoom in'
+                      title={t('svgEdit.zoomInTitle')}
+                      aria-label={t('svgEdit.zoomIn')}
                       disabled={!zoom.canZoomIn}
                       className='inline-flex h-8 w-8 shrink-0 items-center justify-center transition-colors disabled:pointer-events-none disabled:opacity-40'
                       onClick={zoom.zoomIn}
@@ -850,8 +859,8 @@ export const SvgEdit = ({
                   </div>
                   <button
                     type='button'
-                    title='Cancel'
-                    aria-label='Cancel and go back to problem'
+                    title={t('common.cancel')}
+                    aria-label={t('svgEdit.cancelAria')}
                     className={cn(pageActionIconBtn, pageActionIconBtnGlass)}
                     onClick={onCancel}
                   >
@@ -859,8 +868,8 @@ export const SvgEdit = ({
                   </button>
                   <button
                     type='button'
-                    title='Save'
-                    aria-label='Save'
+                    title={t('common.save')}
+                    aria-label={t('common.save')}
                     className={cn(pageActionIconBtn, pageActionIconBtnGreen)}
                     disabled={
                       saving ||
@@ -889,10 +898,12 @@ export const SvgEdit = ({
                   <div className='flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2'>
                     {showPitchScopeDropdown && (
                       <>
-                        <span className={cn(designContract.typography.label, 'shrink-0 text-slate-500')}>Pitch</span>
+                        <span className={cn(designContract.typography.label, 'shrink-0 text-slate-500')}>
+                          {t('svgEdit.pitch')}
+                        </span>
                         <select
                           className={cn(fieldClass, 'max-w-[min(100%,24rem)] min-w-0')}
-                          aria-label='Which pitch strip to edit'
+                          aria-label={t('svgEdit.pitchAria')}
                           value={pitch}
                           onChange={(e) => {
                             const next = +e.target.value;
@@ -901,7 +912,7 @@ export const SvgEdit = ({
                             }
                           }}
                         >
-                          <option value={0}>Entire route</option>
+                          <option value={0}>{t('svgEdit.entireRoute')}</option>
                           {Array.from({ length: pitchStripCount }, (_, i) => i + 1).map((p) => (
                             <option key={p} value={p}>
                               {p}
@@ -914,12 +925,14 @@ export const SvgEdit = ({
                       <>
                         <div className='flex items-center gap-1.5 text-slate-500'>
                           <Settings2 size={14} strokeWidth={2} />
-                          <span className={cn(designContract.typography.label, 'text-slate-500')}>Crop</span>
+                          <span className={cn(designContract.typography.label, 'text-slate-500')}>
+                            {t('svgEdit.crop')}
+                          </span>
                         </div>
                         <input
                           type='number'
                           className={cn(fieldClass, 'w-14 shrink-0 sm:w-16')}
-                          placeholder='X'
+                          placeholder={t('svgEdit.cropX')}
                           value={customMediaRegion?.x ?? 0}
                           onChange={(e) =>
                             setCustomMediaRegion((prev) => ({
@@ -931,7 +944,7 @@ export const SvgEdit = ({
                         <input
                           type='number'
                           className={cn(fieldClass, 'w-14 shrink-0 sm:w-16')}
-                          placeholder='Y'
+                          placeholder={t('svgEdit.cropY')}
                           value={customMediaRegion?.y ?? 0}
                           onChange={(e) =>
                             setCustomMediaRegion((prev) => ({
@@ -942,12 +955,8 @@ export const SvgEdit = ({
                         />
                         <button
                           type='button'
-                          title={
-                            cropApplyDirty
-                              ? 'Apply to update the crop preview and editor'
-                              : 'Crop matches the current preview'
-                          }
-                          aria-label={cropApplyDirty ? 'Apply crop changes (you have unsaved edits)' : 'Apply crop'}
+                          title={cropApplyDirty ? t('svgEdit.cropApplyDirtyTitle') : t('svgEdit.cropMatchesTitle')}
+                          aria-label={t(cropApplyDirty ? 'svgEdit.cropApplyAriaDirty' : 'svgEdit.cropApplyAria')}
                           className={cn(
                             toolBtn,
                             cropApplyDirty
@@ -960,7 +969,7 @@ export const SvgEdit = ({
                           )}
                           onClick={() => onUpdateMediaRegion(customMediaRegion ?? null)}
                         >
-                          <RefreshCw size={12} strokeWidth={2} className='shrink-0' aria-hidden /> Apply
+                          <RefreshCw size={12} strokeWidth={2} className='shrink-0' aria-hidden /> {t('svgEdit.apply')}
                         </button>
                       </>
                     )}
@@ -1525,25 +1534,25 @@ export const SvgEdit = ({
                   </g>
                 );
               })}
-              {texts.map((t, i) => {
+              {texts.map((row, i) => {
                 // Labels are published geometry: fit-time size, capped so they can't dominate when zoomed.
                 const fs = capped(0.03 * w);
                 const pad = fs * 0.45;
-                const tw = Math.max(fs * (t.txt.length || 1) * 0.55, fs * 2);
+                const tw = Math.max(fs * (row.txt.length || 1) * 0.55, fs * 2);
                 const th = fs * 1.35;
                 const btnH = chrome(0.02 * w, editorChrome.toolbarHeight.min, editorChrome.toolbarHeight.max);
                 const btnW = btnH * 1.5;
                 const gap = btnH * 0.2;
                 const totalW = btnW * 2 + gap;
                 const gapY = toolbarGap;
-                let toolbarX = t.x;
+                let toolbarX = row.x;
                 if (toolbarX + totalW > w) toolbarX = w - totalW;
-                const toolbarY = t.y + gapY;
+                const toolbarY = row.y + gapY;
                 return (
                   <g key={`text-${i}`} data-overlay-handle>
                     <rect
-                      x={t.x - pad}
-                      y={t.y - th + pad * 0.2}
+                      x={row.x - pad}
+                      y={row.y - th + pad * 0.2}
                       width={tw + pad * 2}
                       height={th}
                       fill='transparent'
@@ -1553,15 +1562,15 @@ export const SvgEdit = ({
                       onTouchStart={(e) => startOverlayDrag('text', i, e)}
                     />
                     <text
-                      x={t.x}
-                      y={t.y}
+                      x={row.x}
+                      y={row.y}
                       fontSize={fs}
                       fill={activeTab === 'text' ? '#FF0000' : 'white'}
                       fontWeight='bold'
                       stroke='none'
                       pointerEvents='none'
                     >
-                      {t.txt}
+                      {row.txt}
                     </text>
                     {activeTab === 'text' && (
                       <>
@@ -1583,7 +1592,7 @@ export const SvgEdit = ({
                           data-overlay-handle
                           onClick={(e) => {
                             e.stopPropagation();
-                            const newText = prompt('Edit label text:', t.txt);
+                            const newText = prompt(t('svgEdit.editLabelPrompt'), row.txt);
                             if (newText !== null && newText.trim()) {
                               setTexts((prev) =>
                                 prev.map((row, j) => (j === i ? { ...row, txt: newText.trim() } : row)),
@@ -1655,7 +1664,7 @@ export const SvgEdit = ({
               htmlFor='svg-edit-path'
               className={cn(designContract.typography.label, 'mb-1.5 block text-slate-500')}
             >
-              Path
+              {t('mapEditor.path')}
             </label>
             <input
               id='svg-edit-path'

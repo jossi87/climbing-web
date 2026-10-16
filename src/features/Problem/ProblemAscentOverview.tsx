@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Calendar, Ruler, Tag } from 'lucide-react';
 import { Avatar } from '../../shared/ui/Avatar/Avatar';
 import Media from '../../shared/components/Media/Media';
@@ -107,6 +108,7 @@ function todoUserList(todos: ProblemTodo[], key?: string) {
 
 /** Inline ascent rows — no nested panels; dates use the calendar icon. */
 export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedia }: Props) {
+  const { t } = useTranslation();
   const faAid = data.faAid;
   const aidDesc = (faAid?.description ?? '').trim();
   const aidUsers = faAid?.users ?? [];
@@ -202,7 +204,7 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
       {showAidBlock && (
         <div className='space-y-1.5'>
           <div className={rowClass}>
-            <span className={leadClass}>First aid ascent:</span>
+            <span className={leadClass}>{t('place.firstAidAscent')}</span>
             {factsBand(aidRowBody)}
           </div>
           {aidDesc.length > 0 ? (
@@ -226,7 +228,7 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
 
       {showTriviaBlock && (
         <div className={triviaRowClass}>
-          <span className={leadClass}>Trivia:</span>
+          <span className={leadClass}>{t('place.trivia')}</span>
           {factsBand([
             <div key='trivia-inline' className='flex min-w-0 flex-1 flex-col gap-2 sm:gap-2.5'>
               {triviaText.length > 0 ? (
@@ -252,7 +254,7 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
 
       {showTodoRow ? (
         <div className={rowClass}>
-          <span className={leadClass}>Todo:</span>
+          <span className={leadClass}>{t('place.todo')}:</span>
           {factsBand([todoNames])}
         </div>
       ) : null}

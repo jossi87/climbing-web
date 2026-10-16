@@ -1,4 +1,5 @@
 import { useState, useRef, type FC } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useMeta } from '../Meta/context';
 import { useProfile, postMediaImage } from '../../../api';
 import type { components } from '../../../@types/buldreinfo/swagger';
@@ -12,13 +13,14 @@ import { designContract } from '../../../design/contract';
 import { Card, SectionHeader } from '../../ui';
 
 const ProfileSettings = () => {
+  const { t } = useTranslation();
   const meta = useMeta();
   const userId = meta.userId ?? -1;
   const { setProfile, setRegion, data } = useProfile(userId);
 
   if (!data) {
     return (
-      <div className='animate-pulse space-y-6' aria-busy aria-label='Loading profile settings'>
+      <div className='animate-pulse space-y-6' aria-busy aria-label={t('profile.settings.loading')}>
         <Card flush className='border-0'>
           <div className='space-y-6 p-4 sm:p-6'>
             <div className='skeleton-bar h-8 w-[min(100%,14rem)] rounded-md' />
@@ -57,6 +59,7 @@ const ProfileSettings = () => {
   const identity = data.identity;
 
   const ProfileForm: FC<{ identity: typeof identity }> = ({ identity: d }) => {
+    const { t } = useTranslation();
     const { getAccessTokenSilently } = useAuth0();
     const [firstname, setFirstname] = useState(d?.firstname ?? '');
     const [lastname, setLastname] = useState(d?.lastname ?? '');
@@ -90,7 +93,7 @@ const ProfileSettings = () => {
         // Without this the rejection would surface as an unhandled promise rejection (Sentry).
         console.warn(error);
         captureSentryException(error, { fileName: file.name, fileSize: file.size, fileType: file.type });
-        setAvatarError(heicConversionFailureReason(error));
+        setAvatarError(heicConversionFailureReason(error, t));
       } finally {
         setIsPreparingAvatar(false);
       }
@@ -121,10 +124,14 @@ const ProfileSettings = () => {
       <div className='space-y-6'>
         <Card flush className='border-0'>
           <section className='p-4 sm:p-6'>
-            <SectionHeader title='Settings' icon={SettingsIcon} subheader='Manage your account preferences' />
+            <SectionHeader
+              title={t('profile.settings.title')}
+              icon={SettingsIcon}
+              subheader={t('profile.settings.subheader')}
+            />
             <div className='mb-6 grid grid-cols-1 gap-6 sm:grid-cols-2'>
               <div className='space-y-2'>
-                <label className={cn('ml-1', designContract.typography.label)}>First Name</label>
+                <label className={cn('ml-1', designContract.typography.label)}>{t('profile.settings.firstName')}</label>
                 <input
                   type='text'
                   className='bg-surface-nav border-surface-border type-body focus:border-brand w-full rounded-lg border px-4 py-2.5 transition-colors focus:outline-none'
@@ -133,7 +140,7 @@ const ProfileSettings = () => {
                 />
               </div>
               <div className='space-y-2'>
-                <label className={cn('ml-1', designContract.typography.label)}>Last Name</label>
+                <label className={cn('ml-1', designContract.typography.label)}>{t('profile.settings.lastName')}</label>
                 <input
                   type='text'
                   className='bg-surface-nav border-surface-border type-body focus:border-brand w-full rounded-lg border px-4 py-2.5 transition-colors focus:outline-none'
@@ -152,18 +159,18 @@ const ProfileSettings = () => {
                 onChange={(e) => setEmailVisibleToAll(e.target.checked)}
               />
               <label htmlFor='email-visibility' className='cursor-pointer text-sm text-slate-300'>
-                Allow others to contact me by email
+                {t('profile.settings.contactByEmail')}
               </label>
             </div>
 
             <div className='mb-8 space-y-3'>
-              <label className={cn('ml-1', designContract.typography.label)}>Avatar</label>
+              <label className={cn('ml-1', designContract.typography.label)}>{t('profile.settings.avatar')}</label>
               {avatar ? (
                 <div className='group relative h-32 w-32'>
                   <img
                     src={avatar.preview}
                     className='border-brand-border h-full w-full rounded-xl border-2 object-cover'
-                    alt='Preview'
+                    alt={t('profile.settings.avatarPreview')}
                   />
                   <button
                     onClick={() => updateAvatar(null)}
@@ -191,10 +198,10 @@ const ProfileSettings = () => {
                   )}
                   <p className='text-xs text-slate-400'>
                     {isPreparingAvatar
-                      ? 'Preparing image…'
+                      ? t('profile.settings.preparingImage')
                       : isDragActive
-                        ? 'Drop image here'
-                        : 'Drop avatar here, or click to select'}
+                        ? t('profile.settings.dropImage')
+                        : t('profile.settings.dropAvatar')}
                   </p>
                 </div>
               )}
@@ -238,14 +245,14 @@ const ProfileSettings = () => {
               )}
             >
               {isSaving ? <Loader2 className='animate-spin' size={16} /> : <Save size={16} />}
-              Save Profile
+              {t('profile.settings.save')}
             </button>
           </section>
         </Card>
 
         <Card flush className='border-0'>
           <section className='p-4 sm:p-6'>
-            <SectionHeader title='Display Regions' icon={Globe} />
+            <SectionHeader title={t('profile.settings.displayRegions')} icon={Globe} />
             <div className='space-y-1'>
               {(d?.userRegions ?? []).map((region) => {
                 const label = region.role ? `${region.name} (${region.role})` : region.name;

@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createPortal } from 'react-dom';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
@@ -77,15 +78,8 @@ const makeEmptyItem = (): UploadItem => ({
   thumbnailDuration: 0,
 });
 
-/** Connection type options shown in the dropdown (excludes guestbook) */
-const CONNECTION_TYPE_OPTIONS: { value: MediaConnectionType; label: string }[] = [
-  { value: 'area', label: 'Connected to area' },
-  { value: 'sector', label: 'Connected to sector' },
-  { value: 'problem', label: 'Connected to problem(s)' },
-  { value: 'trail', label: 'Connected to trail(s)' },
-];
-
 const MediaEdit = () => {
+  const { t } = useTranslation();
   const { getAccessTokenSilently } = useAuth0();
   /**
    * Access token getter for the dropzone/embed widgets. Auth0's method resolves `undefined` when it
@@ -473,10 +467,10 @@ const MediaEdit = () => {
           ? item.file.name
           : item.instagramSelectedCdnUrl
             ? item.instagramSelectedIsVideo
-              ? 'Instagram video'
-              : 'Instagram image'
+              ? t('mediaEdit.page.instagramVideo')
+              : t('mediaEdit.page.instagramImage')
             : item.embedVideoUrl
-              ? 'Embedded video'
+              ? t('mediaEdit.page.embeddedVideo')
               : `Media #${i + 1}`;
         return { label, state: 'pending' as const };
       });
@@ -534,7 +528,7 @@ const MediaEdit = () => {
               // Video: initiate → upload to presigned URL → complete
               const { id, presignedUrl } = await postMediaVideoInitiate(token, body, item.file.size, item.file.type);
               if (!presignedUrl) {
-                throw new Error('No presigned URL returned from server');
+                throw new Error(t('mediaEdit.page.noPresignedUrl'));
               }
               updateTask(i, { state: 'uploading', progress: 0 });
               await uploadToPresignedUrl(presignedUrl, item.file, (pct) => {
@@ -892,7 +886,7 @@ const MediaEdit = () => {
   if (!isAddMode && !m) {
     return (
       <div className='w-full min-w-0 space-y-4 p-4'>
-        <p className='text-slate-400'>Media not found.</p>
+        <p className='text-slate-400'>{t('mediaEdit.page.notFound')}</p>
       </div>
     );
   }
@@ -910,7 +904,7 @@ const MediaEdit = () => {
       <div className='w-full min-w-0 space-y-4'>
         {/* Title */}
         <h1 className={cn(designContract.typography.subtitle, 'text-slate-100')}>
-          {isAddMode ? 'Add media' : `Edit ${isVideo ? 'video' : 'image'}`}
+          {isAddMode ? t('place.addMedia') : t(isVideo ? 'mediaEdit.page.editVideo' : 'mediaEdit.page.editImage')}
         </h1>
 
         {/* ── Add mode: dropzone + embed card ──────────────────────────── */}
@@ -958,7 +952,9 @@ const MediaEdit = () => {
               <>
                 {/* Header with media ID */}
                 <div className='mb-3'>
-                  <span className='text-[13px] font-medium text-slate-400'>Media #{mediaIdVal}</span>
+                  <span className='text-[13px] font-medium text-slate-400'>
+                    {t('mediaEdit.page.mediaNumber', { id: mediaIdVal })}
+                  </span>
                 </div>
 
                 {/* Grid: left = basic metadata + connected (if not video+problem), right = preview */}
@@ -977,7 +973,9 @@ const MediaEdit = () => {
                       <div className='mt-3 space-y-1.5'>
                         <div className='flex items-center gap-2'>
                           <Image size={14} className='text-slate-500' />
-                          <span className='text-xs font-medium text-slate-400'>Thumbnail frame</span>
+                          <span className='text-xs font-medium text-slate-400'>
+                            {t('mediaEdit.page.thumbnailFrame')}
+                          </span>
                           <span className='ml-auto text-xs text-slate-500'>
                             {secondsToTimeStr(thumbnailSeconds)} / {secondsToTimeStr(thumbnailDuration)}
                           </span>
@@ -1006,16 +1004,18 @@ const MediaEdit = () => {
                         <label className='flex cursor-pointer items-center justify-between gap-3'>
                           <span className='flex items-center gap-2'>
                             <RefreshCw size={14} className='text-slate-500' />
-                            <span className='text-xs font-medium text-slate-300'>Update thumbnail on save</span>
+                            <span className='text-xs font-medium text-slate-300'>
+                              {t('mediaEdit.page.updateThumbnail')}
+                            </span>
                           </span>
                           <FormSwitch
                             checked={refreshEmbedThumb}
                             onChange={() => setRefreshEmbedThumb((v) => !v)}
-                            aria-label='Re-fetch the thumbnail from YouTube/Vimeo when saving'
+                            aria-label={t('mediaEdit.page.refetchThumbnailAria')}
                           />
                         </label>
                         <p className='mt-2 text-[11px] leading-relaxed text-slate-500'>
-                          Re-fetches the current thumbnail from YouTube/Vimeo.
+                          {t('mediaEdit.page.refetchThumbnail')}
                         </p>
                       </div>
                     )}
@@ -1051,7 +1051,7 @@ const MediaEdit = () => {
                           className='h-full w-full'
                           allow='autoplay; fullscreen; picture-in-picture'
                           allowFullScreen
-                          title='Embedded video'
+                          title={t('mediaEdit.page.embeddedVideo')}
                         />
                       </div>
                     ) : isVideo ? (
@@ -1112,7 +1112,7 @@ const MediaEdit = () => {
         )}
         <div className='flex items-center justify-end gap-3'>
           <button type='button' onClick={() => navigate(-1)} className='form-footer-cancel'>
-            Cancel
+            {t('common.cancel')}
           </button>
           <button
             type='button'
@@ -1121,7 +1121,7 @@ const MediaEdit = () => {
             className='type-label flex items-center gap-2 rounded-lg bg-emerald-400 px-8 py-2.5 text-slate-950 shadow-lg shadow-emerald-900/30 transition-all hover:bg-emerald-300 disabled:opacity-50'
           >
             {saving ? <Loader2 className='animate-spin' size={16} /> : <Save size={16} />}
-            {saving ? 'Saving…' : 'Save'}
+            {saving ? t('mediaEdit.page.saving') : t('common.save')}
           </button>
         </div>
       </div>
@@ -1171,6 +1171,14 @@ const ConnectedSection = ({
   hasNoTrails,
   typeReadOnly = false,
 }: ConnectedSectionProps) => {
+  const { t } = useTranslation();
+  /** Connection type options shown in the dropdown (excludes guestbook). */
+  const connectionTypeOptions: { value: MediaConnectionType; label: string }[] = [
+    { value: 'area', label: t('mediaEdit.page.connectedArea') },
+    { value: 'sector', label: t('mediaEdit.page.connectedSector') },
+    { value: 'problem', label: t('mediaEdit.page.connectedProblem') },
+    { value: 'trail', label: t('mediaEdit.page.connectedTrail') },
+  ];
   // Guestbook and User are read-only — show a static label, no dropdown
   const isReadOnly = connectionType === 'guestbook' || connectionType === 'user' || typeReadOnly;
   const typeButtonRef = useRef<HTMLButtonElement>(null);
@@ -1182,10 +1190,10 @@ const ConnectedSection = ({
         {isReadOnly ? (
           <span className='text-sm font-medium whitespace-nowrap text-slate-400'>
             {connectionType === 'guestbook'
-              ? 'Connected to guestbook'
+              ? t('mediaEdit.page.connectedGuestbook')
               : connectionType === 'user'
-                ? 'Connected to user'
-                : 'Connected to problem(s)'}
+                ? t('mediaEdit.page.connectedUser')
+                : t('mediaEdit.page.connectedProblem')}
           </span>
         ) : (
           <div className='relative'>
@@ -1195,7 +1203,7 @@ const ConnectedSection = ({
               onClick={() => setTypeDropdownOpen(!typeDropdownOpen)}
               className='inline-flex items-center gap-1.5 text-sm font-medium whitespace-nowrap text-slate-200 hover:text-slate-100'
             >
-              {CONNECTION_TYPE_OPTIONS.find((o) => o.value === connectionType)?.label ?? connectionType}
+              {connectionTypeOptions.find((o) => o.value === connectionType)?.label ?? connectionType}
               <ChevronDown size={14} className='text-slate-500' />
             </button>
             {typeDropdownOpen &&
@@ -1211,7 +1219,7 @@ const ConnectedSection = ({
                       width: Math.max(typeButtonRef.current.getBoundingClientRect().width, 192),
                     }}
                   >
-                    {CONNECTION_TYPE_OPTIONS.map((opt) => (
+                    {connectionTypeOptions.map((opt) => (
                       <button
                         key={opt.value}
                         type='button'
@@ -1244,7 +1252,7 @@ const ConnectedSection = ({
             }}
             className='bg-surface-raised hover:bg-surface-raised-hover inline-flex items-center gap-1 rounded-lg border border-white/12 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:border-white/22'
           >
-            <Plus size={12} /> Add
+            <Plus size={12} /> {t('common.add')}
           </button>
         )}
 
@@ -1258,7 +1266,7 @@ const ConnectedSection = ({
             }}
             className='bg-surface-raised hover:bg-surface-raised-hover inline-flex items-center gap-1 rounded-lg border border-white/12 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:border-white/22'
           >
-            <Plus size={12} /> Add
+            <Plus size={12} /> {t('common.add')}
           </button>
         )}
       </div>
@@ -1305,6 +1313,7 @@ const UploadItemCard = ({
   onUpdate,
   showConnectedFullWidth,
 }: UploadItemCardProps) => {
+  const { t } = useTranslation();
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleVideoLoaded = useCallback(() => {
@@ -1336,17 +1345,17 @@ const UploadItemCard = ({
           {item.file?.name ??
             (item.instagramSelectedCdnUrl
               ? item.instagramSelectedIsVideo
-                ? 'Instagram video'
-                : 'Instagram image'
+                ? t('mediaEdit.page.instagramVideo')
+                : t('mediaEdit.page.instagramImage')
               : item.embedVideoUrl
-                ? 'Embedded video'
-                : `Item #${idx + 1}`)}
+                ? t('mediaEdit.page.embeddedVideo')
+                : t('mediaEdit.page.itemNumber', { number: idx + 1 }))}
         </span>
         <button
           type='button'
           onClick={() => onRemove(idx)}
           className='hover:bg-surface-raised-hover rounded-lg p-1 text-slate-500 transition-colors hover:text-red-400'
-          aria-label='Remove'
+          aria-label={t('common.remove')}
         >
           <X size={16} />
         </button>
@@ -1368,7 +1377,7 @@ const UploadItemCard = ({
             <div className='mt-3 space-y-1.5'>
               <div className='flex items-center gap-2'>
                 <Image size={14} className='text-slate-500' />
-                <span className='text-xs font-medium text-slate-400'>Thumbnail frame</span>
+                <span className='text-xs font-medium text-slate-400'>{t('mediaEdit.page.thumbnailFrame')}</span>
                 <span className='ml-auto text-xs text-slate-500'>
                   {secondsToTimeStr(item.thumbnailSeconds)} / {secondsToTimeStr(item.thumbnailDuration)}
                 </span>
@@ -1397,7 +1406,9 @@ const UploadItemCard = ({
               {/* Add button for problems — on the same line as the section title */}
               {connectionType === 'problem' && (
                 <div className='mb-3 flex items-center gap-3'>
-                  <span className='text-sm font-medium whitespace-nowrap text-slate-400'>Connected to problem(s)</span>
+                  <span className='text-sm font-medium whitespace-nowrap text-slate-400'>
+                    {t('mediaEdit.page.connectedProblem')}
+                  </span>
                   <button
                     type='button'
                     onClick={() => {
@@ -1409,7 +1420,7 @@ const UploadItemCard = ({
                     }}
                     className='bg-surface-raised hover:bg-surface-raised-hover inline-flex items-center gap-1 rounded-lg border border-white/12 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:border-white/22'
                   >
-                    <Plus size={12} /> Add
+                    <Plus size={12} /> {t('common.add')}
                   </button>
                 </div>
               )}
@@ -1461,7 +1472,7 @@ const UploadItemCard = ({
                 className='h-full w-full'
                 allow='autoplay; fullscreen; picture-in-picture'
                 allowFullScreen
-                title='Embedded video'
+                title={t('mediaEdit.page.embeddedVideo')}
               />
             </div>
           ) : item.preview ? (
@@ -1479,7 +1490,9 @@ const UploadItemCard = ({
         <div className='mt-4'>
           {/* Add button for problems */}
           <div className='mb-3 flex items-center gap-3'>
-            <span className='text-sm font-medium whitespace-nowrap text-slate-400'>Connected to problem(s)</span>
+            <span className='text-sm font-medium whitespace-nowrap text-slate-400'>
+              {t('mediaEdit.page.connectedProblem')}
+            </span>
             <button
               type='button'
               onClick={() => {
@@ -1491,7 +1504,7 @@ const UploadItemCard = ({
               }}
               className='bg-surface-raised hover:bg-surface-raised-hover inline-flex items-center gap-1 rounded-lg border border-white/12 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:border-white/22'
             >
-              <Plus size={12} /> Add
+              <Plus size={12} /> {t('common.add')}
             </button>
           </div>
           <MediaMetadataCard

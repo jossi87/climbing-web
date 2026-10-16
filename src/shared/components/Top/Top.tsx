@@ -1,4 +1,5 @@
 import { Loading } from '../../ui/StatusWidgets';
+import { useTranslation } from 'react-i18next';
 import { Avatar } from '../../ui';
 import { Link } from 'react-router-dom';
 import { useTop } from '../../../api';
@@ -11,6 +12,7 @@ type TopProps = {
 };
 
 const Top = ({ idArea, idSector }: TopProps) => {
+  const { t } = useTranslation();
   const { data: top } = useTop({ idArea, idSector });
 
   if (!top) {
@@ -32,7 +34,7 @@ const Top = ({ idArea, idSector }: TopProps) => {
             <th className={cn('w-8 shrink-0 md:w-12', cellPadRankPct, headerType)}>#</th>
             <th className={cn('w-11 shrink-0 md:w-16', cellPadRankPct, headerType)}>%</th>
             <th className={cn(cellPadClimbers, headerType)}>
-              Climbers
+              {t('top.climbers')}
               <span className={cn(rowType, 'ml-1.5 font-normal text-slate-200 tabular-nums')}>({top.numUsers})</span>
             </th>
           </tr>

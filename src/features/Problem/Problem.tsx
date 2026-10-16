@@ -11,6 +11,7 @@ import {
   type SetStateAction,
 } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
 import GetCenterFromDegrees from '../../utils/map-utils';
 import { getCoordinatesCenter } from '../../utils/mapCenter';
@@ -69,11 +70,14 @@ import { getUserFriendlyHttpErrorMessage, isHttpError } from '../../api/httpErro
 function ProblemSocialCardHeader({
   title,
   count,
+  countLabel,
   icon: Icon,
   iconClassName,
 }: {
   title: string;
   count: number;
+  /** Counted accessible name (`counts.ticks` / `counts.comments`): a passed-in label keeps pluralization in the catalog. */
+  countLabel: string;
   icon: ElementType;
   iconClassName: string;
 }) {
@@ -82,10 +86,7 @@ function ProblemSocialCardHeader({
       <Icon size={15} strokeWidth={2.25} className={cn('shrink-0', iconClassName)} aria-hidden />
       <div className='flex min-w-0 items-baseline gap-2'>
         <span className='text-sm font-semibold tracking-tight text-slate-100'>{title}</span>
-        <span
-          className='text-sm font-medium text-slate-400 tabular-nums'
-          aria-label={`${count} ${title.toLowerCase()}`}
-        >
+        <span className='text-sm font-medium text-slate-400 tabular-nums' aria-label={countLabel}>
           {count}
         </span>
       </div>
@@ -111,7 +112,8 @@ function hseShowsDangerFromComments(comments: ProblemComment[] | undefined): boo
 
 const useIds = () => {
   const { problemId } = useParams();
-  if (!problemId) throw new Error('Missing problemId param');
+  const { t } = useTranslation();
+  if (!problemId) throw new Error(t('place.missingProblemId'));
   return { problemId: +problemId };
 };
 
@@ -119,13 +121,11 @@ type ProblemLoadedData = NonNullable<ReturnType<typeof useProblem>['data']>;
 
 function ProblemNotFound() {
   const meta = useMeta();
+  const { t } = useTranslation();
   return (
     <>
-      <title>{`Not found | ${meta?.title}`}</title>
-      <NotFoundCard
-        className='mt-4 sm:mt-6'
-        description='Cannot find the specified problem or insufficient permissions.'
-      />
+      <title>{t('meta.pageTitle', { page: t('meta.notFound'), site: meta?.title ?? '' })}</title>
+      <NotFoundCard className='mt-4 sm:mt-6' description={t('place.notFoundProblemDescription')} />
     </>
   );
 }
@@ -133,6 +133,7 @@ function ProblemNotFound() {
 export const Problem = () => {
   const { problemId } = useIds();
   const meta = useMeta();
+  const { t } = useTranslation();
   const [showHiddenMedia, setShowHiddenMedia] = useState(false);
   const { data, error, toggleTodo, redirectUi } = useProblem(+problemId, showHiddenMedia);
 
@@ -143,13 +144,11 @@ export const Problem = () => {
   }
 
   if (error) {
-    const description = isHttpError(error)
-      ? getUserFriendlyHttpErrorMessage(error)
-      : 'Something went wrong while loading this problem.';
+    const description = isHttpError(error) ? getUserFriendlyHttpErrorMessage(error) : t('place.loadProblemError');
     return (
       <>
-        <title>{`Error | ${meta?.title}`}</title>
-        <NotFoundCard className='mt-4 sm:mt-6' title='Unable To Load Problem' description={description} />
+        <title>{t('meta.pageTitle', { page: t('status.errorTitle'), site: meta?.title ?? '' })}</title>
+        <NotFoundCard className='mt-4 sm:mt-6' title={t('place.unableToLoadProblem')} description={description} />
       </>
     );
   }
@@ -182,6 +181,7 @@ function ProblemLoaded({
 }) {
   const navigate = useNavigate();
   const { segment } = useParams();
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const meta = useMeta();
   const [isPending, startTransition] = useTransition();
@@ -333,38 +333,39 @@ function ProblemLoaded({
         pageViews={data.pageViews}
       />
       <ActionMenuChip
-        label='PDF'
+        label={t('place.pdf')}
         icon={Download}
-        title='Download PDF'
+        title={t('place.downloadPdf')}
         items={[
           {
             id: 'problem-pdf',
-            label: meta.isBouldering ? 'Problem' : 'Route',
+            label: t(meta.isBouldering ? 'common.problem' : 'common.route'),
             href: `/problems/pdf?id=${data.id}`,
             kind: 'download',
           },
           {
             id: 'sector-pdf',
-            label: 'Sector',
+            label: t('common.sector'),
             href: `/sectors/pdf?id=${data.sectorId}`,
             kind: 'download',
           },
-          { id: 'area-pdf', label: 'Area', href: `/areas/pdf?id=${data.areaId}`, kind: 'download' },
+          { id: 'area-pdf', label: t('common.area'), href: `/areas/pdf?id=${data.areaId}`, kind: 'download' },
         ]}
       />
       <ActionMenuChip
-        label='Maps'
+        label={t('place.maps')}
         icon={MapIcon}
-        title='Open in maps app'
+        title={t('trailProfile.openInMaps')}
         items={[
           ...(data.sectorParking?.latitude != null && data.sectorParking?.longitude != null
             ? [
                 {
                   id: 'maps-parking',
-                  label: 'Parking',
+                  label: t('place.parking'),
                   href: '',
                   kind: 'link' as const,
-                  onClick: () => openMap(data.sectorParking!.latitude!, data.sectorParking!.longitude!, 'Parking'),
+                  onClick: () =>
+                    openMap(data.sectorParking!.latitude!, data.sectorParking!.longitude!, t('place.parking')),
                 },
               ]
             : []),
@@ -372,14 +373,14 @@ function ProblemLoaded({
             ? [
                 {
                   id: 'maps-problem',
-                  label: meta.isBouldering ? 'Boulder' : 'Route',
+                  label: t(meta.isBouldering ? 'common.boulder' : 'common.route'),
                   href: '',
                   kind: 'link' as const,
                   onClick: () =>
                     openMap(
                       data.coordinates!.latitude!,
                       data.coordinates!.longitude!,
-                      data.name ?? (meta.isBouldering ? 'Boulder' : 'Route'),
+                      data.name ?? t(meta.isBouldering ? 'common.boulder' : 'common.route'),
                     ),
                 },
               ]
@@ -396,7 +397,9 @@ function ProblemLoaded({
           )}
         >
           <Info size={12} strokeWidth={2} className='shrink-0' />
-          <span className='min-w-0 normal-case'>Trails: {(data.trails ?? []).map((t) => t.title).join(' + ')}</span>
+          <span className='min-w-0 normal-case'>
+            {t('place.trails', { names: (data.trails ?? []).map((trail) => trail.title).join(' + ') })}
+          </span>
         </Link>
       )}
       <ExternalLinkLabels externalLinks={data.externalLinks} />
@@ -415,13 +418,17 @@ function ProblemLoaded({
       <div className={cn('min-w-0 space-y-2', designContract.typography.body)}>
         {data.broken && (
           <p className='text-access-danger text-pretty'>
-            <span className='font-normal'>{meta.isBouldering ? 'Problem' : 'Route'} broken:</span> {data.broken}
+            <span className='font-normal'>
+              {t(meta.isBouldering ? 'place.problemBrokenLabel' : 'place.routeBrokenLabel')}
+            </span>{' '}
+            {data.broken}
           </p>
         )}
         {(data.areaAccessClosed || data.sectorAccessClosed) && (
           <p className='text-access-danger text-pretty'>
-            {(data.areaAccessClosed ? 'Area' : 'Sector') + ' closed: '}
-            {(data.areaAccessClosed || '') + (data.sectorAccessClosed || '')}
+            {t(data.areaAccessClosed ? 'place.areaClosed' : 'place.sectorClosed', {
+              info: (data.areaAccessClosed || '') + (data.sectorAccessClosed || ''),
+            })}
           </p>
         )}
         {(data.areaNoDogsAllowed || data.areaAccessInfo || data.sectorAccessInfo) && (
@@ -470,7 +477,12 @@ function ProblemLoaded({
 
   return (
     <div className='w-full min-w-0 space-y-3 sm:space-y-5'>
-      <title>{`${data.name} · ${data.grade} · ${data.areaName} / ${data.sectorName} | ${meta?.title}`}</title>
+      <title>
+        {t('meta.pageTitle', {
+          page: `${data.name} · ${data.grade} · ${data.areaName} / ${data.sectorName}`,
+          site: meta?.title ?? '',
+        })}
+      </title>
       <meta name='description' content={data.comment || data.faAid?.description} />
 
       {showTickModal && (
@@ -512,10 +524,10 @@ function ProblemLoaded({
                 'flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-2 text-pretty break-words',
                 designContract.typography.breadcrumb,
               )}
-              aria-label='Breadcrumb'
+              aria-label={t('place.breadcrumb')}
             >
               <Link to='/areas' className={designContract.typography.breadcrumbLink}>
-                Areas
+                {t('areas.title')}
               </Link>
               <ChevronRight size={12} className='shrink-0 translate-y-px opacity-30' aria-hidden />
               <Link to={`/area/${data.areaId}`} className={designContract.typography.breadcrumbLink}>
@@ -536,7 +548,7 @@ function ProblemLoaded({
                 {!isTicked && (
                   <button
                     type='button'
-                    title='Todo'
+                    title={t('place.todo')}
                     data-ph-action={optimisticTodo ? 'todo-on' : undefined}
                     onClick={handleToggleTodo}
                     disabled={isPending}
@@ -556,7 +568,7 @@ function ProblemLoaded({
                 )}
                 <button
                   type='button'
-                  title={isTicked ? 'Edit tick' : 'Tick'}
+                  title={t(isTicked ? 'place.editTick' : 'place.tick')}
                   data-ph-action={isTicked ? 'tick-on' : undefined}
                   onClick={() => setShowTickModal(true)}
                   className={cn(
@@ -571,7 +583,7 @@ function ProblemLoaded({
                 {(meta.isAdmin || meta.isSuperAdmin) && (
                   <button
                     type='button'
-                    title={showHiddenMedia ? 'Showing hidden media' : 'Show hidden media'}
+                    title={t(showHiddenMedia ? 'place.showingHiddenMedia' : 'place.showHiddenMedia')}
                     onClick={() => setShowHiddenMedia(!showHiddenMedia)}
                     className={cn(
                       designContract.controls.pageHeaderIconButton,
@@ -589,7 +601,7 @@ function ProblemLoaded({
                 )}
                 <button
                   type='button'
-                  title='Comment'
+                  title={t('comment.label')}
                   onClick={() => setShowCommentModal({ id: -1, danger: false, resolved: false })}
                   className={cn(
                     designContract.controls.pageHeaderIconButton,
@@ -601,8 +613,8 @@ function ProblemLoaded({
                 {meta.isAuthenticated && (
                   <Link
                     to={`/media/add?type=problem&id=${data.id}&name=${encodeURIComponent(data.name ?? '')}&sectorId=${data.sectorId}&sectorName=${encodeURIComponent(data.sectorName ?? '')}&areaId=${data.areaId}&areaName=${encodeURIComponent(data.areaName ?? '')}&numPitches=${data.sections?.length ?? 0}`}
-                    title='Add media'
-                    aria-label='Add media'
+                    title={t('place.addMedia')}
+                    aria-label={t('place.addMedia')}
                     data-ph-action='add-media'
                     className={cn(
                       designContract.controls.pageHeaderIconButton,
@@ -615,8 +627,8 @@ function ProblemLoaded({
                 {(meta.isAdmin || meta.isSuperAdmin) && (
                   <Link
                     to={`/problem/edit/${data.sectorId}/${data.id}`}
-                    title='Edit problem'
-                    aria-label='Edit problem'
+                    title={t('place.editProblem')}
+                    aria-label={t('place.editProblem')}
                     data-ph-action='edit'
                     className={cn(
                       designContract.controls.pageHeaderIconButton,
@@ -635,8 +647,8 @@ function ProblemLoaded({
             <span
               className='inline-block align-baseline'
               role='img'
-              aria-label='Danger reported for this route'
-              title='Danger reported for this route'
+              aria-label={t('place.dangerReported')}
+              title={t('place.dangerReported')}
             >
               <AlertTriangle
                 size={14}
@@ -671,7 +683,7 @@ function ProblemLoaded({
               className={tabBarStripContainerClassName('equal')}
               style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}
               role='tablist'
-              aria-label='Problem sections'
+              aria-label={t('place.problemSections')}
             >
               <button
                 type='button'
@@ -685,7 +697,7 @@ function ProblemLoaded({
                   strokeWidth={activeTab === 'overview' ? 2.3 : 2}
                   className={tabBarIconClassName(activeTab === 'overview')}
                 />
-                <span className={designContract.controls.tabBarLabel}>Overview</span>
+                <span className={designContract.controls.tabBarLabel}>{t('place.overview')}</span>
               </button>
               <button
                 type='button'
@@ -702,9 +714,9 @@ function ProblemLoaded({
                   />
                 </span>
                 <span className={designContract.controls.tabBarLabel}>
-                  Map
+                  {t('place.map')}
                   {trailsWithRichContent.length > 0 && (
-                    <span title='Contains trail with description or media'>
+                    <span title={t('place.hasTrailContent')}>
                       <Info size={10} strokeWidth={2.5} className='text-brand ml-0.5 inline-block' />
                     </span>
                   )}
@@ -784,7 +796,7 @@ function ProblemLoaded({
           <div className='p-4 sm:p-5'>
             <div className='flex flex-col gap-7'>
               {data.sections.map((s) => (
-                <article key={s.nr} className='min-w-0' aria-label={`Pitch ${s.nr}`}>
+                <article key={s.nr} className='min-w-0' aria-label={t('media.pitch', { pitch: s.nr ?? '' })}>
                   <p
                     className={cn(
                       'text-[14px] leading-snug text-pretty text-slate-300 sm:text-sm sm:leading-relaxed',
@@ -797,7 +809,7 @@ function ProblemLoaded({
                         'font-mono font-semibold text-slate-400 tabular-nums',
                       )}
                     >
-                      Pitch {s.nr}
+                      {t('media.pitch', { pitch: s.nr ?? '' })}
                     </span>{' '}
                     <span className='text-slate-600' aria-hidden>
                       ·
@@ -847,8 +859,9 @@ function ProblemLoaded({
           {hasTicks && (
             <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm'>
               <ProblemSocialCardHeader
-                title='Ticks'
+                title={t('ticks.title')}
                 count={data.ticks?.length ?? 0}
+                countLabel={t('counts.ticks', { count: data.ticks?.length ?? 0 })}
                 icon={Check}
                 iconClassName={designContract.ascentStatus.ticked}
               />
@@ -860,8 +873,9 @@ function ProblemLoaded({
           {hasComments && (
             <Card flush className='min-w-0 overflow-hidden border-0 shadow-sm'>
               <ProblemSocialCardHeader
-                title='Comments'
+                title={t('place.comments')}
                 count={data.comments?.length ?? 0}
+                countLabel={t('counts.comments', { count: data.comments?.length ?? 0 })}
                 icon={MessageSquare}
                 iconClassName='text-brand'
               />
@@ -884,7 +898,9 @@ function ProblemLoaded({
           <div className='grid grid-cols-1 gap-x-6 gap-y-5 p-4 sm:p-5 lg:grid-cols-[min(11rem,30%)_1fr] lg:gap-x-8 lg:gap-y-6'>
             {hasRockBlock && (
               <>
-                <div className={cn('pt-1', designContract.typography.label)}>Rock «{data.rock}»</div>
+                <div className={cn('pt-1', designContract.typography.label)}>
+                  {t('place.rockHeading', { rock: data.rock ?? '' })}
+                </div>
                 <div>
                   <ProblemsOnRock sectorId={data.sectorId!} problemId={+problemId} rock={data.rock} />
                 </div>

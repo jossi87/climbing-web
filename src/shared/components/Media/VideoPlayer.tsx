@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect, type FC, type MouseEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { List } from 'lucide-react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { getMediaFileUrl, mediaIdentityId, mediaIdentityVersionStamp } from '../../../api';
@@ -52,6 +53,7 @@ const VideoPlayer: FC<Props> = ({
   poster,
   onQualityChange,
 }) => {
+  const { t } = useTranslation();
   const [currentTimeMs, setCurrentTimeMs] = useState(0);
   const [durationMs, setDurationMs] = useState(0);
   const [showChapters, setShowChapters] = useState(false);
@@ -292,8 +294,8 @@ const VideoPlayer: FC<Props> = ({
         <button
           type='button'
           onClick={() => setShowChapters(!showChapters)}
-          title='Chapters'
-          aria-label='Chapters'
+          title={t('media.chapters')}
+          aria-label={t('media.chapters')}
           className={cn(
             'absolute top-3 left-3 z-10',
             'flex h-9 w-9 shrink-0 items-center justify-center rounded-full shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all active:scale-95 sm:h-11 sm:w-11',
@@ -310,7 +312,7 @@ const VideoPlayer: FC<Props> = ({
       {/* Current chapter name indicator — only for meaningful chapters */}
       {currentChapter && hasMeaningfulChapters && !showChapters && !isHoveringSeekbar && (
         <div className='pointer-events-none absolute top-3 left-14 z-10 max-w-[60%] truncate rounded-full bg-black/50 px-3 py-1.5 text-xs font-medium text-[#f1f5f9] shadow-lg sm:left-16'>
-          {currentChapter.problemName ?? `Chapter ${currentChapterIndex + 1}`}
+          {currentChapter.problemName ?? t('media.chapterFallback', { number: currentChapterIndex + 1 })}
           {currentChapter.problemGrade ? ` (${currentChapter.problemGrade})` : ''}
         </div>
       )}
@@ -326,7 +328,7 @@ const VideoPlayer: FC<Props> = ({
             className='mx-4 max-h-[60%] w-full max-w-md overflow-y-auto rounded-2xl bg-[#0f172a] p-2 shadow-2xl ring-1 ring-white/10'
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className='px-3 py-2 text-sm font-bold text-[#e2e8f0]'>Chapters</h3>
+            <h3 className='px-3 py-2 text-sm font-bold text-[#e2e8f0]'>{t('media.chapters')}</h3>
             <div className='divide-y divide-white/5'>
               {chapters.map((ch, i) => {
                 const chMs = ch.milliseconds ?? 0;
@@ -358,7 +360,7 @@ const VideoPlayer: FC<Props> = ({
                     {/* Chapter info */}
                     <div className='min-w-0 flex-1'>
                       <p className={cn('truncate text-sm font-medium', isActive ? 'text-[#f8fafc]' : 'text-[#cbd5e1]')}>
-                        {ch.problemName ?? `Chapter ${i + 1}`}
+                        {ch.problemName ?? t('media.chapterFallback', { number: i + 1 })}
                       </p>
                       {ch.problemGrade && <p className='text-xs text-[#64748b]'>{ch.problemGrade}</p>}
                     </div>
@@ -418,7 +420,10 @@ const VideoPlayer: FC<Props> = ({
                   outline: 'none',
                   WebkitTapHighlightColor: 'transparent',
                 }}
-                aria-label={`Seek to ${ch.problemName ?? `Chapter ${i + 1}`} at ${formatMs(chMs)}`}
+                aria-label={t('media.seekToChapter', {
+                  chapter: ch.problemName ?? t('media.chapterFallback', { number: i + 1 }),
+                  time: formatMs(chMs),
+                })}
               />
             );
           })}
@@ -434,7 +439,7 @@ const VideoPlayer: FC<Props> = ({
             >
               <div className='rounded-lg bg-[#0f172a] px-2.5 py-1.5 whitespace-nowrap shadow-2xl ring-1 ring-white/15'>
                 <p className='text-xs font-semibold text-[#f1f5f9]'>
-                  {hoveredChapter.problemName ?? `Chapter ${hoveredChapterIndex + 1}`}
+                  {hoveredChapter.problemName ?? t('media.chapterFallback', { number: hoveredChapterIndex + 1 })}
                   {hoveredChapter.problemGrade && (
                     <span className='ml-1.5 font-normal text-[#94a3b8]'>{hoveredChapter.problemGrade}</span>
                   )}

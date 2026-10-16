@@ -1,4 +1,5 @@
 import { Film } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../../../lib/utils';
 
 type Props = {
@@ -12,6 +13,7 @@ type Props = {
  * Copy focuses on **video** processing, not thumbnails.
  */
 export function VideoProcessingPlaceholder({ compact = false, className }: Props) {
+  const { t } = useTranslation();
   return (
     <div
       className={cn(
@@ -22,7 +24,7 @@ export function VideoProcessingPlaceholder({ compact = false, className }: Props
     >
       <Film className='text-slate-500' size={compact ? 22 : 28} aria-hidden />
       <p className={cn('leading-tight font-semibold text-slate-200', compact ? 'text-[10px]' : 'text-[11px]')}>
-        Processing video
+        {t('videoProcessing.title')}
       </p>
       <p
         className={cn(
@@ -30,8 +32,7 @@ export function VideoProcessingPlaceholder({ compact = false, className }: Props
           compact ? 'text-[10px] leading-snug sm:text-[11px]' : 'text-[11px] sm:text-[12px]',
         )}
       >
-        This video is still being processed in the background. It will be ready soon — refresh the page if the preview
-        stays empty.
+        {t('videoProcessing.description')}
       </p>
     </div>
   );

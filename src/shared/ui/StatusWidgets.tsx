@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Lock, LogIn, AlertTriangle, RefreshCw } from 'lucide-react';
+import { Trans, useTranslation } from 'react-i18next';
 import { Card } from './Card';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
@@ -9,17 +10,21 @@ type LoadingProps = {
   inline?: boolean;
 };
 
-const LoadingContent = () => (
-  <div className='flex min-h-[160px] w-full min-w-0 flex-1 flex-col items-center justify-center gap-4 sm:min-h-[220px]'>
-    <div className='bg-surface-raised border-surface-border ring-brand-border/35 rounded-full border p-3 ring-1'>
-      <RefreshCw className='h-7 w-7 animate-spin text-slate-100' strokeWidth={2.25} aria-hidden />
+const LoadingContent = () => {
+  const { t } = useTranslation();
+
+  return (
+    <div className='flex min-h-[160px] w-full min-w-0 flex-1 flex-col items-center justify-center gap-4 sm:min-h-[220px]'>
+      <div className='bg-surface-raised border-surface-border ring-brand-border/35 rounded-full border p-3 ring-1'>
+        <RefreshCw className='h-7 w-7 animate-spin text-slate-100' strokeWidth={2.25} aria-hidden />
+      </div>
+      <div className='text-center'>
+        <h3 className='text-sm font-medium tracking-tight text-slate-100'>{t('status.loading')}</h3>
+        <p className='type-small mt-1 text-slate-500'>{t('status.loadingDescription')}</p>
+      </div>
     </div>
-    <div className='text-center'>
-      <h3 className='text-sm font-medium tracking-tight text-slate-100'>Loading</h3>
-      <p className='type-small mt-1 text-slate-500'>Fetching data…</p>
-    </div>
-  </div>
-);
+  );
+};
 
 export const Loading = ({ inline = false }: LoadingProps) =>
   inline ? (
@@ -62,11 +67,13 @@ function AuthGateCard({ icon, title, description, actions, tone = 'default' }: A
 
 export const NotLoggedIn = () => {
   const { loginWithRedirect } = useAuth0();
+  const { t } = useTranslation();
+
   return (
     <AuthGateCard
       icon={<Lock size={18} aria-hidden />}
-      title='Authentication required'
-      description='You must be logged in to access this page.'
+      title={t('status.authRequiredTitle')}
+      description={t('status.authRequiredDescription')}
       actions={
         <button
           onClick={() =>
@@ -82,32 +89,41 @@ export const NotLoggedIn = () => {
           )}
         >
           <LogIn size={15} aria-hidden />
-          <span>Sign in</span>
+          <span>{t('common.signIn')}</span>
         </button>
       }
     />
   );
 };
 
-export const InsufficientPrivileges = () => (
-  <AuthGateCard
-    icon={<AlertTriangle size={18} aria-hidden />}
-    title='Insufficient privileges'
-    description="You don't have access to this page."
-    tone='danger'
-    actions={
-      <div className='bg-surface-raised border-surface-border/60 rounded-lg border px-3 py-2.5 sm:px-4 sm:py-3'>
-        <p className={cn(designContract.typography.body, 'text-slate-400')}>
-          Contact{' '}
-          <a
-            href='mailto:jostein.oygarden@gmail.com'
-            className='decoration-brand/35 hover:text-brand active:text-brand focus-visible:text-brand focus-visible:ring-brand-border/55 font-semibold text-slate-200 underline underline-offset-4 transition-colors focus-visible:rounded-sm focus-visible:ring-2 focus-visible:outline-none'
-          >
-            Jostein Oeygarden
-          </a>{' '}
-          if you need an upgrade.
-        </p>
-      </div>
-    }
-  />
-);
+export const InsufficientPrivileges = () => {
+  const { t } = useTranslation();
+
+  return (
+    <AuthGateCard
+      icon={<AlertTriangle size={18} aria-hidden />}
+      title={t('status.insufficientPrivilegesTitle')}
+      description={t('status.insufficientPrivilegesDescription')}
+      tone='danger'
+      actions={
+        <div className='bg-surface-raised border-surface-border/60 rounded-lg border px-3 py-2.5 sm:px-4 sm:py-3'>
+          <p className={cn(designContract.typography.body, 'text-slate-400')}>
+            {/* Name stays a proper noun (translated catalogs keep `{{name}}`); only the sentence is localizable. */}
+            <Trans
+              i18nKey='status.insufficientPrivilegesContact'
+              values={{ name: 'Jostein Oeygarden' }}
+              components={{
+                contact: (
+                  <a
+                    href='mailto:jostein.oygarden@gmail.com'
+                    className='decoration-brand/35 hover:text-brand active:text-brand focus-visible:text-brand focus-visible:ring-brand-border/55 font-semibold text-slate-200 underline underline-offset-4 transition-colors focus-visible:rounded-sm focus-visible:ring-2 focus-visible:outline-none'
+                  />
+                ),
+              }}
+            />
+          </p>
+        </div>
+      }
+    />
+  );
+};

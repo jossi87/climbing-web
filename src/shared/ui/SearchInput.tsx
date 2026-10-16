@@ -1,4 +1,5 @@
 import { forwardRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search as SearchIcon, Loader2, X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { twInk } from '../../design/twInk';
@@ -23,11 +24,13 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(functi
   { isPending, className, onClear, variant = 'default', ariaLabel, placeholder, 'aria-label': ariaLabelAttr, ...props },
   ref,
 ) {
+  const { t } = useTranslation();
   const hasValue = String(props.value ?? '').length > 0;
   const showClear = Boolean(onClear && hasValue && !props.disabled);
   const shell = variant === 'shell';
   const placeholderText = placeholder ?? '';
-  const resolvedAriaLabel = ariaLabel ?? ariaLabelAttr ?? (placeholderText.length > 0 ? placeholderText : 'Search');
+  const resolvedAriaLabel =
+    ariaLabel ?? ariaLabelAttr ?? (placeholderText.length > 0 ? placeholderText : t('search.label'));
 
   return (
     <div
@@ -87,7 +90,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(functi
               ? cn('hover:bg-white/12', twInk.chromeNearWhite88, twInk.hoverChromeWhite, twInk.focusVisibleRingWhite38)
               : 'hover:bg-surface-raised-hover text-slate-400 hover:text-slate-200 focus-visible:ring-slate-300/55',
           )}
-          aria-label='Clear search'
+          aria-label={t('search.clear')}
         >
           <X size={16} strokeWidth={2} className='shrink-0' aria-hidden />
         </button>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo, type ComponentProps, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createPortal } from 'react-dom';
 import { useInView } from 'react-intersection-observer';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -125,6 +126,7 @@ const Media = ({
   compactTiles,
   triviaTiles,
 }: Props) => {
+  const { t } = useTranslation();
   const { mediaId, pitch } = useIds();
   const location = useLocation();
   const navigate = useNavigate();
@@ -273,7 +275,7 @@ const Media = ({
   const onDeleteMedia = () => {
     if (!m) return;
     setConfirmation({
-      message: `Delete this ${m.isMovie ? 'video' : 'image'}?`,
+      message: t(m.isMovie ? 'media.confirmDeleteVideo' : 'media.confirmDeleteImage'),
       action: () => executeMediaAction((token) => deleteMedia(token, mediaIdentityId(m.identity))),
     });
   };
@@ -361,12 +363,12 @@ const Media = ({
             {' '}
             <div className='bg-surface-card border-surface-border w-full max-w-sm rounded-2xl border p-6 shadow-2xl'>
               {' '}
-              <h3 className='type-h2 mb-2'>Confirm Action</h3>{' '}
+              <h3 className='type-h2 mb-2'>{t('media.confirmTitle')}</h3>{' '}
               <p className='type-body mb-6 opacity-70'>{confirmation.message}</p>{' '}
               <div className='flex justify-end gap-3'>
                 {' '}
                 <button type='button' onClick={() => setConfirmation(null)} className='modal-action-cancel px-4 py-2'>
-                  Cancel
+                  {t('common.cancel')}
                 </button>{' '}
                 <button
                   type='button'
@@ -377,7 +379,7 @@ const Media = ({
                   className='type-label rounded-lg bg-red-500 px-4 py-2 shadow-lg shadow-red-500/20 transition-colors hover:bg-red-600'
                 >
                   {' '}
-                  Confirm{' '}
+                  {t('common.confirm')}{' '}
                 </button>{' '}
               </div>{' '}
             </div>{' '}

@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState, type ChangeEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { useGrades } from '../Meta';
 import { Hash, ChevronDown } from 'lucide-react';
@@ -14,6 +15,7 @@ type Props = {
 };
 
 const ProblemSection = ({ sections: initSections, gradeSystemId, onSectionsUpdated }: Props) => {
+  const { t } = useTranslation();
   const { easyToHard: grades } = useGrades(gradeSystemId);
   const [sections, setSections] = useState(initSections);
   const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
@@ -32,7 +34,7 @@ const ProblemSection = ({ sections: initSections, gradeSystemId, onSectionsUpdat
       const num = parseInt(value, 10);
       const currentLen = sections?.length || 1;
 
-      if (!confirm(`Are you sure you want to change number of pitches from ${currentLen} to ${num}?`)) {
+      if (!confirm(t('problemSection.confirmPitchCount', { from: currentLen, to: num }))) {
         return;
       }
 
@@ -55,7 +57,7 @@ const ProblemSection = ({ sections: initSections, gradeSystemId, onSectionsUpdat
       onSectionsUpdated(newSections);
       setSections(newSections);
     },
-    [onSectionsUpdated, sections],
+    [onSectionsUpdated, sections, t],
   );
 
   const updateSection = (
@@ -87,7 +89,7 @@ const ProblemSection = ({ sections: initSections, gradeSystemId, onSectionsUpdat
         >
           {Array.from({ length: 30 }, (_, i) => (
             <option key={i + 1} value={i + 1} className='bg-surface-card'>
-              {i + 1} {i === 0 ? 'Pitch' : 'Pitches'}
+              {t('problemSection.pitchCount', { count: i + 1 })}
             </option>
           ))}
         </select>
@@ -115,7 +117,7 @@ const ProblemSection = ({ sections: initSections, gradeSystemId, onSectionsUpdat
                     type='number'
                     min={1}
                     max={99}
-                    placeholder='Nr'
+                    placeholder={t('problemSection.nr')}
                     className={nrInputClasses}
                     value={s.nr ?? ''}
                     readOnly
@@ -143,7 +145,7 @@ const ProblemSection = ({ sections: initSections, gradeSystemId, onSectionsUpdat
 
               <div className='relative min-w-0'>
                 <textarea
-                  placeholder='Description'
+                  placeholder={t('problemSection.descriptionPlaceholder')}
                   className={commentInputClasses}
                   rows={1}
                   value={s.description || ''}

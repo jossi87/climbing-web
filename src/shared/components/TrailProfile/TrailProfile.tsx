@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { AreaChart, Area, Tooltip, XAxis, YAxis } from 'recharts';
 import { Download, Clock, ArrowUpRight, ArrowDownRight, Ruler, MapPin, ImageIcon, Database } from 'lucide-react';
@@ -78,6 +79,7 @@ export const TrailProfile = ({
   descentIndex = 0,
   className,
 }: Props) => {
+  const { t } = useTranslation();
   const meta = useMeta();
   const containerRef = useRef<HTMLDivElement>(null);
   const gradientId = useId().replace(/:/g, '');
@@ -131,7 +133,7 @@ export const TrailProfile = ({
       {sources ? (
         <span className='inline-flex max-w-full min-w-0 items-center gap-1 font-medium text-slate-100'>
           <Database size={icon} className='light:text-slate-600 shrink-0 text-slate-300' aria-hidden />
-          <span className='min-w-0 truncate' title='Elevation source'>
+          <span className='min-w-0 truncate' title={t('trailProfile.elevationSource')}>
             {sources}
           </span>
         </span>
@@ -180,8 +182,8 @@ export const TrailProfile = ({
             {meta?.isAdmin && trail.id && (
               <Link
                 to={`/media/add?type=trail&trailId=${trail.id}`}
-                title='Add media to trail'
-                aria-label='Add media to trail'
+                title={t('trailProfile.addMedia')}
+                aria-label={t('trailProfile.addMedia')}
                 className='hover:bg-surface-raised-hover -mt-0.5 -mr-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-slate-400 transition-colors hover:text-slate-200'
               >
                 <ImageIcon size={12} strokeWidth={2.5} />
@@ -215,9 +217,9 @@ export const TrailProfile = ({
                     {hasCoords ? (
                       <button
                         type='button'
-                        onClick={() => openMap(lat!, lng!, m.label ?? 'Marker')}
+                        onClick={() => openMap(lat!, lng!, m.label ?? t('trailProfile.marker'))}
                         className='type-on-accent hover:type-on-accent inline-flex items-center gap-1 rounded-lg border border-white/12 bg-white/6 px-1.5 py-0.5 text-[11px] transition-colors hover:border-white/22 hover:bg-white/12 max-sm:text-[10px]'
-                        title='Open in maps app'
+                        title={t('trailProfile.openInMaps')}
                       >
                         {inner}
                       </button>
@@ -251,7 +253,9 @@ export const TrailProfile = ({
           <div className='pt-3' />
           <hr className='border-surface-border/60 mx-0' />
           <div className='bg-surface-raised/60 px-2.5 py-1 max-sm:px-2'>
-            <span className='text-[11px] font-semibold tracking-wide text-slate-400 uppercase'>Hike profile:</span>
+            <span className='text-[11px] font-semibold tracking-wide text-slate-400 uppercase'>
+              {t('trailProfile.hikeProfile')}
+            </span>
           </div>
         </>
       ) : null}

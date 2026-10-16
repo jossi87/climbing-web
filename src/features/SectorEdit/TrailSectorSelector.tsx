@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { cn } from '../../lib/utils';
 
@@ -22,6 +23,7 @@ type Props = {
  * removed; other sectors can be appended / removed freely.
  */
 export function TrailSectorSelector({ areaSectors, currentSectorId, sectors, onChange }: Props) {
+  const { t } = useTranslation();
   const isSelected = useCallback((sectorId: number) => sectors.some((s) => s.sectorId === sectorId), [sectors]);
 
   const toggle = useCallback(
@@ -41,7 +43,9 @@ export function TrailSectorSelector({ areaSectors, currentSectorId, sectors, onC
 
   return (
     <div className='space-y-1.5'>
-      <span className='mb-1 ml-1 block text-[12px] font-medium text-slate-400 sm:text-[13px]'>Shared with sectors</span>
+      <span className='mb-1 ml-1 block text-[12px] font-medium text-slate-400 sm:text-[13px]'>
+        {t('mapEditor.sharedWithSectors')}
+      </span>
       <div className='flex flex-wrap gap-1.5'>
         {areaSectors.map((s) => {
           const id = s.id!;
@@ -61,7 +65,11 @@ export function TrailSectorSelector({ areaSectors, currentSectorId, sectors, onC
                 isSelf && 'cursor-default opacity-90',
               )}
               title={
-                isSelf ? 'This sector (always included)' : selected ? `Remove ${s.name}` : `Share trail with ${s.name}`
+                isSelf
+                  ? t('mapEditor.selfSector')
+                  : selected
+                    ? t('mapEditor.removeNamed', { name: s.name ?? '' })
+                    : t('mapEditor.shareNamed', { name: s.name ?? '' })
               }
             >
               {/* Check indicator */}

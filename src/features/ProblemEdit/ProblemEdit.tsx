@@ -7,6 +7,7 @@ import {
   type FormEvent,
   type UIEvent,
 } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { parseCoordInput, sanitizeCoordInput, useCoordinateText } from '../../shared/hooks/useCoordinateText';
 import { UsersSelector } from '../../shared/ui/UserSelector';
 import RockSelector from '../../shared/components/RockSelector/RockSelector';
@@ -41,22 +42,20 @@ import { formatRouteTypeLabel } from '../../utils/routeTradGear';
 type Problem = components['schemas']['Problem'];
 
 const useIds = (): { sectorId: number; problemId: number } => {
+  const { t } = useTranslation();
   const { sectorId, problemId } = useParams();
-  if (!sectorId) throw new Error('Missing sectorId param');
-  if (!problemId) throw new Error('Missing problemId param');
+  if (!sectorId) throw new Error(t('place.missingSectorId'));
+  if (!problemId) throw new Error(t('place.missingProblemId'));
   return { sectorId: +sectorId, problemId: +problemId };
 };
 
 function ProblemEditLoaderNotFound() {
   const meta = useMeta();
+  const { t } = useTranslation();
   return (
     <>
-      <title>{`Not found | ${meta?.title}`}</title>
-      <NotFoundCard
-        className='mt-4 sm:mt-6'
-        title='404'
-        description='Cannot find the specified problem because it does not exist or you do not have sufficient permissions.'
-      />
+      <title>{t('meta.pageTitle', { page: t('meta.notFound'), site: meta?.title ?? '' })}</title>
+      <NotFoundCard className='mt-4 sm:mt-6' title='404' description={t('place.notFoundProblemDescription')} />
     </>
   );
 }
@@ -118,6 +117,7 @@ const isPlottableProblem = (
 };
 
 const ProblemEdit = ({ problem, sector }: Props) => {
+  const { t } = useTranslation();
   useEffect(() => {
     void ensureDatePickerStyles();
   }, []);
@@ -154,7 +154,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
       event.preventDefault();
       const trash = !!data.trash;
       if (trash) {
-        if (!confirm('Are you sure you want to move this problem/route to trash?')) {
+        if (!confirm(t('problemEdit.confirmTrash'))) {
           captureSentryMessage('Decided to not delete problem', { problemId, sectorId });
           return false;
         }
@@ -219,7 +219,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
         setSaving(false);
       }
     },
-    [accessToken, client, meta.types, problemId, sectorId],
+    [accessToken, client, meta.types, problemId, sectorId, t],
   );
 
   let defaultCenter: { lat: number; lng: number };
@@ -324,8 +324,8 @@ const ProblemEdit = ({ problem, sector }: Props) => {
    * problem doesn't exist yet, so there's nothing to move.
    */
   const isNew = problemId <= 0;
-  const noun = meta.isBouldering ? 'problem' : 'route';
-  const headerTitle = `${isNew ? 'Add' : 'Edit'} ${noun}`;
+  const noun = t(meta.isBouldering ? 'problemEdit.nounProblem' : 'problemEdit.nounRoute');
+  const headerTitle = isNew ? t('problemEdit.addNoun', { noun }) : t('problemEdit.editNoun', { noun });
 
   /** When `nr` is 0 the backend auto-assigns `maxNr + 1`. Show the actual next number instead of 0. */
   const maxNr = Math.max(0, ...(sector.problems ?? []).map((p) => p.nr ?? 0));
@@ -333,7 +333,12 @@ const ProblemEdit = ({ problem, sector }: Props) => {
 
   return (
     <div className='w-full min-w-0 pb-20 text-left'>
-      <title>{`${isNew ? `Add ${noun}` : `Edit ${data.name}`} | ${meta?.title}`}</title>
+      <title>
+        {t('meta.pageTitle', {
+          page: isNew ? t('problemEdit.addNoun', { noun }) : t('common.editNamed', { name: data.name ?? '' }),
+          site: meta?.title ?? '',
+        })}
+      </title>
 
       <form
         id='problem-edit-form'
@@ -351,11 +356,18 @@ const ProblemEdit = ({ problem, sector }: Props) => {
             description={
               isNew ? undefined : (
                 <>
-                  Contact{' '}
-                  <a href='mailto:jostein.oygarden@gmail.com' className='hover:text-brand font-semibold text-slate-200'>
-                    Jostein Øygarden
-                  </a>{' '}
-                  if you want to move this {noun} to another sector.
+                  <Trans
+                    i18nKey='problemEdit.contact'
+                    values={{ noun }}
+                    components={{
+                      link: (
+                        <a
+                          href='mailto:jostein.oygarden@gmail.com'
+                          className='hover:text-brand font-semibold text-slate-200'
+                        />
+                      ),
+                    }}
+                  />
                 </>
               )
             }
@@ -363,17 +375,18 @@ const ProblemEdit = ({ problem, sector }: Props) => {
           <div className='space-y-4 p-3 sm:p-5'>
             <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
               <div className='space-y-2'>
-                <label className={labelClasses}>Name</label>
+                <label className={labelClasses}>{t('problemEdit.name')}</label>
                 <input
                   className={cn(inputClasses, !data.name ? 'border-red-500/50' : '')}
                   value={data.name}
                   onChange={(e) => setData((prev) => ({ ...prev, name: e.target.value }))}
                 />
-                {!data.name && <p className='ml-1 text-[11px] font-bold text-red-500'>Name required</p>}
+                {!data.name && (
+                  <p className='ml-1 text-[11px] font-bold text-red-500'>{t('problemEdit.nameRequired')}</p>
+                )}
               </div>
 
               <VisibilitySelectorField
-                label='Visibility'
                 value={{ lockedAdmin: !!data.lockedAdmin, lockedSuperadmin: !!data.lockedSuperadmin }}
                 onChange={({ lockedAdmin, lockedSuperadmin }) =>
                   setData((prev) => ({ ...prev, lockedAdmin, lockedSuperadmin }))
@@ -381,7 +394,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
               />
 
               <div className='space-y-2'>
-                <label className={labelClasses}>Number</label>
+                <label className={labelClasses}>{t('problemEdit.number')}</label>
                 <input
                   type='number'
                   className={inputClasses}
@@ -391,20 +404,20 @@ const ProblemEdit = ({ problem, sector }: Props) => {
               </div>
 
               <div className='space-y-2'>
-                <label className={labelClasses}>Move to trash</label>
+                <label className={labelClasses}>{t('common.moveToTrash')}</label>
                 <FormSwitch
                   checked={!!data.trash}
                   onChange={() => setData((prev) => ({ ...prev, trash: !prev.trash }))}
                   disabled={!data.id || data.id <= 0}
                   variant='danger'
-                  aria-label='Move to trash'
+                  aria-label={t('common.moveToTrash')}
                 />
               </div>
             </div>
 
             <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
               <div className='space-y-2'>
-                <label className={labelClasses}>Grade</label>
+                <label className={labelClasses}>{t('problemEdit.grade')}</label>
                 <div className='relative'>
                   <select
                     className={cn(
@@ -416,7 +429,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                     onChange={(e) => setData((prev) => ({ ...prev, originalGrade: e.target.value }))}
                   >
                     <option value='' disabled>
-                      Select grade…
+                      {t('problemEdit.selectGrade')}
                     </option>
                     {grades.map((g) => (
                       <option key={g} value={g}>
@@ -429,13 +442,15 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                     className='pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-slate-500'
                   />
                 </div>
-                {gradeMissing && <p className='ml-1 text-[11px] font-bold text-red-500'>Grade required</p>}
+                {gradeMissing && (
+                  <p className='ml-1 text-[11px] font-bold text-red-500'>{t('problemEdit.gradeRequired')}</p>
+                )}
               </div>
 
               <div className='space-y-2'>
-                <label className={labelClasses}>FA user(s)</label>
+                <label className={labelClasses}>{t('problemEdit.faUsers')}</label>
                 <UsersSelector
-                  placeholder='Select FA user(s)'
+                  placeholder={t('problemEdit.selectFaUsers')}
                   users={data.fa ?? []}
                   onUsersUpdated={(users) =>
                     setData((prev) => ({
@@ -450,7 +465,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
               </div>
 
               <div className='space-y-2'>
-                <label className={labelClasses}>FA date</label>
+                <label className={labelClasses}>{t('problemEdit.faDate')}</label>
                 <div className='relative'>
                   <DatePicker
                     wrapperClassName='w-full'
@@ -465,15 +480,13 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                   />
                 </div>
                 {faDateWithoutGradeOrUsers && (
-                  <p className='ml-1 text-[11px] font-bold text-red-500'>
-                    Add FA user(s), change grade, or remove the FA date
-                  </p>
+                  <p className='ml-1 text-[11px] font-bold text-red-500'>{t('problemEdit.faHint')}</p>
                 )}
               </div>
 
               {!meta.isBouldering && (
                 <div className='space-y-2'>
-                  <label className={labelClasses}>Route length (m)</label>
+                  <label className={labelClasses}>{t('problemEdit.routeLength')}</label>
                   <input
                     type='number'
                     className={inputClasses}
@@ -491,12 +504,12 @@ const ProblemEdit = ({ problem, sector }: Props) => {
 
             {meta.isBouldering && (
               <div className='space-y-2'>
-                <label className={labelClasses}>Rock (grouping)</label>
+                <label className={labelClasses}>{t('problemEdit.rock')}</label>
                 <RockSelector
                   rock={data.rock ?? null}
                   onRockUpdated={(rock) => setData((prev) => ({ ...prev, rock: rock ?? undefined }))}
                   rocks={sectorRocks}
-                  placeholder='Search or select rock...'
+                  placeholder={t('problemEdit.searchRock')}
                 />
               </div>
             )}
@@ -504,7 +517,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
             {meta.isClimbing && (
               <>
                 <div className='space-y-2'>
-                  <label className={labelClasses}>Type</label>
+                  <label className={labelClasses}>{t('problemEdit.type')}</label>
                   <div className='relative'>
                     <select
                       className={cn(
@@ -517,7 +530,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                     >
                       {meta.types.length > 1 && (
                         <option value='' disabled>
-                          Select type…
+                          {t('problemEdit.selectType')}
                         </option>
                       )}
                       {meta.types.map((t, i) => (
@@ -531,11 +544,13 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                       className='pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-slate-500'
                     />
                   </div>
-                  {typeMissing && <p className='ml-1 text-[11px] font-bold text-red-500'>Type required</p>}
+                  {typeMissing && (
+                    <p className='ml-1 text-[11px] font-bold text-red-500'>{t('problemEdit.typeRequired')}</p>
+                  )}
                 </div>
 
                 <div className='space-y-2'>
-                  <label className={labelClasses}>First AID ascent?</label>
+                  <label className={labelClasses}>{t('problemEdit.firstAid')}</label>
                   <div className='flex gap-1.5 sm:gap-2'>
                     <button
                       type='button'
@@ -562,7 +577,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                             ),
                       )}
                     >
-                      Yes
+                      {t('common.yes')}
                     </button>
                     <button
                       type='button'
@@ -579,21 +594,18 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                             ),
                       )}
                     >
-                      No
+                      {t('common.no')}
                     </button>
                   </div>
                 </div>
 
                 {data.faAid && (
                   <div className='space-y-4'>
-                    <p className='type-micro text-slate-500'>
-                      First AID ascent is separate from the free first ascent above. Add who, when, and optional notes —
-                      the problem page only shows this block when at least one of these is set.
-                    </p>
+                    <p className='type-micro text-slate-500'>{t('problemEdit.firstAidHint')}</p>
                     <div className='space-y-2'>
-                      <label className={labelClasses}>First AID — climbers</label>
+                      <label className={labelClasses}>{t('problemEdit.firstAidClimbers')}</label>
                       <UsersSelector
-                        placeholder='Search climbers…'
+                        placeholder={t('problemEdit.searchClimbers')}
                         users={data.faAid.users ?? []}
                         onUsersUpdated={(users) =>
                           setData((prev) =>
@@ -614,7 +626,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                       />
                     </div>
                     <div className='space-y-2'>
-                      <label className={labelClasses}>First AID — date</label>
+                      <label className={labelClasses}>{t('problemEdit.firstAidDate')}</label>
                       <div className='relative'>
                         <DatePicker
                           wrapperClassName='w-full'
@@ -638,11 +650,11 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                       </div>
                     </div>
                     <div className='space-y-2'>
-                      <MarkdownFieldLabel className={labelClasses}>First AID — notes</MarkdownFieldLabel>
+                      <MarkdownFieldLabel className={labelClasses}>{t('problemEdit.firstAidNotes')}</MarkdownFieldLabel>
                       <textarea
                         className={cn(inputClasses, 'min-h-20 resize-none')}
                         value={data.faAid.description ?? ''}
-                        placeholder='Gear, style, or other context for the first aid ascent…'
+                        placeholder={t('problemEdit.firstAidNotesPlaceholder')}
                         onChange={(e) =>
                           setData((prev) =>
                             prev.faAid ? { ...prev, faAid: { ...prev.faAid, description: e.target.value } } : prev,
@@ -654,7 +666,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                 )}
 
                 <div className='space-y-2'>
-                  <label className={labelClasses}>Pitches</label>
+                  <label className={labelClasses}>{t('problemEdit.pitches')}</label>
                   <ProblemSection
                     sections={data.sections ?? []}
                     gradeSystemId={sector.gradeSystemId}
@@ -667,7 +679,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
             {meta.isIce && (
               <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'>
                 <div className='space-y-2'>
-                  <label className={labelClasses}>Starting altitude (m)</label>
+                  <label className={labelClasses}>{t('problemEdit.altitude')}</label>
                   <input
                     type='number'
                     className={inputClasses}
@@ -676,7 +688,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                   />
                 </div>
                 <div className='space-y-2'>
-                  <label className={labelClasses}>Aspect</label>
+                  <label className={labelClasses}>{t('problemEdit.aspect')}</label>
                   <input
                     className={inputClasses}
                     value={data.aspect ?? ''}
@@ -684,7 +696,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                   />
                 </div>
                 <div className='space-y-2'>
-                  <label className={labelClasses}>Descent</label>
+                  <label className={labelClasses}>{t('common.descent')}</label>
                   <input
                     className={inputClasses}
                     value={data.descent ?? ''}
@@ -695,7 +707,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
             )}
 
             <div className='space-y-2'>
-              <MarkdownFieldLabel className={labelClasses}>Description</MarkdownFieldLabel>
+              <MarkdownFieldLabel className={labelClasses}>{t('common.description')}</MarkdownFieldLabel>
               <textarea
                 className={cn(inputClasses, 'min-h-30 resize-none')}
                 value={data.comment}
@@ -704,7 +716,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
             </div>
 
             <div className='space-y-2'>
-              <MarkdownFieldLabel className={labelClasses}>Trivia</MarkdownFieldLabel>
+              <MarkdownFieldLabel className={labelClasses}>{t('problemEdit.trivia')}</MarkdownFieldLabel>
               <textarea
                 className={cn(inputClasses, 'min-h-20 resize-none')}
                 value={data.trivia}
@@ -716,7 +728,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
               <input
                 className={cn(inputClasses, 'border-red-500/25 pl-10 focus:border-red-400/45')}
                 value={data.broken}
-                placeholder='Leave empty if not broken'
+                placeholder={t('problemEdit.brokenPlaceholder')}
                 onChange={(e) => setData((prev) => ({ ...prev, broken: e.target.value }))}
               />
               <AlertTriangle
@@ -724,7 +736,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                 size={14}
               />
               <span className='bg-surface-card absolute -top-2 left-10 px-1 text-[11px] font-black tracking-tighter text-red-300/90 uppercase'>
-                {meta.isBouldering ? 'Problem broken' : 'Route broken'}
+                {t(meta.isBouldering ? 'problemEdit.brokenProblem' : 'problemEdit.brokenRoute')}
               </span>
             </div>
 
@@ -741,7 +753,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
 
         {/* ── Map ── */}
         <Card>
-          <SectionHeader title='Map' icon={MapPin} />
+          <SectionHeader title={t('place.map')} icon={MapPin} />
           <div className='relative z-0 h-[35vh] min-h-[220px] w-full overflow-hidden sm:h-[50vh]'>
             <Leaflet
               autoZoom={true}
@@ -767,15 +779,17 @@ const ProblemEdit = ({ problem, sector }: Props) => {
               checked={showSectorMarkers}
               onChange={() => setShowSectorMarkers(!showSectorMarkers)}
               variant='brand'
-              aria-label='Include sibling problems and routes on the map'
+              aria-label={t('problemEdit.includeSiblingsAria')}
             />
-            <span className='text-[12px] font-medium text-slate-300 sm:text-[13px]'>Include siblings</span>
+            <span className='text-[12px] font-medium text-slate-300 sm:text-[13px]'>
+              {t('problemEdit.includeSiblings')}
+            </span>
             <div className='ml-auto'>
               <button
                 type='button'
                 onClick={() => setData((p) => ({ ...p, coordinates: undefined }))}
                 disabled={!hasProblemCoords}
-                title={hasProblemCoords ? 'Remove this problem\u2019s coordinates from the map' : undefined}
+                title={hasProblemCoords ? t('problemEdit.removePositionTitle') : undefined}
                 className={cn(
                   designContract.typography.uiCompact,
                   'inline-flex shrink-0 items-center gap-1 rounded-md border border-dashed border-orange-500/45 px-2 py-1 font-semibold tracking-wide text-orange-400 transition-colors',
@@ -786,13 +800,13 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                 )}
               >
                 <MapPinOff size={13} strokeWidth={2} aria-hidden />
-                Remove position
+                {t('problemEdit.removePosition')}
               </button>
             </div>
           </div>
           <div className='grid grid-cols-1 gap-4 px-0 pb-3 sm:grid-cols-2 sm:px-0 sm:pb-5'>
             <div className='space-y-1'>
-              <label className={labelClasses}>Latitude</label>
+              <label className={labelClasses}>{t('common.latitude')}</label>
               <input
                 className={inputClasses}
                 inputMode='decimal'
@@ -802,7 +816,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
               />
             </div>
             <div className='space-y-1'>
-              <label className={labelClasses}>Longitude</label>
+              <label className={labelClasses}>{t('common.longitude')}</label>
               <input
                 className={inputClasses}
                 inputMode='decimal'
@@ -823,7 +837,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
             }
             className='form-footer-cancel'
           >
-            Cancel
+            {t('common.cancel')}
           </button>
           {isNew && (
             <button
@@ -832,7 +846,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
               disabled={!canSave}
               className='form-footer-secondary disabled:opacity-50'
             >
-              Save & add new
+              {t('problemEdit.saveAndAddNew')}
             </button>
           )}
           <button
@@ -842,7 +856,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
             className='type-label flex items-center gap-2 rounded-lg bg-emerald-400 px-8 py-2.5 text-slate-950 shadow-lg shadow-emerald-900/30 transition-all hover:bg-emerald-300 disabled:opacity-50'
           >
             {saving ? <Loader2 className='animate-spin' size={16} /> : <Save size={16} />}
-            {meta.isBouldering ? 'Save problem' : 'Save route'}
+            {t('problemEdit.saveNoun', { noun })}
           </button>
         </div>
       </form>

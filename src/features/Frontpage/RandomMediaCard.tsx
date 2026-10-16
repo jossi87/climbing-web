@@ -1,6 +1,8 @@
 import { useMemo, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import {
   getMediaFileUrl,
   getMediaFileUrlSrcSet,
@@ -16,24 +18,39 @@ import type { components } from '../../@types/buldreinfo/swagger';
 
 type RandomMedia = components['schemas']['FrontpageRandomMedia'];
 
-/** Full description for `alt` / SR: core climb info plus tagged / photographer (not repeated in the mobile overlay). */
-function randomMediaImageAlt(m: RandomMedia): string {
+/**
+ * Full description for `alt` / SR: core climb info plus tagged / photographer (not repeated in the mobile overlay).
+ *
+ * `t` is passed in (see {@link formatPassiveGearMarkerLine} for the same pattern) so this stays a module-level
+ * function instead of a hook. The route/area/sector parts are API data — the `(grade)` and ` · ` glue is
+ * punctuation, not copy — while everything the card *phrases* comes from the catalog.
+ */
+function randomMediaImageAlt(m: RandomMedia, t: TFunction): string {
   const parts: string[] = [`${m.problem} (${m.grade})`, `${m.area} · ${m.sector}`];
   const tagged = m.tagged || [];
   const photographer = m.photographer;
   const photographerId = photographer?.id ?? null;
   const photographerAlsoTagged = photographerId != null && tagged.some((u) => u.id === photographerId);
-  const showPhotographerByRow = Boolean(photographer && !photographerAlsoTagged);
+  const photographerName = photographer && !photographerAlsoTagged ? photographer.name : undefined;
 
   if (tagged.length === 1) {
-    let t = `In photo: ${tagged[0].name}`;
-    if (photographerAlsoTagged) t += ' · photographer & in photo';
-    parts.push(t);
+    /**
+     * A tagged user without a name is a privacy case (`hideName`), not a missing translation — fall back to the counted
+     * form rather than interpolating an empty name into `In photo: {{name}}`.
+     */
+    const taggedName = tagged[0].name;
+    if (taggedName) {
+      let inPhoto = t('frontpage.inPhoto', { name: taggedName });
+      if (photographerAlsoTagged) inPhoto += t('frontpage.photographerAndInPhoto');
+      parts.push(inPhoto);
+    } else {
+      parts.push(t('frontpage.inPhotoCount', { count: 1 }));
+    }
   } else if (tagged.length > 1) {
-    parts.push(`${tagged.length} in photo`);
+    parts.push(t('frontpage.inPhotoCount', { count: tagged.length }));
   }
-  if (showPhotographerByRow && photographer) {
-    parts.push(`Photo by ${photographer.name}`);
+  if (photographerName) {
+    parts.push(t('frontpage.photoBy', { name: photographerName }));
   }
   return parts.join('. ');
 }
@@ -55,6 +72,7 @@ const arrowNavClass =
   'absolute top-1/2 z-[3] flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border-0 bg-black/35 p-0 !text-white shadow-sm outline-none backdrop-blur-[1px] transition-[opacity,background-color,color] hover:bg-black/50 focus-visible:ring-2 focus-visible:ring-white/45 max-md:opacity-90 md:opacity-55 md:group-hover:opacity-90';
 
 export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
+  const { t } = useTranslation();
   /** Explicit `bg-surface-card` so the shell never reads as white next to `app-card` shadow merge / aside. */
   const cardShellClass = 'group bg-surface-card overflow-hidden border-0 text-left';
 
@@ -175,10 +193,10 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
     return (
       <Card flush className={cardShellClass}>
         <div className={cn(mediaFrameClass, 'flex items-center justify-center text-center text-sm text-slate-400')}>
-          No featured media
+          {t('frontpage.featuredEmptyTitle')}
         </div>
         <div className={desktopCopyMin}>
-          <p className='text-sm text-slate-400'>Check back later for a random photo from the index.</p>
+          <p className='text-sm text-slate-400'>{t('frontpage.featuredEmptyDescription')}</p>
         </div>
       </Card>
     );
@@ -253,7 +271,7 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
                 randomMediaItem.width ?? 2560,
               )}
               sizes='(max-width: 767px) 100vw, 400px'
-              alt={randomMediaImageAlt(randomMediaItem)}
+              alt={randomMediaImageAlt(randomMediaItem, t)}
               width={400}
               height={364}
               decoding='async'
@@ -267,7 +285,7 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
           <>
             <button
               type='button'
-              aria-label='Previous featured photo'
+              aria-label={t('frontpage.featuredPrevious')}
               className={cn(arrowNavClass, 'left-2 max-md:left-1.5')}
               onClick={(e) => {
                 e.preventDefault();
@@ -279,7 +297,7 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
             </button>
             <button
               type='button'
-              aria-label='Next featured photo'
+              aria-label={t('frontpage.featuredNext')}
               className={cn(arrowNavClass, 'right-2 max-md:right-1.5')}
               onClick={(e) => {
                 e.preventDefault();
@@ -341,10 +359,12 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
                     {taggedUsers[0].name}
                   </Link>
                   {taggedUsers.length > 1 && (
-                    <span className='ml-1 text-slate-500'>and {taggedUsers.length - 1} more</span>
+                    <span className='ml-1 text-slate-500'>
+                      {t('frontpage.taggedMore', { count: taggedUsers.length - 1 })}
+                    </span>
                   )}
                   {taggedUsers.length === 1 && photographerAlsoTagged ? (
-                    <span className='ml-1 text-slate-500'>{'· photographer & in photo'}</span>
+                    <span className='ml-1 text-slate-500'>{t('frontpage.photographerAndInPhoto')}</span>
                   ) : null}
                 </div>
               </div>
@@ -358,7 +378,7 @@ export const RandomMediaCard = ({ randomMedia, isLoading = false }: Props) => {
                   size='mini'
                 />
                 <div className={metaTextClass}>
-                  <span className='mr-1 text-slate-400'>By</span>
+                  <span className='mr-1 text-slate-400'>{t('frontpage.bylineBy')}</span>
                   <Link to={`/user/${photographer.id}`} className={`${interactiveLinkClass} ${touchTargetClass}`}>
                     {photographer.name}
                   </Link>

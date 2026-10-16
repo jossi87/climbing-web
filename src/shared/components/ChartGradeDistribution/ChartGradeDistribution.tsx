@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 import { Loading } from '../../ui/StatusWidgets';
@@ -50,6 +51,7 @@ const ChartGradeDistribution = ({
   header,
   embedded = false,
 }: PropsWithHeader) => {
+  const { t } = useTranslation();
   const { data: fetchedGradeDistribution } = useGradeDistribution(idArea, idSector, data || undefined);
   const gradeDistribution = data ?? fetchedGradeDistribution;
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
@@ -215,7 +217,7 @@ const ChartGradeDistribution = ({
                       'px-1.5 py-0.5 font-bold whitespace-nowrap text-slate-400',
                     )}
                   >
-                    {idArea > 0 || idSector > 0 ? 'Sector' : 'Region'}
+                    {t(idArea > 0 || idSector > 0 ? 'chartTable.groupBySector' : 'chartTable.groupByRegion')}
                   </th>
                   {showTotalColumn ? (
                     <th
@@ -224,7 +226,7 @@ const ChartGradeDistribution = ({
                         'px-1.5 py-0.5 text-left font-bold whitespace-nowrap text-slate-400',
                       )}
                     >
-                      Total
+                      {t('chartTable.total')}
                     </th>
                   ) : null}
                   {activeColumns.map((col) => (

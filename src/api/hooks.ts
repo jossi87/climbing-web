@@ -469,14 +469,20 @@ export function useProfile(userId: number) {
     lastname: string;
     emailVisibleToAll: boolean;
     themePreference?: string;
+    /**
+     * Optional: the identity form leaves the language to the header selector (`LanguageSelect`).
+     * Omitted, the stored value is left untouched.
+     */
+    languagePreference?: string;
   }>(`/profiles/identity`, {
-    createBody({ firstname, lastname, emailVisibleToAll, themePreference }) {
+    createBody({ firstname, lastname, emailVisibleToAll, themePreference, languagePreference }) {
       return JSON.stringify({
         id: userId,
         firstname,
         lastname,
         emailVisibleToAll,
         themePreference,
+        languagePreference,
       });
     },
     fetchOptions: {
@@ -602,6 +608,24 @@ export function useProfile(userId: number) {
 export function useSetThemePreference() {
   return usePostData<string>(`/profiles/theme`, {
     createUrl: (themePreference) => `/profiles/theme?themePreference=${encodeURIComponent(themePreference)}`,
+    fetchOptions: {
+      consistencyAction: 'nop',
+    },
+  });
+}
+
+/**
+ * Standalone mutation to set the user's language preference on the backend, mirroring
+ * `useSetThemePreference`: it does not require fetching the profile first, so `LanguageSync` and
+ * `LanguageSelect` can call it on their own.
+ *
+ * Only send languages the backend offers (`meta.languages`): an unknown code is answered with 400
+ * rather than ignored.
+ */
+export function useSetLanguagePreference() {
+  return usePostData<string>(`/profiles/language`, {
+    createUrl: (languagePreference) =>
+      `/profiles/language?languagePreference=${encodeURIComponent(languagePreference)}`,
     fetchOptions: {
       consistencyAction: 'nop',
     },

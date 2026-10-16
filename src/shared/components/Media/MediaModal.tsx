@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, type MouseEvent, useRef, useCallback, Fragment, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useScrollLock } from '../../utils/scroll-lock';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
@@ -242,6 +243,7 @@ const MediaModal = ({
   autoPlayVideo,
   optProblemId,
 }: Props) => {
+  const { t } = useTranslation();
   const { isAdmin, isBouldering } = useMeta();
   const gradeSystems = useGradeSystems();
   /**
@@ -501,7 +503,7 @@ const MediaModal = ({
       <div className='fixed inset-0 z-250 flex h-[100dvh] min-h-[100dvh] w-full max-w-[100vw] items-center justify-center bg-black/90 backdrop-blur-xl'>
         <div className='text-center'>
           <RefreshCw className='text-brand mx-auto mb-4 animate-spin' size={48} />
-          <p className='type-label'>Saving Changes...</p>
+          <p className='type-label'>{t('media.saving')}</p>
         </div>
       </div>
     );
@@ -572,11 +574,11 @@ const MediaModal = ({
                 const isRowActive = problemIdHovered === svg.problemId || optProblemId === svg.problemId;
                 const nrDisplay = svg.nr != null ? svg.nr : '—';
                 const statusHint = svg.ticked
-                  ? 'Ticked'
+                  ? t('media.statusTicked')
                   : svg.todo
-                    ? 'In todo list'
+                    ? t('media.statusTodo')
                     : svg.dangerous
-                      ? 'Flagged as dangerous'
+                      ? t('media.statusDangerous')
                       : undefined;
                 const rawGrade = svg.problemGrade?.trim();
                 const grade = rawGrade && rawGrade !== '.' ? rawGrade : null;
@@ -637,7 +639,7 @@ const MediaModal = ({
               <button
                 type='button'
                 onClick={() => setShowSidebar(!showSidebar)}
-                title={showSidebar ? 'Hide problem list' : 'Show problem list'}
+                title={showSidebar ? t('media.hideProblemList') : t('media.showProblemList')}
                 className={cn(
                   'flex h-9 w-9 shrink-0 items-center justify-center rounded-full shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all active:scale-95 sm:h-11 sm:w-11',
                   showSidebar
@@ -657,8 +659,16 @@ const MediaModal = ({
                 <button
                   type='button'
                   onClick={() => setQualityMenuFor(showQualityMenu ? null : mediaKey)}
-                  title={activeQualityLabel ? `Video quality: ${activeQualityLabel}` : 'Video quality'}
-                  aria-label={activeQualityLabel ? `Video quality: ${activeQualityLabel}` : 'Video quality'}
+                  title={
+                    activeQualityLabel
+                      ? t('media.videoQualityWithLevel', { level: activeQualityLabel })
+                      : t('media.videoQuality')
+                  }
+                  aria-label={
+                    activeQualityLabel
+                      ? t('media.videoQualityWithLevel', { level: activeQualityLabel })
+                      : t('media.videoQuality')
+                  }
                   aria-haspopup='true'
                   aria-expanded={showQualityMenu}
                   className={cn(
@@ -678,7 +688,9 @@ const MediaModal = ({
                    * readable in light mode, matching the ⋯ actions menu.
                    */
                   <div className='media-modal-actions-menu bg-surface-card border-surface-border animate-in fade-in zoom-in-95 absolute top-full right-0 z-180 mt-2 w-44 overflow-hidden rounded-2xl border py-2 shadow-2xl duration-200'>
-                    <div className='type-label border-surface-border/50 mb-1 border-b px-4 py-2'>Quality</div>
+                    <div className='type-label border-surface-border/50 mb-1 border-b px-4 py-2'>
+                      {t('media.quality')}
+                    </div>
 
                     {/* Auto — the adaptive default; ticked while the player picks renditions itself. */}
                     <button
@@ -689,7 +701,7 @@ const MediaModal = ({
                       }}
                       className={cn(mediaMenuItemClass, videoQuality.isAuto && 'bg-surface-raised')}
                     >
-                      <span>Auto</span>
+                      <span>{t('media.qualityAuto')}</span>
                       {videoQuality.isAuto && (
                         <Check size={14} strokeWidth={2} className='text-brand ml-auto shrink-0' />
                       )}
@@ -726,8 +738,8 @@ const MediaModal = ({
             <button
               type='button'
               onClick={() => setShowInfo(true)}
-              title='Information'
-              aria-label='Information'
+              title={t('media.detailTitle')}
+              aria-label={t('media.detailTitle')}
               className={mediaModalToolbarIconBtnClass}
             >
               <Info size={17} strokeWidth={2} />
@@ -737,8 +749,8 @@ const MediaModal = ({
               <button
                 type='button'
                 onClick={() => setShowHelp(true)}
-                title='Topo legend'
-                aria-label='Topo legend'
+                title={t('media.topoLegend')}
+                aria-label={t('media.topoLegend')}
                 className={mediaModalToolbarIconBtnClass}
               >
                 <HelpCircle size={17} strokeWidth={2} />
@@ -749,8 +761,8 @@ const MediaModal = ({
               <button
                 type='button'
                 onClick={() => setShowSvg((prev) => !prev)}
-                title={showSvg ? 'Hide SVG elements' : 'Show SVG elements'}
-                aria-label={showSvg ? 'Hide SVG elements' : 'Show SVG elements'}
+                title={showSvg ? t('media.hideSvg') : t('media.showSvg')}
+                aria-label={showSvg ? t('media.hideSvg') : t('media.showSvg')}
                 className={cn(
                   'flex h-9 w-9 shrink-0 items-center justify-center rounded-full shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all active:scale-95 sm:h-11 sm:w-11',
                   showSvg
@@ -766,8 +778,8 @@ const MediaModal = ({
               <button
                 type='button'
                 onClick={() => setZoomMode(true)}
-                title='Zoom and pan'
-                aria-label='Zoom and pan'
+                title={t('media.zoomAndPan')}
+                aria-label={t('media.zoomAndPan')}
                 className={mediaModalToolbarIconBtnClass}
               >
                 <ZoomIn size={17} strokeWidth={2} />
@@ -778,7 +790,7 @@ const MediaModal = ({
               <button
                 type='button'
                 onClick={() => setShowMenu(!showMenu)}
-                title='More actions'
+                title={t('media.moreActions')}
                 className={cn(
                   'flex h-9 w-9 items-center justify-center rounded-full shadow-[0_4px_28px_rgba(0,0,0,0.55)] ring-1 transition-all active:scale-95 sm:h-11 sm:w-11',
                   showMenu
@@ -796,7 +808,9 @@ const MediaModal = ({
                  * light-on-white in light mode.
                  */
                 <div className='media-modal-actions-menu bg-surface-card border-surface-border animate-in fade-in zoom-in-95 absolute top-full right-0 z-180 mt-2 w-64 rounded-2xl border py-2 shadow-2xl duration-200'>
-                  <div className='type-label border-surface-border/50 mb-1 border-b px-4 py-2'>Actions</div>
+                  <div className='type-label border-surface-border/50 mb-1 border-b px-4 py-2'>
+                    {t('media.actions')}
+                  </div>
                   {canDrawTopo && (
                     <button
                       type='button'
@@ -805,7 +819,7 @@ const MediaModal = ({
                       }
                       className={mediaMenuItemClass}
                     >
-                      <Paintbrush size={14} className={mediaMenuIconClass} strokeWidth={2} /> Draw topo line
+                      <Paintbrush size={14} className={mediaMenuIconClass} strokeWidth={2} /> {t('media.drawTopoLine')}
                     </button>
                   )}
                   {canDrawMedia && (
@@ -814,17 +828,18 @@ const MediaModal = ({
                       onClick={() => navigate(`/media/svg-edit/${mediaIdentityId(m.identity)}`)}
                       className={mediaMenuItemClass}
                     >
-                      <Paintbrush size={14} className={mediaMenuIconClass} strokeWidth={2} /> Draw on image
+                      <Paintbrush size={14} className={mediaMenuIconClass} strokeWidth={2} /> {t('media.drawOnImage')}
                     </button>
                   )}
                   {canOrder && (
                     <button type='button' onClick={onMoveImageLeft} className={mediaMenuItemClass}>
-                      <ArrowLeft size={14} className={mediaMenuIconClass} strokeWidth={2} /> Move image left
+                      <ArrowLeft size={14} className={mediaMenuIconClass} strokeWidth={2} /> {t('media.moveImageLeft')}
                     </button>
                   )}
                   {canOrder && (
                     <button type='button' onClick={onMoveImageRight} className={mediaMenuItemClass}>
-                      <ArrowRight size={14} className={mediaMenuIconClass} strokeWidth={2} /> Move image right
+                      <ArrowRight size={14} className={mediaMenuIconClass} strokeWidth={2} />{' '}
+                      {t('media.moveImageRight')}
                     </button>
                   )}
                   {hasMenuTopActions && hasMenuBottomActions && <div className='bg-surface-border/50 my-2 h-px' />}
@@ -843,19 +858,20 @@ const MediaModal = ({
                       }
                       className={mediaMenuItemClass}
                     >
-                      <Download size={14} className={mediaMenuIconClass} strokeWidth={2} /> Download Original
+                      <Download size={14} className={mediaMenuIconClass} strokeWidth={2} />{' '}
+                      {t('media.downloadOriginal')}
                     </button>
                   )}
                   {canRotate && (
                     <>
                       <button type='button' onClick={() => onRotate(90)} className={mediaMenuItemClass}>
-                        <RotateCw size={14} className={mediaMenuIconClass} strokeWidth={2} /> Rotate 90° CW
+                        <RotateCw size={14} className={mediaMenuIconClass} strokeWidth={2} /> {t('media.rotateCw')}
                       </button>
                       <button type='button' onClick={() => onRotate(270)} className={mediaMenuItemClass}>
-                        <RotateCcw size={14} className={mediaMenuIconClass} strokeWidth={2} /> Rotate 90° CCW
+                        <RotateCcw size={14} className={mediaMenuIconClass} strokeWidth={2} /> {t('media.rotateCcw')}
                       </button>
                       <button type='button' onClick={() => onRotate(180)} className={mediaMenuItemClass}>
-                        <RefreshCw size={14} className={mediaMenuIconClass} strokeWidth={2} /> Rotate 180°
+                        <RefreshCw size={14} className={mediaMenuIconClass} strokeWidth={2} /> {t('media.rotateHalf')}
                       </button>
                     </>
                   )}
@@ -868,12 +884,13 @@ const MediaModal = ({
                       }}
                       className={mediaMenuItemClass}
                     >
-                      <Edit size={14} className={mediaMenuIconClass} strokeWidth={2} /> Edit media
+                      <Edit size={14} className={mediaMenuIconClass} strokeWidth={2} /> {t('media.edit')}
                     </button>
                   )}
                   {canDelete && (
                     <button type='button' onClick={onDelete} className={mediaMenuDeleteClass}>
-                      <Trash2 size={14} className='shrink-0' strokeWidth={2} /> Delete {isImage ? 'Image' : 'Video'}
+                      <Trash2 size={14} className='shrink-0' strokeWidth={2} />{' '}
+                      {isImage ? t('media.deleteImage') : t('media.deleteVideo')}
                     </button>
                   )}
                 </div>
@@ -883,8 +900,8 @@ const MediaModal = ({
             <button
               type='button'
               onClick={onClose}
-              title='Close'
-              aria-label='Close'
+              title={t('common.close')}
+              aria-label={t('common.close')}
               className={mediaModalToolbarIconBtnCloseClass}
             >
               <X size={19} strokeWidth={2} />
@@ -980,7 +997,7 @@ const MediaModal = ({
                       src={embedSrc}
                       className='h-full w-full border-0 bg-black'
                       allowFullScreen
-                      title='Video Content'
+                      title={t('media.embedFrameTitle')}
                     />
                   </div>
                 </div>
@@ -1165,7 +1182,9 @@ const MediaModal = ({
                   if (mediaPitch > 0)
                     chunks.push({
                       key: 'pitch',
-                      node: <span className='text-[#94a3b8] tabular-nums'>Pitch {mediaPitch}</span>,
+                      node: (
+                        <span className='text-[#94a3b8] tabular-nums'>{t('media.pitch', { pitch: mediaPitch })}</span>
+                      ),
                     });
                   if (activePitch?.description?.trim())
                     chunks.push({
@@ -1231,12 +1250,12 @@ const MediaModal = ({
                 <div className='border-surface-border bg-surface-raised ring-surface-border/40 rounded-2xl border p-3 text-slate-100 shadow-sm ring-1'>
                   <Info size={24} strokeWidth={2} />
                 </div>
-                <h3 className='type-h2'>Information</h3>
+                <h3 className='type-h2'>{t('media.detailTitle')}</h3>
               </div>
               <button
                 type='button'
                 onClick={() => setShowInfo(false)}
-                aria-label='Close'
+                aria-label={t('common.close')}
                 className='hover:bg-surface-raised-hover rounded-xl p-2 transition-colors'
               >
                 <X size={24} />
@@ -1247,7 +1266,7 @@ const MediaModal = ({
               <div className='space-y-6'>
                 <div>
                   <p className='type-label mb-2 flex items-center gap-2'>
-                    <Camera size={12} /> Photographer
+                    <Camera size={12} /> {t('media.photographer')}
                   </p>
                   <p className='type-body text-xs font-semibold'>
                     {m.photographer?.id ? (
@@ -1261,14 +1280,14 @@ const MediaModal = ({
                         <ExternalLink size={10} strokeWidth={2} className='shrink-0 opacity-60' />
                       </Link>
                     ) : (
-                      m.photographer?.name || 'Unknown'
+                      m.photographer?.name || t('media.unknownName')
                     )}
                   </p>
                 </div>
                 {m.tagged && m.tagged.length > 0 && (
                   <div>
                     <p className='type-label mb-2 flex items-center gap-2'>
-                      <UsersIcon size={12} /> In shot
+                      <UsersIcon size={12} /> {t('media.inShot')}
                     </p>
                     <p className='type-body text-xs font-semibold'>
                       {m.tagged.map((u, i) => (
@@ -1297,21 +1316,21 @@ const MediaModal = ({
                 {(m.dateCreated || m.dateTaken) && (
                   <div>
                     <p className='type-label mb-2 flex items-center gap-2'>
-                      <Calendar size={12} /> Dates
+                      <Calendar size={12} /> {t('media.dates')}
                     </p>
                     <div className='type-body space-y-1 font-semibold'>
-                      {m.dateCreated && <p className='text-xs'>Uploaded: {m.dateCreated}</p>}
-                      {m.dateTaken && <p className='text-xs'>Taken: {m.dateTaken}</p>}
+                      {m.dateCreated && <p className='text-xs'>{t('media.uploaded', { date: m.dateCreated })}</p>}
+                      {m.dateTaken && <p className='text-xs'>{t('media.taken', { date: m.dateTaken })}</p>}
                     </div>
                   </div>
                 )}
                 {m.width && m.height ? (
                   <div>
                     <p className='type-label mb-2 flex items-center gap-2'>
-                      <Maximize2 size={12} /> Technical
+                      <Maximize2 size={12} /> {t('media.technical')}
                     </p>
                     <p className='type-body text-xs font-semibold'>
-                      {m.width} x {m.height} px
+                      {t('media.pixelSize', { width: m.width, height: m.height })}
                     </p>
                   </div>
                 ) : null}
@@ -1327,7 +1346,7 @@ const MediaModal = ({
               m.userAvatarId) && (
               <div className='border-surface-border/50 border-t pt-6'>
                 <p className='type-label mb-3 flex items-center gap-2'>
-                  <LinkIcon size={12} /> Connected to
+                  <LinkIcon size={12} /> {t('media.connectedTo')}
                 </p>
                 <div className='space-y-1.5'>
                   {m.areas
@@ -1382,9 +1401,12 @@ const MediaModal = ({
                             {p.problemName}
                             {hasGrade ? ` · ${grade}` : ''}
                             {hasPitch && hasNumPitches
-                              ? ` · Pitch ${p.problemPitch} / ${p.problemNumPitches}`
+                              ? ` · ${t('media.pitchOfTotal', {
+                                  pitch: p.problemPitch ?? 0,
+                                  total: p.problemNumPitches ?? 0,
+                                })}`
                               : hasPitch
-                                ? ` · Pitch ${p.problemPitch}`
+                                ? ` · ${t('media.pitch', { pitch: p.problemPitch ?? 0 })}`
                                 : ''}
                             {location ? ` (${location})` : ''}
                             <ExternalLink size={10} strokeWidth={2} className='shrink-0 opacity-60' />
@@ -1392,14 +1414,17 @@ const MediaModal = ({
                         </p>
                       );
                     })}
-                  {(m.trails ?? []).map((t) => {
-                    const sectorNames = (t.sectors ?? [])
+                  {(m.trails ?? []).map((trail) => {
+                    const sectorNames = (trail.sectors ?? [])
                       .map((s) => [s.sectorName, s.areaName].filter(Boolean).join(' · '))
                       .filter(Boolean)
                       .join(', ');
-                    const firstSectorId = t.sectors?.[0]?.sectorId;
+                    const firstSectorId = trail.sectors?.[0]?.sectorId;
+                    /* Resolved once, outside the link/branch: both arms render the same label and the id may be absent. */
+                    const trailId = trail.trailId;
+                    const trailLabel = trailId == null ? '' : t('media.trail', { id: trailId });
                     return (
-                      <p key={t.trailId} className='type-body text-xs font-semibold'>
+                      <p key={trail.trailId} className='type-body text-xs font-semibold'>
                         {firstSectorId ? (
                           <Link
                             to={`/sector/${firstSectorId}/map`}
@@ -1407,15 +1432,15 @@ const MediaModal = ({
                             rel='noopener noreferrer'
                             className='hover:text-brand inline-flex items-center gap-1 transition-colors'
                           >
-                            Trail #{t.trailId}
-                            {t.trailTitle ? ` · ${t.trailTitle}` : ''}
+                            {trailLabel}
+                            {trail.trailTitle ? ` · ${trail.trailTitle}` : ''}
                             {sectorNames ? ` (${sectorNames})` : ''}
                             <ExternalLink size={10} strokeWidth={2} className='shrink-0 opacity-60' />
                           </Link>
                         ) : (
                           <>
-                            Trail #{t.trailId}
-                            {t.trailTitle ? ` · ${t.trailTitle}` : ''}
+                            {trailLabel}
+                            {trail.trailTitle ? ` · ${trail.trailTitle}` : ''}
                             {sectorNames ? ` (${sectorNames})` : ''}
                           </>
                         )}
@@ -1423,8 +1448,8 @@ const MediaModal = ({
                     );
                   })}
 
-                  {!!m.guestbookId && <p className='type-body text-xs font-semibold'>Guestbook entry</p>}
-                  {!!m.userAvatarId && <p className='type-body text-xs font-semibold'>User avatar</p>}
+                  {!!m.guestbookId && <p className='type-body text-xs font-semibold'>{t('media.guestbookEntry')}</p>}
+                  {!!m.userAvatarId && <p className='type-body text-xs font-semibold'>{t('media.userAvatar')}</p>}
                 </div>
               </div>
             )}
@@ -1432,7 +1457,7 @@ const MediaModal = ({
             {m.description?.trim() && (
               <div className='border-surface-border/50 border-t pt-6'>
                 <p className='type-label mb-2 flex items-center gap-2'>
-                  <Info size={12} /> Description
+                  <Info size={12} /> {t('media.description')}
                 </p>
                 <p className='type-body text-xs leading-relaxed font-semibold'>{m.description.trim()}</p>
               </div>
@@ -1441,7 +1466,7 @@ const MediaModal = ({
             {isInstagramEmbed && m.embedUrl && (
               <div className='border-surface-border/50 border-t pt-6'>
                 <p className='type-label mb-2 flex items-center gap-2'>
-                  <ExternalLink size={12} /> Source
+                  <ExternalLink size={12} /> {t('media.source')}
                 </p>
                 <p className='type-body text-xs font-semibold'>
                   <a
@@ -1482,7 +1507,7 @@ const MediaModal = ({
               <button
                 type='button'
                 onClick={() => setShowHelp(false)}
-                aria-label='Close'
+                aria-label={t('common.close')}
                 className='hover:bg-surface-raised-hover -mr-1 rounded-xl p-2 transition-colors'
               >
                 <X size={24} />
@@ -1493,20 +1518,22 @@ const MediaModal = ({
               <div className='space-y-8'>
                 {!isBouldering && (
                   <div>
-                    <h4 className='text-brand mb-4 text-[11px] font-black tracking-widest uppercase'>Line Shapes</h4>
+                    <h4 className='text-brand mb-4 text-[11px] font-black tracking-widest uppercase'>
+                      {t('media.legend.lineShapes')}
+                    </h4>
                     <ul className='space-y-4'>
                       <li className='flex items-center gap-4'>
                         <div className='h-0.5 w-12 border-t-2 border-dashed border-white' />{' '}
                         <div className='text-sm'>
-                          <p className='type-body font-semibold'>Dotted Line</p>
-                          <p className='text-xs text-slate-500'>Bolted sport route</p>
+                          <p className='type-body font-semibold'>{t('media.legend.dottedLine')}</p>
+                          <p className='text-xs text-slate-500'>{t('media.legend.boltedSportRoute')}</p>
                         </div>
                       </li>
                       <li className='flex items-center gap-4'>
                         <div className='h-0.5 w-12 bg-white' />{' '}
                         <div className='text-sm'>
-                          <p className='type-body font-semibold'>Unbroken Line</p>
-                          <p className='text-xs text-slate-500'>Traditionally protected route</p>
+                          <p className='type-body font-semibold'>{t('media.legend.unbrokenLine')}</p>
+                          <p className='text-xs text-slate-500'>{t('media.legend.traditionallyProtected')}</p>
                         </div>
                       </li>
                     </ul>
@@ -1514,7 +1541,7 @@ const MediaModal = ({
                 )}
                 <div>
                   <h4 className='text-brand mb-4 text-[11px] font-black tracking-widest uppercase'>
-                    Line Colors (Difficulty)
+                    {t('media.legend.lineColors')}
                   </h4>
                   <ul className='grid grid-cols-2 gap-4'>
                     {gradeLegend.map((g) => (
@@ -1528,7 +1555,9 @@ const MediaModal = ({
               </div>
               <div className='space-y-8'>
                 <div>
-                  <h4 className='text-brand mb-4 text-[11px] font-black tracking-widest uppercase'>Number Colors</h4>
+                  <h4 className='text-brand mb-4 text-[11px] font-black tracking-widest uppercase'>
+                    {t('media.legend.numberColors')}
+                  </h4>
                   <ul className='space-y-3'>
                     <li className='flex items-center gap-3'>
                       <div
@@ -1540,7 +1569,7 @@ const MediaModal = ({
                       >
                         1
                       </div>
-                      <span className='text-xs font-bold text-slate-300'>Green: Ticked</span>
+                      <span className='text-xs font-bold text-slate-300'>{t('media.legend.ticked')}</span>
                     </li>
                     <li className='flex items-center gap-3'>
                       <div
@@ -1552,7 +1581,7 @@ const MediaModal = ({
                       >
                         1
                       </div>
-                      <span className='text-xs font-bold text-slate-300'>Blue: In Todo-list</span>
+                      <span className='text-xs font-bold text-slate-300'>{t('media.legend.todo')}</span>
                     </li>
                     <li className='flex items-center gap-3'>
                       <div
@@ -1564,25 +1593,27 @@ const MediaModal = ({
                       >
                         1
                       </div>
-                      <span className='text-xs font-bold text-slate-300'>Red: Dangerous</span>
+                      <span className='text-xs font-bold text-slate-300'>{t('media.legend.dangerous')}</span>
                     </li>
                     <li className='flex items-center gap-3'>
                       <div className='flex h-4 w-4 items-center justify-center rounded border border-slate-200/90 text-[9px] font-black text-slate-200'>
                         1
                       </div>
-                      <span className='text-xs font-bold text-slate-300'>White: Default color</span>
+                      <span className='text-xs font-bold text-slate-300'>{t('media.legend.defaultColor')}</span>
                     </li>
                   </ul>
                 </div>
                 {!isBouldering && (
                   <div>
-                    <h4 className='text-brand mb-4 text-[11px] font-black tracking-widest uppercase'>Other Symbols</h4>
+                    <h4 className='text-brand mb-4 text-[11px] font-black tracking-widest uppercase'>
+                      {t('media.legend.otherSymbols')}
+                    </h4>
                     <ul className='space-y-6'>
                       <li className='flex items-center gap-4'>
                         <svg width='60' height='20' className='bg-surface-nav rounded'>
                           <Descent scale={0.6} path={'M 0 10 C 30 10 30 10 60 10'} thumb={false} />
                         </svg>
-                        <span className='text-xs font-bold text-slate-300'>Descent Line</span>
+                        <span className='text-xs font-bold text-slate-300'>{t('media.legend.descentLine')}</span>
                       </li>
                       <li className='flex items-center gap-4'>
                         <svg
@@ -1602,7 +1633,7 @@ const MediaModal = ({
                             color='#f8fafc'
                           />
                         </svg>
-                        <span className='text-xs font-bold text-slate-300'>Bolted Anchor</span>
+                        <span className='text-xs font-bold text-slate-300'>{t('media.legend.boltedAnchor')}</span>
                       </li>
                       <li className='flex items-center gap-4'>
                         <svg
@@ -1622,7 +1653,7 @@ const MediaModal = ({
                             color='#f8fafc'
                           />
                         </svg>
-                        <span className='text-xs font-bold text-slate-300'>Traditional Anchor</span>
+                        <span className='text-xs font-bold text-slate-300'>{t('media.legend.traditionalAnchor')}</span>
                       </li>
                     </ul>
                   </div>

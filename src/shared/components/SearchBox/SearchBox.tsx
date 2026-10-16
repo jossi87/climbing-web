@@ -1,5 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { ExternalLink, Map, MapPin, MapPinned, Search as SearchIcon, User, type LucideIcon } from 'lucide-react';
 import {
   getMediaFileUrl,
@@ -30,19 +32,22 @@ function getSearchEntityKind(result: SearchResult): SearchEntityKind {
   return 'unknown';
 }
 
-/** Icons for non-user hits without a photo (users get colorful initials instead). */
-function getSearchFallbackMeta(kind: SearchEntityKind): { Icon: LucideIcon; label: string } {
+/**
+ * Icons for non-user hits without a photo (users get colorful initials instead). `t` arrives as an
+ * argument so this stays a plain module-level function instead of a hook.
+ */
+function getSearchFallbackMeta(kind: SearchEntityKind, t: TFunction): { Icon: LucideIcon; label: string } {
   switch (kind) {
     case 'area':
-      return { Icon: Map, label: 'Area' };
+      return { Icon: Map, label: t('search.kind.area') };
     case 'sector':
-      return { Icon: MapPinned, label: 'Sector' };
+      return { Icon: MapPinned, label: t('search.kind.sector') };
     case 'problem':
-      return { Icon: MapPin, label: 'Problem' };
+      return { Icon: MapPin, label: t('search.kind.problem') };
     case 'user':
-      return { Icon: User, label: 'User' };
+      return { Icon: User, label: t('search.kind.user') };
     default:
-      return { Icon: SearchIcon, label: 'Result' };
+      return { Icon: SearchIcon, label: t('search.kind.result') };
   }
 }
 
@@ -71,9 +76,14 @@ const SearchBox = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isBouldering, isClimbing } = useMeta();
+  const { t } = useTranslation();
   const { search, isPending, data } = useSearch();
   /** Bouldering → “problems”; climbing (sport/trad) → “routes”. */
-  const routesOrProblems = isBouldering ? 'problems' : isClimbing ? 'routes' : 'problems';
+  const routesOrProblems = isBouldering
+    ? t('search.entities.problems')
+    : isClimbing
+      ? t('search.entities.routes')
+      : t('search.entities.problems');
   const [value, setValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(isNarrowSearchViewport);
@@ -154,7 +164,9 @@ const SearchBox = () => {
       <SearchInput
         variant='shell'
         ref={inputRef}
-        placeholder={isMobile ? 'Search...' : `Search areas, sectors, ${routesOrProblems} or users...`}
+        placeholder={
+          isMobile ? t('search.placeholderShort') : t('search.placeholderLong', { entities: routesOrProblems })
+        }
         value={value}
         isPending={isPending}
         onClear={() => {
@@ -205,7 +217,7 @@ const SearchBox = () => {
               const versionStamp = mediaIdentityVersionStamp(result?.mediaIdentity);
               const imageSrc = mid > 0 ? getMediaFileUrl(mid, versionStamp, false, { minDimension: 48 }) : null;
               const entityKind = getSearchEntityKind(result);
-              const fallbackMeta = getSearchFallbackMeta(entityKind);
+              const fallbackMeta = getSearchFallbackMeta(entityKind, t);
               const FallbackIcon = fallbackMeta.Icon;
               const userInitialsFallback = entityKind === 'user' && !result.externalUrl && !imageSrc;
               const userId = entityKind === 'user' ? getUserIdFromPath(result.url) : null;
@@ -224,12 +236,12 @@ const SearchBox = () => {
                   <div
                     title={
                       result.externalUrl
-                        ? 'External link'
+                        ? t('search.externalLink')
                         : imageSrc
                           ? undefined
                           : userInitialsFallback
-                            ? `${result.title ?? 'User'} (no photo)`
-                            : `${fallbackMeta.label} (no photo)`
+                            ? t('search.altNoPhoto', { name: result.title ?? t('search.kind.user') })
+                            : t('search.altNoPhoto', { name: fallbackMeta.label })
                     }
                     className={cn(
                       'flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg border transition-colors',

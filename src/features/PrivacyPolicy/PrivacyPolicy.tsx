@@ -1,4 +1,5 @@
 import { useMeta } from '../../shared/components/Meta/context';
+import { Trans, useTranslation } from 'react-i18next';
 import { FileText, Shield } from 'lucide-react';
 import {
   BRV_PLATFORM_AGREEMENT_DATE_LABEL,
@@ -8,77 +9,68 @@ import {
 import { Card, SectionHeader, TextLink } from '../../shared/ui';
 
 const PrivacyPolicy = () => {
+  const { t } = useTranslation();
   const meta = useMeta();
 
   return (
     <>
-      <title>{`Privacy Policy | ${meta?.title}`}</title>
-      <meta name='description' content='Privacy Policy' />
+      <title>{t('meta.pageTitle', { page: t('privacy.title'), site: meta?.title ?? '' })}</title>
+      <meta name='description' content={t('privacy.title')} />
       <Card>
-        <SectionHeader title='Privacy Policy' icon={Shield} subheader='How we protect your data' />
+        <SectionHeader title={t('privacy.title')} icon={Shield} subheader={t('privacy.subheader')} />
         <div className='space-y-8 text-slate-300'>
-          <p className='type-body'>
-            This is a non-profit site. Your name may be visible, but your email stays private and is never used for
-            spam.
-          </p>
+          <p className='type-body'>{t('privacy.intro')}</p>
 
           <section className='space-y-3'>
-            <h3 className='type-label'>Introduction</h3>
+            <h3 className='type-label'>{t('privacy.introductionTitle')}</h3>
             <ul className='list-disc space-y-2 pl-5'>
-              <li className='type-body'>We safeguard the privacy of website visitors.</li>
+              <li className='type-body'>{t('privacy.introVisitors')}</li>
+              <li className='type-body'>{t('privacy.introStorage')}</li>
+            </ul>
+          </section>
+
+          <section className='space-y-3'>
+            <h3 className='type-label'>{t('privacy.personalDataTitle')}</h3>
+            <ul className='list-disc space-y-2 pl-5'>
+              <li className='type-body'>{t('privacy.account')}</li>
+              <li className='type-body'>{t('privacy.saved')}</li>
+              <li className='type-body'>{t('privacy.helps')}</li>
+              <li className='type-body'>{t('privacy.noSelling')}</li>
+            </ul>
+          </section>
+
+          <section className='space-y-3'>
+            <h3 className='type-label'>{t('privacy.regionalTitle')}</h3>
+            <ul className='list-disc space-y-2 pl-5'>
               <li className='type-body'>
-                We store information in your browser using local storage and session storage (not cookies)—for example
-                to keep you signed in, remember your preferences, and cache some content. We also use a third-party
-                error-monitoring service (Sentry) to help diagnose and fix technical issues.
+                <Trans
+                  i18nKey='privacy.agreement'
+                  values={{ date: BRV_PLATFORM_AGREEMENT_DATE_LABEL }}
+                  components={{
+                    brv: <TextLink href={BRV_WEBSITE_URL} children={null} />,
+                    pdf: (
+                      <TextLink href={BRV_PLATFORM_AGREEMENT_PDF} title={t('about.collaboration.norwegianPdf')}>
+                        <span className='inline-flex items-center gap-1'>
+                          {t('about.collaboration.readPdf')}
+                          <FileText className='h-3.5 w-3.5 shrink-0 opacity-90' strokeWidth={2} aria-hidden />
+                        </span>
+                      </TextLink>
+                    ),
+                  }}
+                />
               </li>
             </ul>
           </section>
 
           <section className='space-y-3'>
-            <h3 className='type-label'>How we use personal data</h3>
+            <h3 className='type-label'>{t('privacy.deletingTitle')}</h3>
             <ul className='list-disc space-y-2 pl-5'>
+              <li className='type-body'>{t('privacy.deletingMost')}</li>
               <li className='type-body'>
-                When you create an account, we store your name, email, and profile picture from your login provider.
-              </li>
-              <li className='type-body'>
-                Data you choose to save, such as climbed routes/boulders and uploaded images, can be deleted from your
-                profile page.
-              </li>
-              <li className='type-body'>Saved data helps improve guide quality and helps other users choose climbs.</li>
-              <li className='type-body'>
-                We do not sell personal data or use it for advertising. Trusted providers process data on our behalf
-                only where needed to run the service (for example sign-in and error monitoring), and only as required
-                for that purpose.
-              </li>
-            </ul>
-          </section>
-
-          <section className='space-y-3'>
-            <h3 className='type-label'>Regional agreements</h3>
-            <ul className='list-disc space-y-2 pl-5'>
-              <li className='type-body'>
-                For Rogaland, there is a signed agreement with <TextLink href={BRV_WEBSITE_URL}>BRV</TextLink> (the
-                local climbing club) from {BRV_PLATFORM_AGREEMENT_DATE_LABEL}. It covers who owns the data, how the
-                platform may be used, and related terms. Legally it applies to Rogaland; we still show this section on
-                every regional guide so the terms stay easy to find:{' '}
-                <TextLink href={BRV_PLATFORM_AGREEMENT_PDF} title='Agreement (PDF)'>
-                  <span className='inline-flex items-center gap-1'>
-                    Read the PDF
-                    <FileText className='h-3.5 w-3.5 shrink-0 opacity-90' strokeWidth={2} aria-hidden />
-                  </span>
-                </TextLink>
-                {'.'}
-              </li>
-            </ul>
-          </section>
-
-          <section className='space-y-3'>
-            <h3 className='type-label'>Deleting personal data</h3>
-            <ul className='list-disc space-y-2 pl-5'>
-              <li className='type-body'>Most personal data can be deleted from your profile page after login.</li>
-              <li className='type-body'>
-                If you need help, contact{' '}
-                <TextLink href='mailto:jostein.oygarden@gmail.com'>jostein.oygarden@gmail.com</TextLink>.
+                <Trans
+                  i18nKey='privacy.deletingContact'
+                  components={{ mail: <TextLink href='mailto:jostein.oygarden@gmail.com' children={null} /> }}
+                />
               </li>
             </ul>
           </section>

@@ -15,6 +15,7 @@ import {
   Coffee,
   Heart,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useMeta } from '../components/Meta/context';
 import { SectionLabel } from '../ui';
 import { cn } from '../../lib/utils';
@@ -43,6 +44,7 @@ type NavCardProps = {
 
 const Footer = () => {
   const { isBouldering } = useMeta();
+  const { t } = useTranslation();
   const currYear = new Date().getFullYear();
 
   const NavCard = ({ to, href, icon: Icon, title, subtitle, className, fallbackText }: NavCardProps) => {
@@ -98,43 +100,43 @@ const Footer = () => {
       <div className='max-w-container mx-auto px-4 sm:px-6'>
         <div className='mb-3 grid grid-cols-2 gap-2 sm:mb-4 sm:gap-3 lg:grid-cols-4'>
           <div className='space-y-1 sm:space-y-1.5'>
-            <SectionLabel className={footerColumnHeadingClass}>Navigation</SectionLabel>
+            <SectionLabel className={footerColumnHeadingClass}>{t('footer.navigation')}</SectionLabel>
             <div className='flex flex-col gap-1 sm:gap-1.5'>
-              <NavCard to='/about' icon={Info} title='About' />
-              <NavCard to='/activity' icon={ActivityIcon} title='Activity' />
-              {!isBouldering && <NavCard to='/dangerous' icon={AlertTriangle} title='Dangerous' />}
-              <NavCard to='/graph' icon={BarChart3} title='Graph' />
-              <NavCard to='/restrictions' icon={ShieldOff} title='Restrictions' />
-              <NavCard to='/webcams' icon={Camera} title='Webcams' />
+              <NavCard to='/about' icon={Info} title={t('footer.about')} />
+              <NavCard to='/activity' icon={ActivityIcon} title={t('footer.activity')} />
+              {!isBouldering && <NavCard to='/dangerous' icon={AlertTriangle} title={t('footer.dangerous')} />}
+              <NavCard to='/graph' icon={BarChart3} title={t('footer.graph')} />
+              <NavCard to='/restrictions' icon={ShieldOff} title={t('footer.restrictions')} />
+              <NavCard to='/webcams' icon={Camera} title={t('footer.webcams')} />
             </div>
           </div>
 
           <div className='space-y-1 sm:space-y-1.5'>
-            <SectionLabel className={footerColumnHeadingClass}>Open Source Stack</SectionLabel>
+            <SectionLabel className={footerColumnHeadingClass}>{t('footer.openSourceStack')}</SectionLabel>
             <div className='flex flex-col gap-1 sm:gap-1.5'>
               <NavCard
                 href='https://github.com/jossi87/climbing-web'
                 icon={Code2}
-                title='Frontend'
+                title={t('footer.frontend')}
                 subtitle='React / TS'
               />
               <NavCard
                 href='https://github.com/jossi87/climbing-ws'
                 icon={Coffee}
-                title='Backend API'
+                title={t('footer.backendApi')}
                 subtitle='Java REST'
               />
               <NavCard
                 href='https://github.com/jossi87/climbing-leaflet-renderer'
                 icon={FileDown}
-                title='PDF Maps'
+                title={t('footer.pdfMaps')}
                 subtitle='Leaflet'
               />
             </div>
           </div>
 
           <div className='space-y-1 sm:space-y-1.5'>
-            <SectionLabel className={footerColumnHeadingClass}>Affiliation</SectionLabel>
+            <SectionLabel className={footerColumnHeadingClass}>{t('footer.affiliation')}</SectionLabel>
             <a
               href='https://brv.no'
               rel='noreferrer noopener'
@@ -171,7 +173,7 @@ const Footer = () => {
           </div>
 
           <div className='space-y-1 sm:space-y-1.5'>
-            <SectionLabel className={footerColumnHeadingClass}>Community</SectionLabel>
+            <SectionLabel className={footerColumnHeadingClass}>{t('footer.community')}</SectionLabel>
             <NavCard
               href='https://www.facebook.com/groups/brattelinjer'
               fallbackText='f'
@@ -197,7 +199,7 @@ const Footer = () => {
               href='mailto:jostein.oygarden@gmail.com'
               className='hover:text-brand hover:decoration-brand/55 light:text-slate-600 light:decoration-slate-400/55 light:hover:bg-slate-300/55 light:hover:decoration-brand/60 flex shrink-0 items-center gap-1 rounded px-1 py-0.5 font-bold text-slate-300 underline decoration-white/22 underline-offset-[3px] transition-[color,background-color,text-decoration-color] duration-200 hover:bg-white/[0.07]'
             >
-              <Mail className='h-2.5 w-2.5 shrink-0' strokeWidth={2} /> Contact
+              <Mail className='h-2.5 w-2.5 shrink-0' strokeWidth={2} /> {t('footer.contact')}
             </a>
             <a
               href='/gpl-3.0.txt'
@@ -205,23 +207,23 @@ const Footer = () => {
               rel='noreferrer'
               className='hover:text-brand hover:decoration-brand/55 light:text-slate-600 light:decoration-slate-400/55 light:hover:bg-slate-300/55 light:hover:decoration-brand/60 flex shrink-0 items-center gap-1 rounded px-1 py-0.5 font-bold text-slate-300 underline decoration-white/22 underline-offset-[3px] transition-[color,background-color,text-decoration-color] duration-200 hover:bg-white/[0.07]'
             >
-              <FileText className='h-2.5 w-2.5 shrink-0' strokeWidth={2} /> License
+              <FileText className='h-2.5 w-2.5 shrink-0' strokeWidth={2} /> {t('footer.license')}
             </a>
             <a
               href='/privacy-policy'
               className='hover:text-brand hover:decoration-brand/55 light:text-slate-600 light:decoration-slate-400/55 light:hover:bg-slate-300/55 light:hover:decoration-brand/60 flex shrink-0 items-center gap-1 rounded px-1 py-0.5 font-bold text-slate-300 underline decoration-white/22 underline-offset-[3px] transition-[color,background-color,text-decoration-color] duration-200 hover:bg-white/[0.07]'
             >
-              <ShieldCheck className='h-2.5 w-2.5 shrink-0' strokeWidth={2} /> Privacy
+              <ShieldCheck className='h-2.5 w-2.5 shrink-0' strokeWidth={2} /> {t('footer.privacy')}
             </a>
             <a
               href='/donate'
               className='hover:text-brand hover:decoration-brand/55 light:text-slate-600 light:decoration-slate-400/55 light:hover:bg-slate-300/55 light:hover:decoration-brand/60 flex shrink-0 items-center gap-1 rounded px-1 py-0.5 font-bold text-slate-300 underline decoration-white/22 underline-offset-[3px] transition-[color,background-color,text-decoration-color] duration-200 hover:bg-white/[0.07]'
             >
-              <Heart className='h-2.5 w-2.5 shrink-0' strokeWidth={2} /> Donate
+              <Heart className='h-2.5 w-2.5 shrink-0' strokeWidth={2} /> {t('footer.donate')}
             </a>
           </div>
           <p className={cn('text-center select-none', footerLegalTextClass)}>
-            Buldreinfo / Bratte Linjer &copy; 2003-{currYear}
+            {t('footer.copyright', { year: currYear })}
           </p>
         </div>
       </div>

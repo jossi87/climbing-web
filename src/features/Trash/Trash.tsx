@@ -5,6 +5,8 @@ import { useMeta } from '../../shared/components/Meta';
 import { useNavigate } from 'react-router';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { Trash2, RotateCcw } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { designContract } from '../../design/contract';
 import { twInk } from '../../design/twInk';
 import { cn } from '../../lib/utils';
@@ -15,15 +17,20 @@ const getKey = ({ idArea, idSector, idProblem, idMedia }: components['schemas'][
   return [idArea, idSector, idProblem, idMedia].join('/');
 };
 
-const getLabel = ({ idMedia, idArea, idSector, idProblem }: components['schemas']['Trash']): string => {
-  if (idMedia) return 'Media';
-  if (idArea) return 'Area';
-  if (idSector) return 'Sector';
-  if (idProblem) return 'Problem';
+/**
+ * Entity name of a trash row. Takes `t` because the noun is UI copy: the API only tells us *which*
+ * foreign key is set.
+ */
+const getLabel = (t: TFunction, { idMedia, idArea, idSector, idProblem }: components['schemas']['Trash']): string => {
+  if (idMedia) return t('common.media');
+  if (idArea) return t('common.area');
+  if (idSector) return t('common.sector');
+  if (idProblem) return t('common.problem');
   return '';
 };
 
 const Trash = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const meta = useMeta();
   const { data, restore } = useTrash();
@@ -35,62 +42,68 @@ const Trash = () => {
 
   return (
     <div className='w-full min-w-0'>
-      <title>{`Trash | ${meta?.title}`}</title>
+      <title>{t('meta.pageTitle', { page: t('trash.title'), site: meta.title })}</title>
 
       <Card flush className='min-w-0 border-0'>
         <div className='p-4 sm:p-5'>
-          <SectionHeader title='Trash' icon={Trash2} subheader={`${data.length} items`} />
+          <SectionHeader title={t('trash.title')} icon={Trash2} subheader={t('counts.items', { count: data.length })} />
         </div>
 
         <div className='space-y-1 px-2 pb-2 sm:px-3 sm:pb-3'>
           {!data.length ? (
             <div className='px-4 py-14 text-center sm:px-5 sm:py-18'>
-              <p className={designContract.typography.label}>No data</p>
+              <p className={designContract.typography.label}>{t('common.noData')}</p>
             </div>
           ) : (
-            data.map((t) => {
-              const key = getKey(t);
-              const mediaUrl = t.idMedia ? getMediaFileUrl(t.idMedia, 0, false) : null;
+            data.map((row) => {
+              const key = getKey(row);
+              const mediaUrl = row.idMedia ? getMediaFileUrl(row.idMedia, 0, false) : null;
+              /**
+               * The API may omit the actor or timestamp (deleted-by with a purged account / older rows). Coerced here so
+               * the interpolated sentence reads "deleted by  ()" at worst instead of literally printing `undefined`.
+               */
+              const by = row.by ?? '';
+              const when = row.when ?? '';
               return (
                 <div
                   key={key}
                   className='hover:bg-surface-raised-hover flex min-w-0 items-center justify-between gap-3 rounded-lg px-3 py-2 transition-colors sm:px-4'
                 >
                   <div className='flex min-w-0 items-center gap-3'>
-                    {!!t.idMedia && (
+                    {!!row.idMedia && (
                       <button
                         type='button'
-                        onClick={() => setOpenMedia({ mid: t.idMedia!, name: t.name ?? '' })}
+                        onClick={() => setOpenMedia({ mid: row.idMedia!, name: row.name ?? '' })}
                         className='shrink-0'
                       >
                         <img
-                          alt={t.name ?? ''}
-                          src={getMediaFileUrl(t.idMedia, 0, false, { minDimension: 50 })}
+                          alt={row.name ?? ''}
+                          src={getMediaFileUrl(row.idMedia, 0, false, { minDimension: 50 })}
                           className='border-surface-border h-11 w-11 rounded-md border object-cover'
                         />
                       </button>
                     )}
                     <div className='min-w-0'>
                       <h4 className={cn('truncate text-sm font-semibold text-slate-200', twInk.lightTextSlate900)}>
-                        {t.name}
+                        {row.name}
                       </h4>
                       <p className={cn('truncate text-[11px] text-slate-500', twInk.lightTextSlate700)}>
                         {mediaUrl ? (
                           <>
                             <button
                               type='button'
-                              onClick={() => setOpenMedia({ mid: t.idMedia!, name: t.name ?? '' })}
+                              onClick={() => setOpenMedia({ mid: row.idMedia!, name: row.name ?? '' })}
                               className={cn(
                                 designContract.typography.breadcrumbLink,
                                 'underline-offset-2 hover:underline',
                               )}
                             >
-                              Media
+                              {t('common.media')}
                             </button>{' '}
-                            deleted by {t.by} ({t.when})
+                            {t('trash.deletedBy', { by, when })}
                           </>
                         ) : (
-                          `${getLabel(t)} deleted by ${t.by} (${t.when})`
+                          t('trash.deletedItem', { kind: getLabel(t, row), by, when })
                         )}
                       </p>
                     </div>
@@ -98,8 +111,8 @@ const Trash = () => {
 
                   <button
                     onClick={() => {
-                      if (confirm('Are you sure you want to restore item?')) {
-                        restore(t).then((url) => {
+                      if (confirm(t('trash.confirmRestore'))) {
+                        restore(row).then((url) => {
                           navigate(url);
                         });
                       }
@@ -110,7 +123,7 @@ const Trash = () => {
                     )}
                   >
                     <RotateCcw size={12} />
-                    Restore
+                    {t('common.restore')}
                   </button>
                 </div>
               );

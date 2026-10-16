@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { profileRowMiddleDotClass } from '../../shared/components/Profile/ProfileRowTextSep';
@@ -24,6 +25,9 @@ const AreaPanelGradeDistribution = ({
   data: { grade?: string; color?: string; num?: number }[];
   className?: string;
 }) => {
+  const { t } = useTranslation();
+  /** Only for the discipline noun of the bar tooltip — the bars count the area's problems. */
+  const meta = useMeta();
   const maxValue = Math.max(1, ...data.map((d) => d.num ?? 0));
   const [barMaxHeight, setBarMaxHeight] = useState(125);
   useEffect(() => {
@@ -69,7 +73,10 @@ const AreaPanelGradeDistribution = ({
                 backgroundColor: color ?? 'rgba(255, 255, 255, 0.15)',
                 opacity: total > 0 ? 0.85 : 0.15,
               }}
-              title={`${g.grade}: ${total} route${total !== 1 ? 's' : ''}`}
+              title={t('areas.gradeBarTooltip', {
+                grade: g.grade ?? '',
+                items: t(meta.isBouldering ? 'counts.problems' : 'counts.routes', { count: total }),
+              })}
             />
             <span className='text-center text-[9px] leading-none text-slate-400 opacity-55'>{g.grade}</span>
           </div>
@@ -86,6 +93,7 @@ const AreaPanel = ({
   area: NonNullable<ReturnType<typeof useArea>['data']>;
   onClose: () => void;
 }) => {
+  const { t } = useTranslation();
   const meta = useMeta();
   // Count problems and sectors
   const sectorCount = area.sectors?.length ?? 0;
@@ -136,6 +144,7 @@ const AreaPanel = ({
     const formatGroup = (map: Map<string, number>, total: number) => {
       if (total === 0) return null;
       const entries = [...map.entries()].sort((a, b) => b[1] - a[1]);
+      /** Sub-type names are API data (English keys), so the count/name glue is just a space — no locale wording. */
       const details = entries.map(([type, count]) => `${count} ${type}`).join(', ');
       return { total, details };
     };
@@ -182,8 +191,8 @@ const AreaPanel = ({
             target='_blank'
             rel='noopener noreferrer'
             className='hover:bg-surface-hover inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-slate-500 transition-colors hover:text-slate-200'
-            aria-label='Open area page in new tab'
-            title='Open area page in new tab'
+            aria-label={t('areas.openInNewTab')}
+            title={t('areas.openInNewTab')}
           >
             <ExternalLink size={14} />
           </a>
@@ -195,7 +204,7 @@ const AreaPanel = ({
           type='button'
           onClick={onClose}
           className='hover:bg-surface-hover inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-slate-500 transition-colors hover:text-slate-200'
-          aria-label='Close area panel'
+          aria-label={t('areas.closePanel')}
         >
           <X size={14} />
         </button>
@@ -205,15 +214,11 @@ const AreaPanel = ({
       <div className='flex-1 space-y-3 overflow-y-auto p-3'>
         {/* Stats row */}
         <div className='flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-slate-400'>
-          <span>
-            {sectorCount} sector{sectorCount !== 1 ? 's' : ''}
-          </span>
+          <span>{t('counts.sectors', { count: sectorCount })}</span>
           {meta.isBouldering ? (
             <>
               <span className='text-slate-600'>·</span>
-              <span>
-                {problemCount} problem{problemCount !== 1 ? 's' : ''}
-              </span>
+              <span>{t('counts.problems', { count: problemCount })}</span>
             </>
           ) : (
             <>
@@ -221,7 +226,10 @@ const AreaPanel = ({
                 <>
                   <span className='text-slate-600'>·</span>
                   <span>
-                    {problemBreakdown.single.total} Single-pitch ({problemBreakdown.single.details})
+                    {t('areas.pitchSingleGroup', {
+                      count: problemBreakdown.single.total,
+                      details: problemBreakdown.single.details,
+                    })}
                   </span>
                 </>
               )}
@@ -229,7 +237,10 @@ const AreaPanel = ({
                 <>
                   <span className='text-slate-600'>·</span>
                   <span>
-                    {problemBreakdown.multi.total} Multi-pitch ({problemBreakdown.multi.details})
+                    {t('areas.pitchMultiGroup', {
+                      count: problemBreakdown.multi.total,
+                      details: problemBreakdown.multi.details,
+                    })}
                   </span>
                 </>
               )}
@@ -239,22 +250,22 @@ const AreaPanel = ({
             <>
               <span className='text-slate-600'>·</span>
               <span>
-                {lengthRange.min === lengthRange.max ? `${lengthRange.min}m` : `${lengthRange.min}-${lengthRange.max}m`}
+                {lengthRange.min === lengthRange.max
+                  ? t('areas.lengthExact', { length: lengthRange.min })
+                  : t('areas.lengthRange', { min: lengthRange.min, max: lengthRange.max })}
               </span>
             </>
           )}
           {tickSum > 0 && (
             <>
               <span className='text-slate-600'>·</span>
-              <span>
-                {tickSum} tick{tickSum !== 1 ? 's' : ''}
-              </span>
+              <span>{t('counts.ticks', { count: tickSum })}</span>
             </>
           )}
           {area.pageViews && (
             <>
               <span className='text-slate-600'>·</span>
-              <span>{area.pageViews} page views</span>
+              <span>{t('counts.pageViews', { count: Number(area.pageViews) || 0, formatted: area.pageViews })}</span>
             </>
           )}
         </div>
@@ -290,6 +301,7 @@ const AreaPanel = ({
 };
 
 const Areas = () => {
+  const { t } = useTranslation();
   const { data } = useAreas();
   const meta = useMeta();
   const [showForDevelopers, setShowForDevelopers] = useState(false);
@@ -327,7 +339,7 @@ const Areas = () => {
   );
 
   const areasByRegion = filteredData.reduce((acc, area) => {
-    const regionName = area.regionName?.trim() || 'Unknown region';
+    const regionName = area.regionName?.trim() || t('areas.unknownRegion');
     const existing = acc.get(regionName) ?? [];
     existing.push(area);
     acc.set(regionName, existing);
@@ -358,8 +370,8 @@ const Areas = () => {
 
   return (
     <div className='w-full min-w-0'>
-      <title>{`Areas | ${meta?.title}`}</title>
-      <meta name='description' content={`${data.length} areas for climbing.`} />
+      <title>{t('meta.pageTitle', { page: t('areas.title'), site: meta.title })}</title>
+      <meta name='description' content={t('areas.description', { items: t('counts.areas', { count: data.length }) })} />
 
       <Card flush className='min-w-0 overflow-hidden border-0'>
         <div className='p-4 pb-3 sm:p-5 sm:pb-4'>
@@ -367,8 +379,8 @@ const Areas = () => {
             {meta.isAdmin && (
               <Link
                 to={`/area/edit/-1`}
-                title='Add area'
-                aria-label='Add area'
+                title={t('areas.addArea')}
+                aria-label={t('areas.addArea')}
                 data-ph-action='add'
                 className={cn(
                   designContract.controls.pageHeaderIconButton,
@@ -380,12 +392,16 @@ const Areas = () => {
             )}
           </div>
 
-          <SectionHeader title='Areas' icon={MapIcon} subheader={`${filteredData.length} areas`} />
+          <SectionHeader
+            title={t('areas.title')}
+            icon={MapIcon}
+            subheader={t('counts.areas', { count: filteredData.length })}
+          />
 
           {hasDeveloperAreas ? (
             <div className='mb-3 flex flex-wrap items-center gap-2'>
               <div className='bg-surface-raised border-surface-border/60 inline-flex h-8 items-center gap-1 rounded-full border p-0.5 pl-2 shadow-sm'>
-                <span className='type-micro shrink-0 text-slate-300'>Dataset:</span>
+                <span className='type-micro shrink-0 text-slate-300'>{t('areas.dataset')}</span>
                 <button
                   type='button'
                   onClick={() => setShowForDevelopers(false)}
@@ -396,7 +412,7 @@ const Areas = () => {
                       : designContract.surfaces.segmentInactiveInGroup,
                   )}
                 >
-                  Developed
+                  {t('areas.datasetDeveloped')}
                 </button>
                 <button
                   type='button'
@@ -408,7 +424,7 @@ const Areas = () => {
                       : designContract.surfaces.segmentInactiveInGroup,
                   )}
                 >
-                  Developers
+                  {t('areas.datasetDevelopers')}
                 </button>
               </div>
             </div>

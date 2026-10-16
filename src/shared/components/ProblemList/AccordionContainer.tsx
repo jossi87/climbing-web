@@ -1,4 +1,5 @@
 import { type ReactNode, useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 
@@ -11,6 +12,7 @@ type Props = {
 };
 
 const AccordionContainer = ({ accordionRows }: Props) => {
+  const { t } = useTranslation();
   const [activeIndex, setActiveIndex] = useState<number>(-1);
 
   const toggleAccordion = useCallback((index: number) => {
@@ -50,7 +52,11 @@ const AccordionContainer = ({ accordionRows }: Props) => {
               )}
             >
               <div className='px-2.5 pb-2.5 pl-3 sm:px-3 sm:pb-3'>
-                {hasData ? d.content : <i className='text-[13px] text-slate-400 md:text-[14px]'>No data</i>}
+                {hasData ? (
+                  d.content
+                ) : (
+                  <i className='text-[13px] text-slate-400 md:text-[14px]'>{t('problemList.noData')}</i>
+                )}
               </div>
             </div>
           </div>

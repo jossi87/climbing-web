@@ -1,9 +1,13 @@
 import { CircleX, PawPrint } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from '../../../i18n/useLanguage';
 import { designContract } from '../../../design/contract';
 import { cn } from '../../../lib/utils';
 
-/** Landowner restriction — one-line bilingual warning + icon. */
+/** Landowner restriction — one line mirroring the sign on site: the ban, then the duty behind it. */
 export function NoDogsAllowed() {
+  const { t } = useTranslation();
+  const { active } = useLanguage();
   return (
     <p
       className={cn(
@@ -19,14 +23,14 @@ export function NoDogsAllowed() {
         <CircleX size={11} strokeWidth={2.5} className='bg-surface absolute -right-1 -bottom-1 rounded-full px-[1px]' />
       </span>
       <span className='min-w-0 font-semibold'>
-        <span lang='en'>
-          <span className='access-no-dogs-title'>No dogs allowed</span>
+        <span lang={active}>
+          <span className='access-no-dogs-title'>{t('dogWarning.title')}</span>
         </span>
         <span aria-hidden className='access-no-dogs-sub px-1.5'>
           |
         </span>
-        <span lang='nb'>
-          <span className='access-no-dogs-title'>Helårsbåndtvang</span>
+        <span lang={active}>
+          <span className='access-no-dogs-title'>{t('dogWarning.allYearLeash')}</span>
         </span>
       </span>
     </p>

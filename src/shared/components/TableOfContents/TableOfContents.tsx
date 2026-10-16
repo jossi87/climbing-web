@@ -1,4 +1,5 @@
 import { useRef, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { LockSymbol, Stars } from '../../ui/Indicators';
 import { SunOnWall, Orientation } from '../Widgets/ClimbingWidgets';
@@ -10,20 +11,23 @@ import { profileRowMiddleDotClass } from '../Profile/ProfileRowTextSep';
 import { tickComment, tickProblemLinkWithStatus } from '../Profile/profileRowTypography';
 import { TradGearMarker } from '../../ui/TradGearMarker';
 
-const JumpToTop = ({ compact = false }: { compact?: boolean }) => (
-  <button
-    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-    className={cn(
-      'transition-colors hover:opacity-100',
-      compact
-        ? 'type-micro bg-surface-raised inline-flex items-center gap-1 rounded-full border border-white/12 px-2 py-0.5 opacity-80'
-        : 'p-1 opacity-70',
-    )}
-  >
-    <ArrowUpCircle size={compact ? 12 : 16} />
-    {compact && <span>Top</span>}
-  </button>
-);
+const JumpToTop = ({ compact = false }: { compact?: boolean }) => {
+  const { t } = useTranslation();
+  return (
+    <button
+      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      className={cn(
+        'transition-colors hover:opacity-100',
+        compact
+          ? 'type-micro bg-surface-raised inline-flex items-center gap-1 rounded-full border border-white/12 px-2 py-0.5 opacity-80'
+          : 'p-1 opacity-70',
+      )}
+    >
+      <ArrowUpCircle size={compact ? 12 : 16} />
+      {compact && <span>{t('tableOfContents.top')}</span>}
+    </button>
+  );
+};
 
 export type Props = {
   areas: (Required<
@@ -81,10 +85,11 @@ export const TableOfContents = ({
   showAreaJumpToTop = true,
   showSunWallMeta = true,
 }: Props) => {
+  const { t } = useTranslation();
   const areaRefs = useRef<Record<number, HTMLElement | null>>({});
 
   if (!areas || areas.length === 0) {
-    return <div className='p-8 text-center text-slate-500 italic'>No results match your search criteria.</div>;
+    return <div className='p-8 text-center text-slate-500 italic'>{t('tableOfContents.noResults')}</div>;
   }
 
   return (

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createPortal } from 'react-dom';
 import { Search, Loader2, Clock, ChevronDown, Trash2 } from 'lucide-react';
 import type { components } from '../../../@types/buldreinfo/swagger';
@@ -21,6 +22,7 @@ const ProblemTimeInput = ({
   maxSeconds: number;
   onChange: (val: string) => void;
 }) => {
+  const { t } = useTranslation();
   const [focused, setFocused] = useState(false);
   const [draft, setDraft] = useState('');
 
@@ -81,7 +83,7 @@ const ProblemTimeInput = ({
       />
       {exceedsMax && (
         <span className='absolute -bottom-4 left-0 text-[11px] whitespace-nowrap text-amber-400'>
-          Max {secondsToTimeStr(maxSeconds)}
+          {t('mediaEdit.problem.maxTime', { time: secondsToTimeStr(maxSeconds) })}
         </span>
       )}
     </div>
@@ -114,6 +116,7 @@ const ProblemRow = ({
   onRemove: () => void;
   autoFocus?: boolean;
 }) => {
+  const { t } = useTranslation();
   const isReadOnly = !!problem.problemId && !!problem.problemName;
   const { data: searchResults = [], isFetching } = useProblemSearch(isReadOnly ? '' : searchInput);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -172,7 +175,7 @@ const ProblemRow = ({
   const filtered = searchResults.filter((p) => p.id && p.problemName);
 
   const handleRemove = () => {
-    if (window.confirm('Remove this problem from the list?')) {
+    if (window.confirm(t('mediaEdit.problem.confirmRemove'))) {
       onRemove();
     }
   };
@@ -190,7 +193,7 @@ const ProblemRow = ({
           <input
             ref={inputRef}
             type='text'
-            placeholder='Search problem...'
+            placeholder={t('mediaEdit.problem.searchPlaceholder')}
             readOnly={!!problem.problemId && !!problem.problemName}
             className={cn(
               'bg-surface-nav type-body w-full min-w-0 rounded-lg border py-1.5 pr-2 pl-7 text-sm transition-colors placeholder:opacity-50 focus:outline-none',
@@ -218,11 +221,11 @@ const ProblemRow = ({
               {isFetching && (
                 <div className='flex items-center gap-2 px-3 py-2.5 text-[13px] text-slate-500'>
                   <Loader2 size={13} className='animate-spin' />
-                  Searching...
+                  {t('mediaEdit.problem.searching')}
                 </div>
               )}
               {!isFetching && filtered.length === 0 && (
-                <div className='px-3 py-2.5 text-[13px] text-slate-500'>No problems found.</div>
+                <div className='px-3 py-2.5 text-[13px] text-slate-500'>{t('mediaEdit.problem.noResults')}</div>
               )}
               {filtered.map((p) => (
                 <button
@@ -257,10 +260,10 @@ const ProblemRow = ({
               'border-surface-border focus:border-brand-border/60',
             )}
           >
-            <option value={0}>No pitch</option>
+            <option value={0}>{t('mediaEdit.problem.noPitch')}</option>
             {Array.from({ length: problem.problemNumPitches ?? 0 }, (_, i) => i + 1).map((p) => (
               <option key={p} value={p}>
-                Pitch {p}
+                {t('media.pitch', { pitch: p })}
               </option>
             ))}
           </select>
@@ -287,14 +290,14 @@ const ProblemRow = ({
           onChange={(e) => onTriviaChange(e.target.checked)}
           className='text-brand focus:ring-brand/50 h-4 w-4 rounded border-white/20 bg-slate-700 focus:ring-2'
         />
-        Trivia
+        {t('mediaEdit.trivia')}
       </label>
 
       <button
         type='button'
         onClick={handleRemove}
         className='shrink-0 rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-red-500/10 hover:text-red-400'
-        aria-label='Remove problem'
+        aria-label={t('mediaEdit.problem.remove')}
       >
         <Trash2 size={14} />
       </button>

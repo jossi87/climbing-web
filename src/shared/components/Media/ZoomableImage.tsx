@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useScrollLock } from '../../utils/scroll-lock';
 import { getMediaFileUrl, getMediaFileUrlSrcSet, mediaIdentityId, mediaIdentityVersionStamp } from '../../../api';
@@ -22,6 +23,7 @@ type Props = {
 };
 
 export const ZoomableImage = ({ m, showSvg, onToggleSvg, onExitZoom }: Props) => {
+  const { t } = useTranslation();
   const [loaded, setLoaded] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -177,8 +179,8 @@ export const ZoomableImage = ({ m, showSvg, onToggleSvg, onExitZoom }: Props) =>
               e.stopPropagation();
               onToggleSvg();
             }}
-            title={showSvg ? 'Hide SVG elements' : 'Show SVG elements'}
-            aria-label={showSvg ? 'Hide SVG elements' : 'Show SVG elements'}
+            title={t(showSvg ? 'media.hideSvg' : 'media.showSvg')}
+            aria-label={t(showSvg ? 'media.hideSvg' : 'media.showSvg')}
             className='flex h-10 w-10 items-center justify-center rounded-full bg-slate-900/80 text-[#f8fafc] shadow-lg ring-1 ring-white/20 transition-all hover:bg-slate-700 active:scale-95'
           >
             {showSvg ? <Eye size={18} strokeWidth={2} /> : <EyeOff size={18} strokeWidth={2} />}
@@ -191,7 +193,7 @@ export const ZoomableImage = ({ m, showSvg, onToggleSvg, onExitZoom }: Props) =>
             onExitZoom();
           }}
           className='flex h-10 w-10 items-center justify-center rounded-full bg-slate-900/80 text-[#f8fafc] shadow-lg ring-1 ring-white/20 transition-all hover:bg-red-700 active:scale-95'
-          aria-label='Exit zoom'
+          aria-label={t('media.exitZoom')}
         >
           <X size={20} strokeWidth={2} />
         </button>

@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import Leaflet from '../Leaflet/Leaflet';
 import { LockSymbol } from '../../ui/Indicators';
@@ -63,59 +64,62 @@ type TodoItem = {
   partners: TodoPartner[];
 };
 
-const TodoListItem = ({ item }: { item: TodoItem }) => (
-  <div className={cn(profileRowRootClass, 'text-pretty [overflow-wrap:anywhere]')}>
-    <Link to={`/area/${item.areaId}`} className={tickCragLinkArea}>
-      {item.areaName}
-    </Link>
-    <LockSymbol lockedAdmin={item.areaLockedAdmin} lockedSuperadmin={item.areaLockedSuperadmin} />
-    {item.areaLockedAdmin || item.areaLockedSuperadmin ? ' ' : <ProfileRowTextSep />}
-    <Link to={`/sector/${item.sectorId}`} className={tickCragLinkSector}>
-      {item.sectorName}
-    </Link>
-    <LockSymbol lockedAdmin={item.sectorLockedAdmin} lockedSuperadmin={item.sectorLockedSuperadmin} />
-    {item.sectorLockedAdmin || item.sectorLockedSuperadmin ? ' ' : <ProfileRowTextSep />}
-    <Link to={`/problem/${item.id}`} className={tickProblemLink}>
-      {item.problemName}
-    </Link>
-    {item.grade ? (
-      <>
-        {' '}
-        <span className={cn(tickWhenGrade, 'whitespace-nowrap tabular-nums')}>{item.grade}</span>
-      </>
-    ) : null}
-    {item.tradGear ? (
-      <TradGearMarker
-        line={formatPassiveGearMarkerLine(formatRouteTypeLabel(undefined, item.subType), item.numPitches)}
-      />
-    ) : null}
-    {item.numPitches > 1 && (
-      <>
-        {' '}
-        <span className={cn(tickListRowQuietMeta, 'whitespace-nowrap')}>
-          {'\u00B7'} {item.numPitches} pitches
-        </span>
-      </>
-    )}
-    <LockSymbol lockedAdmin={item.problemLockedAdmin} lockedSuperadmin={item.problemLockedSuperadmin} />
-    {item.partners.length > 0 ? (
-      <>
-        {item.problemLockedAdmin || item.problemLockedSuperadmin ? ' ' : <ProfileRowTextSep />}
-        <span className='inline-flex min-w-0 flex-wrap content-start items-center gap-x-2 gap-y-1'>
-          {item.partners.map((p) => (
-            <Link
-              key={p.id}
-              to={`/user/${p.id}/todo`}
-              className={cn(tickFlags, 'hover:text-status-todo transition-colors')}
-            >
-              {p.name}
-            </Link>
-          ))}
-        </span>
-      </>
-    ) : null}
-  </div>
-);
+const TodoListItem = ({ item }: { item: TodoItem }) => {
+  const { t } = useTranslation();
+  return (
+    <div className={cn(profileRowRootClass, 'text-pretty [overflow-wrap:anywhere]')}>
+      <Link to={`/area/${item.areaId}`} className={tickCragLinkArea}>
+        {item.areaName}
+      </Link>
+      <LockSymbol lockedAdmin={item.areaLockedAdmin} lockedSuperadmin={item.areaLockedSuperadmin} />
+      {item.areaLockedAdmin || item.areaLockedSuperadmin ? ' ' : <ProfileRowTextSep />}
+      <Link to={`/sector/${item.sectorId}`} className={tickCragLinkSector}>
+        {item.sectorName}
+      </Link>
+      <LockSymbol lockedAdmin={item.sectorLockedAdmin} lockedSuperadmin={item.sectorLockedSuperadmin} />
+      {item.sectorLockedAdmin || item.sectorLockedSuperadmin ? ' ' : <ProfileRowTextSep />}
+      <Link to={`/problem/${item.id}`} className={tickProblemLink}>
+        {item.problemName}
+      </Link>
+      {item.grade ? (
+        <>
+          {' '}
+          <span className={cn(tickWhenGrade, 'whitespace-nowrap tabular-nums')}>{item.grade}</span>
+        </>
+      ) : null}
+      {item.tradGear ? (
+        <TradGearMarker
+          line={formatPassiveGearMarkerLine(formatRouteTypeLabel(undefined, item.subType), item.numPitches, t)}
+        />
+      ) : null}
+      {item.numPitches > 1 && (
+        <>
+          {' '}
+          <span className={cn(tickListRowQuietMeta, 'whitespace-nowrap')}>
+            {'\u00B7'} {t('counts.pitches', { count: item.numPitches })}
+          </span>
+        </>
+      )}
+      <LockSymbol lockedAdmin={item.problemLockedAdmin} lockedSuperadmin={item.problemLockedSuperadmin} />
+      {item.partners.length > 0 ? (
+        <>
+          {item.problemLockedAdmin || item.problemLockedSuperadmin ? ' ' : <ProfileRowTextSep />}
+          <span className='inline-flex min-w-0 flex-wrap content-start items-center gap-x-2 gap-y-1'>
+            {item.partners.map((p) => (
+              <Link
+                key={p.id}
+                to={`/user/${p.id}/todo`}
+                className={cn(tickFlags, 'hover:text-status-todo transition-colors')}
+              >
+                {p.name}
+              </Link>
+            ))}
+          </span>
+        </>
+      ) : null}
+    </div>
+  );
+};
 
 /**
  * Compute area-level markers from filtered ProblemList rows.
@@ -210,6 +214,7 @@ function computeFilteredAreaMarkers(rows: Row[]): MarkerDef[] {
 }
 
 const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) => {
+  const { t } = useTranslation();
   const { data } = useProfileTodo(userId);
 
   const areas = useMemo(() => data?.areas ?? [], [data?.areas]);
@@ -265,7 +270,7 @@ const ProfileTodo = ({ userId, defaultCenter, defaultZoom }: ProfileTodoProps) =
   }
 
   if (items.length === 0) {
-    return <div className='py-10 text-center text-slate-500'>Empty list.</div>;
+    return <div className='py-10 text-center text-slate-500'>{t('problemList.empty')}</div>;
   }
 
   return (

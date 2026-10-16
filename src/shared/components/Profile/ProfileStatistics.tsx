@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import Chart from '../Chart/Chart';
 import ProblemList from '../ProblemList';
@@ -37,6 +38,7 @@ type TickListItemProps = {
 const TickListItem = ({ tick }: TickListItemProps) => <TickListItemInner tick={tick} />;
 
 const TickListItemInner = ({ tick }: TickListItemProps) => {
+  const { t } = useTranslation();
   const { isClimbing } = useMeta();
   const areaId = tick.areaId;
   const sectorId = tick.sectorId;
@@ -47,7 +49,7 @@ const TickListItemInner = ({ tick }: TickListItemProps) => {
   const routeTypeLabel = formatRouteTypeLabel(undefined, tick.subType);
   /** Passive-gear glyph: driven by the DB flag (`tradGear`), never by the type/subtype text. */
   const showPassiveGear = !!tick.tradGear;
-  const passiveGearLine = showPassiveGear ? formatPassiveGearMarkerLine(routeTypeLabel, tick.numPitches) : '';
+  const passiveGearLine = showPassiveGear ? formatPassiveGearMarkerLine(routeTypeLabel, tick.numPitches, t) : '';
 
   return (
     <div className={profileRowRootClass}>
@@ -96,7 +98,7 @@ const TickListItemInner = ({ tick }: TickListItemProps) => {
       {isClimbing && tick.idTickRepeat ? (
         <>
           {' '}
-          <span className={tickFlags}>repeat</span>
+          <span className={tickFlags}>{t('profile.statistics.repeatChip')}</span>
         </>
       ) : null}
       {tick.noPersonalGrade ? (
@@ -108,7 +110,7 @@ const TickListItemInner = ({ tick }: TickListItemProps) => {
       {!showPassiveGear && multiPitch ? (
         <>
           {' '}
-          <span className={tickFlags}>{pitchCount}p</span>
+          <span className={tickFlags}>{t('problems.metaPitches', { count: pitchCount })}</span>
         </>
       ) : null}
       {tick.comment ? (
@@ -130,8 +132,9 @@ type ProfileStatisticsProps = {
 
 /** Overview sub-component — renders a card per discipline with grade distribution chart. */
 const ProfileOverview = ({ disciplines }: { disciplines: components['schemas']['ProfileDiscipline'][] }) => {
+  const { t } = useTranslation();
   if (!disciplines.length) {
-    return <div className='py-10 text-center text-slate-500'>No discipline data available.</div>;
+    return <div className='py-10 text-center text-slate-500'>{t('profile.statistics.noDisciplineData')}</div>;
   }
 
   return (
@@ -147,13 +150,21 @@ const ProfileOverview = ({ disciplines }: { disciplines: components['schemas']['
             {/* Discipline header */}
             <div className='bg-surface-raised px-4 py-3 sm:px-5'>
               <div className='flex min-w-0 items-center gap-2'>
-                <h3 className='type-h3 shrink-0 truncate font-semibold text-slate-100'>{d.discipline ?? 'Unknown'}</h3>
+                <h3 className='type-h3 shrink-0 truncate font-semibold text-slate-100'>
+                  {d.discipline ?? t('profile.statistics.unknownDiscipline')}
+                </h3>
               </div>
               <div className='mt-1 text-[13px] text-slate-400'>
                 <span className='tabular-nums'>
-                  <span className='font-medium text-slate-200'>{totalAscents}</span> ascents (
-                  <span className='font-medium text-slate-200'>{totalFas}</span> FA,{' '}
-                  <span className='font-medium text-slate-200'>{totalTicks}</span> ticks)
+                  <Trans
+                    i18nKey='profile.statistics.overviewAscents'
+                    count={totalAscents}
+                    values={{
+                      fa: t('profile.statistics.overviewFa', { numFa: totalFas }),
+                      ticks: t('profile.statistics.overviewTicks', { count: totalTicks }),
+                    }}
+                    components={{ count: <span className='font-medium text-slate-200' /> }}
+                  />
                 </span>
               </div>
             </div>
@@ -262,8 +273,20 @@ function computeFilteredAreaMarkers(rows: Row[]): MarkerDef[] {
 
 /** Ascents sub-component — fetches /profile/ascents only when this view is active. */
 const ProfileAscentsView = ({ userId }: { userId: number }) => {
+  const { t } = useTranslation();
   const { defaultCenter, defaultZoom } = useMeta();
   const { data: ascents, isLoading, error } = useProfileAscents(userId);
+
+  /**
+   * One type's summary sentence — the row's `title` and the block's `aria-label` render the same reading.
+   * Plural-aware, so a locale inflects the count instead of receiving an English `_other` fallback.
+   */
+  const typeSummaryTitle = (s: { header: string; count: number; numFa: number }) =>
+    t(s.numFa > 0 ? 'profile.statistics.ascentsSummaryFa' : 'profile.statistics.ascentsSummary', {
+      header: s.header,
+      count: s.count,
+      numFa: s.numFa,
+    });
 
   if (isLoading) return <Loading inline />;
 
@@ -272,14 +295,14 @@ const ProfileAscentsView = ({ userId }: { userId: number }) => {
     return (
       <div className='py-12 text-center'>
         <AlertCircle size={48} className='mx-auto mb-4 text-red-500' />
-        <h3 className='type-h2 mb-2'>Error</h3>
-        <p className='text-slate-400'>Unable to load profile statistics.</p>
+        <h3 className='type-h2 mb-2'>{t('profile.statistics.error')}</h3>
+        <p className='text-slate-400'>{t('profile.statistics.loadError')}</p>
       </div>
     );
   }
 
   if (!ascents.length) {
-    return <div className='py-10 text-center text-slate-400'>No ascents yet.</div>;
+    return <div className='py-10 text-center text-slate-400'>{t('profile.statistics.noAscents')}</div>;
   }
 
   return (
@@ -313,11 +336,7 @@ const ProfileAscentsView = ({ userId }: { userId: number }) => {
             <div
               className='min-w-0'
               role='status'
-              aria-label={ascentTypeSummaries
-                .map((s) =>
-                  s.numFa > 0 ? `${s.header}: ${s.count} ascents (${s.numFa} FA)` : `${s.header}: ${s.count} ascents`,
-                )
-                .join('. ')}
+              aria-label={ascentTypeSummaries.map((s) => typeSummaryTitle(s)).join('. ')}
             >
               <div className='flex flex-wrap items-center gap-x-4 gap-y-2.5 text-[13px] leading-snug sm:gap-x-6 sm:text-sm'>
                 {ascentTypeSummaries.map((s, i) => (
@@ -327,17 +346,13 @@ const ProfileAscentsView = ({ userId }: { userId: number }) => {
                       'inline-flex max-w-full min-w-0 items-center gap-x-2 sm:whitespace-nowrap',
                       i > 0 && 'border-surface-border border-l pl-3 sm:pl-4',
                     )}
-                    title={
-                      s.numFa > 0
-                        ? `${s.header}: ${s.count} ascents (${s.numFa} FA)`
-                        : `${s.header}: ${s.count} ascents`
-                    }
+                    title={typeSummaryTitle(s)}
                   >
                     <span className={cn('font-semibold text-slate-200', twInk.lightTextSlate800)}>{s.header}:</span>
                     <span className={cn('text-slate-300 tabular-nums', twInk.lightTextSlate700)}>{s.count}</span>
                     {s.numFa > 0 ? (
                       <span className={cn('font-normal tabular-nums', designContract.ascentStatus.ticked)}>
-                        ({s.numFa} FA)
+                        {t('profile.statistics.faCount', { numFa: s.numFa })}
                       </span>
                     ) : null}
                   </div>

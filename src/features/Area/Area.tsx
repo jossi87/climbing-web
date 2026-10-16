@@ -1,5 +1,6 @@
 import { type ComponentProps, useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import ChartGradeDistribution from '../../shared/components/ChartGradeDistribution/ChartGradeDistribution';
 import Top from '../../shared/components/Top/Top';
 import Activity from '../../shared/components/Activity/Activity';
@@ -119,6 +120,7 @@ const SectorCardGradeDistribution = ({
   data: components['schemas']['GradeCount'][];
   className?: string;
 }) => {
+  const { t } = useTranslation();
   const maxValue = Math.max(1, ...data.map((d) => d.num ?? 0));
   const BAR_MAX_HEIGHT = 30;
   return (
@@ -144,7 +146,7 @@ const SectorCardGradeDistribution = ({
                 backgroundColor: color,
                 opacity: total > 0 ? 0.85 : 0.15,
               }}
-              title={`${g.grade}: ${total} route${total !== 1 ? 's' : ''}`}
+              title={t('place.gradeBarTitle', { grade: g.grade ?? '', routes: t('counts.routes', { count: total }) })}
             />
             {/* Grade label — no truncate so "6A" shows fully */}
             <span className={cn('text-center text-[10px] leading-none opacity-55', twInk.chromeNearWhite)}>
@@ -159,6 +161,7 @@ const SectorCardGradeDistribution = ({
 
 /** Area Routes tab row — same typography/layout as the sector problem list; includes sector name for context. */
 const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
+  const { t } = useTranslation();
   const { isClimbing, isBouldering } = useMeta();
   const compact = useProblemListCompact();
 
@@ -182,9 +185,13 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
 
   const pitchLine =
     isClimbing && (problem.numPitches ?? 1) > 1 ? (
-      <span className={cn(tickListRowQuietMeta, 'align-baseline whitespace-nowrap')}>{problem.numPitches} pitches</span>
+      <span className={cn(tickListRowQuietMeta, 'align-baseline whitespace-nowrap')}>
+        {t('counts.pitches', { count: problem.numPitches ?? 0 })}
+      </span>
     ) : null;
-  const rockLine = problem.rock ? <span className='not-italic'>Rock: {problem.rock}</span> : null;
+  const rockLine = problem.rock ? (
+    <span className='not-italic'>{t('problemRow.rock', { rock: problem.rock })}</span>
+  ) : null;
   const faEl = faLine ? <span>{faLine}</span> : null;
   const commentEl = commentTrimmed ? <span className={tickCommentSmall}>{commentTrimmed}</span> : null;
 
@@ -228,22 +235,22 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
           </span>
         ) : null}
         {hasTopo ? (
-          <span className='inline-flex items-end' title='Topo line'>
+          <span className='inline-flex items-end' title={t('problemRow.topoTooltip')}>
             <Spline size={12} strokeWidth={2.5} className={problemListRowMediaGlyphClass} aria-hidden />
           </span>
         ) : null}
         {hasCoordinates ? (
-          <span className='inline-flex items-end' title='Coordinates'>
+          <span className='inline-flex items-end' title={t('problemRow.coordinatesTooltip')}>
             <MapPin size={12} strokeWidth={2.5} className={problemListRowMediaGlyphClass} aria-hidden />
           </span>
         ) : null}
         {showImages ? (
-          <span className='inline-flex items-end' title='Images'>
+          <span className='inline-flex items-end' title={t('problemRow.imagesTooltip')}>
             <ImageIcon size={12} strokeWidth={2.5} className={problemListRowMediaGlyphClass} aria-hidden />
           </span>
         ) : null}
         {showMovies ? (
-          <span className='inline-flex items-end' title='Movies'>
+          <span className='inline-flex items-end' title={t('problemRow.moviesTooltip')}>
             <Film size={12} strokeWidth={2.5} className={problemListRowMediaGlyphClass} aria-hidden />
           </span>
         ) : null}
@@ -253,7 +260,7 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
 
   const ticksMetaBlock =
     tickCount > 0 ? (
-      <span className={problemListRowTicksMetaClass}>{tickCount === 1 ? '1 tick' : `${tickCount} ticks`}</span>
+      <span className={problemListRowTicksMetaClass}>{t('counts.ticks', { count: tickCount })}</span>
     ) : null;
 
   const sectorMeta = sectorName ? (
@@ -369,10 +376,10 @@ const SectorListItem = ({ sectorId, sectorName, problem }: Props) => {
             className={cn(tickWhenGrade, 'shrink-0 leading-snug tabular-nums antialiased')}
             title={
               problem.ticked
-                ? 'Ticked'
+                ? t('problemRow.ticked')
                 : problem.todo
-                  ? 'On to-do list'
-                  : `${isBouldering ? 'Boulder' : 'Route'} number`
+                  ? t('problemRow.onTodoList')
+                  : t(isBouldering ? 'problemRow.boulderNumber' : 'problemRow.routeNumber')
             }
           >
             #{problem.nr}
@@ -493,11 +500,12 @@ function sumAreaProblemTicks(area: components['schemas']['Area']): number {
 const Area = () => {
   const meta = useMeta();
   const { areaId, segment } = useParams();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [activeSectorTab, setActiveSectorTab] = useState<string>('sectors');
 
   if (areaId === undefined) {
-    throw new Error('Missing areaId parameter');
+    throw new Error(t('place.missingAreaId'));
   }
 
   const { data, error, redirectUi } = useArea(+areaId);
@@ -617,27 +625,27 @@ const Area = () => {
   }, [data]);
 
   const tabs = useMemo(() => {
-    const t: { id: string; label: string; icon: typeof LayoutDashboard }[] = [];
-    if (!data) return t;
-    t.push({ id: 'overview', label: 'Overview', icon: LayoutDashboard });
+    const items: { id: string; label: string; icon: typeof LayoutDashboard }[] = [];
+    if (!data) return items;
+    items.push({ id: 'overview', label: t('place.overview'), icon: LayoutDashboard });
     /** Map is also useful without markers: an area may only have coordinates for the area itself. */
     const hasMapContent =
       markers.length > 0 || outlines.length > 0 || trails.length > 0 || !!getCoordinatesCenter(data.coordinates);
-    if (hasMapContent) t.push({ id: 'map', label: 'Map', icon: MapIcon });
+    if (hasMapContent) items.push({ id: 'map', label: t('place.map'), icon: MapIcon });
     if (data.sectors?.length) {
       const problemCount = countAreaProblems(data);
       const tickSum = sumAreaProblemTicks(data);
       if (problemCount > 0) {
-        t.push({ id: 'distribution', label: 'Distribution', icon: BarChart2 });
+        items.push({ id: 'distribution', label: t('place.distribution'), icon: BarChart2 });
       }
       if (problemCount > 0 && tickSum > 0) {
-        t.push({ id: 'top', label: 'Top', icon: Trophy });
+        items.push({ id: 'top', label: t('place.top'), icon: Trophy });
       }
-      t.push({ id: 'todo', label: 'Todo', icon: Bookmark });
-      t.push({ id: 'activity', label: 'Activity', icon: Clock });
+      items.push({ id: 'todo', label: t('place.todo'), icon: Bookmark });
+      items.push({ id: 'activity', label: t('place.activity'), icon: Clock });
     }
-    return t;
-  }, [data, markers.length, outlines.length, trails.length]);
+    return items;
+  }, [data, markers.length, outlines.length, trails.length, t]);
 
   /** Path segments: `/area/:id`, `/area/:id/overview`, `/area/:id/map`, …; numeric segment = media deep link. */
   const effectiveTab = useMemo(() => {
@@ -700,23 +708,18 @@ const Area = () => {
   if (error && isHttpError(error, 404)) {
     return (
       <>
-        <title>{`Not found | ${meta?.title}`}</title>
-        <NotFoundCard
-          className='mt-4 sm:mt-6'
-          description='Cannot find the specified area because it does not exist or you do not have sufficient permissions.'
-        />
+        <title>{t('meta.pageTitle', { page: t('meta.notFound'), site: meta?.title ?? '' })}</title>
+        <NotFoundCard className='mt-4 sm:mt-6' description={t('place.notFoundAreaDescription')} />
       </>
     );
   }
 
   if (error) {
-    const description = isHttpError(error)
-      ? getUserFriendlyHttpErrorMessage(error)
-      : 'Something went wrong while loading this area.';
+    const description = isHttpError(error) ? getUserFriendlyHttpErrorMessage(error) : t('place.loadAreaError');
     return (
       <>
-        <title>{`Error | ${meta?.title}`}</title>
-        <NotFoundCard className='mt-4 sm:mt-6' title='Unable To Load Area' description={description} />
+        <title>{t('meta.pageTitle', { page: t('status.errorTitle'), site: meta?.title ?? '' })}</title>
+        <NotFoundCard className='mt-4 sm:mt-6' title={t('place.unableToLoadArea')} description={description} />
       </>
     );
   }
@@ -760,14 +763,14 @@ const Area = () => {
           className='mb-0'
           breadcrumb={
             <nav
-              aria-label='Breadcrumb'
+              aria-label={t('place.breadcrumb')}
               className={cn(
                 'flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-2 text-pretty break-words',
                 designContract.typography.breadcrumb,
               )}
             >
               <Link to='/areas' className={designContract.typography.breadcrumbLink}>
-                Areas
+                {t('areas.title')}
               </Link>
               {/*
                 Same chevron as sector/problem crumbs: single segment still reads as a path ("Areas" → title below).
@@ -781,8 +784,8 @@ const Area = () => {
                 {meta.isAdmin && (
                   <Link
                     to={`/sector/edit/${data.id}/0`}
-                    title='Add sector'
-                    aria-label='Add sector'
+                    title={t('place.addSector')}
+                    aria-label={t('place.addSector')}
                     data-ph-action='add'
                     className={cn(
                       designContract.controls.pageHeaderIconButton,
@@ -794,8 +797,8 @@ const Area = () => {
                 )}
                 <Link
                   to={`/media/add?type=area&id=${data.id}&name=${encodeURIComponent(data.name ?? '')}`}
-                  title='Add media'
-                  aria-label='Add media'
+                  title={t('place.addMedia')}
+                  aria-label={t('place.addMedia')}
                   data-ph-action='add-media'
                   className={cn(
                     designContract.controls.pageHeaderIconButton,
@@ -807,8 +810,8 @@ const Area = () => {
                 {meta.isAdmin && (
                   <Link
                     to={`/area/edit/${data.id}`}
-                    title='Edit area'
-                    aria-label='Edit area'
+                    title={t('place.editArea')}
+                    aria-label={t('place.editArea')}
                     data-ph-action='edit'
                     className={cn(
                       designContract.controls.pageHeaderIconButton,
@@ -835,18 +838,18 @@ const Area = () => {
               className={tabBarStripContainerClassName('equal')}
               style={{ display: 'grid', gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
               role='tablist'
-              aria-label='Area sections'
+              aria-label={t('place.areaSections')}
             >
-              {tabs.map((t) => {
-                const IconComp = t.icon;
-                const isActive = effectiveTab === t.id;
+              {tabs.map((tab) => {
+                const IconComp = tab.icon;
+                const isActive = effectiveTab === tab.id;
                 return (
                   <button
-                    key={t.id}
+                    key={tab.id}
                     type='button'
                     role='tab'
                     aria-selected={isActive}
-                    onClick={() => setAreaTab(t.id)}
+                    onClick={() => setAreaTab(tab.id)}
                     className={tabBarButtonClassName(isActive)}
                   >
                     <IconComp
@@ -854,7 +857,7 @@ const Area = () => {
                       strokeWidth={isActive ? 2.3 : 2}
                       className={tabBarIconClassName(isActive)}
                     />
-                    <span className={designContract.controls.tabBarLabel}>{t.label}</span>
+                    <span className={designContract.controls.tabBarLabel}>{tab.label}</span>
                   </button>
                 );
               })}
@@ -894,14 +897,16 @@ const Area = () => {
                           'text-[11px] font-semibold tracking-wide text-amber-400/90 uppercase',
                         )}
                       >
-                        Under development
+                        {t('place.underDevelopment')}
                       </span>
                     )}
                     <ActionMenuChip
-                      label='PDF'
+                      label={t('place.pdf')}
                       icon={Download}
-                      title='Download PDF'
-                      items={[{ id: 'area-pdf', label: 'Area', href: `/areas/pdf?id=${data.id}`, kind: 'download' }]}
+                      title={t('place.downloadPdf')}
+                      items={[
+                        { id: 'area-pdf', label: t('common.area'), href: `/areas/pdf?id=${data.id}`, kind: 'download' },
+                      ]}
                     />
                     <ExternalLinkLabels externalLinks={data.externalLinks} />
                   </div>
@@ -955,7 +960,7 @@ const Area = () => {
                                 : 'light:!text-[rgb(203_213_225)] light:hover:!text-[rgb(255_255_255)] text-slate-400 hover:text-slate-200',
                             )}
                           >
-                            Sectors
+                            {t('place.sectors')}
                           </button>
                           <button
                             type='button'
@@ -967,7 +972,7 @@ const Area = () => {
                                 : 'light:!text-[rgb(203_213_225)] light:hover:!text-[rgb(255_255_255)] text-slate-400 hover:text-slate-200',
                             )}
                           >
-                            {meta.isBouldering ? 'Problems' : 'Routes'}
+                            {t(meta.isBouldering ? 'problems.titleBouldering' : 'problems.titleRoped')}
                           </button>
                         </div>
                       ) : undefined
@@ -999,11 +1004,7 @@ const Area = () => {
 
       {effectiveTab === 'overview' && (data.sectors?.length ?? 0) > 0 && (
         <Card flush className='mt-6 min-w-0 overflow-hidden border-0 shadow-sm'>
-          <div
-            role='tablist'
-            aria-label='Choose sector grid or full problem list'
-            className={tabBarStripContainerClassName('inline')}
-          >
+          <div role='tablist' aria-label={t('place.chooseView')} className={tabBarStripContainerClassName('inline')}>
             <button
               type='button'
               role='tab'
@@ -1017,7 +1018,7 @@ const Area = () => {
                 className={tabBarIconClassName(activeSectorTab === 'sectors')}
               />
               <span className={designContract.controls.tabBarLabelInline}>
-                Sectors{' '}
+                {t('place.sectors')}{' '}
                 <span className={cn(designContract.typography.micro, 'font-normal text-slate-500 tabular-nums')}>
                   ({data.sectors?.length ?? 0})
                 </span>
@@ -1036,7 +1037,7 @@ const Area = () => {
                 className={tabBarIconClassName(activeSectorTab === 'problems')}
               />
               <span className={designContract.controls.tabBarLabelInline}>
-                {meta.isBouldering ? 'Problems' : 'Routes'}{' '}
+                {t(meta.isBouldering ? 'problems.titleBouldering' : 'problems.titleRoped')}{' '}
                 <span className={cn(designContract.typography.micro, 'font-normal text-slate-500 tabular-nums')}>
                   ({problemRows.length})
                 </span>

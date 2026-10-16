@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createPortal } from 'react-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -73,6 +74,7 @@ const TickModal = ({
   enableTickRepeats,
 }: TickModalProps) => {
   const { isClimbing } = useMeta();
+  const { t } = useTranslation();
   /** Grades of the problem's own system, easy → hard — the tick's personal grade must come from it. */
   const { easyToHard: grades } = useGrades(gradeSystemId);
   const queryClient = useQueryClient();
@@ -126,10 +128,13 @@ const TickModal = ({
     [],
   );
 
-  const handleDeleteRepeatAt = useCallback((index: number) => {
-    if (!confirm('Remove this repeat ascent from the list?')) return;
-    setRepeats((current) => current.filter((_, i) => i !== index));
-  }, []);
+  const handleDeleteRepeatAt = useCallback(
+    (index: number) => {
+      if (!confirm(t('tick.confirmRemoveRepeat'))) return;
+      setRepeats((current) => current.filter((_, i) => i !== index));
+    },
+    [t],
+  );
 
   const handleAddRepeat = useCallback(() => {
     const newRepeat: Repeat = {
@@ -212,13 +217,13 @@ const TickModal = ({
         <div className='border-surface-border bg-surface-raised flex shrink-0 items-center justify-between border-b px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-6 sm:py-4 sm:pt-4'>
           <h3 id='tick-modal-title' className='type-label flex min-w-0 items-center gap-2 text-slate-200'>
             <Check size={18} className='shrink-0 text-emerald-400' />
-            <span className='truncate'>{isClimbing ? 'Tick route' : 'Tick problem'}</span>
+            <span className='truncate'>{isClimbing ? t('tick.titleRoute') : t('tick.titleProblem')}</span>
           </h3>
           <button
             type='button'
             onClick={onClose}
             className='hover:bg-surface-raised-hover -mr-1 shrink-0 rounded-lg p-1.5 opacity-70 transition-colors hover:opacity-100'
-            aria-label='Close'
+            aria-label={t('common.close')}
           >
             <X size={20} />
           </button>
@@ -229,7 +234,7 @@ const TickModal = ({
             <div className='bg-surface-raised flex items-start gap-3 rounded-xl border border-red-500/35 p-4'>
               <AlertCircle className='shrink-0 text-red-500' size={18} />
               <div className={cn(designContract.typography.label, 'text-red-500')}>
-                <span className='opacity-70'>Error:</span> {apiError}
+                <span className='opacity-70'>{t('tick.errorLabel')}</span> {apiError}
               </div>
             </div>
           )}
@@ -237,7 +242,7 @@ const TickModal = ({
           <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5'>
             <div className='space-y-1.5'>
               <label className={cn('ml-1', fieldLabelClass, !validDate && 'text-red-500')}>
-                Date {!validDate && '(cannot be in the future)'}
+                {t('tick.date')} {!validDate && t('tick.dateInvalid')}
               </label>
               <div className='relative'>
                 <Calendar
@@ -245,7 +250,7 @@ const TickModal = ({
                   size={16}
                 />
                 <DatePicker
-                  placeholderText='Date'
+                  placeholderText={t('tick.date')}
                   dateFormat='dd-MM-yyyy'
                   isClearable
                   showMonthDropdown
@@ -262,14 +267,14 @@ const TickModal = ({
             </div>
 
             <div className='space-y-1.5'>
-              <label className={cn('ml-1', fieldLabelClass)}>Grade</label>
+              <label className={cn('ml-1', fieldLabelClass)}>{t('tick.grade')}</label>
               <div className='relative'>
                 <select
                   value={grade}
                   onChange={(e) => setGrade(e.target.value)}
                   className='bg-surface-nav border-surface-border type-body w-full cursor-pointer appearance-none rounded-xl border px-3 py-2.5 pr-9 transition-colors focus:border-white/20 focus:outline-none'
                 >
-                  <option value={NO_PERSONAL_GRADE_LABEL}>I don't want to grade</option>
+                  <option value={NO_PERSONAL_GRADE_LABEL}>{t('tick.noGrade')}</option>
                   {grades.map((g) => (
                     <option key={g} value={g}>
                       {g}
@@ -281,7 +286,7 @@ const TickModal = ({
                   className='pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-slate-400'
                 />
                 <div className={cn('mt-1.5 px-1 text-slate-400 italic', designContract.typography.micro)}>
-                  FA: {gradeFa} | Consensus: {gradeConsensus}
+                  {t('tick.gradeMeta', { fa: gradeFa ?? '', consensus: gradeConsensus ?? '' })}
                 </div>
               </div>
             </div>
@@ -289,11 +294,11 @@ const TickModal = ({
 
           <div className='space-y-1.5'>
             <label id='tick-rating-label' className={cn('ml-1', fieldLabelClass)}>
-              Rating{' '}
+              {t('tick.rating')}{' '}
               <span className='text-red-500' aria-hidden>
                 *
               </span>
-              <span className='sr-only'> (required)</span>
+              <span className='sr-only'> {t('common.required')}</span>
             </label>
             <div
               className='border-surface-border bg-surface-raised divide-surface-border/50 flex min-h-[3rem] w-full min-w-0 flex-nowrap divide-x overflow-hidden rounded-xl border shadow-sm'
@@ -312,7 +317,7 @@ const TickModal = ({
                     : 'hover:bg-surface-raised-hover text-slate-400 hover:text-slate-200',
                 )}
               >
-                No rating
+                {t('tick.noRating')}
               </button>
               {[0, 1, 2, 3].map((s) => (
                 <button
@@ -320,7 +325,7 @@ const TickModal = ({
                   key={s}
                   role='radio'
                   aria-checked={stars === s}
-                  aria-label={s === 0 ? '0 stars' : `${s} star${s === 1 ? '' : 's'}`}
+                  aria-label={t('tick.stars', { count: s })}
                   onClick={() => setStars(s)}
                   className={cn(
                     'flex min-w-0 flex-1 items-center justify-center px-1 py-2.5 transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-amber-400/55 focus-visible:ring-offset-0 focus-visible:outline-none sm:px-2',
@@ -357,11 +362,11 @@ const TickModal = ({
           </div>
 
           <div className='space-y-1.5'>
-            <label className={cn('ml-1', fieldLabelClass)}>Comment</label>
+            <label className={cn('ml-1', fieldLabelClass)}>{t('tick.comment')}</label>
             <div className='relative'>
               <MessageSquare className='pointer-events-none absolute top-3.5 left-3 text-slate-400' size={16} />
               <textarea
-                placeholder='Optional comment'
+                placeholder={t('tick.commentPlaceholder')}
                 className='bg-surface-nav border-surface-border type-body min-h-24 w-full resize-y rounded-xl border py-3 pr-4 pl-10 transition-colors focus:border-white/20 focus:outline-none max-sm:min-h-[min(10rem,30dvh)] sm:min-h-28'
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
@@ -371,7 +376,7 @@ const TickModal = ({
 
           {enableTickRepeats && (
             <div className='border-surface-border/50 space-y-2 border-t pt-3'>
-              <label className={cn('ml-1 block', fieldLabelClass)}>Repeats</label>
+              <label className={cn('ml-1 block', fieldLabelClass)}>{t('tick.repeats')}</label>
               <div className='border-surface-border/60 bg-surface-card overflow-hidden rounded-xl border shadow-sm'>
                 {repeats.length > 0 ? (
                   <ol className='divide-surface-border/40 m-0 list-none divide-y p-0'>
@@ -399,13 +404,13 @@ const TickModal = ({
                               type='button'
                               onClick={() => handleDeleteRepeatAt(index)}
                               className='bg-surface-raised shrink-0 rounded-lg border border-red-500/50 p-2 text-red-300 shadow-sm transition-colors hover:border-red-400 hover:bg-red-950 hover:text-red-200 focus-visible:ring-2 focus-visible:ring-red-400/45 focus-visible:ring-offset-0 focus-visible:outline-none active:scale-[0.98] sm:p-2'
-                              aria-label={`Remove repeat ${index + 1}`}
+                              aria-label={t('tick.removeRepeat', { number: index + 1 })}
                             >
                               <Minus size={15} strokeWidth={2.35} />
                             </button>
                           </div>
                           <textarea
-                            placeholder='Optional — conditions, partners, how it felt…'
+                            placeholder={t('tick.repeatCommentPlaceholder')}
                             rows={3}
                             className='bg-surface-raised border-surface-border type-small max-h-40 min-h-[4.25rem] w-full resize-y rounded-lg border px-2.5 py-2 leading-snug focus:border-white/20 focus:outline-none sm:min-h-[4.5rem]'
                             value={r.comment ?? ''}
@@ -422,7 +427,7 @@ const TickModal = ({
                     onClick={handleAddRepeat}
                     className='type-label hover:bg-surface-raised-hover flex w-full items-center justify-center gap-2 px-3 py-2.5 text-slate-200 transition-colors sm:px-4 sm:py-2.5'
                   >
-                    <Plus size={14} className='text-emerald-400/90' /> Add repeat ascent
+                    <Plus size={14} className='text-emerald-400/90' /> {t('tick.addRepeat')}
                   </button>
                 </div>
               </div>
@@ -441,8 +446,7 @@ const TickModal = ({
               type='button'
               disabled={isSaving}
               onClick={() => {
-                if (!confirm('Delete this tick permanently? You can add a new tick later if this was a mistake.'))
-                  return;
+                if (!confirm(t('tick.confirmDelete'))) return;
                 saveTick(true);
               }}
               className={cn(
@@ -452,14 +456,14 @@ const TickModal = ({
             >
               <Trash2 size={14} className='shrink-0 sm:h-4 sm:w-4' />
               <span className='min-w-0 truncate sm:whitespace-normal'>
-                <span className='sm:hidden'>Delete</span>
-                <span className='hidden sm:inline'>Delete Tick</span>
+                <span className='sm:hidden'>{t('common.delete')}</span>
+                <span className='hidden sm:inline'>{t('tick.delete')}</span>
               </span>
             </button>
           ) : null}
           <div className='flex min-w-0 shrink-0 items-center gap-1.5 sm:gap-3'>
             <button type='button' onClick={onClose} className='modal-action-cancel'>
-              Cancel
+              {t('common.cancel')}
             </button>
             <button
               type='button'
@@ -471,7 +475,7 @@ const TickModal = ({
               )}
             >
               {isSaving ? <RefreshCw size={14} className='animate-spin' /> : <Check size={14} />}
-              Save Tick
+              {t('tick.save')}
             </button>
           </div>
         </div>

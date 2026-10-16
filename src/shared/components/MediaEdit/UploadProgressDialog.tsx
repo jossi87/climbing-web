@@ -1,4 +1,5 @@
 import { Upload, Loader2, CheckCircle2, XCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../../../lib/utils';
 
 export type UploadTask = {
@@ -44,6 +45,7 @@ const stateLabel = (state: UploadTask['state']) => {
 };
 
 export const UploadProgressDialog = ({ tasks }: Props) => {
+  const { t } = useTranslation();
   const allDone = tasks.every((t) => t.state === 'done' || t.state === 'error');
   const hasError = tasks.some((t) => t.state === 'error');
 
@@ -63,10 +65,17 @@ export const UploadProgressDialog = ({ tasks }: Props) => {
           </div>
           <div>
             <h3 className='text-sm font-semibold text-slate-100'>
-              {hasError ? 'Upload failed' : allDone ? 'Upload complete' : 'Uploading media…'}
+              {hasError
+                ? t('mediaEdit.upload.failed')
+                : allDone
+                  ? t('mediaEdit.upload.complete')
+                  : t('mediaEdit.upload.uploading')}
             </h3>
             <p className='text-xs text-slate-500'>
-              {tasks.filter((t) => t.state === 'done').length}/{tasks.length} completed
+              {t('mediaEdit.upload.progress', {
+                done: tasks.filter((task) => task.state === 'done').length,
+                total: tasks.length,
+              })}
             </p>
           </div>
         </div>

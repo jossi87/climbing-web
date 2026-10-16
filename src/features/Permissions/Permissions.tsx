@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { usePermissions } from '../../api';
 import { useMeta } from '../../shared/components/Meta/context';
@@ -8,25 +9,14 @@ import { designContract } from '../../design/contract';
 import { Card, SearchInput, SectionHeader, UserCard } from '../../shared/ui';
 
 const ROLE_CONFIG = [
-  {
-    value: 0,
-    label: 'Default user',
-  },
-  {
-    value: 1,
-    label: 'Read hidden',
-  },
-  {
-    value: 2,
-    label: 'Admin (Write)',
-  },
-  {
-    value: 3,
-    label: 'Superadmin',
-  },
+  { value: 0, labelKey: 'permissions.defaultUser' },
+  { value: 1, labelKey: 'permissions.readHidden' },
+  { value: 2, labelKey: 'permissions.adminWrite' },
+  { value: 3, labelKey: 'permissions.superadmin' },
 ] as const;
 
 const Permissions = () => {
+  const { t } = useTranslation();
   const meta = useMeta();
   const [query, setQuery] = useState<string>('');
   const [openRoleMenuUserId, setOpenRoleMenuUserId] = useState<number | null>(null);
@@ -64,10 +54,10 @@ const Permissions = () => {
   const getLevel = (u: (typeof data)[number]) => (u.superadminWrite ? 3 : u.adminWrite ? 2 : u.adminRead ? 1 : 0);
 
   const groups = [
-    { value: 3, title: 'Superadmin' },
-    { value: 2, title: 'Admin' },
-    { value: 1, title: 'Read hidden' },
-    { value: 0, title: 'Default users' },
+    { value: 3, title: t('permissions.roles.superadmin') },
+    { value: 2, title: t('permissions.roles.admin') },
+    { value: 1, title: t('permissions.roles.readHidden') },
+    { value: 0, title: t('permissions.roles.defaultUsers') },
   ]
     .map((group) => ({
       ...group,
@@ -75,20 +65,27 @@ const Permissions = () => {
     }))
     .filter((group) => group.users.length > 0);
 
-  const subheader = query ? `${filteredData.length}/${data.length} users` : `${data.length} users total`;
+  const subheader = query
+    ? t('users.usersProgress', { visible: filteredData.length, total: data.length })
+    : t('permissions.usersTotal', { count: data.length });
 
   return (
     <div className='w-full min-w-0'>
-      <title>{`Permissions | ${meta?.title}`}</title>
-      <meta name='description' content='Manage user roles and access' />
+      <title>{t('meta.pageTitle', { page: t('permissions.title'), site: meta?.title ?? '' })}</title>
+      <meta name='description' content={t('permissions.metaDescription')} />
       <Card flush className='min-w-0 overflow-visible border-0'>
         <div className='p-4 pb-3 sm:p-5 sm:pb-4'>
           <div className='flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between'>
-            <SectionHeader className='mb-0 min-w-0 lg:flex-1' title='Permissions' icon={Users} subheader={subheader} />
+            <SectionHeader
+              className='mb-0 min-w-0 lg:flex-1'
+              title={t('permissions.title')}
+              icon={Users}
+              subheader={subheader}
+            />
             <div className='w-full shrink-0 lg:w-64 lg:max-w-[48vw]'>
               <SearchInput
                 type='text'
-                placeholder='Search users...'
+                placeholder={t('permissions.searchPlaceholder')}
                 onChange={(e) => setQuery(e.target.value)}
                 value={query}
                 onClear={() => setQuery('')}
@@ -101,7 +98,7 @@ const Permissions = () => {
         <div className='border-surface-border/60 border-t'>
           {filteredData.length === 0 ? (
             <div className='px-4 py-16 text-center sm:px-5 sm:py-20'>
-              <p className={designContract.typography.label}>No users found</p>
+              <p className={designContract.typography.label}>{t('permissions.noUsers')}</p>
             </div>
           ) : (
             <div className='divide-surface-border/25 divide-y'>
@@ -136,7 +133,9 @@ const Permissions = () => {
                                   }
                                   className='bg-surface-raised hover:bg-surface-raised-hover border-surface-border inline-flex w-full min-w-0 items-center justify-between rounded-md border px-2 py-1 text-left text-[11px] font-semibold text-slate-100 transition-colors hover:border-slate-500 focus:border-slate-400 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-[12px]'
                                 >
-                                  <span className='truncate'>{ROLE_CONFIG[currentLevel]?.label ?? 'Default user'}</span>
+                                  <span className='truncate'>
+                                    {t(ROLE_CONFIG[currentLevel]?.labelKey ?? 'permissions.defaultUser')}
+                                  </span>
                                   <ChevronDown size={12} className='ml-2 shrink-0 text-slate-500' />
                                 </button>
                                 {openRoleMenuUserId === (u.userId ?? -1) && (
@@ -156,7 +155,7 @@ const Permissions = () => {
                                             : 'hover:bg-surface-hover text-slate-300',
                                         )}
                                       >
-                                        {opt.label}
+                                        {t(opt.labelKey)}
                                       </button>
                                     ))}
                                   </div>

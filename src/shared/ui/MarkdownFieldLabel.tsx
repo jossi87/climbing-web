@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Trans } from 'react-i18next';
 
 type Props = { children: ReactNode; className?: string };
 
@@ -9,16 +10,20 @@ type Props = { children: ReactNode; className?: string };
 export function MarkdownFieldLabel({ children, className }: Props) {
   return (
     <label className={className}>
-      {children} (supports{' '}
-      <a
-        href='https://jonschlinkert.github.io/remarkable/demo/'
-        target='_blank'
-        rel='noopener noreferrer'
-        className='text-brand underline'
-      >
-        markdown
-      </a>
-      )
+      {children}{' '}
+      <Trans
+        i18nKey='markdownField.supports'
+        components={{
+          link: (
+            <a
+              href='https://jonschlinkert.github.io/remarkable/demo/'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-brand underline'
+            />
+          ),
+        }}
+      />
     </label>
   );
 }

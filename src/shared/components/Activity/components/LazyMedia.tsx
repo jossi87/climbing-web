@@ -1,4 +1,5 @@
 import { useInView } from 'react-intersection-observer';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import type { components } from '../../../../@types/buldreinfo/swagger';
 import {
@@ -17,6 +18,7 @@ import { VideoThumbnailPlayOverlay } from '../../Media/VideoThumbnailPlayOverlay
 type ActivityMedia = components['schemas']['ActivityMedia'];
 
 function ActivityMediaThumb({ m, problemId }: { m: ActivityMedia; problemId?: number }) {
+  const { t } = useTranslation();
   const retry = useRetryingMediaImage();
   const isMovie = !!m.movie;
   /** Stable 1x/2x tiers (100 or 188) to avoid many on-demand S3 variants. */
@@ -33,7 +35,7 @@ function ActivityMediaThumb({ m, problemId }: { m: ActivityMedia; problemId?: nu
     <Link
       to={`/problem/${problemId ?? 0}/${mediaIdentityId(m.identity)}`}
       className='sm:h-thumbnail-h sm:w-thumbnail-w group/thumb border-surface-border bg-surface-card relative block aspect-square min-w-0 shrink-0 overflow-hidden rounded-md border transition-all active:scale-95 sm:rounded-lg'
-      aria-label={`View activity photo, open problem ${problemId ?? 0}`}
+      aria-label={t('activity.mediaAltOpenProblem', { number: problemId ?? 0 })}
     >
       {isMovie ? (
         retry.showPlaceholder ? (
@@ -59,7 +61,7 @@ function ActivityMediaThumb({ m, problemId }: { m: ActivityMedia; problemId?: nu
         <>
           <div
             role='img'
-            aria-label='Activity media'
+            aria-label={t('activity.mediaAlt')}
             className='animate-in fade-in fill-mode-both absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-500 ease-out group-hover/thumb:scale-110'
             style={{
               backgroundImage: `url(${JSON.stringify(thumbUrl)})`,

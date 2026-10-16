@@ -10,6 +10,8 @@
  * for `.heic`/`.heif` files (Windows/Chrome has no MIME association for the extension), so the
  * file name is the reliable signal.
  */
+import type { TFunction } from 'i18next';
+
 const HEIC_MIME_TYPES = new Set(['image/heic', 'image/heif', 'image/heic-sequence', 'image/heif-sequence']);
 const HEIC_EXTENSION = /\.(heic|heif)$/i;
 
@@ -23,7 +25,11 @@ type HeifContainerKind = 'heic' | 'heif' | 'avif' | 'unknown';
 /** The wasm decoder module, fetched lazily by {@link loadLibheif} on the first conversion. */
 type LibheifModule = import('libheif-js/libheif-wasm/libheif-bundle.mjs').HeifModule;
 
-/** Shown to the user when every decoder failed; says what to do instead of what went wrong. */
+/**
+ * English wording for the failure: it is what `HeicConversionError.message` carries for logs and Sentry, while
+ * the UI reads `mediaEdit.heicFailure.<kind>` from the catalog — this module is pure and deliberately does not
+ * reach for the i18n singleton.
+ */
 const CONVERSION_FAILURE_MESSAGE: Record<HeifContainerKind, string> = {
   heic: 'This HEIC image could not be converted. Export it as JPEG (iPhone: Settings → Camera → Formats → Most Compatible) and try again.',
   heif: 'This HEIF image could not be converted. Export it as JPEG and try again.',
@@ -34,23 +40,30 @@ const CONVERSION_FAILURE_MESSAGE: Record<HeifContainerKind, string> = {
 /**
  * A HEIC/HEIF image that no decoder in the browser could read.
  *
- * Carries a `message` that is safe to render in the UI (it is advice, not a stack trace) and the
- * decoder errors in `details` for logging.
+ * Carries the decoder errors in `details` for logging, and the `kind` that tells the UI which advice to show:
+ * `heic` / `heif` / `avif` / `unknown` are four different sentences, in every locale.
  */
 export class HeicConversionError extends Error {
   readonly details: string[];
+  readonly kind: HeifContainerKind;
 
-  constructor(message: string, details: string[] = []) {
-    super(message);
+  constructor(kind: HeifContainerKind, details: string[] = []) {
+    super(CONVERSION_FAILURE_MESSAGE[kind]);
     this.name = 'HeicConversionError';
+    this.kind = kind;
     this.details = details;
   }
 }
 
-/** User-facing reason for a failed conversion — safe to render next to the file name. */
-export function heicConversionFailureReason(error: unknown): string {
-  if (error instanceof HeicConversionError) return error.message;
-  return messageFor(error) || 'Could not be read';
+/**
+ * User-facing reason for a failed conversion — safe to render next to the file name.
+ *
+ * Takes `t` because the advice has to come from the catalog: this module is pure (no hooks, no i18n singleton),
+ * and every caller is a component that already holds `t`.
+ */
+export function heicConversionFailureReason(error: unknown, t: TFunction): string {
+  if (error instanceof HeicConversionError) return t(`mediaEdit.heicFailure.${error.kind}`);
+  return messageFor(error) || t('mediaEdit.heicFailure.unreadable');
 }
 
 /** JPEG name for the converted file, so the API can derive `StorageType.JPG` from the suffix. */
@@ -240,7 +253,7 @@ async function convertToJpegBlob(file: File, quality: number): Promise<Blob> {
     details.push(`browser: ${messageFor(error)}`);
   }
 
-  throw new HeicConversionError(CONVERSION_FAILURE_MESSAGE[await readContainerKind(file)], details);
+  throw new HeicConversionError(await readContainerKind(file), details);
 }
 
 /** Convert a HEIC/HEIF image into a JPEG `File`, or throw a {@link HeicConversionError}. */

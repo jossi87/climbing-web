@@ -1,3 +1,13 @@
+/**
+ * First-ascent (FA) / first-free-ascent (FFA) display lines.
+ *
+ * Not localized on purpose: everything these helpers emit is API data (`fa` / `ffa` / `faDate` columns) plus the
+ * `FA:` / `FFA:` markers, `-YY` years and `, ` separators. The markers are standard climbing notation rather than
+ * copy, and every catalog spells them the same way — `gradeMeta` in the locales keeps `FA:` verbatim too, so a
+ * locale would only be able to restate them identically. Word order and plurals never come into play here, which
+ * is why (unlike `routeTradGear.passiveGearLine`) no `t` is threaded in.
+ */
+
 /** Replace `/` and `&` between people with commas; leaves existing commas as-is. */
 export function normalizeFaPeopleSeparators(fa: string): string {
   return fa

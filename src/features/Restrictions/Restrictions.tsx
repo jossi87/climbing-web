@@ -6,11 +6,13 @@ import { useMeta } from '../../shared/components/Meta/context';
 import { useData } from '../../api';
 import type { Success } from '../../@types/buldreinfo';
 import { ShieldOff, Ban } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Card, SectionHeader } from '../../shared/ui';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 
 const Restrictions = () => {
+  const { t } = useTranslation();
   const meta = useMeta();
   const { data } = useData<Success<'getRestrictions'>>(`/restrictions`);
 
@@ -24,7 +26,10 @@ const Restrictions = () => {
     [data],
   );
 
-  const description = `${numAreas} area${numAreas !== 1 ? 's' : ''}, ${numSectors} sector${numSectors !== 1 ? 's' : ''}`;
+  const description = t('restrictions.summary', {
+    areas: t('counts.areas', { count: numAreas }),
+    sectors: t('counts.sectors', { count: numSectors }),
+  });
 
   if (!data) {
     return <Loading />;
@@ -32,12 +37,17 @@ const Restrictions = () => {
 
   return (
     <div className='w-full min-w-0'>
-      <title>{`Restrictions | ${meta?.title}`}</title>
+      <title>{t('meta.pageTitle', { page: t('restrictions.title'), site: meta.title })}</title>
       <meta name='description' content={description} />
 
       <Card flush className='min-w-0 border-0'>
         <div className='p-4 pb-3 sm:p-5 sm:pb-4'>
-          <SectionHeader title='Restrictions' icon={ShieldOff} subheader={description} className='mb-4 sm:mb-5' />
+          <SectionHeader
+            title={t('restrictions.title')}
+            icon={ShieldOff}
+            subheader={description}
+            className='mb-4 sm:mb-5'
+          />
         </div>
         <div className='p-4 sm:p-5'>
           <div className='space-y-10'>

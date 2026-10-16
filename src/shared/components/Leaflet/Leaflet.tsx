@@ -1,4 +1,5 @@
 import { useState, type FC, Fragment, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import 'leaflet/dist/leaflet.css';
 import {
   useMapEvents,
@@ -170,6 +171,7 @@ const Leaflet = ({
   onMouseClick = undefined,
   onMouseMove = undefined,
 }: Props) => {
+  const { t } = useTranslation();
   const [groupByRock, setGroupByRock] = useState(!!rocks?.length);
   const [showElevation, setShowElevation] = useState(false);
   /** Base maps offered by the active region; the region's default is the one selected on load. */
@@ -281,7 +283,7 @@ const Leaflet = ({
                 onChange={(e) => setGroupByRock(e.target.checked)}
                 className='accent-brand'
               />
-              <span className={cn('text-slate-300', designContract.typography.label)}>Group by rock</span>
+              <span className={cn('text-slate-300', designContract.typography.label)}>{t('leaflet.groupByRock')}</span>
             </label>
           </div>
         </UseControlWrapper>
@@ -303,8 +305,8 @@ const Leaflet = ({
                 : 'border-surface-border/60 light:shadow-[0_4px_14px_rgba(15,23,42,0.1),0_0_0_1px_rgba(15,23,42,0.05)] bg-[var(--color-surface-card)] shadow-[0_4px_12px_rgba(0,0,0,0.5)]',
             )}
             aria-pressed={showElevation}
-            aria-label={showElevation ? 'Hide elevation labels' : 'Show elevation labels'}
-            title={showElevation ? 'Hide elevation labels' : 'Show elevation labels'}
+            aria-label={t(showElevation ? 'leaflet.hideElevationLabels' : 'leaflet.showElevationLabels')}
+            title={t(showElevation ? 'leaflet.hideElevationLabels' : 'leaflet.showElevationLabels')}
           >
             <Activity
               size={18}

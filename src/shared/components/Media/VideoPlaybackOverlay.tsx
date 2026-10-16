@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { AlertTriangle, Loader2, RefreshCw } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
@@ -44,6 +45,7 @@ const retryButtonClass = cn(
  * native control whose state (play or pause) the user cannot see.
  */
 export function VideoPlaybackOverlay({ phase, onEnsurePlayback, onRetry }: Props) {
+  const { t } = useTranslation();
   if (phase === null) return null;
 
   if (phase === 'buffering') {
@@ -55,7 +57,7 @@ export function VideoPlaybackOverlay({ phase, onEnsurePlayback, onRetry }: Props
           <Loader2 size={22} strokeWidth={2.5} className='animate-spin text-[#e2e8f0]' aria-hidden />
         </div>
         <span role='status' aria-live='polite' className='sr-only'>
-          Buffering
+          {t('media.buffering')}
         </span>
       </div>
     );
@@ -72,7 +74,7 @@ export function VideoPlaybackOverlay({ phase, onEnsurePlayback, onRetry }: Props
             event.stopPropagation();
             onEnsurePlayback();
           }}
-          aria-label='Play'
+          aria-label={t('media.play')}
           /* The padded hit area is what makes the disc a comfortable touch target; the disc itself keeps the poster's
              size, so the stage looks unchanged when the player takes over the thumbnail. */
           className='pointer-events-auto cursor-pointer rounded-full p-2 transition-transform active:scale-95'
@@ -84,7 +86,7 @@ export function VideoPlaybackOverlay({ phase, onEnsurePlayback, onRetry }: Props
           the reason — the browser refused to autoplay — has to be spelled out. Once playback has started, the disc
           plus the element's own control bar already say "paused".
         */}
-        {phase === 'blocked' && <p className='text-[13px] font-semibold text-slate-100'>Tap to play</p>}
+        {phase === 'blocked' && <p className='text-[13px] font-semibold text-slate-100'>{t('media.tapToPlay')}</p>}
       </div>
     );
   }
@@ -97,10 +99,10 @@ export function VideoPlaybackOverlay({ phase, onEnsurePlayback, onRetry }: Props
         </div>
         <div className='flex flex-col gap-1'>
           <p role='status' className='text-[15px] font-semibold text-slate-100'>
-            Video unavailable
+            {t('media.videoUnavailable')}
           </p>
           <p className='max-w-[19rem] text-[13px] leading-snug text-slate-300'>
-            The video could not be loaded. Check your connection and try again.
+            {t('media.videoUnavailableDescription')}
           </p>
         </div>
         <button
@@ -112,7 +114,7 @@ export function VideoPlaybackOverlay({ phase, onEnsurePlayback, onRetry }: Props
           className={retryButtonClass}
         >
           <RefreshCw size={14} strokeWidth={2.25} aria-hidden />
-          Try again
+          {t('common.tryAgain')}
         </button>
       </div>
     );
@@ -137,7 +139,7 @@ export function VideoPlaybackOverlay({ phase, onEnsurePlayback, onRetry }: Props
         <Loader2 size={26} strokeWidth={2.5} className='animate-spin text-[#e2e8f0]' aria-hidden />
       </div>
       <span role='status' aria-live='polite' className='sr-only'>
-        Loading video
+        {t('media.loadingVideo')}
       </span>
     </div>
   );

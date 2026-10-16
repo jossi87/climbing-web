@@ -1,19 +1,25 @@
 import { useState } from 'react';
 import { Moon, Sun } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../providers/useTheme';
 import { cn } from '../../lib/utils';
 import { useMeta } from './Meta/context';
 import { useSetThemePreference } from '../../api';
 
-/** Inline hover fill avoids glass-header / `backdrop-filter` compositing bugs and `::before` z-index pitfalls. */
-const CHROME = 'rgb(28, 30, 36)';
-const CHROME_HOVER = 'rgb(51, 53, 61)';
+/**
+ * Inline hover fill avoids glass-header / `backdrop-filter` compositing bugs and `::before` z-index pitfalls.
+ *
+ * Exported for `LanguageSelect`, which sits in the same header slot and inherits the same constraints.
+ */
+export const CHROME = 'rgb(28, 30, 36)';
+export const CHROME_HOVER = 'rgb(51, 53, 61)';
 /** Same in both global themes: preflight `button { color: inherit }` would otherwise pull page body ink onto dark chrome. */
-const CHROME_ICON = '#ffffff';
+export const CHROME_ICON = '#ffffff';
 /** Keep off `border-white/12` — `html[data-theme="light"] .border-white/12` remaps to dark ink and vanishes on the dark bar. */
-const CHROME_BORDER = '1px solid rgba(255, 255, 255, 0.12)';
+export const CHROME_BORDER = '1px solid rgba(255, 255, 255, 0.12)';
 
 export function ThemeToggle() {
+  const { t } = useTranslation();
   const { resolved, toggle } = useTheme();
   const isDark = resolved === 'dark';
   const [hover, setHover] = useState(false);
@@ -36,7 +42,7 @@ export function ThemeToggle() {
       onClick={handleToggle}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      aria-label={isDark ? t('theme.switchToLight') : t('theme.switchToDark')}
       style={{
         backgroundColor: hover ? CHROME_HOVER : CHROME,
         color: CHROME_ICON,

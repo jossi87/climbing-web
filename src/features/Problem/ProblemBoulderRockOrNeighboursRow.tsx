@@ -1,4 +1,5 @@
 import { ProblemNeighboursRow, SectorProblemLink } from './ProblemNeighboursRow';
+import { useTranslation } from 'react-i18next';
 import { problemSurroundingsLeadClass, problemSurroundingsRowClass } from './problemSurroundingsLayout';
 import type { components } from '../../@types/buldreinfo/swagger';
 
@@ -12,9 +13,10 @@ type Props = {
 
 /** Boulder: same-rock list replaces the neighbours row when `rock` is set; otherwise plain neighbours. */
 export function ProblemBoulderRockOrNeighboursRow({ problemId, rock, neighbours }: Props) {
+  const { t } = useTranslation();
   if (rock) {
     return (
-      <p className={problemSurroundingsRowClass} aria-label={`Problems on rock «${rock}»`}>
+      <p className={problemSurroundingsRowClass} aria-label={t('place.problemsOnRock', { rock: rock ?? '' })}>
         <span className={problemSurroundingsLeadClass}>{rock}:</span>
         <span className='inline-flex w-full min-w-0 flex-wrap items-baseline gap-x-4 gap-y-1 sm:flex-1'>
           {(neighbours ?? []).map((n) => (

@@ -1,6 +1,7 @@
 import { type ComponentProps, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import ProblemList, { useProblemListCompact } from '../../shared/components/ProblemList';
 import ChartGradeDistribution from '../../shared/components/ChartGradeDistribution/ChartGradeDistribution';
 import { TrailProfile } from '../../shared/components/TrailProfile';
@@ -83,6 +84,7 @@ type SectorListItemProps = { problem: SectorProblemRow };
 const lockInlineClass = 'ml-0.5 inline-block align-middle';
 
 export const SectorListItem = ({ problem }: SectorListItemProps) => {
+  const { t } = useTranslation();
   const { isClimbing, isBouldering } = useMeta();
   const compact = useProblemListCompact();
 
@@ -106,13 +108,17 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
 
   const pitchLine =
     isClimbing && (problem.numPitches ?? 1) > 1 ? (
-      <span className={cn(tickListRowQuietMeta, 'align-baseline whitespace-nowrap')}>{problem.numPitches} pitches</span>
+      <span className={cn(tickListRowQuietMeta, 'align-baseline whitespace-nowrap')}>
+        {t('counts.pitches', { count: problem.numPitches ?? 0 })}
+      </span>
     ) : null;
   const lengthLine =
     !isBouldering && problem.lengthMeter ? (
       <span className={cn(tickListRowQuietMeta, 'align-baseline whitespace-nowrap')}>{problem.lengthMeter}m</span>
     ) : null;
-  const rockLine = problem.rock ? <span className='not-italic'>Rock: {problem.rock}</span> : null;
+  const rockLine = problem.rock ? (
+    <span className='not-italic'>{t('problemRow.rock', { rock: problem.rock })}</span>
+  ) : null;
   const faEl = faLine ? <span>{faLine}</span> : null;
   const commentEl = commentTrimmed ? <span className={tickCommentSmall}>{commentTrimmed}</span> : null;
 
@@ -178,22 +184,22 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
           </span>
         ) : null}
         {hasTopo ? (
-          <span className='inline-flex items-end' title='Topo line'>
+          <span className='inline-flex items-end' title={t('problemRow.topoTooltip')}>
             <Spline size={12} strokeWidth={2.5} className={problemListRowMediaGlyphClass} aria-hidden />
           </span>
         ) : null}
         {hasCoordinates ? (
-          <span className='inline-flex items-end' title='Coordinates'>
+          <span className='inline-flex items-end' title={t('problemRow.coordinatesTooltip')}>
             <MapPin size={12} strokeWidth={2.5} className={problemListRowMediaGlyphClass} aria-hidden />
           </span>
         ) : null}
         {showImages ? (
-          <span className='inline-flex items-end' title='Images'>
+          <span className='inline-flex items-end' title={t('problemRow.imagesTooltip')}>
             <ImageIcon size={12} strokeWidth={2.5} className={problemListRowMediaGlyphClass} aria-hidden />
           </span>
         ) : null}
         {showMovies ? (
-          <span className='inline-flex items-end' title='Movies'>
+          <span className='inline-flex items-end' title={t('problemRow.moviesTooltip')}>
             <Film size={12} strokeWidth={2.5} className={problemListRowMediaGlyphClass} aria-hidden />
           </span>
         ) : null}
@@ -213,7 +219,7 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
 
   const ticksMetaBlock =
     tickCount > 0 ? (
-      <span className={problemListRowTicksMetaClass}>{tickCount === 1 ? '1 tick' : `${tickCount} ticks`}</span>
+      <span className={problemListRowTicksMetaClass}>{t('counts.ticks', { count: tickCount })}</span>
     ) : null;
 
   const hasContentBeforeMetaTail =
@@ -272,10 +278,10 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
             className={cn(tickWhenGrade, 'shrink-0 leading-snug tabular-nums antialiased')}
             title={
               problem.ticked
-                ? 'Ticked'
+                ? t('problemRow.ticked')
                 : problem.todo
-                  ? 'On to-do list'
-                  : `${isBouldering ? 'Boulder' : 'Route'} number`
+                  ? t('problemRow.onTodoList')
+                  : t(isBouldering ? 'problemRow.boulderNumber' : 'problemRow.routeNumber')
             }
           >
             #{problem.nr}
@@ -398,8 +404,9 @@ function sumSectorProblemTicks(problems: components['schemas']['SectorProblem'][
 
 const Sector = () => {
   const { sectorId, segment } = useParams();
+  const { t } = useTranslation();
   if (!sectorId) {
-    throw new Error('Missing sectorId URL param');
+    throw new Error(t('place.missingSectorId'));
   }
   const meta = useMeta();
   const { data, error, isLoading, redirectUi } = useSector(+sectorId);
@@ -469,8 +476,8 @@ const Sector = () => {
 
   const tabs = useMemo(() => {
     if (!data) return [] as { id: string; label: string; icon: LucideIcon; hasMedia?: boolean }[];
-    const t: { id: string; label: string; icon: LucideIcon; hasMedia?: boolean }[] = [];
-    t.push({ id: 'overview', label: 'Overview', icon: LayoutDashboard });
+    const items: { id: string; label: string; icon: LucideIcon; hasMedia?: boolean }[] = [];
+    items.push({ id: 'overview', label: t('place.overview'), icon: LayoutDashboard });
     const addPolygon = meta.isClimbing || markers.length === 0;
     const hasOutlineOnMap = (data.outline ?? []).length > 0 && addPolygon;
     const hasApproachOrDescent = (data.trails ?? []).length > 0;
@@ -479,23 +486,23 @@ const Sector = () => {
     );
 
     if (markers.length > 0 || hasOutlineOnMap || hasApproachOrDescent || areaMapCenter) {
-      t.push({
+      items.push({
         id: 'map',
-        label: 'Map',
+        label: t('place.map'),
         icon: MapIcon,
         hasMedia: trailsWithRichContent.length > 0,
       });
     }
     if ((data.problems ?? []).length > 0) {
-      t.push({ id: 'distribution', label: 'Distribution', icon: BarChart2 });
+      items.push({ id: 'distribution', label: t('place.distribution'), icon: BarChart2 });
       if (sumSectorProblemTicks(data.problems) > 0) {
-        t.push({ id: 'top', label: 'Top', icon: Trophy });
+        items.push({ id: 'top', label: t('place.top'), icon: Trophy });
       }
-      t.push({ id: 'todo', label: 'Todo', icon: Bookmark });
-      t.push({ id: 'activity', label: 'Activity', icon: Clock });
+      items.push({ id: 'todo', label: t('place.todo'), icon: Bookmark });
+      items.push({ id: 'activity', label: t('place.activity'), icon: Clock });
     }
-    return t;
-  }, [areaMapCenter, data, markers, meta.isClimbing]);
+    return items;
+  }, [areaMapCenter, data, markers, meta.isClimbing, t]);
 
   /** Path segments: `/sector/:id`, `/sector/:id/overview`, `/sector/:id/map`, …; numeric segment = media deep link (tab highlights overview). */
   const effectiveTab = useMemo(() => {
@@ -538,23 +545,18 @@ const Sector = () => {
   if (error && isHttpError(error, 404)) {
     return (
       <>
-        <title>{`Not found | ${meta?.title}`}</title>
-        <NotFoundCard
-          className='mt-4 sm:mt-6'
-          description='Cannot find the specified sector because it does not exist or you do not have sufficient permissions.'
-        />
+        <title>{t('meta.pageTitle', { page: t('meta.notFound'), site: meta?.title ?? '' })}</title>
+        <NotFoundCard className='mt-4 sm:mt-6' description={t('place.notFoundSectorDescription')} />
       </>
     );
   }
 
   if (error) {
-    const description = isHttpError(error)
-      ? getUserFriendlyHttpErrorMessage(error)
-      : 'Something went wrong while loading this sector.';
+    const description = isHttpError(error) ? getUserFriendlyHttpErrorMessage(error) : t('place.loadSectorError');
     return (
       <>
-        <title>{`Error | ${meta?.title}`}</title>
-        <NotFoundCard className='mt-4 sm:mt-6' title='Unable To Load Sector' description={description} />
+        <title>{t('meta.pageTitle', { page: t('status.errorTitle'), site: meta?.title ?? '' })}</title>
+        <NotFoundCard className='mt-4 sm:mt-6' title={t('place.unableToLoadSector')} description={description} />
       </>
     );
   }
@@ -643,6 +645,23 @@ const Sector = () => {
     })
     .filter((s) => s.count > 0);
 
+  /**
+   * Per-type summary ("Cesty: 12 cest, 3 vylezené"), reused for the live-region label and each chip's tooltip.
+   *
+   * Two independent counts can't share one `count` (the ticked figure would pluralize on the route total), so the
+   * fragments are translated separately and spliced by `place.typeSummary*` — see that key's note.
+   */
+  const typeSummaryText = (s: { header: string; count: number; numTicked: number }) => {
+    const routes = t('counts.routes', { count: s.count });
+    return s.numTicked > 0
+      ? t('place.typeSummaryWithTicks', {
+          header: s.header,
+          routes,
+          ticked: t('place.tickedCount', { count: s.numTicked }),
+        })
+      : t('place.typeSummary', { header: s.header, routes });
+  };
+
   const sectorProblemListRows: ComponentProps<typeof ProblemList>['rows'] =
     data.problems?.map((p) => ({
       element: <SectorListItem key={p.id} problem={p} />,
@@ -669,8 +688,9 @@ const Sector = () => {
       <div className={cn('min-w-0 space-y-2', designContract.typography.body)}>
         {(data.areaAccessClosed || data.accessClosed) && (
           <p className='text-access-danger text-pretty'>
-            {(data.areaAccessClosed ? 'Area' : 'Sector') + ' closed: '}
-            {(data.areaAccessClosed || '') + (data.accessClosed || '')}
+            {t(data.areaAccessClosed ? 'place.areaClosed' : 'place.sectorClosed', {
+              info: (data.areaAccessClosed || '') + (data.accessClosed || ''),
+            })}
           </p>
         )}
         {(data.areaNoDogsAllowed || data.areaAccessInfo || data.accessInfo) && (
@@ -685,7 +705,7 @@ const Sector = () => {
 
   return (
     <div className='w-full min-w-0 space-y-4 sm:space-y-6'>
-      <title>{`${data.name} (${data.areaName}) | ${meta?.title}`}</title>
+      <title>{t('meta.pageTitle', { page: `${data.name} (${data.areaName})`, site: meta?.title ?? '' })}</title>
       <meta name='description' content={data.comment} />
 
       <div className='mb-3 min-w-0 space-y-2 pt-1 sm:mb-4 sm:space-y-2 sm:pt-1 lg:pt-0'>
@@ -694,14 +714,14 @@ const Sector = () => {
           breadcrumb={
             <>
               <nav
-                aria-label='Breadcrumb'
+                aria-label={t('place.breadcrumb')}
                 className={cn(
                   'flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-2 text-pretty break-words',
                   designContract.typography.breadcrumb,
                 )}
               >
                 <Link to='/areas' className={designContract.typography.breadcrumbLink}>
-                  Areas
+                  {t('areas.title')}
                 </Link>
                 <ChevronRight size={12} className='shrink-0 translate-y-px opacity-30' aria-hidden />
                 <Link to={`/area/${data.areaId}`} className={designContract.typography.breadcrumbLink}>
@@ -718,8 +738,8 @@ const Sector = () => {
                 {meta.isAdmin && (
                   <Link
                     to={`/problem/edit/${data.id}/0`}
-                    title='Add problem'
-                    aria-label='Add problem'
+                    title={t('place.addProblem')}
+                    aria-label={t('place.addProblem')}
                     data-ph-action='add'
                     className={cn(
                       designContract.controls.pageHeaderIconButton,
@@ -731,8 +751,8 @@ const Sector = () => {
                 )}
                 <Link
                   to={`/media/add?type=sector&id=${data.id}&name=${encodeURIComponent(data.name ?? '')}&areaId=${data.areaId}&areaName=${encodeURIComponent(data.areaName ?? '')}`}
-                  title='Add media'
-                  aria-label='Add media'
+                  title={t('place.addMedia')}
+                  aria-label={t('place.addMedia')}
                   data-ph-action='add-media'
                   className={cn(
                     designContract.controls.pageHeaderIconButton,
@@ -745,8 +765,8 @@ const Sector = () => {
                   <>
                     <Link
                       to={`/sector/edit/${data.areaId}/${data.id}`}
-                      title='Edit sector'
-                      aria-label='Edit sector'
+                      title={t('place.editSector')}
+                      aria-label={t('place.editSector')}
                       data-ph-action='edit'
                       className={cn(
                         designContract.controls.pageHeaderIconButton,
@@ -767,7 +787,7 @@ const Sector = () => {
               type='button'
               aria-expanded={sectorPickerOpen}
               aria-haspopup='listbox'
-              aria-label={`Sector: ${data.name}. Open list of sectors in this area.`}
+              aria-label={t('place.sectorPickerAria', { name: data.name ?? '' })}
               onClick={() => setSectorPickerOpen((o) => !o)}
               className={cn(
                 'group inline-flex max-w-full min-w-0 items-baseline gap-1 rounded-md border-0 bg-transparent py-0.5 text-left text-[15px] leading-snug font-semibold tracking-tight text-slate-50 transition-[color,background-color,box-shadow] sm:text-[16px]',
@@ -844,18 +864,18 @@ const Sector = () => {
               className={tabBarStripContainerClassName('equal')}
               style={{ display: 'grid', gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
               role='tablist'
-              aria-label='Sector sections'
+              aria-label={t('place.sectorSections')}
             >
-              {tabs.map((t) => {
-                const IconComp = t.icon;
-                const isActive = effectiveTab === t.id;
+              {tabs.map((tab) => {
+                const IconComp = tab.icon;
+                const isActive = effectiveTab === tab.id;
                 return (
                   <button
-                    key={t.id}
+                    key={tab.id}
                     type='button'
                     role='tab'
                     aria-selected={isActive}
-                    onClick={() => setSectorTab(t.id)}
+                    onClick={() => setSectorTab(tab.id)}
                     className={tabBarButtonClassName(isActive)}
                   >
                     <span className='relative inline-flex'>
@@ -866,9 +886,9 @@ const Sector = () => {
                       />
                     </span>
                     <span className={designContract.controls.tabBarLabel}>
-                      {t.label}
-                      {t.hasMedia && (
-                        <span title='Contains trail with description or media'>
+                      {tab.label}
+                      {tab.hasMedia && (
+                        <span title={t('place.hasTrailContent')}>
                           <Info size={10} strokeWidth={2.5} className='text-brand ml-0.5 inline-block' />
                         </span>
                       )}
@@ -906,32 +926,38 @@ const Sector = () => {
                       pageViews={data.pageViews}
                     />
                     <ActionMenuChip
-                      label='PDF'
+                      label={t('place.pdf')}
                       icon={Download}
-                      title='Download PDF'
+                      title={t('place.downloadPdf')}
                       items={[
                         {
                           id: 'sector-pdf',
-                          label: 'Sector',
+                          label: t('common.sector'),
                           href: `/sectors/pdf?id=${data.id}`,
                           kind: 'download',
                         },
-                        { id: 'area-pdf', label: 'Area', href: `/areas/pdf?id=${data.areaId}`, kind: 'download' },
+                        {
+                          id: 'area-pdf',
+                          label: t('common.area'),
+                          href: `/areas/pdf?id=${data.areaId}`,
+                          kind: 'download',
+                        },
                       ]}
                     />
                     <ActionMenuChip
-                      label='Maps'
+                      label={t('place.maps')}
                       icon={MapIcon}
-                      title='Open in maps app'
+                      title={t('trailProfile.openInMaps')}
                       items={[
                         ...(data.parking?.latitude != null && data.parking?.longitude != null
                           ? [
                               {
                                 id: 'maps-parking',
-                                label: 'Parking',
+                                label: t('place.parking'),
                                 href: '',
                                 kind: 'link' as const,
-                                onClick: () => openMap(data.parking!.latitude!, data.parking!.longitude!, 'Parking'),
+                                onClick: () =>
+                                  openMap(data.parking!.latitude!, data.parking!.longitude!, t('place.parking')),
                               },
                             ]
                           : []),
@@ -942,14 +968,14 @@ const Sector = () => {
                           ? [
                               {
                                 id: 'maps-sector',
-                                label: 'Sector',
+                                label: t('common.sector'),
                                 href: '',
                                 kind: 'link' as const,
                                 onClick: () =>
                                   openMap(
                                     data.outline![0]!.latitude!,
                                     data.outline![0]!.longitude!,
-                                    data.name ?? 'Sector',
+                                    data.name ?? t('common.sector'),
                                   ),
                               },
                             ]
@@ -967,7 +993,7 @@ const Sector = () => {
                       >
                         <Info size={12} strokeWidth={2} className='shrink-0' />
                         <span className='min-w-0 normal-case'>
-                          Trails: {(data.trails ?? []).map((t) => t.title).join(' + ')}
+                          {t('place.trails', { names: (data.trails ?? []).map((trail) => trail.title).join(' + ') })}
                         </span>
                       </Link>
                     )}
@@ -1092,17 +1118,7 @@ const Sector = () => {
             enableViewModeToggle
             contentBeforeList={
               sectorTypeSummaries.length > 1 ? (
-                <div
-                  className='min-w-0'
-                  role='status'
-                  aria-label={sectorTypeSummaries
-                    .map((s) =>
-                      s.numTicked > 0
-                        ? `${s.header}: ${s.count} routes, ${s.numTicked} ticked`
-                        : `${s.header}: ${s.count} routes`,
-                    )
-                    .join('. ')}
-                >
+                <div className='min-w-0' role='status' aria-label={sectorTypeSummaries.map(typeSummaryText).join('. ')}>
                   <div className='flex flex-wrap items-center gap-x-4 gap-y-2.5 text-[13px] leading-snug sm:gap-x-6 sm:text-sm'>
                     {sectorTypeSummaries.map((s, i) => (
                       <div
@@ -1111,11 +1127,7 @@ const Sector = () => {
                           'inline-flex max-w-full min-w-0 items-center gap-x-2 sm:whitespace-nowrap',
                           i > 0 && 'border-surface-border border-l pl-3 sm:pl-4',
                         )}
-                        title={
-                          s.numTicked > 0
-                            ? `${s.header}: ${s.count} routes, ${s.numTicked} ticked`
-                            : `${s.header}: ${s.count} routes`
-                        }
+                        title={typeSummaryText(s)}
                       >
                         <span className='font-semibold text-slate-200'>{s.header}:</span>
                         <span className='text-slate-300 tabular-nums'>{s.count}</span>
@@ -1128,7 +1140,7 @@ const Sector = () => {
                               aria-hidden
                             />
                             <span className={cn('font-medium', designContract.ascentStatus.ticked)}>{s.numTicked}</span>
-                            <span className='sr-only'> ticked</span>
+                            <span className='sr-only'> {t('place.tickedSr')}</span>
                           </span>
                         ) : null}
                       </div>

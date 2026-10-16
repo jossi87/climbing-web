@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MousePointerClick, Video, ExternalLink } from 'lucide-react';
 import { Badge, SunOnWall, SunriseSunset, Orientation } from './ClimbingWidgets';
 import { YrLink } from './WeatherWidgets';
@@ -52,20 +53,26 @@ export function ConditionLabels({
   layout = 'chips',
   className,
 }: ConditionLabelsProps) {
+  const { t } = useTranslation();
   const hasCoords = lat != null && lng != null && lat !== 0 && lng !== 0;
   const d = new Date();
   const date = `${d.getFullYear()}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getDate().toString().padStart(2, '0')}`;
   const time = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
 
+  /**
+   * `count` only selects the plural form (and is `0` for a pre-formatted string, which reads as the plural),
+   * `formatted` is what is drawn — so a value the API already formatted is never re-parsed.
+   */
   const viewsText =
     pageViews != null && String(pageViews).length > 0
-      ? typeof pageViews === 'number'
-        ? `${pageViews.toLocaleString()} ${pageViews === 1 ? 'view' : 'views'}`
-        : `${pageViews} views`
+      ? t('widgets.pageViews', {
+          count: typeof pageViews === 'number' ? pageViews : Number(pageViews) || 0,
+          formatted: typeof pageViews === 'number' ? pageViews.toLocaleString() : String(pageViews),
+        })
       : null;
 
   const viewsChip = viewsText ? (
-    <Badge icon={MousePointerClick} title='Approximate page views (visits)'>
+    <Badge icon={MousePointerClick} title={t('widgets.pageViewsTitle')}>
       {viewsText}
     </Badge>
   ) : null;
@@ -73,7 +80,7 @@ export function ConditionLabels({
   const viewsInline = viewsText ? (
     <span
       className={cn(designContract.typography.menuItem, 'inline-flex max-w-full items-center gap-1 text-slate-300')}
-      title='Approximate page views (visits)'
+      title={t('widgets.pageViewsTitle')}
     >
       <MousePointerClick size={12} strokeWidth={2} className='shrink-0 text-slate-100' />
       <span className='font-medium'>{viewsText}</span>
@@ -110,7 +117,7 @@ export function ConditionLabels({
             )}
           >
             <Video size={12} strokeWidth={2} className='shrink-0 text-slate-100' />
-            Webcams
+            {t('widgets.webcams')}
           </span>
         </a>,
       );
@@ -157,7 +164,7 @@ export function ConditionLabels({
       <YrLink lat={lat} lng={lng} />
       <a href={`/webcams/${encodeURIComponent(JSON.stringify({ lat, lng, label }))}`} target='_blank' rel='noreferrer'>
         <Badge icon={Video} className={designContract.surfaces.badgeLinkHover}>
-          Webcams
+          {t('widgets.webcams')}
         </Badge>
       </a>
       <a

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Database, CheckCircle, Globe, Map, type LucideIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { numberWithCommas } from '../../api';
 import { cn } from '../../lib/utils';
 import type { components } from '../../@types/buldreinfo/swagger';
@@ -135,6 +136,8 @@ export const FrontpageStats = ({
   isBouldering,
   placement,
 }: FrontpageStatsProps) => {
+  const { t } = useTranslation();
+
   return (
     <Card flush className='border-0'>
       <div
@@ -148,7 +151,7 @@ export const FrontpageStats = ({
         <StatItem
           to={regionsTo}
           icon={Globe}
-          label='Regions'
+          label={t('frontpage.statRegions')}
           value={regionsLoading ? undefined : numberWithCommas(numRegions)}
           loading={regionsLoading}
           tileRadiusClass={statTileOuterRadius(placement, 0)}
@@ -156,7 +159,7 @@ export const FrontpageStats = ({
         <StatItem
           to='/areas'
           icon={Map}
-          label='Areas'
+          label={t('frontpage.statAreas')}
           value={stats ? numberWithCommas(stats.areas ?? 0) : undefined}
           loading={statsLoading}
           tileRadiusClass={statTileOuterRadius(placement, 1)}
@@ -164,7 +167,7 @@ export const FrontpageStats = ({
         <StatItem
           to='/problems'
           icon={Database}
-          label={isBouldering ? 'Problems' : 'Routes'}
+          label={isBouldering ? t('frontpage.statProblems') : t('frontpage.statRoutes')}
           value={stats ? numberWithCommas(stats.problems ?? 0) : undefined}
           loading={statsLoading}
           tileRadiusClass={statTileOuterRadius(placement, 2)}
@@ -172,7 +175,7 @@ export const FrontpageStats = ({
         <StatItem
           to='/ticks/1'
           icon={CheckCircle}
-          label='Ticks'
+          label={t('frontpage.statTicks')}
           value={stats ? numberWithCommas(stats.ticks ?? 0) : undefined}
           loading={statsLoading}
           tileRadiusClass={statTileOuterRadius(placement, 3)}

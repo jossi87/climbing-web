@@ -1,4 +1,5 @@
 import { cn } from '../../lib/utils';
+import { useTranslation } from 'react-i18next';
 import { twInk } from '../../design/twInk';
 
 /**
@@ -7,6 +8,12 @@ import { twInk } from '../../design/twInk';
  * detect it without duplicating string literals across modules.
  */
 export const NO_PERSONAL_GRADE_LABEL = 'No personal grade';
+
+/**
+ * Note: this literal matches the English label the API echoes back in a tick's `grade` slot, so it is a *value*
+ * comparison (see `ProblemLink`) rather than copy — it stays English on purpose while the rendered badge uses
+ * `tick.noPersonalGradeLabel`.
+ */
 
 type Variant = 'inline' | 'feed' | 'dense';
 
@@ -29,18 +36,26 @@ type Props = {
  * (kept readable, not abbreviated) in italic + muted ink so it reads as an annotation rather
  * than a grade. Replaces the previous per-call-site `X`-icon chip, which suggested
  * rejection/error rather than "user chose not to grade".
+ *
+ * The phrase is translated, but `NO_PERSONAL_GRADE_LABEL` above is not: it is the API sentinel
+ * (compare `TickModal`'s grade `<select>`, which sends it as an option value), so translating it
+ * would break the protocol, not the copy.
  */
-export const NoPersonalGradeBadge = ({ className, variant = 'inline' }: Props) => (
-  <span
-    className={cn(
-      'align-baseline text-slate-400 italic antialiased',
-      twInk.lightTextSlate700,
-      variant === 'dense' && 'text-[12px] sm:text-[13px]',
-      className,
-    )}
-    title={NO_PERSONAL_GRADE_LABEL}
-    aria-label={NO_PERSONAL_GRADE_LABEL}
-  >
-    no personal grade
-  </span>
-);
+export const NoPersonalGradeBadge = ({ className, variant = 'inline' }: Props) => {
+  const { t } = useTranslation();
+
+  return (
+    <span
+      className={cn(
+        'align-baseline text-slate-400 italic antialiased',
+        twInk.lightTextSlate700,
+        variant === 'dense' && 'text-[12px] sm:text-[13px]',
+        className,
+      )}
+      title={t('tick.noPersonalGradeLabel')}
+      aria-label={t('tick.noPersonalGradeLabel')}
+    >
+      {t('tick.noPersonalGradeText')}
+    </span>
+  );
+};

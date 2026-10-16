@@ -46,6 +46,28 @@
         }
       })();
     </script>
+    <script>
+      /*
+       * Sets <html lang> before the bundle loads, so :lang() styles and assistive tech agree with the
+       * locale i18next is about to pick. Mirrors resolveInitialLanguage() in src/i18n/config.ts, which
+       * likewise runs before /meta brings the region default: stored override, then browser, then
+       * English. Keep `supported`/`fallback` in sync with SUPPORTED_LANGUAGES.
+       */
+      (function () {
+        var supported = ['en', 'cs'];
+        var fallback = 'en';
+        var stored = null;
+        try {
+          var raw = localStorage.getItem('language_preference');
+          stored = raw != null ? JSON.parse(raw) : null;
+        } catch (e) {
+          /* Unreadable storage or corrupt JSON: fall through to the browser below, never to English. */
+        }
+        var base = String(navigator.language || fallback).split('-')[0];
+        var resolved = supported.indexOf(stored) >= 0 ? stored : base;
+        document.documentElement.lang = supported.indexOf(resolved) >= 0 ? resolved : fallback;
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

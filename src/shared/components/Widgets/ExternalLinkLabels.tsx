@@ -1,4 +1,5 @@
 import { Link as LinkIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Badge } from './ClimbingWidgets';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
@@ -13,6 +14,7 @@ export function ExternalLinkLabels({
   externalLinks?: ExternalLinkItem[];
   variant?: 'badge' | 'inline';
 }) {
+  const { t } = useTranslation();
   if (!externalLinks || externalLinks.length === 0) return null;
   if (variant === 'inline') {
     return (
@@ -33,7 +35,11 @@ export function ExternalLinkLabels({
               <span className='min-w-0 font-medium'>
                 {l.title}
                 {l.url?.includes('page=') && (
-                  <span className='text-slate-500 tabular-nums'> p.{l.url.split('page=')[1]}</span>
+                  <span className='text-slate-500 tabular-nums'>
+                    {' '}
+                    {t('common.pageAbbr')}
+                    {l.url.split('page=')[1]}
+                  </span>
                 )}
               </span>
             </a>
@@ -55,7 +61,12 @@ export function ExternalLinkLabels({
         <a key={l.id} href={l.url ?? '#'} target='_blank' rel='noreferrer'>
           <Badge icon={LinkIcon} className={designContract.surfaces.badgeLinkHover}>
             {l.title}
-            {l.url?.includes('page=') && <span className='ml-1 text-slate-500'>p.{l.url.split('page=')[1]}</span>}
+            {l.url?.includes('page=') && (
+              <span className='ml-1 text-slate-500'>
+                {t('common.pageAbbr')}
+                {l.url.split('page=')[1]}
+              </span>
+            )}
           </Badge>
         </a>
       ))}

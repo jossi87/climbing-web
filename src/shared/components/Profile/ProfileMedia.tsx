@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Loading } from '../../ui/StatusWidgets';
 import { useProfileMedia } from '../../../api';
 import Media from '../Media/Media';
@@ -10,6 +11,7 @@ type Props = {
 };
 
 const ProfileMedia = ({ userId, captured }: Props) => {
+  const { t } = useTranslation();
   const { data, isLoading } = useProfileMedia({ userId, captured });
   const meta = useMeta();
 
@@ -18,7 +20,7 @@ const ProfileMedia = ({ userId, captured }: Props) => {
   }
 
   if (!data || data.length === 0) {
-    return <div className='py-10 text-center text-slate-500'>Empty list.</div>;
+    return <div className='py-10 text-center text-slate-500'>{t('problemList.empty')}</div>;
   }
 
   return (

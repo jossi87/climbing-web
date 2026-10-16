@@ -7,6 +7,7 @@ import { ClickableAvatar } from '../../shared/ui/Avatar/Avatar';
 import ProfileTodo from '../../shared/components/Profile/ProfileTodo';
 import ProfileMedia from '../../shared/components/Profile/ProfileMedia';
 import { LayoutDashboard, List, Bookmark, Users, Camera, Globe, Mail, Clock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 import {
@@ -29,6 +30,7 @@ enum Page {
 const Profile = () => {
   const { userId, page } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const meta = useMeta();
   const profileUserId = userId ? +userId : (meta.userId ?? -1);
   const { data: profile, isLoading, error } = useProfile(profileUserId);
@@ -44,7 +46,7 @@ const Profile = () => {
     return (
       <div className='w-full min-w-0'>
         <Card flush className='min-w-0 border-0'>
-          <div className='animate-pulse' aria-busy aria-label='Loading profile'>
+          <div className='animate-pulse' aria-busy aria-label={t('profile.loading')}>
             <div className='p-4 sm:p-5'>
               {/* Avatar `small` (40px) + title + meta lines — no extra row (old skeleton mimicked non-existent chips). */}
               <div className='flex min-w-0 items-start gap-3'>
@@ -80,11 +82,11 @@ const Profile = () => {
   if (error || !profile) {
     return (
       <>
-        <title>{`Not found | ${meta?.title}`}</title>
+        <title>{t('meta.pageTitle', { page: t('meta.notFound'), site: meta.title })}</title>
         <NotFoundCard
           className='py-8 sm:py-12'
-          title={error ? '404' : 'Not Found'}
-          description={error ? String(error) : 'Profile not found'}
+          title={error ? '404' : t('meta.notFound')}
+          description={error ? String(error) : t('profile.notFoundDescription')}
         />
       </>
     );
@@ -102,17 +104,25 @@ const Profile = () => {
   const numCaptured = (kpis?.numImagesCreated ?? 0) + (kpis?.numVideosCreated ?? 0);
 
   const navItems = [
-    { id: Page.overview, label: 'Overview', icon: LayoutDashboard },
-    { id: Page.ascents, label: 'Ascents', icon: List },
-    { id: Page.todo, label: 'Todo', icon: Bookmark },
-    { id: Page.media, label: numMedia > 0 ? `Media (${numMedia})` : 'Media', icon: Users },
-    { id: Page.captured, label: numCaptured > 0 ? `Captured (${numCaptured})` : 'Captured', icon: Camera },
+    { id: Page.overview, label: t('profile.page.overview'), icon: LayoutDashboard },
+    { id: Page.ascents, label: t('profile.page.ascents'), icon: List },
+    { id: Page.todo, label: t('profile.page.todo'), icon: Bookmark },
+    {
+      id: Page.media,
+      label: numMedia > 0 ? t('profile.page.mediaCount', { count: numMedia }) : t('profile.page.media'),
+      icon: Users,
+    },
+    {
+      id: Page.captured,
+      label: numCaptured > 0 ? t('profile.page.capturedCount', { count: numCaptured }) : t('profile.page.captured'),
+      icon: Camera,
+    },
   ];
 
   return (
     <div className='w-full min-w-0 space-y-0'>
-      <title>{`${fullName} | ${meta?.title}`}</title>
-      <meta name='description' content='Profile with public ascents, media, and other statistics.' />
+      <title>{t('meta.pageTitle', { page: fullName, site: meta.title })}</title>
+      <meta name='description' content={t('profile.description')} />
 
       <Card flush className='min-w-0 border-0'>
         <div className='p-4 sm:p-5'>
@@ -144,7 +154,7 @@ const Profile = () => {
                 {identity?.lastActivity && (
                   <span className='inline-flex max-w-full min-w-0 items-center gap-1.5'>
                     <Clock size={12} className='shrink-0 text-slate-500' aria-hidden />
-                    <span className='min-w-0 break-words'>Active {identity.lastActivity}</span>
+                    <span className='min-w-0 break-words'>{t('profile.active', { when: identity.lastActivity })}</span>
                   </span>
                 )}
               </div>
@@ -152,7 +162,7 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className={tabBarStripContainerClassName('equal')} role='tablist' aria-label='Profile sections'>
+        <div className={tabBarStripContainerClassName('equal')} role='tablist' aria-label={t('profile.sections')}>
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activePage === item.id;

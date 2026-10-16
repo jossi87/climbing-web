@@ -1,4 +1,5 @@
 import { Fragment } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { cn } from '../../../lib/utils';
@@ -24,6 +25,7 @@ export function ActivityFeedMetaRow({
   problemLinkTone: 'default' | 'soft';
   userLinkClass: string;
 }) {
+  const { t } = useTranslation();
   const [numImg, numMov] = (a.media ?? []).reduce(
     (acc: number[], item) => (item.movie ? [acc[0], acc[1] + 1] : [acc[0] + 1, acc[1]]),
     [0, 0],
@@ -35,14 +37,14 @@ export function ActivityFeedMetaRow({
     <>
       {newFaUsers.map((u, i) => (
         <Fragment key={u.id}>
-          {i > 0 ? (i === newFaUsers.length - 1 ? ' and ' : ', ') : null}
+          {i > 0 ? (i === newFaUsers.length - 1 ? t('activityFeed.andJoiner') : ', ') : null}
           <Link to={`/user/${u.id}`} className={userLinkClass}>
             {u.name}
           </Link>
         </Fragment>
       ))}
       {' '}
-      <span className={actionClass}>{isBouldering ? 'opened' : 'first ascended'}</span>{' '}
+      <span className={actionClass}>{t(isBouldering ? 'activityFeed.opened' : 'activityFeed.firstAscended')}</span>{' '}
       <ProblemLink a={a} compactEnd flagsClassName={actionClass} problemFirst tone={problemLinkTone} />
     </>
   ) : a.message ? (
@@ -50,7 +52,7 @@ export function ActivityFeedMetaRow({
       <Link to={`/user/${a.id}`} className={userLinkClass}>
         {a.name}
       </Link>{' '}
-      <span className={actionClass}>commented on</span>{' '}
+      <span className={actionClass}>{t('activityFeed.commentedOn')}</span>{' '}
       <ProblemLink a={a} compactEnd flagsClassName={actionClass} problemFirst tone={problemLinkTone} />
     </>
   ) : (
@@ -60,16 +62,16 @@ export function ActivityFeedMetaRow({
           <Link to={`/user/${a.id}`} className={userLinkClass}>
             {a.name}
           </Link>{' '}
-          <span className={actionClass}>{a.repeat ? 'repeated' : 'ticked'}</span>{' '}
+          <span className={actionClass}>{t(a.repeat ? 'activityFeed.repeated' : 'activityFeed.ticked')}</span>{' '}
         </>
       ) : numImg > 0 || numMov > 0 ? (
         <>
           <span className={cragLeadClass}>
-            {numImg > 0 && `${numImg} ${numImg === 1 ? 'image' : 'images'}`}
+            {numImg > 0 && t('activityFeed.imageCount', { count: numImg })}
             {numImg > 0 && numMov > 0 && ' & '}
-            {numMov > 0 && `${numMov} ${numMov === 1 ? 'video' : 'videos'}`}
+            {numMov > 0 && t('activityFeed.videoCount', { count: numMov })}
           </span>{' '}
-          <span className={actionClass}>on</span>{' '}
+          <span className={actionClass}>{t('activityFeed.on')}</span>{' '}
         </>
       ) : null}
       <ProblemLink a={a} compactEnd flagsClassName={actionClass} problemFirst tone={problemLinkTone} />

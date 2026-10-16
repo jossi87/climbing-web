@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState, type CSSProperties, type ChangeEvent, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { GradeSelect } from './GradeSelect';
 import { getLocales } from '../../../api';
 import { useMeta } from '../Meta';
@@ -14,16 +15,20 @@ import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
 import { FormSwitch } from '../../ui';
 
+/**
+ * Pitch-count filter options. `key`/`value` stay the literals the reducer keys on (and the API expects);
+ * `labelKey` is translated at render, so the option table itself holds no English prose.
+ */
 const CLIMBING_OPTIONS = [
   {
     key: 'Single-pitch',
     value: 'Single-pitch',
-    text: 'Single-pitch',
+    labelKey: 'filter.pitchSingle',
   },
   {
     key: 'Multi-pitch',
     value: 'Multi-pitch',
-    text: 'Multi-pitch',
+    labelKey: 'filter.pitchMulti',
   },
 ] as const;
 
@@ -40,10 +45,16 @@ type GroupHeaderProps = {
 };
 
 const GroupHeader = ({ title, reset, buttons }: GroupHeaderProps) => {
+  const { t } = useTranslation();
   const filter = useFilter();
   const { dispatch } = filter;
   // A section only shows its reset button (and the brand “on” ink) while it actually restricts the list.
   const active = isFilterSectionActive(filter, reset);
+  /**
+   * The section's own (already translated) label goes in as `{{section}}` rather than being glued to a
+   * verb here — a locale has to be able to inflect or reorder “Reset …”.
+   */
+  const resetLabel = t('filter.resetSection', { section: title });
 
   return (
     <div
@@ -84,8 +95,8 @@ const GroupHeader = ({ title, reset, buttons }: GroupHeaderProps) => {
               'rounded-md border transition-colors',
               'light:border-brand light:bg-brand/25 light:text-amber-800 light:hover:bg-brand/45 light:hover:text-amber-900',
             )}
-            title={`Reset ${title}`}
-            aria-label={`Reset ${title}`}
+            title={resetLabel}
+            aria-label={resetLabel}
           >
             <Trash2 size={13} />
           </button>
@@ -162,6 +173,7 @@ const CheckboxLabel = ({ label, checked, onChange, disabled = false }: CheckboxL
 );
 
 export const FilterForm = () => {
+  const { t } = useTranslation();
   const meta = useMeta();
   const filterState = useFilter();
   const {
@@ -211,7 +223,7 @@ export const FilterForm = () => {
   return (
     <div className='space-y-6'>
       <div className='border-surface-border flex items-center justify-between border-b pb-4'>
-        <h3 className='type-h2 m-0'>Filter</h3>
+        <h3 className='type-h2 m-0'>{t('filter.title')}</h3>
         <div className='flex items-center gap-2'>
           {anyFilterActive && (
             <button
@@ -223,7 +235,7 @@ export const FilterForm = () => {
                 'uppercase',
               )}
             >
-              <Trash2 size={12} /> Clear filter
+              <Trash2 size={12} /> {t('filter.clear')}
             </button>
           )}
           <button
@@ -235,7 +247,7 @@ export const FilterForm = () => {
               'uppercase',
             )}
           >
-            <X size={12} /> Close
+            <X size={12} /> {t('common.close')}
           </button>
         </div>
       </div>
@@ -243,21 +255,21 @@ export const FilterForm = () => {
       <div className='grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3'>
         <div className='space-y-6'>
           <div>
-            <GroupHeader title='Grade between' reset='grades' />
+            <GroupHeader title={t('filter.gradeBetween')} reset='grades' />
             <div className='px-1'>
               <GradeSelect low={filterGradeLow} high={filterGradeHigh} dispatch={dispatch} />
             </div>
           </div>
 
           <div>
-            <GroupHeader title='First ascent year between' reset='fa-year' />
+            <GroupHeader title={t('filter.faYearBetween')} reset='fa-year' />
             <div className='px-1'>
               <YearSelect />
             </div>
           </div>
 
           <div>
-            <GroupHeader title='Starting altitude between' reset='starting-altitude' />
+            <GroupHeader title={t('filter.startingAltitudeBetween')} reset='starting-altitude' />
             <div className='px-1'>
               <StartingAltitudeSelect />
             </div>
@@ -266,17 +278,17 @@ export const FilterForm = () => {
 
         <div className='space-y-6'>
           <div>
-            <GroupHeader title='Options' reset='options' />
+            <GroupHeader title={t('filter.options')} reset='options' />
             <div className='flex flex-col gap-3 px-1'>
               <CheckboxLabel
-                label='Hide ticked'
+                label={t('filter.hideTicked')}
                 checked={!!filterHideTicked}
                 disabled={!meta.isAuthenticated}
                 onChange={(e) => dispatch?.({ action: 'set-hide-ticked', checked: !!e.target.checked })}
               />
               {meta.isAdmin && (
                 <CheckboxLabel
-                  label='Only admin'
+                  label={t('filter.onlyAdmin')}
                   checked={!!filterOnlyAdmin}
                   onChange={(e) => {
                     dispatch?.({ action: 'set-only-admin', checked: !!e.target.checked });
@@ -285,7 +297,7 @@ export const FilterForm = () => {
               )}
               {meta.isSuperAdmin && (
                 <CheckboxLabel
-                  label='Only superadmin'
+                  label={t('filter.onlySuperAdmin')}
                   checked={!!filterOnlySuperAdmin}
                   onChange={(e) => {
                     dispatch?.({
@@ -300,7 +312,7 @@ export const FilterForm = () => {
 
           {disciplineOptions.length > 1 && (
             <div>
-              <GroupHeader title='Types' reset='types' />
+              <GroupHeader title={t('filter.types')} reset='types' />
               <div className='flex flex-wrap gap-4 px-1'>
                 {disciplineOptions.map((discipline) => (
                   <CheckboxLabel
@@ -322,12 +334,12 @@ export const FilterForm = () => {
 
           {!meta.isBouldering && (
             <div>
-              <GroupHeader title='Pitches' reset='pitches' />
+              <GroupHeader title={t('filter.pitches')} reset='pitches' />
               <div className='flex flex-wrap gap-4 px-1'>
                 {CLIMBING_OPTIONS.map((option) => (
                   <CheckboxLabel
                     key={option.key}
-                    label={option.text}
+                    label={t(option.labelKey)}
                     checked={!!filterPitches?.[option.value]}
                     onChange={(e) => {
                       dispatch?.({
@@ -346,7 +358,7 @@ export const FilterForm = () => {
         {meta.isClimbing && (
           <div className='space-y-6'>
             <div>
-              <GroupHeader title='Orientation' reset='orientations' />
+              <GroupHeader title={t('filter.orientation')} reset='orientations' />
               <div className='flex flex-wrap gap-4 px-1'>
                 {compassDirectionOptions.map((option) => (
                   <CheckboxLabel
@@ -366,10 +378,10 @@ export const FilterForm = () => {
             </div>
 
             <div>
-              <GroupHeader title='Conditions' reset='conditions' />
+              <GroupHeader title={t('filter.conditions')} reset='conditions' />
               <div className='flex flex-col gap-4 px-1'>
                 <div className='flex items-center gap-2'>
-                  <span className='text-sm text-slate-300'>Sun on wall at</span>
+                  <span className='text-sm text-slate-300'>{t('filter.sunOnWallAt')}</span>
                   <div className='relative'>
                     <select
                       className='bg-surface-nav border-surface-border type-body focus:border-brand appearance-none rounded-md border px-3 py-1.5 pr-8 focus:outline-none'
@@ -394,7 +406,7 @@ export const FilterForm = () => {
                   </div>
                 </div>
                 <div className='flex items-center gap-2'>
-                  <span className='text-sm text-slate-300'>Shade on wall at</span>
+                  <span className='text-sm text-slate-300'>{t('filter.shadeOnWallAt')}</span>
                   <div className='relative'>
                     <select
                       className='bg-surface-nav border-surface-border type-body focus:border-brand appearance-none rounded-md border px-3 py-1.5 pr-8 focus:outline-none'
@@ -428,7 +440,7 @@ export const FilterForm = () => {
         {(unfilteredData?.regions?.length ?? 0) > 1 && (
           <div>
             <GroupHeader
-              title='Regions'
+              title={t('filter.regions')}
               reset='regions'
               buttons={[
                 regionContainerButton
@@ -460,7 +472,7 @@ export const FilterForm = () => {
 
         <div>
           <GroupHeader
-            title='Areas'
+            title={t('filter.areas')}
             reset='areas'
             buttons={[areaContainerButton ? { icon: areaContainerButton, onClick: areaContainerAction } : undefined]}
           />

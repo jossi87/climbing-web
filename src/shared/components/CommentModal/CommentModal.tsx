@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, type MouseEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createPortal } from 'react-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -49,6 +50,7 @@ const CommentModal = ({
   const queryClient = useQueryClient();
   const accessToken = useAccessToken();
   const meta = useMeta();
+  const { t } = useTranslation();
   const [message, setMessage] = useState(comment?.message ?? '');
   const [danger, setDanger] = useState(comment?.danger);
   const [resolved, setResolved] = useState(comment?.resolved);
@@ -211,13 +213,13 @@ const CommentModal = ({
         <div className='border-surface-border bg-surface-raised flex shrink-0 items-center justify-between border-b px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-6 sm:py-4 sm:pt-4'>
           <h3 id='comment-modal-title' className='type-label flex min-w-0 items-center gap-2 text-slate-200'>
             <MessageSquare size={18} className='shrink-0 text-slate-400' />
-            <span className='truncate'>{isEditing ? 'Edit comment' : 'Add comment'}</span>
+            <span className='truncate'>{isEditing ? t('comment.editTitle') : t('comment.addTitle')}</span>
           </h3>
           <button
             type='button'
             onClick={onClose}
             className='hover:bg-surface-raised-hover -mr-1 shrink-0 rounded-lg p-1.5 opacity-70 transition-colors hover:opacity-100'
-            aria-label='Close'
+            aria-label={t('common.close')}
           >
             <X size={20} />
           </button>
@@ -226,11 +228,11 @@ const CommentModal = ({
         <div className={modalBodyClass}>
           <div className='space-y-1.5'>
             <label id='comment-body-label' className={cn('ml-1', fieldLabelClass)}>
-              Comment{' '}
+              {t('comment.label')}{' '}
               <span className='text-red-500' aria-hidden>
                 *
               </span>
-              <span className='sr-only'> (required)</span>
+              <span className='sr-only'> {t('common.required')}</span>
             </label>
             <div className='relative'>
               <MessageSquare
@@ -239,7 +241,7 @@ const CommentModal = ({
                 aria-hidden
               />
               <textarea
-                placeholder='Write your comment…'
+                placeholder={t('comment.placeholder')}
                 aria-labelledby='comment-body-label'
                 className='bg-surface-nav border-surface-border type-body focus:border-brand-border/60 min-h-24 w-full resize-y rounded-xl border py-3 pr-4 pl-10 transition-colors focus:outline-none max-sm:min-h-[min(11rem,32dvh)] sm:min-h-28'
                 value={message}
@@ -250,7 +252,7 @@ const CommentModal = ({
 
           {/* Media: dropzone + embed (reused from MediaEdit) */}
           <div className='space-y-1.5'>
-            <label className={cn('ml-1', fieldLabelClass)}>Media</label>
+            <label className={cn('ml-1', fieldLabelClass)}>{t('media.label')}</label>
             <MediaDropzoneEmbed onFilesAdded={handleFilesAdded} onEmbedAdded={handleEmbedAdded} />
           </div>
 
@@ -263,13 +265,14 @@ const CommentModal = ({
               {/* Header with filename and remove button */}
               <div className='flex items-center justify-between px-4 pt-3 sm:px-5 sm:pt-4'>
                 <span className='text-[13px] font-medium text-slate-400'>
-                  {item.file?.name ?? (item.embedVideoUrl ? 'Embedded video' : `Item #${idx + 1}`)}
+                  {item.file?.name ??
+                    (item.embedVideoUrl ? t('media.embeddedVideo') : t('comment.itemNumber', { number: idx + 1 }))}
                 </span>
                 <button
                   type='button'
                   onClick={() => removeItem(idx)}
                   className='hover:bg-surface-raised-hover rounded-lg p-1 text-slate-500 transition-colors hover:text-red-400'
-                  aria-label='Remove'
+                  aria-label={t('common.remove')}
                 >
                   <X size={16} />
                 </button>
@@ -306,7 +309,7 @@ const CommentModal = ({
                         className='h-full w-full'
                         allow='autoplay; fullscreen; picture-in-picture'
                         allowFullScreen
-                        title='Embedded video'
+                        title={t('media.embeddedVideo')}
                       />
                     </div>
                   ) : null}
@@ -317,11 +320,11 @@ const CommentModal = ({
 
           {showHse && (
             <div className='space-y-1.5'>
-              <label className={cn('ml-1', fieldLabelClass)}>Status</label>
+              <label className={cn('ml-1', fieldLabelClass)}>{t('comment.statusLabel')}</label>
               <div
                 className='border-surface-border bg-surface-raised divide-surface-border/50 flex min-h-[2.75rem] w-full min-w-0 flex-nowrap divide-x overflow-hidden rounded-xl border shadow-sm sm:w-fit'
                 role='radiogroup'
-                aria-label='Comment safety status'
+                aria-label={t('comment.statusGroupLabel')}
               >
                 <button
                   type='button'
@@ -339,7 +342,7 @@ const CommentModal = ({
                       : 'hover:bg-surface-raised-hover hover:text-brand/90 text-slate-500',
                   )}
                 >
-                  Default
+                  {t('comment.safety.default')}
                 </button>
                 <button
                   type='button'
@@ -357,7 +360,7 @@ const CommentModal = ({
                       : 'hover:bg-surface-raised-hover text-slate-500 hover:text-red-300',
                   )}
                 >
-                  <ShieldAlert size={14} className='shrink-0' /> Dangerous
+                  <ShieldAlert size={14} className='shrink-0' /> {t('comment.safety.dangerous')}
                 </button>
                 <button
                   type='button'
@@ -375,7 +378,7 @@ const CommentModal = ({
                       : 'hover:bg-surface-raised-hover text-slate-500 hover:text-emerald-300',
                   )}
                 >
-                  <ShieldCheck size={14} className='shrink-0' /> Safe
+                  <ShieldCheck size={14} className='shrink-0' /> {t('comment.safety.safe')}
                 </button>
               </div>
             </div>
@@ -389,19 +392,14 @@ const CommentModal = ({
               )}
             >
               <AlertTriangle className='mt-0.5 shrink-0' size={16} />
-              <p className='light:text-red-900 text-red-200/95'>
-                A loose hanger should not be flagged as dangerous. All climbers should carry a 17mm spanner (wrench),
-                and if you don't have it just tight the nut by hand. Be specific, is the bolt spinning freely in the
-                rock? Are there loose rocks/flakes that you were not able to safely remove by hand? What kind of tools
-                are needed?
-              </p>
+              <p className='light:text-red-900 text-red-200/95'>{t('comment.dangerWarning')}</p>
             </div>
           )}
         </div>
 
         <div className='bg-surface-raised border-surface-border flex shrink-0 justify-end gap-1.5 border-t px-3 py-2.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:gap-3 sm:px-4 sm:py-4 sm:pb-4'>
           <button type='button' onClick={onClose} className='modal-action-cancel'>
-            Cancel
+            {t('common.cancel')}
           </button>
           <button
             type='button'
@@ -417,7 +415,7 @@ const CommentModal = ({
             ) : (
               <Check size={14} />
             )}
-            Save
+            {t('common.save')}
           </button>
         </div>
       </div>

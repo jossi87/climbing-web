@@ -1,4 +1,5 @@
 import { useCallback, useMemo, type ChangeEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { Link, Type, ChevronDown } from 'lucide-react';
 import { designContract } from '../../design/contract';
@@ -14,7 +15,11 @@ type Props = {
   mobileFlat?: boolean;
 };
 
+/** Select offers a fixed number of link slots. 0 has its own label: count 0 is not a plural. */
+const EXTERNAL_LINK_COUNTS = [0, 1, 2, 3, 4, 5];
+
 const ExternalLinks = ({ externalLinks, onExternalLinksUpdated, hideLabel = false, mobileFlat = false }: Props) => {
+  const { t } = useTranslation();
   const links = useMemo(() => externalLinks || [], [externalLinks]);
 
   const handleLinkChange = (index: number, field: keyof ExternalLink, value: string | undefined) => {
@@ -56,31 +61,20 @@ const ExternalLinks = ({ externalLinks, onExternalLinksUpdated, hideLabel = fals
   return (
     <div className={cn(mobileFlat && 'rounded-none border-0 p-0 shadow-none')}>
       <div className='flex items-center gap-2'>
-        {!hideLabel && <label className={`${labelClasses} ${designContract.typography.label}`}>External Links</label>}
+        {!hideLabel && (
+          <label className={`${labelClasses} ${designContract.typography.label}`}>{t('externalLinks.label')}</label>
+        )}
         <div className='relative inline-block'>
           <select
             value={links.length}
             onChange={onNumberOfExternalLinksChange}
             className='type-label border-surface-border bg-surface-nav focus:border-brand cursor-pointer appearance-none rounded-lg border py-2 pr-7 pl-2.5 text-sm text-slate-200 transition-colors focus:outline-none'
           >
-            <option value={0} className='bg-surface-card'>
-              No external links
-            </option>
-            <option value={1} className='bg-surface-card'>
-              1 external link
-            </option>
-            <option value={2} className='bg-surface-card'>
-              2 external links
-            </option>
-            <option value={3} className='bg-surface-card'>
-              3 external links
-            </option>
-            <option value={4} className='bg-surface-card'>
-              4 external links
-            </option>
-            <option value={5} className='bg-surface-card'>
-              5 external links
-            </option>
+            {EXTERNAL_LINK_COUNTS.map((count) => (
+              <option key={count} value={count} className='bg-surface-card'>
+                {count === 0 ? t('externalLinks.none') : t('externalLinks.count', { count })}
+              </option>
+            ))}
           </select>
           <ChevronDown
             size={12}
@@ -97,7 +91,7 @@ const ExternalLinks = ({ externalLinks, onExternalLinksUpdated, hideLabel = fals
                 <Link className='absolute top-1/2 left-3 -translate-y-1/2 text-slate-500' size={14} />
                 <input
                   type='text'
-                  placeholder='URL'
+                  placeholder={t('externalLinks.urlPlaceholder')}
                   className={inputClasses}
                   value={l.url || ''}
                   onChange={(e) => handleLinkChange(index, 'url', e.target.value === '' ? undefined : e.target.value)}
@@ -107,7 +101,7 @@ const ExternalLinks = ({ externalLinks, onExternalLinksUpdated, hideLabel = fals
                 <Type className='absolute top-1/2 left-3 -translate-y-1/2 text-slate-500' size={14} />
                 <input
                   type='text'
-                  placeholder='Title'
+                  placeholder={t('externalLinks.titlePlaceholder')}
                   className={inputClasses}
                   value={l.title || ''}
                   onChange={(e) => handleLinkChange(index, 'title', e.target.value === '' ? undefined : e.target.value)}

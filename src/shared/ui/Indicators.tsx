@@ -1,4 +1,5 @@
 import { Star, Lock, LockKeyhole } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../../lib/utils';
 
 const lockIconStroke = 2.35;
@@ -14,10 +15,12 @@ export const LockSymbol = ({
   adminClassName?: string;
   superadminClassName?: string;
 }) => {
+  const { t } = useTranslation();
+
   if (lockedSuperadmin)
     return (
       <span
-        title='Super-admin lock'
+        title={t('indicators.superAdminLock')}
         className={cn(
           'ml-0.5 inline-flex h-4 min-w-[1.25rem] shrink-0 items-center justify-center rounded border px-[3px] leading-none',
           /* Dark: rose chip — strong border + fill, not “error red” */
@@ -38,7 +41,7 @@ export const LockSymbol = ({
   if (lockedAdmin)
     return (
       <span
-        title='Admin lock'
+        title={t('indicators.adminLock')}
         className={cn(
           'ml-0.5 inline-flex h-4 min-w-[1.25rem] shrink-0 items-center justify-center rounded border px-[3px] leading-none',
           /* Dark: violet chip — distinct from brand gold */

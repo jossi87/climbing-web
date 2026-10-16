@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { Trans } from 'react-i18next';
 import { User } from 'lucide-react';
 import { getMediaFileUrl, mediaPrimaryColorHex } from '../../../api/utils';
 import type { MediaIdentity } from '../../../api/utils';
@@ -80,14 +81,14 @@ export default function AvatarModal({
               className='btn-brand-solid border-brand-border inline-flex items-center gap-2 rounded-full border px-6 py-2.5 text-[11px] font-bold tracking-widest uppercase transition-all hover:opacity-90'
             >
               <User size={12} strokeWidth={2.25} />
-              View profile
+              <Trans i18nKey='avatarModal.viewProfile' />
             </Link>
           ) : null}
           <button
             className='bg-surface-hover hover:bg-surface-border border-surface-border rounded-full border px-8 py-2.5 text-[11px] font-bold tracking-widest text-slate-200 uppercase transition-all'
             onClick={onClose}
           >
-            Close
+            <Trans i18nKey='common.close' />
           </button>
         </div>
       </div>

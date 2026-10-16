@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useFilter } from '../context';
 import { ChevronDown } from 'lucide-react';
 
@@ -6,6 +7,7 @@ import { ChevronDown } from 'lucide-react';
  * each select offers an explicit "Any" option instead of a bound that is not applied.
  */
 export const StartingAltitudeSelect = () => {
+  const { t } = useTranslation();
   const { filterStartingAltitudeLow, filterStartingAltitudeHigh, dispatch } = useFilter();
 
   const minAlt = 0;
@@ -32,7 +34,7 @@ export const StartingAltitudeSelect = () => {
               });
             }}
           >
-            <option value={0}>Any</option>
+            <option value={0}>{t('common.any')}</option>
             {/* Inclusive bounds (`<=` / `>=`) so “500m – 500m” is selectable; 0m stays the “Any” option. */}
             {altitudeRange
               .filter((value) => value > minAlt && value <= high)
@@ -65,7 +67,7 @@ export const StartingAltitudeSelect = () => {
                   {alt}m
                 </option>
               ))}
-            <option value={0}>Any</option>
+            <option value={0}>{t('common.any')}</option>
           </select>
           <ChevronDown
             size={14}

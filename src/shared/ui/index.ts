@@ -9,6 +9,7 @@ export * from './ExternalLinks';
 export * from './FooterLink';
 export * from './FormSwitch';
 export * from './Indicators';
+export * from './LanguageFlag';
 export * from './List';
 export * from './MarkdownFieldLabel';
 export * from './NotFoundCard';

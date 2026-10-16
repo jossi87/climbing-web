@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAccessToken, useProblem, postComment, invalidateProblemQueries } from '../../../api';
 import Media from '../../../shared/components/Media/Media';
@@ -44,13 +45,14 @@ export const ProblemComments = ({
   const queryClient = useQueryClient();
   const accessToken = useAccessToken();
   const meta = useMeta();
+  const { t } = useTranslation();
   const { data } = useProblem(+problemId, showHiddenMedia);
 
   function flagAsDangerous({ id, message }: { id?: number; message?: string | null }) {
     if (!id || !message) return;
     const pid = data?.id;
     if (!pid) return;
-    if (confirm('Are you sure you want to flag this comment?')) {
+    if (confirm(t('comment.confirmFlag'))) {
       postComment(accessToken, id, pid, message, true, false, false)
         .then(() => {
           void invalidateProblemQueries(queryClient, pid);
@@ -67,7 +69,7 @@ export const ProblemComments = ({
     const pid = data?.id;
     if (!pid) return;
 
-    if (confirm('Are you sure you want to delete this comment?')) {
+    if (confirm(t('comment.confirmDelete'))) {
       postComment(accessToken, id, pid, null, false, false, true)
         .then(() => {
           void invalidateProblemQueries(queryClient, pid);
@@ -123,24 +125,24 @@ export const ProblemComments = ({
                           'ml-1.5 inline-flex shrink-0 translate-y-px items-center opacity-90',
                           designContract.ascentStatus.dangerous,
                         )}
-                        title='Flagged as dangerous'
-                        aria-label='Comment flagged as dangerous'
+                        title={t('comment.flaggedDangerous')}
+                        aria-label={t('comment.flaggedDangerousAria')}
                       >
                         <AlertTriangle size={12} strokeWidth={2.25} aria-hidden />
                       </span>
                     ) : c.resolved ? (
                       <span
                         className='text-status-ticked/90 ml-1.5 inline-flex shrink-0 translate-y-px items-center'
-                        title='Flagged as safe'
-                        aria-label='Comment flagged as safe'
+                        title={t('comment.flaggedSafe')}
+                        aria-label={t('comment.flaggedSafeAria')}
                       >
                         <ShieldCheck size={12} strokeWidth={2.25} aria-hidden />
                       </span>
                     ) : showFlagAction ? (
                       <button
                         type='button'
-                        title='Flag as dangerous'
-                        aria-label='Flag this comment as dangerous'
+                        title={t('comment.flagDangerous')}
+                        aria-label={t('comment.flagDangerousAria')}
                         onClick={() => flagAsDangerous(c)}
                         className={hseIconBtn}
                       >
@@ -153,8 +155,8 @@ export const ProblemComments = ({
                     <div className='flex shrink-0 items-center gap-0.5'>
                       <button
                         type='button'
-                        title='Edit comment'
-                        aria-label='Edit comment'
+                        title={t('comment.editTitle')}
+                        aria-label={t('comment.editTitle')}
                         onClick={() => onShowCommentModal(c)}
                         className={actionIconBtn}
                       >
@@ -162,8 +164,8 @@ export const ProblemComments = ({
                       </button>
                       <button
                         type='button'
-                        title='Delete comment'
-                        aria-label='Delete comment'
+                        title={t('comment.delete')}
+                        aria-label={t('comment.delete')}
                         onClick={() => deleteComment(c.id)}
                         className={cn(actionIconBtn, 'hover:text-red-400/90')}
                       >

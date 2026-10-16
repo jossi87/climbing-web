@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { components } from '../../../../@types/buldreinfo/swagger';
 import { LockSymbol } from '../../../ui/Indicators';
 import { ProfileRowTextSep } from '../../Profile/ProfileRowTextSep';
@@ -55,6 +56,7 @@ export const ProblemLink = ({
   compactEnd = false,
   problemFirst = false,
 }: Props) => {
+  const { t } = useTranslation();
   const cragArea = tone === 'soft' ? softCragLink : tickCragLinkArea;
   const cragSector = tone === 'soft' ? softCragLink : tickCragLinkSector;
   const problem = tone === 'soft' ? softProblemLink : tickProblemLink;
@@ -130,7 +132,7 @@ export const ProblemLink = ({
       {useProblemFirst ? (
         <>
           {routeWithGrade}
-          <span className={cn(metaSpanClass, 'ms-1.5')}>in</span> {locationPair}
+          <span className={cn(metaSpanClass, 'ms-1.5')}>{t('activityFeed.in')}</span> {locationPair}
         </>
       ) : (
         <>

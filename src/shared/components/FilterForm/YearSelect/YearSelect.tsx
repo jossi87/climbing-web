@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useFilter } from '../context';
 import { useFaYears } from '../../Meta';
 import { ChevronDown } from 'lucide-react';
@@ -8,6 +9,7 @@ import { ChevronDown } from 'lucide-react';
  * state is unbounded would claim a bound that is not applied.
  */
 export const YearSelect = () => {
+  const { t } = useTranslation();
   const { filterFaYearLow, filterFaYearHigh, dispatch } = useFilter();
   const faYears = useFaYears();
 
@@ -32,7 +34,7 @@ export const YearSelect = () => {
             }}
             disabled={faYears.length < 2}
           >
-            <option value={0}>Any</option>
+            <option value={0}>{t('common.any')}</option>
             {/* `<=` / `>=` so both ends can be the same year (e.g. “2005 – 2005”), like the grade filter. */}
             {faYears
               .filter((value) => value <= high)
@@ -66,7 +68,7 @@ export const YearSelect = () => {
                   {year}
                 </option>
               ))}
-            <option value={0}>Any</option>
+            <option value={0}>{t('common.any')}</option>
           </select>
           <ChevronDown
             size={14}

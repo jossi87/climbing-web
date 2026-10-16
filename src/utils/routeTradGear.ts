@@ -1,3 +1,5 @@
+import type { TFunction } from 'i18next';
+
 /**
  * Labels for the “type” line a list row / feed entry shows. The text always comes from the database
  * (`climbing.type.type` + `climbing.type.subtype`, surfaced as `Type.type` / `Type.subType`): this module only joins
@@ -27,9 +29,18 @@ export function formatRouteTypeLabel(type?: string | null, subType?: string | nu
   return `${t} - ${s}`;
 }
 
-/** Tooltip / marker line: `typeLabel` plus pitch count when multipitch (lists + TOC). */
-export function formatPassiveGearMarkerLine(typeLabel: string, numPitches?: number | null): string {
+/**
+ * Tooltip / marker line: `typeLabel` plus pitch count when multipitch (lists + TOC).
+ *
+ * Takes `t` because the pitch count is a counted phrase — gluing a noun onto the label would deny a locale its
+ * own plural forms and word order.
+ */
+export function formatPassiveGearMarkerLine(
+  typeLabel: string,
+  numPitches: number | null | undefined,
+  t: TFunction,
+): string {
   const n = numPitches ?? 0;
   if (n <= 1) return typeLabel;
-  return `${typeLabel} · ${n} pitches`;
+  return t('routeTradGear.passiveGearLine', { label: typeLabel, count: n });
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, type ElementType, type ReactNode } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { User, Settings, Download, LogOut, Trash2, Users, Code, LogIn, Loader2, UserCog } from 'lucide-react';
 import { useMeta } from '../components/Meta/context';
 import SearchBox from '../components/SearchBox/SearchBox';
@@ -9,6 +10,7 @@ import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 import { downloadUsersTicks, useAccessToken } from '../../api';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { LanguageSelect } from '../components/LanguageSelect';
 
 type DropdownItemProps = {
   to: string;
@@ -23,6 +25,7 @@ const Header = () => {
   const { isLoading, loginWithRedirect, logout } = useAuth0();
   const accessToken = useAccessToken();
   const location = useLocation();
+  const { t } = useTranslation();
 
   const isHome = location.pathname === '/';
 
@@ -106,15 +109,15 @@ const Header = () => {
           <div className='bg-surface-card border-surface-border animate-in fade-in zoom-in-95 absolute top-full right-0 z-70 mt-3 w-[min(18rem,calc(100vw-1.25rem))] overflow-hidden rounded-xl border py-2 shadow-2xl ring-1 ring-white/10 duration-150 sm:w-64'>
             <div className='border-surface-border/50 px-3 pt-1 pb-2.5'>
               <p className='truncate text-[13px] font-semibold text-slate-100 sm:text-sm'>
-                {authenticatedName || 'Profile'}
+                {authenticatedName || t('header.profile')}
               </p>
             </div>
             <div className='border-surface-border/40 border-t pt-1'>
               <DropdownItem to={'/user/' + userId} icon={User} onClick={() => setIsAccountOpen(false)}>
-                Profile
+                {t('header.profile')}
               </DropdownItem>
               <DropdownItem to='/settings' icon={Settings} onClick={() => setIsAccountOpen(false)}>
-                Settings
+                {t('header.settings')}
               </DropdownItem>
 
               <button
@@ -131,7 +134,7 @@ const Header = () => {
                 ) : (
                   <Download size={16} strokeWidth={2} className='shrink-0 text-slate-400' />
                 )}
-                Export ascents to Excel
+                {t('header.exportAscents')}
               </button>
 
               <div className='border-surface-border/35 mx-2 my-1 border-t' />
@@ -139,10 +142,10 @@ const Header = () => {
               {isSuperAdmin && (
                 <>
                   <DropdownItem to='/permissions' icon={Users} onClick={() => setIsAccountOpen(false)}>
-                    Permissions
+                    {t('header.permissions')}
                   </DropdownItem>
                   <DropdownItem to='/users' icon={UserCog} onClick={() => setIsAccountOpen(false)}>
-                    Users
+                    {t('header.users')}
                   </DropdownItem>
                   <a
                     href='/api/swagger-ui/index.html'
@@ -154,7 +157,7 @@ const Header = () => {
                     <Code size={16} strokeWidth={2} className='shrink-0 text-slate-400' /> Swagger
                   </a>
                   <DropdownItem to='/trash' icon={Trash2} onClick={() => setIsAccountOpen(false)}>
-                    Trash
+                    {t('header.trash')}
                   </DropdownItem>
                 </>
               )}
@@ -165,7 +168,7 @@ const Header = () => {
                 onClick={() => logout({ logoutParams: { returnTo: window.origin } })}
                 className='mx-1 flex w-[calc(100%-0.5rem)] items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[13px] leading-snug font-medium text-red-400 transition-colors hover:bg-red-500/12 hover:text-red-300 sm:text-[14px]'
               >
-                <LogOut size={16} strokeWidth={2} className='shrink-0' /> Sign out
+                <LogOut size={16} strokeWidth={2} className='shrink-0' /> {t('common.signOut')}
               </button>
             </div>
           </div>
@@ -182,7 +185,7 @@ const Header = () => {
         }
         className='header-sign-in-btn border-brand-border bg-surface-raised text-brand hover:border-brand-border hover:bg-surface-hover flex items-center gap-2 rounded border px-3 py-1.5 text-[11px] font-semibold tracking-[0.08em] normal-case transition-colors active:scale-95'
       >
-        <LogIn size={14} /> <span>Sign in</span>
+        <LogIn size={14} /> <span>{t('common.signIn')}</span>
       </button>
     );
   };
@@ -225,7 +228,7 @@ const Header = () => {
                   height={62}
                   className='header-logo h-auto w-7 transition-[transform,filter] duration-300 ease-out will-change-transform group-hover:scale-[1.06] group-active:scale-100'
                 />
-                <span className='sr-only'>Home</span>
+                <span className='sr-only'>{t('header.home')}</span>
                 {isHome && <div className='bg-brand absolute right-0 bottom-0 left-0 h-0.5 rounded-t' />}
               </Link>
               <div className='w-full min-w-0 flex-1 lg:max-w-sm xl:max-w-md'>
@@ -234,6 +237,7 @@ const Header = () => {
             </div>
 
             <div className='flex h-full items-center gap-2 sm:gap-3'>
+              <LanguageSelect />
               <ThemeToggle />
               <div className='my-auto flex h-6 items-center'>{renderUserMenu()}</div>
             </div>

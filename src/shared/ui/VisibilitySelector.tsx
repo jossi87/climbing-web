@@ -1,4 +1,5 @@
 import { useMeta } from '../components/Meta';
+import { useTranslation } from 'react-i18next';
 import { ChevronDown, Lock, LockKeyhole, Eye } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -15,15 +16,15 @@ type CustomProps = {
 };
 
 const lockedOptions = [
-  { value: 0, text: 'Visible for everyone' },
-  { value: 1, text: 'Only visible for administrators' },
+  { value: 0, textKey: 'visibility.everyone' },
+  { value: 1, textKey: 'visibility.admins' },
 ] as const;
 
 const superAdminOptions = [
   ...lockedOptions,
   {
     value: 2,
-    text: 'Only visible for super administrators',
+    textKey: 'visibility.superAdmins',
   },
 ] as const;
 
@@ -34,6 +35,7 @@ export const VisibilitySelector = ({
   selectClassName,
   disabled,
 }: Omit<CustomProps, 'label'>) => {
+  const { t } = useTranslation();
   const meta = useMeta();
 
   const options = meta.isSuperAdmin ? superAdminOptions : meta.isAdmin ? lockedOptions : [];
@@ -60,7 +62,7 @@ export const VisibilitySelector = ({
       >
         {options.map((opt) => (
           <option key={opt.value} value={opt.value} className='bg-surface-card'>
-            {opt.text}
+            {t(opt.textKey)}
           </option>
         ))}
       </select>
@@ -79,10 +81,11 @@ export const VisibilitySelector = ({
 };
 
 export const VisibilitySelectorField = ({ label, labelClassName, ...props }: CustomProps) => {
+  const { t } = useTranslation();
   return (
     <div className='space-y-2'>
       <label className={cn('mb-1 ml-1 block text-[12px] font-medium text-slate-400 sm:text-[13px]', labelClassName)}>
-        {label || 'Visibility'}
+        {label || t('visibility.label')}
       </label>
       <VisibilitySelector {...props} />
     </div>

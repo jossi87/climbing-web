@@ -4,6 +4,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useMeta } from '../../shared/components/Meta';
 import { useTicks } from '../../api';
 import { CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Card, SectionHeader } from '../../shared/ui';
 import {
   profileRowRootClass,
@@ -74,6 +75,7 @@ const TickRow = ({ t }: { t: PublicAscent }) => {
 };
 
 const Ticks = () => {
+  const { t } = useTranslation();
   const { page } = useParams();
   const meta = useMeta();
   const pageNum = Number(page ?? 0);
@@ -89,15 +91,15 @@ const Ticks = () => {
 
   return (
     <div className='space-y-6'>
-      <title>{`Ticks | ${meta?.title}`}</title>
+      <title>{t('meta.pageTitle', { page: t('ticks.title'), site: meta.title })}</title>
 
       <Card flush className='min-w-0 border-0'>
         <div className='p-4 sm:p-6'>
           {!isLoading && (
             <SectionHeader
-              title='Ticks'
+              title={t('ticks.title')}
               icon={CheckCircle}
-              subheader={data ? `Page ${currPage} of ${numPages}` : undefined}
+              subheader={data ? t('ticks.pageOf', { page: currPage, total: numPages }) : undefined}
             />
           )}
 
@@ -109,7 +111,7 @@ const Ticks = () => {
               : null}
 
             {!isLoading && data && data.ticks.length === 0 ? (
-              <div className={cn(profileRowRootClass, tickFlags, 'py-6')}>Empty list.</div>
+              <div className={cn(profileRowRootClass, tickFlags, 'py-6')}>{t('ticks.empty')}</div>
             ) : null}
           </div>
 

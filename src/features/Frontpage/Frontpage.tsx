@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useMeta } from '../../shared/components/Meta/context';
 import { useData } from '../../api';
 import type { Success } from '../../@types/buldreinfo';
@@ -15,6 +16,7 @@ import { sameDiscipline } from '../../utils/discipline';
  * `/ticks/1` still hit their own endpoints.
  */
 const Frontpage = () => {
+  const { t } = useTranslation();
   const meta = useMeta();
   const { data: frontpage, isPending: frontpagePending } = useData<Success<'getFrontpage'>>(`/frontpage`);
 
@@ -26,13 +28,23 @@ const Frontpage = () => {
   const stats = frontpage?.stats;
   const randomMedia = frontpage?.randomMedia;
 
-  const type = meta.isBouldering ? 'bouldering problems' : 'climbing routes';
   /** Entries in meta.regions for the active region’s discipline (header region list scope). */
   const activeRegion = meta.regions?.find((r) => r.active);
   const numRegions = activeRegion ? (meta.regions?.filter((r) => sameDiscipline(r, activeRegion)).length ?? 0) : 0;
   /** Matches `/regions/:type` tabs in Regions.tsx (bouldering | climbing | ice). */
   const regionsTo = `/regions/${meta.isIce ? 'ice' : meta.isBouldering ? 'bouldering' : 'climbing'}`;
-  const description = `${numRegions} regions, ${stats?.areas ?? 0} areas, ${stats?.problems ?? 0} ${type}, ${stats?.ticks ?? 0} public ascents.`;
+  /**
+   * Every slot is a counted phrase: `counts.*` for the nouns shared with the list headers, `frontpage.*` for the
+   * two that carry the discipline (“bouldering problems” / “climbing routes”) so one locale inflects both.
+   */
+  const description = t('frontpage.description', {
+    regions: t('counts.regions', { count: numRegions }),
+    areas: t('counts.areas', { count: stats?.areas ?? 0 }),
+    problems: t(meta.isBouldering ? 'frontpage.boulderingProblems' : 'frontpage.climbingRoutes', {
+      count: stats?.problems ?? 0,
+    }),
+    ascents: t('frontpage.publicAscents', { count: stats?.ticks ?? 0 }),
+  });
 
   return (
     <>

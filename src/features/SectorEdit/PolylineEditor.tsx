@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { colorLatLng, parsePolyline } from '../../utils/polyline';
 import { type DropzoneOptions, useDropzone } from 'react-dropzone';
 import type { components } from '../../@types/buldreinfo/swagger';
@@ -20,6 +21,7 @@ type Props = {
 type TabType = 'POINTS' | 'DATA' | 'UPLOAD';
 
 export const PolylineEditor = ({ coordinates, parking, onChange, upload, slopeType }: Props) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>('POINTS');
 
   const onDrop = useCallback(
@@ -97,14 +99,14 @@ export const PolylineEditor = ({ coordinates, parking, onChange, upload, slopeTy
     <div className='bg-surface-card border-surface-border overflow-hidden rounded-xl border shadow-sm'>
       <div className='border-surface-border bg-surface-raised flex border-b'>
         <button type='button' onClick={() => setActiveTab('POINTS')} className={navItemClasses('POINTS')}>
-          <List size={14} /> Points
+          <List size={14} /> {t('mapEditor.points')}
         </button>
         <button type='button' onClick={() => setActiveTab('DATA')} className={navItemClasses('DATA')}>
-          <Database size={14} /> Raw Data
+          <Database size={14} /> {t('mapEditor.rawData')}
         </button>
         {upload && (
           <button type='button' onClick={() => setActiveTab('UPLOAD')} className={navItemClasses('UPLOAD')}>
-            <FileCode size={14} /> GPX/TCX
+            <FileCode size={14} /> {t('mapEditor.gpxTcx')}
           </button>
         )}
       </div>
@@ -121,7 +123,7 @@ export const PolylineEditor = ({ coordinates, parking, onChange, upload, slopeTy
                     className='inline-flex items-center gap-2 rounded-md border px-2.5 py-1 text-[11px] font-bold'
                     style={{ backgroundColor: bg, borderColor: bg, color: fg }}
                   >
-                    Point #{i}
+                    {t('mapEditor.pointNumber', { number: i })}
                     <button
                       type='button'
                       onClick={() => {
@@ -137,14 +139,16 @@ export const PolylineEditor = ({ coordinates, parking, onChange, upload, slopeTy
                 );
               })
             ) : (
-              <p className='text-xs text-slate-500 italic'>No points defined yet. Click on the map to add points.</p>
+              <p className='text-xs text-slate-500 italic'>{t('mapEditor.noPoints')}</p>
             )}
           </div>
         )}
 
         {activeTab === 'DATA' && (
           <div className='space-y-2'>
-            <label className={cn('ml-1', designContract.typography.label, 'text-slate-500')}>Coordinate String</label>
+            <label className={cn('ml-1', designContract.typography.label, 'text-slate-500')}>
+              {t('mapEditor.coordinateString')}
+            </label>
             <input
               type='text'
               className='type-small border-surface-border bg-surface-nav focus:border-brand-border w-full rounded-lg border px-3 py-2 transition-colors focus:outline-none'
@@ -172,15 +176,17 @@ export const PolylineEditor = ({ coordinates, parking, onChange, upload, slopeTy
               </div>
               <div className='space-y-1'>
                 <p className='text-xs font-bold text-slate-200'>
-                  Drag-and-drop a <code className='text-brand'>.gpx</code> or <code className='text-brand'>.tcx</code>{' '}
-                  file
+                  <Trans
+                    i18nKey='mapEditor.dropFile'
+                    components={{ gpx: <code className='text-brand' />, tcx: <code className='text-brand' /> }}
+                  />
                 </p>
                 <p className={cn('mx-auto max-w-xs text-slate-500', designContract.typography.micro)}>
-                  Import paths from GPS watches, Strava, or Fitbit to generate the approach path automatically.
+                  {t('mapEditor.importHint')}
                 </p>
               </div>
               <button type='button' className='type-label btn-brand-solid mt-2 rounded-lg px-4 py-2 transition-all'>
-                Select File
+                {t('mapEditor.selectFile')}
               </button>
             </div>
           </div>

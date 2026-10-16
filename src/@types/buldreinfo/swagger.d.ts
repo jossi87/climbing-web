@@ -250,6 +250,23 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/profiles/language": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Update language preference */
+        post: operations["postProfilesLanguage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/profiles/identity": {
         parameters: {
             query?: never;
@@ -1433,6 +1450,7 @@ export type components = {
             lastname?: string;
             emailVisibleToAll?: boolean;
             themePreference?: string;
+            languagePreference?: string;
             mediaIdentity?: components["schemas"]["MediaIdentity"];
             emails?: string[];
             userRegions?: components["schemas"]["UserRegion"][];
@@ -2042,9 +2060,9 @@ export type components = {
             gradeSystemId?: number;
             coordinates?: components["schemas"]["Coordinates"];
             tradGear?: boolean;
+            isBouldering?: boolean;
             isRopeClimbing?: boolean;
             isIceClimbing?: boolean;
-            isBouldering?: boolean;
         };
         ProblemSearchResult: {
             /** Format: int32 */
@@ -2074,6 +2092,12 @@ export type components = {
             name?: string;
             grades?: components["schemas"]["Grade"][];
         };
+        Language: {
+            /** Format: int32 */
+            id?: number;
+            code?: string;
+            name?: string;
+        };
         LatLng: {
             /** Format: double */
             lat?: number;
@@ -2099,12 +2123,14 @@ export type components = {
             userId?: number;
             authenticatedName?: string;
             themePreference?: string;
+            languagePreference?: string;
             mediaIdentity?: components["schemas"]["MediaIdentity"];
             gradeSystems?: components["schemas"]["GradeSystem"][];
             faYears?: number[];
             /** Format: int32 */
             defaultZoom?: number;
             defaultCenter?: components["schemas"]["LatLng"];
+            defaultLanguage?: string;
             isBouldering?: boolean;
             isClimbing?: boolean;
             isIce?: boolean;
@@ -2113,6 +2139,7 @@ export type components = {
             regions?: components["schemas"]["Region"][];
             maps?: components["schemas"]["Map"][];
             compassDirections?: components["schemas"]["CompassDirection"][];
+            languages?: components["schemas"]["Language"][];
         };
         Region: {
             /** Format: int32 */
@@ -2815,6 +2842,26 @@ export interface operations {
         parameters: {
             query: {
                 themePreference: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    postProfilesLanguage: {
+        parameters: {
+            query: {
+                languagePreference: string;
             };
             header?: never;
             path?: never;

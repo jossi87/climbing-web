@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createPortal } from 'react-dom';
 import {
   ArrowRight,
@@ -223,6 +224,7 @@ function buildGroups(data: AdminUser[], dismissedPairs: ReadonlySet<string>): Us
 }
 
 const Users = () => {
+  const { t } = useTranslation();
   const meta = useMeta();
   const [query, setQuery] = useState('');
   const [mode, setMode] = useState<'suggestions' | 'all'>('suggestions');
@@ -397,7 +399,7 @@ const Users = () => {
                   twInk.lightTextSlate900,
                 )}
               >
-                {user.name || 'Unknown'}
+                {user.name || t('users.unknown')}
               </a>
               <span className={cn('shrink-0 text-[10px] font-medium text-slate-500', twInk.lightTextSlate700)}>
                 #{userId}
@@ -412,7 +414,7 @@ const Users = () => {
                 )}
               >
                 <Calendar size={9} className='shrink-0' aria-hidden />
-                <span className='min-w-0 truncate'>Seen {user.lastLogin}</span>
+                <span className='min-w-0 truncate'>{t('users.seen', { date: user.lastLogin ?? '' })}</span>
               </p>
             )}
             {emails.length > 0 && (
@@ -437,7 +439,7 @@ const Users = () => {
             )}
             {activityRegions.length > 0 && (
               <p
-                title='Regions where this user has activity (most ascents first)'
+                title={t('users.regionsTitle')}
                 className={cn(
                   'mt-0.5 flex min-w-0 items-start gap-1 text-[10px] leading-snug text-slate-500',
                   twInk.lightTextSlate700,
@@ -453,11 +455,7 @@ const Users = () => {
           <button
             type='button'
             disabled={!canEditName}
-            title={
-              canEditName
-                ? 'Edit the name of this user'
-                : 'Not allowed - this user is only associated with regions where you are not a superadmin'
-            }
+            title={canEditName ? t('users.editNameTitle') : t('users.editNameNotAllowed')}
             onClick={() => setRenameUser(user)}
             className={cn(
               'inline-flex w-full items-center justify-center gap-1 rounded-md border px-1.5 py-1.5 text-[10px] font-semibold transition-colors',
@@ -467,12 +465,12 @@ const Users = () => {
             )}
           >
             <Pencil size={10} aria-hidden />
-            Edit name
+            {t('users.editName')}
           </button>
           <button
             type='button'
             aria-pressed={isKeep}
-            title='Keep this account (the merge target)'
+            title={t('users.keepTitle')}
             onClick={() => toggleKeep(userId)}
             className={cn(
               'inline-flex w-full items-center justify-center gap-1 rounded-md border px-1.5 py-1.5 text-[10px] font-semibold transition-colors',
@@ -486,19 +484,13 @@ const Users = () => {
             ) : (
               <span className='inline-block h-1.5 w-1.5 rounded-full bg-current opacity-60' />
             )}
-            Keep
+            {t('users.keep')}
           </button>
           <button
             type='button'
             aria-pressed={isMergee}
             disabled={isSelf || isKeep}
-            title={
-              isSelf
-                ? 'You cannot merge away your own account'
-                : isKeep
-                  ? 'The kept account cannot also be merged away'
-                  : 'Merge this account into the kept account'
-            }
+            title={isSelf ? t('users.mergeSelf') : isKeep ? t('users.mergeKept') : t('users.mergeOther')}
             onClick={() => toggleMerge(userId)}
             className={cn(
               'inline-flex w-full items-center justify-center gap-1 rounded-md border px-1.5 py-1.5 text-[10px] font-semibold transition-colors',
@@ -513,18 +505,18 @@ const Users = () => {
             ) : (
               <span className='inline-block h-1.5 w-1.5 rounded-full border border-current opacity-60' />
             )}
-            Merge
+            {t('users.merge')}
           </button>
           {group && (
             <button
               type='button'
               disabled={isDismissing}
-              title={`Mark ${user.name ?? 'this account'} as NOT a duplicate of the other account(s) here`}
+              title={t('users.markNotDupe', { name: user.name ?? t('users.thisAccount') })}
               onClick={() => dismissUser(user, group)}
               className='border-surface-border/60 bg-surface-card inline-flex w-full items-center justify-center gap-1 rounded-md border px-1.5 py-1.5 text-[10px] font-semibold text-slate-500 transition-colors hover:border-slate-500 hover:text-slate-200 disabled:cursor-not-allowed disabled:opacity-50'
             >
               <Ban size={10} aria-hidden />
-              Not dupe
+              {t('users.notDupe')}
             </button>
           )}
         </div>
@@ -537,8 +529,8 @@ const Users = () => {
   }
 
   const MODES = [
-    { id: 'suggestions', label: 'Merge suggestions', icon: Lightbulb },
-    { id: 'all', label: 'All users', icon: UsersIcon },
+    { id: 'suggestions', label: t('users.tabSuggestions'), icon: Lightbulb },
+    { id: 'all', label: t('users.tabAll'), icon: UsersIcon },
   ] as const;
 
   const suggestionUserCount = groups.reduce((sum, group) => sum + group.users.length, 0);
@@ -546,24 +538,29 @@ const Users = () => {
   const subheader =
     mode === 'suggestions'
       ? query
-        ? `${visibleSuggestionUsers}/${suggestionUserCount} suggested users`
-        : `${suggestionUserCount} suggested users in ${groups.length} group${groups.length === 1 ? '' : 's'}`
+        ? t('users.suggestedProgress', { visible: visibleSuggestionUsers, total: suggestionUserCount })
+        : `${t('users.suggestedTotal', { count: suggestionUserCount })} ${t('users.suggestedGroups', { count: groups.length })}`
       : query
-        ? `${filteredUsers.length}/${data.length} users`
-        : `${data.length} users`;
+        ? t('users.usersProgress', { visible: filteredUsers.length, total: data.length })
+        : t('users.usersTotal', { count: data.length });
 
   return (
     <div className='w-full min-w-0'>
-      <title>{`Users | ${meta?.title}`}</title>
-      <meta name='description' content='Browse users, merge duplicate accounts and edit names (superadmin only)' />
+      <title>{t('meta.pageTitle', { page: t('users.title'), site: meta?.title ?? '' })}</title>
+      <meta name='description' content={t('users.metaDescription')} />
       <Card flush className='min-w-0 overflow-visible border-0'>
         <div className='p-4 pb-3 sm:p-5 sm:pb-4'>
           <div className='flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between'>
-            <SectionHeader className='mb-0 min-w-0 lg:flex-1' title='Users' icon={UserCog} subheader={subheader} />
+            <SectionHeader
+              className='mb-0 min-w-0 lg:flex-1'
+              title={t('users.title')}
+              icon={UserCog}
+              subheader={subheader}
+            />
             <div className='w-full shrink-0 lg:w-80 lg:max-w-[52vw]'>
               <div
                 role='tablist'
-                aria-label='Users view'
+                aria-label={t('users.viewAria')}
                 className='bg-surface-raised border-surface-border mb-2 grid grid-cols-2 gap-1 rounded-lg border p-1'
               >
                 {MODES.map((tab) => (
@@ -587,7 +584,7 @@ const Users = () => {
               </div>
               <SearchInput
                 type='text'
-                placeholder='Search users (name, email or id)...'
+                placeholder={t('users.searchPlaceholder')}
                 onChange={(e) => setQuery(e.target.value)}
                 value={query}
                 onClear={() => setQuery('')}
@@ -596,12 +593,12 @@ const Users = () => {
               <button
                 type='button'
                 onClick={() => setShowDismissed(true)}
-                title='Browse accounts you have marked as NOT merge candidates, and undo mistakes'
+                title={t('users.dismissedTitle')}
                 className='border-surface-border/60 bg-surface-raised hover:border-surface-border mt-2 inline-flex w-full items-center justify-between gap-1.5 rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold text-slate-400 transition-colors hover:text-slate-100'
               >
                 <span className='inline-flex items-center gap-1.5'>
                   <Ban size={12} aria-hidden />
-                  Not merge candidates
+                  {t('users.notCandidates')}
                 </span>
                 <span className='text-[10px] font-medium text-slate-500'>{dismissals.length}</span>
               </button>
@@ -612,11 +609,8 @@ const Users = () => {
           {mode === 'suggestions' ? (
             filteredGroups.length === 0 ? (
               <div className='px-4 py-16 text-center sm:px-5 sm:py-20'>
-                <p className={designContract.typography.label}>No merge suggestions found</p>
-                <p className='mt-2 text-[11px] text-slate-500'>
-                  Accounts with the same name that share a region, or the same email address, are suggested here. Switch
-                  to &quot;All users&quot; to browse everything.
-                </p>
+                <p className={designContract.typography.label}>{t('users.noSuggestions')}</p>
+                <p className='mt-2 text-[11px] text-slate-500'>{t('users.suggestionsHint')}</p>
               </div>
             ) : (
               <div className='divide-surface-border/40 divide-y'>
@@ -626,7 +620,9 @@ const Users = () => {
                       <h4 className={cn('truncate text-sm font-bold text-slate-100', twInk.lightTextSlate900)}>
                         {group.label}
                       </h4>
-                      <span className='text-[10px] font-medium text-slate-500'>{group.users.length} accounts</span>
+                      <span className='text-[10px] font-medium text-slate-500'>
+                        {t('users.accountsCount', { count: group.users.length })}
+                      </span>
                     </div>
                     <div className='grid grid-cols-1 gap-2 p-3 pt-1 sm:grid-cols-2 sm:p-4 sm:pt-1 lg:grid-cols-3'>
                       {group.users.map((user) => renderUser(user, group))}
@@ -637,7 +633,7 @@ const Users = () => {
             )
           ) : filteredUsers.length === 0 ? (
             <div className='px-4 py-16 text-center sm:px-5 sm:py-20'>
-              <p className={designContract.typography.label}>No users found</p>
+              <p className={designContract.typography.label}>{t('users.noUsers')}</p>
             </div>
           ) : (
             <div className='grid grid-cols-1 gap-2 p-3 sm:grid-cols-2 sm:p-4 lg:grid-cols-3'>
@@ -651,12 +647,16 @@ const Users = () => {
           <div className='pointer-events-none fixed inset-x-0 bottom-3 z-[300] flex justify-center px-3 sm:bottom-5'>
             <div
               role='status'
-              aria-label='Merge selection'
+              aria-label={t('users.mergeSelectionAria')}
               title={
                 keeper || mergees.length > 0
                   ? [
-                      keeper ? `Keep: ${keeper.name ?? 'Unknown'} (#${keeper.userId})` : null,
-                      ...mergees.map((m) => `Merge: ${m.name ?? 'Unknown'} (#${m.userId})`),
+                      keeper
+                        ? t('users.keepTag', { name: keeper.name ?? t('users.unknown'), userId: keeper.userId ?? 0 })
+                        : null,
+                      ...mergees.map((m) =>
+                        t('users.mergeTag', { name: m.name ?? t('users.unknown'), userId: m.userId ?? 0 }),
+                      ),
                     ]
                       .filter(Boolean)
                       .join(' | ')
@@ -678,7 +678,7 @@ const Users = () => {
                       <span
                         key={mergee.userId}
                         className='border-surface-border/70 bg-surface-card inline-flex shrink-0 items-center gap-1 rounded-full border py-0.5 pr-2 pl-0.5'
-                        title={mergee.name ?? 'Unknown'}
+                        title={mergee.name ?? t('users.unknown')}
                       >
                         <Avatar name={mergee.name} mediaIdentity={mergee.mediaIdentity} size='micro' />
                         <span className='max-w-[10rem] truncate text-[11px] font-medium text-slate-200'>
@@ -688,7 +688,7 @@ const Users = () => {
                     ))
                   ) : (
                     <span className='border-surface-border/70 inline-flex shrink-0 items-center gap-1 rounded-full border border-dashed px-2.5 py-1 text-[11px] font-medium text-slate-400'>
-                      Mark accounts to merge
+                      {t('users.markToMerge')}
                     </span>
                   )}
                 </div>
@@ -698,7 +698,7 @@ const Users = () => {
                 {keeper ? (
                   <span
                     className='border-brand-border/80 bg-surface-card ring-brand-border/60 inline-flex shrink-0 items-center gap-1 rounded-full border py-0.5 pr-2 pl-0.5 ring-1'
-                    title={keeper.name ?? 'Unknown'}
+                    title={keeper.name ?? t('users.unknown')}
                   >
                     <Avatar name={keeper.name} mediaIdentity={keeper.mediaIdentity} size='micro' />
                     <span className='max-w-[10rem] truncate text-[11px] font-bold text-slate-50'>{keeper.name}</span>
@@ -706,7 +706,7 @@ const Users = () => {
                   </span>
                 ) : (
                   <span className='border-brand-border/60 inline-flex shrink-0 items-center gap-1 rounded-full border border-dashed px-2.5 py-1 text-[11px] font-medium text-slate-400'>
-                    Pick keeper
+                    {t('users.pickKeeper')}
                   </span>
                 )}
               </div>
@@ -717,7 +717,7 @@ const Users = () => {
                 disabled={isMerging}
                 className='hover:bg-surface-raised-hover border-surface-border/70 shrink-0 rounded-full border px-2 py-1 text-[11px] font-semibold text-slate-300 transition-colors hover:text-slate-100 disabled:cursor-not-allowed disabled:opacity-50 sm:px-2.5'
               >
-                Clear
+                {t('users.clear')}
               </button>
               <button
                 type='button'
@@ -733,10 +733,10 @@ const Users = () => {
                 {isMerging ? (
                   <span className='inline-flex items-center gap-1'>
                     <Loader2 size={12} className='animate-spin' aria-hidden />
-                    Merging…
+                    {t('users.merging')}
                   </span>
                 ) : (
-                  'Merge'
+                  t('users.merge')
                 )}
               </button>
             </div>
@@ -774,6 +774,7 @@ type RenameUserDialogProps = {
  * user's regions - or the user has no region association).
  */
 const RenameUserDialog = ({ user, onRename, onClose }: RenameUserDialogProps) => {
+  const { t } = useTranslation();
   const [firstname, setFirstname] = useState(user.firstname ?? '');
   const [lastname, setLastname] = useState(user.lastname ?? '');
   const [isSaving, setIsSaving] = useState(false);
@@ -826,14 +827,14 @@ const RenameUserDialog = ({ user, onRename, onClose }: RenameUserDialogProps) =>
         <div className='border-surface-border bg-surface-raised flex shrink-0 items-center justify-between border-b px-4 py-3 sm:px-5'>
           <h3 id='rename-user-modal-title' className='type-label flex min-w-0 items-center gap-2 text-slate-200'>
             <Pencil size={16} className='shrink-0 text-slate-400' />
-            <span className='truncate'>Edit name</span>
+            <span className='truncate'>{t('users.editName')}</span>
           </h3>
           <button
             type='button'
             onClick={onClose}
             disabled={isSaving}
             className='hover:bg-surface-raised-hover -mr-1 shrink-0 rounded-lg p-1.5 opacity-70 transition-colors hover:opacity-100 disabled:pointer-events-none disabled:opacity-40'
-            aria-label='Close'
+            aria-label={t('common.close')}
           >
             <X size={18} />
           </button>
@@ -843,24 +844,24 @@ const RenameUserDialog = ({ user, onRename, onClose }: RenameUserDialogProps) =>
           <div className='flex min-w-0 items-center gap-2.5'>
             <Avatar name={user.name} mediaIdentity={user.mediaIdentity} size='tiny' />
             <div className='min-w-0'>
-              <p className='truncate text-sm font-semibold text-slate-100'>{user.name || 'Unknown'}</p>
+              <p className='truncate text-sm font-semibold text-slate-100'>{user.name || t('users.unknown')}</p>
               <p className='mt-0.5 text-[10px] font-medium text-slate-500'>#{user.userId}</p>
             </div>
           </div>
 
           <div className='space-y-1.5'>
             <label htmlFor='rename-user-firstname' className={cn('ml-1', fieldLabelClass)}>
-              First name{' '}
+              {t('users.firstName')}{' '}
               <span className='text-red-500' aria-hidden>
                 *
               </span>
-              <span className='sr-only'> (required)</span>
+              <span className='sr-only'>{t('common.required')}</span>
             </label>
             <input
               id='rename-user-firstname'
               type='text'
               autoFocus
-              placeholder='First name'
+              placeholder={t('users.firstName')}
               className='bg-surface-nav border-surface-border type-body focus:border-brand w-full rounded-lg border px-3 py-2 transition-colors focus:outline-none'
               value={firstname}
               onChange={(e) => setFirstname(e.target.value)}
@@ -869,12 +870,12 @@ const RenameUserDialog = ({ user, onRename, onClose }: RenameUserDialogProps) =>
 
           <div className='space-y-1.5'>
             <label htmlFor='rename-user-lastname' className={cn('ml-1', fieldLabelClass)}>
-              Last name
+              {t('users.lastName')}
             </label>
             <input
               id='rename-user-lastname'
               type='text'
-              placeholder='Last name'
+              placeholder={t('users.lastName')}
               className='bg-surface-nav border-surface-border type-body focus:border-brand w-full rounded-lg border px-3 py-2 transition-colors focus:outline-none'
               value={lastname}
               onChange={(e) => setLastname(e.target.value)}
@@ -884,7 +885,9 @@ const RenameUserDialog = ({ user, onRename, onClose }: RenameUserDialogProps) =>
           <p className='border-surface-border/50 flex items-start gap-1.5 rounded-lg border border-dashed px-2.5 py-2 text-[10px] leading-snug text-slate-500'>
             <Mail size={10} className='mt-px shrink-0' aria-hidden />
             <span className='min-w-0 break-words'>
-              {user.emails && user.emails.length > 0 ? `Emails: ${user.emails.join(', ')}` : 'No email registered.'}
+              {user.emails && user.emails.length > 0
+                ? t('users.emails', { list: user.emails.join(', ') })
+                : t('users.noEmail')}
             </span>
           </p>
 
@@ -892,15 +895,15 @@ const RenameUserDialog = ({ user, onRename, onClose }: RenameUserDialogProps) =>
             <MapPin size={10} className='mt-px shrink-0' aria-hidden />
             <span className='min-w-0 break-words'>
               {user.regions && user.regions.length > 0
-                ? `Associated regions: ${user.regions.map((r) => r.url || r.name).join(', ')}.`
-                : 'This user is not associated with any region.'}
+                ? t('users.associatedRegions', { list: user.regions.map((r) => r.url || r.name).join(', ') })
+                : t('users.noRegions')}
             </span>
           </p>
         </div>
 
         <div className='border-surface-border bg-surface-raised flex shrink-0 justify-end gap-2 border-t px-3 py-3 sm:px-5'>
           <button type='button' onClick={onClose} disabled={isSaving} className='modal-action-cancel'>
-            Cancel
+            {t('common.cancel')}
           </button>
           <button
             type='button'
@@ -912,7 +915,7 @@ const RenameUserDialog = ({ user, onRename, onClose }: RenameUserDialogProps) =>
             )}
           >
             {isSaving ? <Loader2 size={14} className='animate-spin' /> : <Check size={14} />}
-            {isSaving ? 'Saving…' : 'Save name'}
+            {isSaving ? t('users.saving') : t('users.saveName')}
           </button>
         </div>
       </div>
@@ -933,6 +936,7 @@ type DismissedPairsDialogProps = {
  * a mistake can be reversed without touching the database. Pairs whose accounts no longer exist are simply not listed.
  */
 const DismissedPairsDialog = ({ dismissals, usersById, onRestore, onClose }: DismissedPairsDialogProps) => {
+  const { t } = useTranslation();
   const [busyKey, setBusyKey] = useState<string | null>(null);
   /** Backdrop closes only when the press itself started on the backdrop - never when a drag began inside the dialog. */
   const pointerDownOnBackdrop = useRef(false);
@@ -962,7 +966,7 @@ const DismissedPairsDialog = ({ dismissals, usersById, onRestore, onClose }: Dis
     <div className='flex min-w-0 flex-1 items-center gap-2'>
       <Avatar name={account?.name} mediaIdentity={account?.mediaIdentity} size='micro' />
       <div className='min-w-0'>
-        <p className='truncate text-[11px] font-semibold text-slate-200'>{account?.name ?? 'Unknown user'}</p>
+        <p className='truncate text-[11px] font-semibold text-slate-200'>{account?.name ?? t('users.unknownUser')}</p>
         <p className='truncate text-[10px] font-medium text-slate-500'>
           #{account?.userId ?? '?'}
           {account?.emails?.[0] ? ` · ${account.emails[0]}` : ''}
@@ -990,7 +994,7 @@ const DismissedPairsDialog = ({ dismissals, usersById, onRestore, onClose }: Dis
         <div className='border-surface-border bg-surface-raised flex shrink-0 items-center justify-between border-b px-4 py-3 sm:px-5'>
           <h3 id='dismissed-pairs-modal-title' className='type-label flex min-w-0 items-center gap-2 text-slate-200'>
             <Ban size={16} className='shrink-0 text-slate-400' />
-            <span className='truncate'>Not merge candidates</span>
+            <span className='truncate'>{t('users.notCandidates')}</span>
             <span className='shrink-0 text-[10px] font-medium text-slate-500'>{dismissals.length}</span>
           </h3>
           <button
@@ -998,7 +1002,7 @@ const DismissedPairsDialog = ({ dismissals, usersById, onRestore, onClose }: Dis
             onClick={onClose}
             disabled={busyKey !== null}
             className='hover:bg-surface-raised-hover -mr-1 shrink-0 rounded-lg p-1.5 opacity-70 transition-colors hover:opacity-100 disabled:pointer-events-none disabled:opacity-40'
-            aria-label='Close'
+            aria-label={t('common.close')}
           >
             <X size={18} />
           </button>
@@ -1006,9 +1010,7 @@ const DismissedPairsDialog = ({ dismissals, usersById, onRestore, onClose }: Dis
 
         <div className='min-h-0 flex-1 overflow-y-auto'>
           {dismissals.length === 0 ? (
-            <p className='px-4 py-10 text-center text-[11px] text-slate-500'>
-              No account pairs have been marked as &quot;not merge candidates&quot;.
-            </p>
+            <p className='px-4 py-10 text-center text-[11px] text-slate-500'>{t('users.noNotCandidates')}</p>
           ) : (
             <ul className='divide-surface-border/40 divide-y'>
               {dismissals.map((pair) => {
@@ -1023,7 +1025,7 @@ const DismissedPairsDialog = ({ dismissals, usersById, onRestore, onClose }: Dis
                       type='button'
                       disabled={busyKey !== null}
                       onClick={() => handleRestore(pair)}
-                      title='Undo: let these two accounts be suggested for merging again'
+                      title={t('users.undoTitle')}
                       className='border-surface-border/60 bg-surface-raised hover:border-surface-border inline-flex shrink-0 items-center gap-1 rounded-md border px-2 py-1 text-[10px] font-semibold text-slate-400 transition-colors hover:text-slate-100 disabled:cursor-not-allowed disabled:opacity-50'
                     >
                       {busy ? (
@@ -1031,7 +1033,7 @@ const DismissedPairsDialog = ({ dismissals, usersById, onRestore, onClose }: Dis
                       ) : (
                         <RotateCcw size={11} aria-hidden />
                       )}
-                      Undo
+                      {t('users.undo')}
                     </button>
                   </li>
                 );
@@ -1042,7 +1044,7 @@ const DismissedPairsDialog = ({ dismissals, usersById, onRestore, onClose }: Dis
 
         <div className='border-surface-border bg-surface-raised flex shrink-0 justify-end gap-2 border-t px-3 py-3 sm:px-5'>
           <button type='button' onClick={onClose} className='modal-action-cancel'>
-            Close
+            {t('common.close')}
           </button>
         </div>
       </div>

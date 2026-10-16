@@ -2,6 +2,7 @@ import { Fragment, useLayoutEffect, useRef, useState, type ReactNode } from 'rea
 import { Link } from 'react-router-dom';
 import { ArrowRight, Camera, Check, MessageSquare, Plus } from 'lucide-react';
 import Linkify from 'linkify-react';
+import { useTranslation } from 'react-i18next';
 import {
   getMediaFileUrl,
   mediaBackgroundPositionStyle,
@@ -13,6 +14,7 @@ import {
 import { AvatarGroup, Card, ClickableAvatar, SectionLabel, TradGearMarker } from '../../shared/ui';
 import { LockSymbol } from '../../shared/ui/Indicators';
 import { useMeta } from '../../shared/components/Meta/context';
+import type { TranslationKey } from '../../i18n';
 import { VideoProcessingPlaceholder } from '../../shared/components/Media/VideoProcessingPlaceholder';
 import { VideoThumbnailPlayOverlay } from '../../shared/components/Media/VideoThumbnailPlayOverlay';
 import { useRetryingMediaImage } from '../../shared/hooks/useRetryingMediaImage';
@@ -48,10 +50,29 @@ function rowLockBlock(a: LockFlags) {
 
 /* ──────────────────────────── Shared shell ──────────────────────────── */
 
+/**
+ * Default accessible name per See-more destination. Keys are written out (not built from the category) so the
+ * catalog stays greppable — the FA panel overrides its entry, because "newest boulders" vs "newest routes" is a
+ * discipline decision the shared key can't make (see {@link PanelProps.seeMoreAriaLabel}).
+ */
+const seeMoreAriaKeys: Record<ActivityShowCategory, TranslationKey> = {
+  fa: 'frontpage.seeMoreAriaFa',
+  ticks: 'frontpage.seeMoreAriaTicks',
+  media: 'frontpage.seeMoreAriaMedia',
+  comments: 'frontpage.seeMoreAriaComments',
+};
+
 type PanelProps = {
   icon: ReactNode;
   title: string;
   seeAllLabel?: string;
+  /**
+   * Catalog key that overrides the category's default accessible name (the FA panel pins the discipline — see
+   * {@link seeMoreAriaKeys}). A **key**, not rendered text: `PanelCard` translates it exactly like its own default,
+   * and handing it already-translated copy would send that copy back into `t()` as a lookup key — where a `:` or `.`
+   * in the sentence would be read as i18next's namespace / key separator.
+   */
+  seeMoreAriaLabel?: TranslationKey;
   /**
    * Which `/activity` filter the See-more link should preselect. The destination page applies the preset on mount and
    * cleans the URL — see {@link activityShowHref} and `activityShowPreset.ts`. Omit to fall back to a plain `/activity`
@@ -107,11 +128,13 @@ const PanelCard = ({
   icon,
   title,
   seeAllLabel,
+  seeMoreAriaLabel,
   seeMoreCategory,
   children,
   bodyClassName,
   titleLoading,
 }: PanelProps) => {
+  const { t } = useTranslation();
   const href = seeMoreCategory ? activityShowHref(seeMoreCategory) : '/activity';
   return (
     <Card flush>
@@ -134,20 +157,18 @@ const PanelCard = ({
         <Link
           to={href}
           className={seeAllLinkClass}
+          /**
+           * All four panels label this link "See more", so the accessible name is what tells them apart — when the
+           * panel deep-links a category, name that category (a panel may override it, e.g. FA per discipline). While
+           * the title is still a skeleton bar there is no destination to name yet, so it falls back to the label.
+           */
           aria-label={
-            titleLoading
-              ? 'See more'
-              : seeMoreCategory
-                ? ({
-                    fa: `View all first ascents and newest ${title.toLowerCase()} on the activity feed`,
-                    ticks: 'View all recent climbing ascents and logged ticks on the activity feed',
-                    media: 'View all newest climbing photos and videos on the activity feed',
-                    comments: 'View all recent climbing comments and discussions on the activity feed',
-                  }[seeMoreCategory] ?? `See all ${title.toLowerCase()}`)
-                : `See all ${title.toLowerCase()}`
+            !titleLoading && seeMoreCategory
+              ? t(seeMoreAriaLabel ?? seeMoreAriaKeys[seeMoreCategory])
+              : t('common.seeMore')
           }
         >
-          {seeAllLabel ?? 'See all'}
+          {seeAllLabel ?? t('common.seeMore')}
           <ArrowRight size={11} strokeWidth={2.25} />
         </Link>
       </div>
@@ -429,15 +450,19 @@ function NameList({ users }: { users: { id?: number; name?: string }[] }) {
  *  - Line 3: area · sector   ← muted slate-500 metadata
  */
 function FirstAscentsPanel({ items, isBouldering }: { items: FirstAscent[]; isBouldering: boolean }) {
+  const { t } = useTranslation();
   return (
     <PanelCard
       icon={<Plus size={13} strokeWidth={2.25} />}
-      title={isBouldering ? 'Newest Boulders' : 'Newest Routes'}
-      seeAllLabel='See more'
+      title={t(isBouldering ? 'frontpage.panelNewestBoulders' : 'frontpage.panelNewestRoutes')}
+      seeAllLabel={t('common.seeMore')}
+      seeMoreAriaLabel={isBouldering ? 'frontpage.seeMoreAriaFaBoulders' : 'frontpage.seeMoreAriaFaRoutes'}
       seeMoreCategory='fa'
     >
       {items.length === 0 ? (
-        <div className={emptyRowClass}>{isBouldering ? 'No new boulders yet.' : 'No new routes yet.'}</div>
+        <div className={emptyRowClass}>
+          {t(isBouldering ? 'frontpage.emptyNewestBoulders' : 'frontpage.emptyNewestRoutes')}
+        </div>
       ) : (
         <ul className='m-0 list-none p-0'>
           {items.map((a, i) => {
@@ -492,15 +517,16 @@ function FirstAscentsPanel({ items, isBouldering }: { items: FirstAscent[]; isBo
 }
 
 function RecentAscentsPanel({ items }: { items: Ascent[] }) {
+  const { t } = useTranslation();
   return (
     <PanelCard
       icon={<Check size={13} strokeWidth={2.25} />}
-      title='Recent Ascents'
-      seeAllLabel='See more'
+      title={t('frontpage.panelRecentAscents')}
+      seeAllLabel={t('common.seeMore')}
       seeMoreCategory='ticks'
     >
       {items.length === 0 ? (
-        <div className={emptyRowClass}>No recent ticks yet.</div>
+        <div className={emptyRowClass}>{t('frontpage.emptyRecentAscents')}</div>
       ) : (
         <ul className='m-0 list-none p-0'>
           {items.map((a, i) => {
@@ -610,17 +636,18 @@ function MediaThumbFill({ m }: { m: NewestMedia }) {
 }
 
 function NewestMediaPanel({ items }: { items: NewestMedia[] }) {
+  const { t } = useTranslation();
   const tiles = items.filter((m) => mediaIdentityId(m.identity) > 0);
   return (
     <PanelCard
       icon={<Camera size={13} strokeWidth={2.25} />}
-      title='Newest Media'
-      seeAllLabel='See more'
+      title={t('frontpage.panelNewestMedia')}
+      seeAllLabel={t('common.seeMore')}
       seeMoreCategory='media'
       bodyClassName='p-3 sm:p-4'
     >
       {tiles.length === 0 ? (
-        <div className={emptyRowClass}>No new media yet.</div>
+        <div className={emptyRowClass}>{t('frontpage.emptyNewestMedia')}</div>
       ) : (
         <div className='grid grid-cols-3 gap-2 sm:grid-cols-4 sm:gap-2.5 md:grid-cols-6 md:gap-3'>
           {tiles.map((m, i) => {
@@ -642,7 +669,16 @@ function NewestMediaPanel({ items }: { items: NewestMedia[] }) {
                   'group group/tile border-surface-border bg-surface-card hover:border-brand-border/55 focus-visible:ring-brand-border/70 relative block overflow-hidden rounded-lg border transition-all focus-visible:ring-2 focus-visible:outline-none',
                   overflowClass,
                 )}
-                aria-label={`View ${m.problemName ?? 'media'}${m.grade ? ` (${m.grade})` : ''}${isMovie ? ' (video)' : ''}`}
+                /**
+                 * The tile is a background image, so this label is the thumbnail's only accessible name: route name,
+                 * an optional parenthesised grade and an optional video marker — each parenthesised slot comes from
+                 * its own suffix key so locales own the punctuation.
+                 */
+                aria-label={t('frontpage.mediaTileAria', {
+                  name: m.problemName ?? t('frontpage.mediaTileFallbackName'),
+                  grade: m.grade ? t('frontpage.mediaTileGradeSuffix', { grade: m.grade }) : '',
+                  video: isMovie ? t('frontpage.mediaTileVideoSuffix') : '',
+                })}
               >
                 <MediaThumbFill m={m} />
                 {isMovie ? <VideoThumbnailPlayOverlay size='compact' /> : null}
@@ -709,16 +745,17 @@ function NewestMediaPanel({ items }: { items: NewestMedia[] }) {
  * from the bold route headline and aligned with the rest of the row's secondary metadata.
  */
 function CommentsPanel({ items }: { items: LastComment[] }) {
+  const { t } = useTranslation();
   return (
     <PanelCard
       icon={<MessageSquare size={13} strokeWidth={2.25} />}
-      title='Last Comments'
-      seeAllLabel='See more'
+      title={t('frontpage.panelLastComments')}
+      seeAllLabel={t('common.seeMore')}
       seeMoreCategory='comments'
       bodyClassName='py-1'
     >
       {items.length === 0 ? (
-        <div className={emptyRowClass}>No comments yet.</div>
+        <div className={emptyRowClass}>{t('frontpage.emptyComments')}</div>
       ) : (
         <ul className='m-0 grid list-none grid-cols-1 gap-x-6 gap-y-1 p-0 sm:grid-cols-2 sm:px-1'>
           {items.map((a, i) => {
@@ -964,6 +1001,7 @@ export const FrontpagePanels = ({ frontpage, isLoading = false }: Props) => {
    *  term while `/meta` is in flight (without the flag, `MetaProvider`'s DEFAULT_META has `isBouldering: false` and
    *  the skeleton would briefly show "Newest Routes" before swapping to "Newest Boulders" on a bouldering site). */
   const isBouldering = !!useMeta()?.isBouldering;
+  const { t } = useTranslation();
 
   /**
    * **Skeleton height reservation.** The loading skeleton always reserves the maximum the WS returns (8 / 8 / 12 / 4
@@ -996,8 +1034,8 @@ export const FrontpagePanels = ({ frontpage, isLoading = false }: Props) => {
         <div className={panelPairGridClass}>
           <PanelCard
             icon={<Check size={13} strokeWidth={2.25} />}
-            title='Recent Ascents'
-            seeAllLabel='See more'
+            title={t('frontpage.panelRecentAscents')}
+            seeAllLabel={t('common.seeMore')}
             seeMoreCategory='ticks'
           >
             {[...Array(FEED_SKELETON_ROWS)].map((_, i) => (
@@ -1006,11 +1044,13 @@ export const FrontpagePanels = ({ frontpage, isLoading = false }: Props) => {
           </PanelCard>
           <PanelCard
             icon={<Plus size={13} strokeWidth={2.25} />}
-            /** Title text doesn't render while `titleLoading`, but we still pass a non-empty string so the
-             *  `aria-label` fallback in `PanelCard` has something useful for screen readers if the prop is read. */
-            title='Newest'
+            /**
+             * `title` is required by `PanelCard`; it doesn't render while `titleLoading`, but the discipline-neutral
+             * "Newest" still describes the panel better than an empty string (e.g. for devtools / tests).
+             */
+            title={t('frontpage.panelNewest')}
             titleLoading
-            seeAllLabel='See more'
+            seeAllLabel={t('common.seeMore')}
             seeMoreCategory='fa'
           >
             {[...Array(FEED_SKELETON_ROWS)].map((_, i) => (
@@ -1020,8 +1060,8 @@ export const FrontpagePanels = ({ frontpage, isLoading = false }: Props) => {
         </div>
         <PanelCard
           icon={<Camera size={13} strokeWidth={2.25} />}
-          title='Newest Media'
-          seeAllLabel='See more'
+          title={t('frontpage.panelNewestMedia')}
+          seeAllLabel={t('common.seeMore')}
           seeMoreCategory='media'
           bodyClassName='p-3 sm:p-4'
         >
@@ -1033,8 +1073,8 @@ export const FrontpagePanels = ({ frontpage, isLoading = false }: Props) => {
         </PanelCard>
         <PanelCard
           icon={<MessageSquare size={13} strokeWidth={2.25} />}
-          title='Last Comments'
-          seeAllLabel='See more'
+          title={t('frontpage.panelLastComments')}
+          seeAllLabel={t('common.seeMore')}
           seeMoreCategory='comments'
           bodyClassName='py-1'
         >

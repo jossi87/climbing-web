@@ -1,3 +1,4 @@
+import { useTranslation, Trans } from 'react-i18next';
 import { useMeta } from '../../shared/components/Meta/context';
 import { useData } from '../../api';
 import { Flag, FileText, Info, Users, Pencil, Book, Code, Globe, Heart, Camera, ExternalLink } from 'lucide-react';
@@ -19,187 +20,205 @@ import {
   TextLink,
 } from '../../shared/ui';
 
+/**
+ * The maintainer's mailto link, defined once and handed to each `<Trans>` as its `link` slot: three sentences mention it,
+ * and the visible name stays inside the catalog sentence (see `about.statutes.createdBy`). `children` stays empty here
+ * because `<Trans>` supplies the translated text when it clones the slot.
+ */
+const maintainerLink = <TextLink href='mailto:jostein.oygarden@gmail.com' children={null} />;
+
 const About = () => {
   const meta = useMeta();
+  const { t } = useTranslation();
   const { data } = useData<Success<'getAdministrators'>>(`/administrators`);
-
   const adminCount = data?.length;
-  const adminSubheader = adminCount !== undefined ? `${adminCount} Regional Admins` : 'Regional Admins';
+  const adminSubheader = adminCount !== undefined ? t('about.administrators.count', { count: adminCount }) : undefined;
 
   return (
     <>
-      <title>{`About | ${meta?.title}`}</title>
-      <meta name='description' content='History, information and administrators' />
+      <title>{t('meta.pageTitle', { page: t('about.history.title'), site: meta?.title ?? '' })}</title>
+      <meta name='description' content={t('about.pageDescription')} />
 
       <div className='grid grid-cols-1 items-start gap-6 lg:grid-cols-2'>
         <div className='space-y-6'>
           <Card>
+            <SectionHeader title={t('about.statutes.title')} icon={Info} subheader={t('about.statutes.subheader')} />
+            <List>
+              <ListItem>
+                <Trans i18nKey='about.statutes.createdBy' components={{ link: maintainerLink }} />
+              </ListItem>
+              <ListItem>{t('about.statutes.aim')}</ListItem>
+              <ListItem>{t('about.statutes.nonProfit')}</ListItem>
+              <ListItem>{t('about.statutes.editors')}</ListItem>
+              <ListItem>{t('about.statutes.ownership')}</ListItem>
+            </List>
+          </Card>
+
+          <Card>
             <SectionHeader
-              title='Statutes'
-              icon={Info}
-              subheader='A nonprofit website created by climbers, for climbers'
+              title={t('about.collaboration.title')}
+              icon={Heart}
+              subheader={t('about.collaboration.subheader')}
             />
             <List>
               <ListItem>
-                The webpage is created and maintained by{' '}
-                <TextLink href='mailto:jostein.oygarden@gmail.com'>Jostein Øygarden</TextLink>
-              </ListItem>
-              <ListItem>The aim is to provide the best possible climbing information in the region</ListItem>
-              <ListItem>The site is non-profit and free to use for everyone</ListItem>
-              <ListItem>The editors are a variety of active climbers in the different regions</ListItem>
-              <ListItem>The owner of the content is linked to the origin, club or individual</ListItem>
-            </List>
-          </Card>
-
-          <Card>
-            <SectionHeader title='Collaboration' icon={Heart} subheader='Get your own guide' />
-            <List>
-              <ListItem>
-                Contact <TextLink href='mailto:jostein.oygarden@gmail.com'>Jostein</TextLink> if you want to establish
-                your own online guidebook for your region.
+                <Trans i18nKey='about.collaboration.contact' components={{ link: maintainerLink }} />
               </ListItem>
               <ListItem>
-                The yearly hosting fee (as for 2026) is approximately{' '}
-                <span className='font-semibold text-slate-200'>250,- NOK</span>.
+                <Trans
+                  i18nKey='about.collaboration.hostingFee'
+                  components={{ amount: <span className='font-semibold text-slate-200' /> }}
+                />
               </ListItem>
               <ListItem>
-                In Rogaland, <TextLink href={BRV_WEBSITE_URL}>BRV</TextLink> has a signed agreement (
-                {BRV_PLATFORM_AGREEMENT_DATE_LABEL}) covering platform use and data ownership.{' '}
-                <TextLink href={BRV_PLATFORM_AGREEMENT_PDF} title='Norwegian PDF'>
-                  <span className='inline-flex items-center gap-1'>
-                    Read the PDF
-                    <FileText className='h-3.5 w-3.5 shrink-0 opacity-90' strokeWidth={2} aria-hidden />
-                  </span>
-                </TextLink>
-                . We repeat this short notice on every regional guide so it stays easy to find.
+                <Trans
+                  i18nKey='about.collaboration.brvAgreement'
+                  values={{ date: BRV_PLATFORM_AGREEMENT_DATE_LABEL }}
+                  components={{
+                    brv: <TextLink href={BRV_WEBSITE_URL} children={null} />,
+                    pdf: (
+                      <TextLink href={BRV_PLATFORM_AGREEMENT_PDF} title={t('about.collaboration.norwegianPdf')}>
+                        <span className='inline-flex items-center gap-1'>
+                          {t('about.collaboration.readPdf')}
+                          <FileText className='h-3.5 w-3.5 shrink-0 opacity-90' strokeWidth={2} aria-hidden />
+                        </span>
+                      </TextLink>
+                    ),
+                  }}
+                />
               </ListItem>
             </List>
           </Card>
 
           <Card>
-            <SectionHeader title='Ethics' icon={Pencil} subheader='Guidelines for the crag' />
+            <SectionHeader title={t('about.ethics.title')} icon={Pencil} subheader={t('about.ethics.subheader')} />
             <List>
-              <ListItem>Show respect for landowners</ListItem>
-              <ListItem>Follow paths and park with reason</ListItem>
-              <ListItem>Take trash back</ListItem>
-              <ListItem>No chipping</ListItem>
-              <ListItem>Climbing involves risk</ListItem>
-              <ListItem>
-                {meta.isBouldering
-                  ? 'Sit start means feet/behind leave the ground last'
-                  : 'Tighten loose hangers (17mm spanner)'}
-              </ListItem>
+              <ListItem>{t('about.ethics.respectLandowners')}</ListItem>
+              <ListItem>{t('about.ethics.followPaths')}</ListItem>
+              <ListItem>{t('about.ethics.takeTrash')}</ListItem>
+              <ListItem>{t('about.ethics.noChipping')}</ListItem>
+              <ListItem>{t('about.ethics.risk')}</ListItem>
+              <ListItem>{t(meta.isBouldering ? 'about.ethics.sitStart' : 'about.ethics.tightenHangers')}</ListItem>
             </List>
           </Card>
 
           <Card>
             <SectionHeader
-              title='Content & Moderation'
+              title={t('about.moderation.title')}
               icon={Flag}
-              subheader='Help us keep the platform accurate and safe'
+              subheader={t('about.moderation.subheader')}
             />
             <List>
               <ListItem>
-                If you find any factual errors, typos, or outdated information, please report them to a regional
-                administrator or <TextLink href='mailto:jostein.oygarden@gmail.com'>Jostein</TextLink>.
+                <Trans i18nKey='about.moderation.reportErrors' components={{ link: maintainerLink }} />
+              </ListItem>
+              <ListItem>{t('about.moderation.namesTrivia')}</ListItem>
+              <ListItem>
+                <Trans
+                  i18nKey='about.moderation.namingGuidance'
+                  components={{
+                    link: (
+                      <TextLink
+                        href='https://klatring.no/siteassets/dokumenter/klatrefelt-og-anlegg/klatrefelt/2022-retningslinjer-for-rutenavn-.pdf'
+                        children={null}
+                      />
+                    ),
+                    icon: <ExternalLink className='inline h-3 w-3' />,
+                  }}
+                />
               </ListItem>
               <ListItem>
-                Names are given by the first ascensionists. Some routes and boulders have trivia to provide context
-                behind the name.
-              </ListItem>
-              <ListItem>
-                For guidance on creating welcoming names, see the{' '}
-                <TextLink href='https://klatring.no/siteassets/dokumenter/klatrefelt-og-anlegg/klatrefelt/2022-retningslinjer-for-rutenavn-.pdf'>
-                  Norwegian Climbing Federation's recommendations for route naming{' '}
-                  <ExternalLink className='inline h-3 w-3' />
-                </TextLink>
-                .
-              </ListItem>
-              <ListItem>
-                If you find any content offensive or inappropriate, please contact a regional administrator or{' '}
-                <TextLink href='mailto:jostein.oygarden@gmail.com'>Jostein</TextLink>.
+                <Trans i18nKey='about.moderation.reportOffensive' components={{ link: maintainerLink }} />
               </ListItem>
             </List>
           </Card>
         </div>
 
         <Card>
-          <SectionHeader title='History' icon={Book} subheader='First published in 2003' />
+          <SectionHeader title={t('about.history.title')} icon={Book} subheader={t('about.history.subheader')} />
           <Timeline>
-            <TimelineItem year='2026' title='Complete redesign' description='Semantic UI -> TailwindCSS'>
+            <TimelineItem
+              year='2026'
+              title={t('about.history.redesignTitle')}
+              description={t('about.history.redesignDescription')}
+            >
               <Badge href='/png/archive/20260514_brattelinjer_dark.png' icon={Camera}>
-                Screenshot (dark)
+                {t('about.history.screenshotDark')}
               </Badge>
               <Badge href='/png/archive/20260514_brattelinjer_light.png' icon={Camera}>
-                Screenshot (light)
+                {t('about.history.screenshotLight')}
               </Badge>
             </TimelineItem>
 
-            <TimelineItem year='2023' title='github.com/jossi87' description='The project is now open source'>
+            <TimelineItem year='2023' title='github.com/jossi87' description={t('about.history.openSource')}>
               <Badge href='https://github.com/jossi87/climbing-web' icon={Code}>
-                Frontend
+                {t('about.history.frontend')}
               </Badge>
               <Badge href='https://github.com/jossi87/climbing-ws' icon={Code}>
-                Backend
+                {t('about.history.backend')}
               </Badge>
             </TimelineItem>
 
-            <TimelineItem year='2021' title='is.brattelinjer.no' description='Ice climbing guide, by Jostein Øygarden'>
+            <TimelineItem year='2021' title='is.brattelinjer.no' description={t('about.history.iceGuide')}>
               <Badge href='/png/archive/20211012_is_brattelinjer.png' icon={Camera}>
-                Screenshot
+                {t('about.history.screenshot')}
+              </Badge>
+            </TimelineItem>
+
+            <TimelineItem year='2018' title='brattelinjer.no' description={t('about.history.sportTradGuide')}>
+              <Badge href='/png/archive/20211012_brattelinjer.png' icon={Camera}>
+                {t('about.history.screenshot')}
+              </Badge>
+            </TimelineItem>
+
+            <TimelineItem year='2016' title='buldreinfo.com' description={t('about.history.boulderingGuideJostein')}>
+              <Badge href='/png/archive/20211012_buldreinfo.png' icon={Camera}>
+                {t('about.history.screenshot')}
+              </Badge>
+            </TimelineItem>
+
+            <TimelineItem year='2012-2016' title='buldreinfo.com' description={t('about.history.boulderingGuideIdar')}>
+              <Badge href='/png/archive/20160205_buldreinfo.png' icon={Camera}>
+                {t('about.history.screenshot')}
+              </Badge>
+              <Badge href='https://web.archive.org/web/20160205060357/http://www.buldreinfo.com/' icon={Globe}>
+                {t('about.history.archive')}
               </Badge>
             </TimelineItem>
 
             <TimelineItem
-              year='2018'
-              title='brattelinjer.no'
-              description='Sport- and traditional climbing guide, by Jostein Øygarden'
+              year='2006-2012'
+              title='buldreinfo.com'
+              description={t('about.history.boulderingGuideVegard')}
             >
-              <Badge href='/png/archive/20211012_brattelinjer.png' icon={Camera}>
-                Screenshot
-              </Badge>
-            </TimelineItem>
-
-            <TimelineItem year='2016' title='buldreinfo.com' description='Bouldering guide, by Jostein Øygarden'>
-              <Badge href='/png/archive/20211012_buldreinfo.png' icon={Camera}>
-                Screenshot
-              </Badge>
-            </TimelineItem>
-
-            <TimelineItem year='2012-2016' title='buldreinfo.com' description='Bouldering guide, by Idar Ose'>
-              <Badge href='/png/archive/20160205_buldreinfo.png' icon={Camera}>
-                Screenshot
-              </Badge>
-              <Badge href='https://web.archive.org/web/20160205060357/http://www.buldreinfo.com/' icon={Globe}>
-                Archive
-              </Badge>
-            </TimelineItem>
-
-            <TimelineItem year='2006-2012' title='buldreinfo.com' description='Bouldering guide, by Vegard Aksnes'>
               <Badge href='/png/archive/20110923_buldreinfo.png' icon={Camera}>
-                Screenshot
+                {t('about.history.screenshot')}
               </Badge>
               <Badge href='https://web.archive.org/web/20110923004804/http://www.buldreinfo.com/' icon={Globe}>
-                Archive
+                {t('about.history.archive')}
               </Badge>
             </TimelineItem>
 
-            <TimelineItem year='2003-2006' title='brv.no' description='Bouldering guide predecessor, by Vegard Aksnes'>
+            <TimelineItem year='2003-2006' title='brv.no' description={t('about.history.boulderingGuidePredecessor')}>
               <Badge href='/png/archive/20040812_brv_bouldering_guide.png' icon={Camera}>
-                Screenshot
+                {t('about.history.screenshot')}
               </Badge>
               <Badge
                 href='https://web.archive.org/web/20050308114436/http://www.brv.no/gammelt/buldring/oversikt.htm'
                 icon={Globe}
               >
-                Archive
+                {t('about.history.archive')}
               </Badge>
             </TimelineItem>
           </Timeline>
         </Card>
 
         <Card className='lg:col-span-2'>
-          <SectionHeader title='Administrators' icon={Users} subheader={adminSubheader} />
+          <SectionHeader
+            title={t('about.administrators.title')}
+            icon={Users}
+            subheader={adminSubheader ?? t('about.administrators.subheader')}
+          />
           <div className='grid grid-cols-2 gap-1 sm:gap-1.5 lg:grid-cols-3 xl:grid-cols-4'>
             {data?.map((u) => (
               <UserCard key={u.userId} user={u} variant='minimal' />

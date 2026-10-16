@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { Hash } from 'lucide-react';
 import { cn } from '../../lib/utils';
@@ -10,6 +11,7 @@ type Props = Pick<components['schemas']['Sector'], 'problemOrder'> & {
 const TYPE_IMPOSSIBILITY = 0;
 
 export const ProblemOrder = ({ problemOrder, onChange }: Props) => {
+  const { t } = useTranslation();
   const originalOrder = useRef<Record<number, number>>(
     (problemOrder ?? []).reduce((acc, { id, nr }) => ({ ...acc, [id ?? TYPE_IMPOSSIBILITY]: nr }), {}),
   ).current;
@@ -33,7 +35,7 @@ export const ProblemOrder = ({ problemOrder, onChange }: Props) => {
                 type='number'
                 step={1}
                 defaultValue={nr}
-                placeholder='Number'
+                placeholder={t('common.number')}
                 className={cn(
                   'bg-surface-nav w-full rounded-l-lg border py-1.5 pr-2.5 pl-8 text-[13px] transition-colors focus:outline-none',
                   isModified

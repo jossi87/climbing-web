@@ -1,4 +1,6 @@
 import { useState, useCallback, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { useDropzone, ErrorCode, type Accept, type FileRejection } from 'react-dropzone';
 import { Upload, Loader2, AlertCircle, X } from 'lucide-react';
 import { cn } from '../../../lib/utils';
@@ -38,15 +40,19 @@ const maxSizeLabelForFile = (file: File): string => {
   return file.type.startsWith('video/') ? `${MAX_VIDEO_SIZE_MB} MB` : `${MAX_IMAGE_SIZE_MB} MB`;
 };
 
-const describeRejection = (rejection: FileRejection): string => {
+const describeRejection = (rejection: FileRejection, t: TFunction): string => {
   const tooLarge = rejection.errors.find((e) => e.code === ErrorCode.FileTooLarge);
   if (tooLarge) {
-    return `Too large (${formatFileSizeMb(rejection.file.size)}, limit ${maxSizeLabelForFile(rejection.file)})`;
+    return t('mediaEdit.dropzone.tooLarge', {
+      size: formatFileSizeMb(rejection.file.size),
+      limit: maxSizeLabelForFile(rejection.file),
+    });
   }
   if (rejection.errors.some((e) => e.code === ErrorCode.FileInvalidType)) {
-    return 'Unsupported file type';
+    return t('mediaEdit.dropzone.unsupportedType');
   }
-  return rejection.errors[0]?.message ?? 'Rejected';
+  /** `errors[0].message` comes from react-dropzone itself and stays as the library wrote it. */
+  return rejection.errors[0]?.message ?? t('mediaEdit.dropzone.rejected');
 };
 
 export type DropzoneFile = {
@@ -85,6 +91,7 @@ type Props = {
 };
 
 export const MediaDropzoneEmbed = ({ onFilesAdded, onEmbedAdded, children, getAccessToken }: Props) => {
+  const { t } = useTranslation();
   const [isConverting, setIsConverting] = useState(false);
   const [rejections, setRejections] = useState<FileRejection[]>([]);
   const [conversionErrors, setConversionErrors] = useState<DropProblem[]>([]);
@@ -118,7 +125,7 @@ export const MediaDropzoneEmbed = ({ onFilesAdded, onEmbedAdded, children, getAc
           } catch (error) {
             console.warn(error);
             captureSentryException(error, { fileName: file.name, fileSize: file.size, fileType: file.type });
-            failed.push({ fileName: file.name, reason: heicConversionFailureReason(error) });
+            failed.push({ fileName: file.name, reason: heicConversionFailureReason(error, t) });
           }
         }
         if (newItems.length > 0) onFilesAdded(newItems);
@@ -127,7 +134,7 @@ export const MediaDropzoneEmbed = ({ onFilesAdded, onEmbedAdded, children, getAc
         setIsConverting(false);
       }
     },
-    [onFilesAdded],
+    [onFilesAdded, t],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -143,7 +150,7 @@ export const MediaDropzoneEmbed = ({ onFilesAdded, onEmbedAdded, children, getAc
     ...rejections.map((rejection) => ({
       key: `${rejection.file.name}-${rejection.file.size}-${rejection.file.lastModified}`,
       fileName: rejection.file.name,
-      reason: describeRejection(rejection),
+      reason: describeRejection(rejection, t),
     })),
     ...conversionErrors.map((failure, index) => ({ ...failure, key: `${failure.fileName}-${index}` })),
   ];
@@ -167,7 +174,7 @@ export const MediaDropzoneEmbed = ({ onFilesAdded, onEmbedAdded, children, getAc
           {isConverting ? (
             <div className='flex flex-col items-center gap-1.5'>
               <Loader2 className='animate-spin text-slate-400' size={18} />
-              <p className='text-xs font-medium text-slate-400'>Preparing media…</p>
+              <p className='text-xs font-medium text-slate-400'>{t('mediaEdit.dropzone.preparing')}</p>
             </div>
           ) : (
             <>
@@ -176,10 +183,10 @@ export const MediaDropzoneEmbed = ({ onFilesAdded, onEmbedAdded, children, getAc
               </div>
               <div className='space-y-0.5'>
                 <p className='text-xs leading-snug font-semibold text-slate-200'>
-                  {isDragActive ? 'Drop here' : 'Tap or drop to upload'}
+                  {isDragActive ? t('mediaEdit.dropzone.dropHere') : t('mediaEdit.dropzone.tapOrDrop')}
                 </p>
                 <p className='text-[10px] leading-tight text-slate-500'>
-                  JPG (360° supported), PNG, HEIC, MP4… · up to {MAX_VIDEO_SIZE_MB} MB
+                  {t('mediaEdit.dropzone.acceptedFormats', { maxMb: MAX_VIDEO_SIZE_MB })}
                 </p>
               </div>
             </>
@@ -196,7 +203,7 @@ export const MediaDropzoneEmbed = ({ onFilesAdded, onEmbedAdded, children, getAc
           <AlertCircle className='mt-0.5 shrink-0 text-red-500' size={18} />
           <div className='min-w-0 flex-1 space-y-1'>
             <p className='text-[13px] font-semibold text-red-500'>
-              {problems.length === 1 ? 'File could not be added' : `${problems.length} files could not be added`}
+              {t('mediaEdit.dropzone.errorsTitle', { count: problems.length })}
             </p>
             <ul className='space-y-0.5 text-[12px] leading-snug text-slate-300'>
               {problems.map((problem) => (
@@ -214,7 +221,7 @@ export const MediaDropzoneEmbed = ({ onFilesAdded, onEmbedAdded, children, getAc
               setConversionErrors([]);
             }}
             className='hover:bg-surface-raised-hover -mr-1 shrink-0 rounded-lg p-1 text-slate-400 transition-colors hover:text-slate-200'
-            aria-label='Dismiss'
+            aria-label={t('common.dismiss')}
           >
             <X size={16} />
           </button>

@@ -1,4 +1,5 @@
 import { useState, useLayoutEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Markdown } from '../Markdown/Markdown';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
@@ -24,6 +25,7 @@ const MIN_HIDDEN_LINES = 0;
  * The toggle only appears when collapsed content is actually clipped (measured in the DOM).
  */
 export const ExpandableMarkdown = ({ content, className, contentClassName }: Props) => {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const [overflowsWhenCollapsed, setOverflowsWhenCollapsed] = useState(false);
   const bodyRef = useRef<HTMLDivElement>(null);
@@ -107,7 +109,7 @@ export const ExpandableMarkdown = ({ content, className, contentClassName }: Pro
             'inline-flex min-w-[7.25rem] justify-center tabular-nums',
           )}
         >
-          {expanded ? 'Show less' : 'Show more'}
+          {t(expanded ? 'common.showLess' : 'common.showMore')}
         </button>
       )}
     </div>

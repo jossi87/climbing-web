@@ -1,4 +1,5 @@
 import { Fragment } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Loading } from '../../ui/StatusWidgets';
 import { LockSymbol } from '../../ui/Indicators';
@@ -17,6 +18,7 @@ import { designContract } from '../../../design/contract';
 const lockInlineClass = 'ml-1 inline-block align-middle';
 
 const Todo = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
+  const { t } = useTranslation();
   const { data } = useTodo({ idArea, idSector });
 
   if (!data) {
@@ -24,7 +26,11 @@ const Todo = ({ idArea, idSector }: { idArea: number; idSector: number }) => {
   }
 
   if ((data.sectors ?? []).length === 0) {
-    return <p className={cn(profileRowRootClass, tickFlags, 'text-center text-slate-500 italic')}>Empty list.</p>;
+    return (
+      <p className={cn(profileRowRootClass, tickFlags, 'text-center text-slate-500 italic')}>
+        {t('problemList.empty')}
+      </p>
+    );
   }
 
   return (

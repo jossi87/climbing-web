@@ -1,4 +1,5 @@
 import './index.css';
+import './i18n';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, useNavigate } from 'react-router-dom';
 import { Auth0Provider } from '@auth0/auth0-react';
@@ -9,6 +10,7 @@ import { ThemeProvider } from './shared/providers/ThemeProvider';
 import { SessionGuard } from './shared/providers/SessionGuard';
 import { Component, type ErrorInfo, type ReactNode, lazy, Suspense } from 'react';
 import { captureSentryException, initSentry } from './utils/sentry';
+import { useTranslation } from 'react-i18next';
 
 const ReactQueryDevtoolsLazy = lazy(() =>
   import('@tanstack/react-query-devtools').then((module) => ({
@@ -19,23 +21,25 @@ const ReactQueryDevtoolsLazy = lazy(() =>
 initSentry(import.meta.env.PROD ? 'production' : 'development');
 
 function ErrorFallback({ error, resetError }: { error: unknown; componentStack: string; resetError: () => void }) {
+  const { t } = useTranslation();
+
   return (
     <div
       role='alert'
       className='bg-surface-dark flex min-h-screen flex-col items-center justify-center p-6 font-sans text-slate-300'
     >
       <div className='bg-surface-card border-surface-border w-full max-w-2xl rounded-xl border p-8 shadow-2xl'>
-        <h1 className='mb-2 text-2xl font-semibold text-slate-100'>Something went wrong</h1>
-        <p className='mb-6 text-sm text-slate-400'>The application encountered an unexpected error.</p>
+        <h1 className='mb-2 text-2xl font-semibold text-slate-100'>{t('errorBoundary.title')}</h1>
+        <p className='mb-6 text-sm text-slate-400'>{t('errorBoundary.description')}</p>
         <div className='bg-surface-dark border-surface-border max-h-64 space-y-4 overflow-auto rounded-lg border p-4 font-mono text-[12px]'>
-          <div className='text-brand font-semibold tracking-wide uppercase'>Error Log</div>
+          <div className='text-brand font-semibold tracking-wide uppercase'>{t('errorBoundary.logLabel')}</div>
           <div className='whitespace-pre-wrap text-slate-300'>{`${error}`}</div>
         </div>
         <button
           onClick={resetError}
           className='btn-brand-solid mt-8 rounded-md px-6 py-2 text-[12px] font-semibold tracking-wide uppercase transition active:scale-95'
         >
-          Try again
+          {t('common.tryAgain')}
         </button>
       </div>
     </div>
