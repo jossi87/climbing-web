@@ -9,9 +9,27 @@
  *   - bare module specifiers (`leaflet.markercluster`, `hls.js`, `image.jpeg`)
  *   - `localStorage`-style app keys (`problemList.detailed` in `ProblemList`)
  */
-import { readFileSync } from 'node:fs';
-import { execSync } from 'node:child_process';
+import { readFileSync, readdirSync } from 'node:fs';
 import ts from 'typescript';
+
+/**
+ * `.ts`/`.tsx` sources under `src`, excluding the catalogs and the generated swagger types.
+ * Walks the working tree instead of shelling out to `git ls-files`: the Docker image build has no `git` binary
+ * (node:alpine) and no `.git` directory (.dockerignore), which used to break `npm run build`.
+ */
+const EXCLUDED_DIRS = new Set(['src/i18n', 'src/@types']);
+
+function listSourceFiles(dir = 'src', out = []) {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const path = `${dir}/${entry.name}`;
+    if (entry.isDirectory()) {
+      if (!EXCLUDED_DIRS.has(path)) listSourceFiles(path, out);
+    } else if (/\.(ts|tsx)$/.test(entry.name)) {
+      out.push(path);
+    }
+  }
+  return out.sort();
+}
 
 function collectKeys(file) {
   const sf = ts.createSourceFile(file, readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
@@ -38,10 +56,7 @@ function collectKeys(file) {
 const en = collectKeys('src/i18n/locales/en.ts');
 const cs = collectKeys('src/i18n/locales/cs.ts');
 
-const files = execSync('git ls-files src', { encoding: 'utf8' })
-  .trim()
-  .split('\n')
-  .filter((f) => /\.(tsx|ts)$/.test(f) && !/src\/i18n\//.test(f) && !/src\@types\//.test(f) && !/src\/@types\//.test(f));
+const files = listSourceFiles();
 
 const KEY_RE = /^[a-z][A-Za-z0-9]*(\.[A-Za-z0-9_]+){1,}$/;
 /** A plural key has no base entry: `t('counts.points', { count })` resolves `counts.points_one` / `_other` / … */
