@@ -1,10 +1,12 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { useState, useEffect } from 'react';
+import i18n from 'i18next';
 import { DATA_MUTATION_EVENT } from '../shared/providers/DataReloader';
 import { ACTIVITY_AND_FRONTPAGE_INVALIDATION_EVENT } from './activityFeedInvalidation';
 import type { FetchOptions } from './types';
 import type { MediaRegion } from '../utils/svg-scaler';
 import type { components } from '../@types/buldreinfo/swagger';
+import { resolveInitialLanguage } from '../i18n/config';
 
 export type MediaIdentity = components['schemas']['MediaIdentity'];
 
@@ -75,8 +77,43 @@ export function getBaseUrl(): string {
   return window.origin;
 }
 
-export function getUrl(urlSuffix: string): string {
+/**
+ * The language the API should answer in, as its `lang` query parameter — the active UI locale.
+ *
+ * The client only ever names *a language*: which rows come back translated (problem types, compass
+ * directions, region titles, …) is the API's and the database's business, so no translated value is matched
+ * or passed between the layers (API side: `RequestContext.getLanguageId`). A code the backend does not know
+ * is answered with canonical content rather than an error, so a locale without backend translations still
+ * renders.
+ *
+ * Read from the i18next singleton instead of a hook: `i18n/useLanguage.ts` only mirrors the locale i18next
+ * owns, and this also has to work from the non-React callers (`operations.ts`, `downloadFileWithProgress`).
+ * `resolvedLanguage` is unset only before `i18n/index.ts` has run, where the boot-time resolution is what
+ * init is about to pick anyway.
+ */
+function getApiLanguage(): string {
+  return i18n.resolvedLanguage ?? resolveInitialLanguage();
+}
+
+/**
+ * Bare API URL for a suffix, without the `lang` parameter — only for endpoints that answer with the same
+ * bytes in every language ({@link getMediaFileUrl}).
+ */
+function getBareUrl(urlSuffix: string): string {
   return encodeURI(`${getBaseUrl()}/api${urlSuffix}`);
+}
+
+/**
+ * URL of an API endpoint, carrying the language the client is reading in.
+ *
+ * Every request the app makes is built here — `makeAuthenticatedRequest` for data and mutations, the download
+ * chips and `operations.ts` for exports — which is exactly the value the API resolves per request. Mutating
+ * calls therefore answer with the same translation the GETs do, and a language switch needs no API-side
+ * state.
+ */
+export function getUrl(urlSuffix: string): string {
+  const separator = urlSuffix.includes('?') ? '&' : '?';
+  return `${getBareUrl(urlSuffix)}${separator}lang=${getApiLanguage()}`;
 }
 
 export function useAccessToken() {
@@ -123,7 +160,9 @@ export function getMediaFileUrl(
   } else if (options?.minDimension) {
     url += `&minDimension=${options.minDimension}`;
   }
-  return getUrl(url);
+  // Bytes, not data: one URL per generated variant, requested once per `srcset` step and cached by the
+  // browser, so these stay language-free — see {@link getUrl}.
+  return getBareUrl(url);
 }
 
 /** Regular srcset widths for grids/tiles. Kept coarse so each media only needs a handful of on-demand variants. */

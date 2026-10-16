@@ -11,6 +11,7 @@ import {
 } from '@tanstack/react-query';
 import type { Success, WithoutFirstParameter } from '../@types/buldreinfo';
 import type { components } from '../@types/buldreinfo/swagger';
+import { useLanguage } from '../i18n/useLanguage';
 import { useLocalStorage } from '../utils/use-local-storage';
 import { useRedirect } from '../utils/useRedirect';
 import { makeAuthenticatedRequest, useAccessToken, mediaIdentityId, mediaIdentityVersionStamp } from './utils';
@@ -30,14 +31,26 @@ import type { SvgType } from '../utils/svg-helpers';
 import { createHttpErrorFromResponse, isHttpError } from './httpError';
 import { applyEntityRedirectUrl } from './redirectResponse';
 
+/**
+ * React Query key for an API call: the caller's key with `isAuthenticated` and the active locale folded in.
+ *
+ * Only keys the caller shaped `[url, { … }]` receive them, so pass such an object for anything the API
+ * personalizes or localizes (or omit `queryKey`, which defaults to that shape).
+ */
 function useKey(customKey: readonly unknown[] | undefined, urlSuffix: string): readonly unknown[] {
   const { isAuthenticated } = useAuth0();
+  const { active: language } = useLanguage();
   const key = customKey ?? [urlSuffix, { isAuthenticated }];
   if (Array.isArray(key) && key[1] && typeof key[1] === 'object') {
     // Spread them in this order so that callers can choose to ignore the
-    // isAuthenticated variable if they choose to.
+    // isAuthenticated or language variables if they choose to.
     key[1] = {
       isAuthenticated,
+      // The API localizes every payload it is asked for (`lang`, see `getApiLanguage`), so the active locale
+      // is part of what identifies a cached payload. Without it a language switch kept serving the previous
+      // language for the rest of the 30 min `staleTime` — and `/meta` is cached with `staleTime: Infinity`,
+      // so its types, compass labels and regions would never have been refetched at all.
+      language,
       ...key[1],
     };
   }
