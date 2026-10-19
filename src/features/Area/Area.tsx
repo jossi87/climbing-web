@@ -489,14 +489,6 @@ function countAreaProblems(area: components['schemas']['Area']): number {
   return (area.sectors ?? []).reduce((acc, s) => acc + (s.problems?.length ?? 0), 0);
 }
 
-/** Sum of `numTicks` across embedded sector problems (same payload as the lists). */
-function sumAreaProblemTicks(area: components['schemas']['Area']): number {
-  return (area.sectors ?? []).reduce(
-    (acc, s) => acc + (s.problems ?? []).reduce((m, p) => m + (p.numTicks ?? 0), 0),
-    0,
-  );
-}
-
 const Area = () => {
   const meta = useMeta();
   const { areaId, segment } = useParams();
@@ -634,11 +626,9 @@ const Area = () => {
     if (hasMapContent) items.push({ id: 'map', label: t('place.map'), icon: MapIcon });
     if (data.sectors?.length) {
       const problemCount = countAreaProblems(data);
-      const tickSum = sumAreaProblemTicks(data);
       if (problemCount > 0) {
         items.push({ id: 'distribution', label: t('place.distribution'), icon: BarChart2 });
-      }
-      if (problemCount > 0 && tickSum > 0) {
+        /** Top ranks first ascents and FA-aid users too, so it is useful whenever the area has routes. */
         items.push({ id: 'top', label: t('place.top'), icon: Trophy });
       }
       items.push({ id: 'todo', label: t('place.todo'), icon: Bookmark });

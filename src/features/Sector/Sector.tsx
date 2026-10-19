@@ -398,10 +398,6 @@ export const SectorListItem = ({ problem }: SectorListItemProps) => {
 
 type ProblemType = NonNullable<NonNullable<ReturnType<typeof useSector>['data']>['problems']>[number];
 
-function sumSectorProblemTicks(problems: components['schemas']['SectorProblem'][] | undefined): number {
-  return (problems ?? []).reduce((s, p) => s + (p.numTicks ?? 0), 0);
-}
-
 const Sector = () => {
   const { sectorId, segment } = useParams();
   const { t } = useTranslation();
@@ -495,9 +491,8 @@ const Sector = () => {
     }
     if ((data.problems ?? []).length > 0) {
       items.push({ id: 'distribution', label: t('place.distribution'), icon: BarChart2 });
-      if (sumSectorProblemTicks(data.problems) > 0) {
-        items.push({ id: 'top', label: t('place.top'), icon: Trophy });
-      }
+      /** Top ranks first ascents and FA-aid users too, so it is useful whenever the sector has routes. */
+      items.push({ id: 'top', label: t('place.top'), icon: Trophy });
       items.push({ id: 'todo', label: t('place.todo'), icon: Bookmark });
       items.push({ id: 'activity', label: t('place.activity'), icon: Clock });
     }
