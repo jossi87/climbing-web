@@ -1150,6 +1150,7 @@ export const cs: Catalog = {
     restrictionsPlaceholder: 'Zadejte konkrétní omezení...',
     gradeSystem: 'Systém klasifikace',
     gradesUsed: 'Klasifikace používané v této oblasti',
+    gradeSystemLocked: 'Systém klasifikace nelze změnit, dokud má oblast problémy.',
     sectorOrder: 'Pořadí sektorů',
     confirmTrash: 'Opravdu chcete přesunout oblast do koše?',
     save: 'Uložit oblast',

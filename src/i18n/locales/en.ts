@@ -1531,6 +1531,7 @@ export const en = {
     restrictionsPlaceholder: 'Enter specific restrictions...',
     gradeSystem: 'Grade system',
     gradesUsed: 'Grades used by this area',
+    gradeSystemLocked: 'The grade system cannot be changed while the area has problems.',
     sectorOrder: 'Sector order',
     confirmTrash: 'Are you sure you want to move area to trash?',
     save: 'Save area',

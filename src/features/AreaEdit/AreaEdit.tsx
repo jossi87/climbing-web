@@ -117,6 +117,13 @@ export const AreaEdit = () => {
   const isNew = !data.id || data.id <= 0;
   const headerTitle = isNew ? 'Add Area' : 'Edit Area';
 
+  /**
+   * A problem's grade belongs to the grade system that was active when it was created, so once an area has problems
+   * its system is in use and switching it would make the stored grades meaningless. New areas and areas without
+   * problems can still pick freely.
+   */
+  const gradeSystemLocked = !isNew && safeSectors.some((s) => (s.problems?.length ?? 0) > 0);
+
   return (
     <div className='w-full min-w-0 pb-20'>
       <title>
@@ -353,9 +360,10 @@ export const AreaEdit = () => {
               <div className='space-y-2'>
                 <label className={labelClasses}>{t('areaEdit.gradesUsed')}</label>
                 <select
-                  className={inputClasses}
+                  className={cn(inputClasses, gradeSystemLocked && 'cursor-not-allowed opacity-60')}
                   value={data.gradeSystemId ?? 0}
                   onChange={(e) => setGradeSystem(Number(e.target.value))}
+                  disabled={gradeSystemLocked}
                 >
                   {meta.gradeSystems.map((system) => (
                     <option key={system.id} value={system.id}>
@@ -363,6 +371,9 @@ export const AreaEdit = () => {
                     </option>
                   ))}
                 </select>
+                {gradeSystemLocked && (
+                  <p className='ml-1 text-[11px] font-medium text-amber-400/90'>{t('areaEdit.gradeSystemLocked')}</p>
+                )}
               </div>
             </div>
           </Card>
