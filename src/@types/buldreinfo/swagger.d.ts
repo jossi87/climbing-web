@@ -1646,6 +1646,9 @@ export type components = {
             redirectUrl?: string;
             regionName?: string;
             /** Format: int32 */
+            regionId?: number;
+            regionGradeSystemIds?: number[];
+            /** Format: int32 */
             id?: number;
             trash?: boolean;
             lockedAdmin?: boolean;

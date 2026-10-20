@@ -1,7 +1,7 @@
 import { useCallback, type FormEvent, type ChangeEvent } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
-import { useGradeSystems, useMeta } from '../../shared/components/Meta/context';
+import { useGradeSystems, useGradeSystemsByIds, useMeta } from '../../shared/components/Meta/context';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { useNavigate, useParams } from 'react-router-dom';
 import { VisibilitySelectorField } from '../../shared/ui/VisibilitySelector';
@@ -27,7 +27,7 @@ type ToggleProps = {
 export const AreaEdit = () => {
   const { t } = useTranslation();
   const meta = useMeta();
-  const gradeSystems = useGradeSystems();
+  const activeRegionGradeSystems = useGradeSystems();
   const navigate = useNavigate();
   const { areaId } = useParams();
   const {
@@ -45,13 +45,19 @@ export const AreaEdit = () => {
     setGradeSystem,
   } = useAreaEdit({ areaId: +(areaId ?? 0) });
 
+  /**
+   * An area from another region carries that region's grade-system ids. The editor must offer those systems, not the
+   * active domain region's, while a new area (no ids yet) uses the active region's systems.
+   */
+  const areaRegionGradeSystems = useGradeSystemsByIds(data.regionGradeSystemIds);
+  const gradeSystems = data.regionGradeSystemIds.length > 0 ? areaRegionGradeSystems : activeRegionGradeSystems;
+
   /** Only a region that declares several systems needs the area to pin one. */
   const showGradeSystem = gradeSystems.length > 1;
 
   /*
-   * **Coordinates are mandatory.** The API maps a `0`/absent latitude or longitude to "no position" and writes
-   * `coordinates_id = 0`, which violates the `area_coordinates_id` foreign key (the backend expects `NULL` instead).
-   * Rather than letting that save fail on the server, keep the button disabled until both fields hold a value.
+   * **Coordinates are mandatory.** `area.coordinates_id` is `NOT NULL`, and the API rejects a missing or `0`
+   * latitude/longitude with a validation error. Keep the button disabled until both fields hold a value.
    * `0` counts as empty for the same reason the backend treats it as "no position".
    */
   const hasCoordinates = !!data?.coordinates?.latitude && !!data?.coordinates?.longitude;

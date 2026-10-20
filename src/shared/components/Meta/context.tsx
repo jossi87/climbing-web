@@ -99,10 +99,19 @@ export const useMeta = (): Metadata => {
 
 /** Grade systems declared for the requesting region. */
 export const useGradeSystems = () => {
-  const { allGradeSystems, regionGradeSystemIds } = useMeta();
+  const { regionGradeSystemIds } = useMeta();
+  return useGradeSystemsByIds(regionGradeSystemIds);
+};
+
+/**
+ * Grade systems declared by a specific region. Area payloads carry their own region's ids because cross-region
+ * content must offer the systems of the region that owns the area, not those of the active domain region.
+ */
+export const useGradeSystemsByIds = (gradeSystemIds: number[] | undefined) => {
+  const { allGradeSystems } = useMeta();
   return useMemo(
-    () => allGradeSystems.filter((system) => regionGradeSystemIds.includes(system.id)),
-    [allGradeSystems, regionGradeSystemIds],
+    () => allGradeSystems.filter((system) => gradeSystemIds?.includes(system.id)),
+    [allGradeSystems, gradeSystemIds],
   );
 };
 

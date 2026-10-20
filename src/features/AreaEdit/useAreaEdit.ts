@@ -22,6 +22,7 @@ type State = Required<
     | 'lockedSuperadmin'
     | 'name'
     | 'noDogsAllowed'
+    | 'regionGradeSystemIds'
     | 'sunFromHour'
     | 'sunToHour'
     | 'sectorOrder'
@@ -77,6 +78,7 @@ const DEFAULT_STATE: State = {
   lockedSuperadmin: false,
   name: '',
   noDogsAllowed: false,
+  regionGradeSystemIds: [],
   sunFromHour: 0,
   sunToHour: 0,
   sectorOrder: [],
