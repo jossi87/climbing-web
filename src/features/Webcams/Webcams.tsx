@@ -25,6 +25,8 @@ type WebcamGroup = {
   }[];
 };
 
+const cameraKey = (camera: WebcamGroup) => `${camera.coordinates.latitude}_${camera.coordinates.longitude}`;
+
 const CameraPanel = ({ camera, onClose }: { camera: WebcamGroup; onClose: () => void }) => {
   const { t } = useTranslation();
 
@@ -98,18 +100,23 @@ const CameraPanel = ({ camera, onClose }: { camera: WebcamGroup; onClose: () => 
 const Webcams = () => {
   const { t } = useTranslation();
   const meta = useMeta();
-  const { data } = useData<Success<'getCameras'>>(`/webcams`);
+  const { data } = useData<Success<'getCameras'>>(`/webcams`, {
+    // Windy's image URLs are tokenized and expire after ~10 minutes. Refresh every 4 minutes while the page is
+    // open instead of keeping the first payload for the global 30 minute staleTime. The backend caches Windy for
+    // 5 minutes, so this hands out fresh tokens without extra upstream calls.
+    refetchInterval: 4 * 60 * 1000,
+  });
   const { json } = useParams();
-  const [selectedCamera, setSelectedCamera] = useState<WebcamGroup | null>(null);
+  const [selectedCameraKey, setSelectedCameraKey] = useState<string | null>(null);
 
   const handleMarkerClick = useCallback((marker: MarkerDef) => {
     if ('isCamera' in marker && marker.isCamera) {
-      setSelectedCamera(marker as unknown as WebcamGroup);
+      setSelectedCameraKey(cameraKey(marker as unknown as WebcamGroup));
     }
   }, []);
 
   const handleClosePanel = useCallback(() => {
-    setSelectedCamera(null);
+    setSelectedCameraKey(null);
   }, []);
 
   if (!data) {
@@ -120,13 +127,14 @@ const Webcams = () => {
     .filter((c) => c.lat && c.lng && c.name) // Ensure we have the basics
     .reduce(
       (acc, c) => {
-        const key = `${c.lat}_${c.lng}`;
+        const coordinates = {
+          latitude: c.lat ?? 0,
+          longitude: c.lng ?? 0,
+        };
+        const key = `${coordinates.latitude}_${coordinates.longitude}`;
         if (!acc[key]) {
           acc[key] = {
-            coordinates: {
-              latitude: c.lat ?? 0,
-              longitude: c.lng ?? 0,
-            },
+            coordinates,
             isCamera: true,
             name: c.name ?? t('webcams.unknownCamera'),
             urlYr: c.urlYr,
@@ -143,6 +151,10 @@ const Webcams = () => {
       },
       {} as Record<string, WebcamGroup>,
     );
+
+  // Derive the panel from the latest payload so a feed refresh (Windy tokens expire) also refreshes the
+  // selected camera instead of keeping the snapshot captured on click.
+  const selectedCamera = selectedCameraKey ? (grouped[selectedCameraKey] ?? null) : null;
 
   const markers: ComponentProps<typeof Leaflet>['markers'] = Object.values(grouped);
 
