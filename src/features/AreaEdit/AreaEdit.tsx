@@ -48,10 +48,18 @@ export const AreaEdit = () => {
   /** Only a region that declares several systems needs the area to pin one. */
   const showGradeSystem = gradeSystems.length > 1;
 
+  /*
+   * **Coordinates are mandatory.** The API maps a `0`/absent latitude or longitude to "no position" and writes
+   * `coordinates_id = 0`, which violates the `area_coordinates_id` foreign key (the backend expects `NULL` instead).
+   * Rather than letting that save fail on the server, keep the button disabled until both fields hold a value.
+   * `0` counts as empty for the same reason the backend treats it as "no position".
+   */
+  const hasCoordinates = !!data?.coordinates?.latitude && !!data?.coordinates?.longitude;
+
   const save = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      if (!data?.name) return;
+      if (!data?.name || !hasCoordinates) return;
 
       if (!data.trash || confirm(t('areaEdit.confirmTrash'))) {
         performSave(data)
@@ -67,7 +75,7 @@ export const AreaEdit = () => {
           });
       }
     },
-    [areaId, data, navigate, performSave, t],
+    [areaId, data, hasCoordinates, navigate, performSave, t],
   );
 
   const handleNumberChange = (field: 'sunFromHour' | 'sunToHour') => (e: ChangeEvent<HTMLSelectElement>) => {
@@ -325,7 +333,7 @@ export const AreaEdit = () => {
             <div className='space-y-1'>
               <label className={labelClasses}>{t('common.latitude')}</label>
               <input
-                className={inputClasses}
+                className={cn(inputClasses, !data.coordinates?.latitude && 'border-red-500/50')}
                 inputMode='decimal'
                 placeholder='e.g. 59.123'
                 value={lat.text}
@@ -339,7 +347,7 @@ export const AreaEdit = () => {
             <div className='space-y-1'>
               <label className={labelClasses}>{t('common.longitude')}</label>
               <input
-                className={inputClasses}
+                className={cn(inputClasses, !data.coordinates?.longitude && 'border-red-500/50')}
                 inputMode='decimal'
                 placeholder='e.g. 10.456'
                 value={lng.text}
@@ -350,6 +358,11 @@ export const AreaEdit = () => {
                 }}
               />
             </div>
+            {!hasCoordinates && (
+              <p className='ml-1 text-[11px] font-bold text-red-500 sm:col-span-2'>
+                {t('areaEdit.coordinatesRequired')}
+              </p>
+            )}
           </div>
         </Card>
 
@@ -421,7 +434,7 @@ export const AreaEdit = () => {
           <button
             type='submit'
             form='area-edit-form'
-            disabled={isSaving || !data.name || !!data.sunFromHour !== !!data.sunToHour}
+            disabled={isSaving || !data.name || !hasCoordinates || !!data.sunFromHour !== !!data.sunToHour}
             className='type-label flex items-center gap-2 rounded-lg bg-emerald-400 px-8 py-2.5 text-slate-950 shadow-lg shadow-emerald-900/30 transition-all hover:bg-emerald-300 disabled:opacity-50'
           >
             {isSaving ? <Loader2 className='animate-spin' size={16} /> : <Save size={16} />}

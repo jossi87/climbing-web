@@ -1521,6 +1521,7 @@ export const en = {
     name: 'Area name',
     namePlaceholder: 'Enter name',
     nameRequired: 'Area name required',
+    coordinatesRequired: 'Latitude and longitude required',
     forDevelopers: 'For developers',
     noDogsAllowed: 'No dogs allowed',
     trash: 'Trash',

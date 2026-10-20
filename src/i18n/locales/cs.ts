@@ -1140,6 +1140,7 @@ export const cs: Catalog = {
     name: 'Název oblasti',
     namePlaceholder: 'Zadejte název',
     nameRequired: 'Název oblasti je povinný',
+    coordinatesRequired: 'Zeměpisná šířka a délka jsou povinné',
     forDevelopers: 'Pro vývojáře',
     noDogsAllowed: 'Zákaz psů',
     trash: 'Koš',
