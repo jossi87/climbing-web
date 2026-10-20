@@ -265,7 +265,11 @@ const ProfileSettings = () => {
                       disabled={region.readOnly}
                       className='border-surface-border/80 bg-surface-nav text-brand focus:ring-brand-border/60 h-4 w-4 rounded-sm border shadow-[inset_0_0_0_1px_rgba(15,23,42,0.22)] disabled:cursor-default'
                       checked={region.enabled}
-                      onChange={(e) => setRegion({ region, del: !e.target.checked })}
+                      onChange={(e) => {
+                        setRegion({ region, del: !e.target.checked }).catch(() => {
+                          /* Silently ignore — useProfile's onError restores the cached profile */
+                        });
+                      }}
                     />
                     <label
                       htmlFor={id}

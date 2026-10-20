@@ -534,10 +534,17 @@ export function useProfile(userId: number) {
   }>(`/users/regions`, {
     createUrl: ({ region: { id }, del }) => `/users/regions?regionId=${id}&delete=${del}`,
     fetchOptions: {
-      consistencyAction: 'nop',
+      // Followed regions decide what every personalized query returns (areas, problems,
+      // dangerous, activity, frontpage, profile …), so sweep the whole cache. The hand-picked
+      // refetch list this replaces missed `/profiles`, which is why the checkbox only changed
+      // after a page reload.
+      consistencyAction: 'invalidate',
     },
     onMutate: ({ region, del }) => {
-      client.setQueryData<components['schemas']['Profile']>([`/profiles`, { id: userId, isAuthenticated }], (old) => {
+      // `setQueriesData` matches partially, so this still hits the cached profile query even
+      // though `useKey` folds `isAuthenticated` and the active `language` into its key. An
+      // exact `setQueryData` key without those never matched, making the patch a silent no-op.
+      client.setQueriesData<components['schemas']['Profile']>({ queryKey: [`/profiles`, { id: userId }] }, (old) => {
         if (old && typeof old === 'object') {
           const identity = old.identity;
           if (!identity) return old;
@@ -564,18 +571,7 @@ export function useProfile(userId: number) {
     onError: () => {
       // Roll back the optimistic onMutate patch if the write fails.
       client.refetchQueries({
-        queryKey: [`/profiles`, { id: userId, isAuthenticated }],
-      });
-    },
-    onSettled: () => {
-      client.refetchQueries({
-        queryKey: [`/areas`],
-      });
-      client.refetchQueries({
-        queryKey: [`/problems`],
-      });
-      client.refetchQueries({
-        queryKey: [`/dangerous`],
+        queryKey: [`/profiles`, { id: userId }],
       });
     },
   });
@@ -586,7 +582,9 @@ export function useProfile(userId: number) {
       consistencyAction: 'nop',
     },
     onMutate: (themePreference) => {
-      client.setQueryData<components['schemas']['Profile']>([`/profiles`, { id: userId, isAuthenticated }], (old) => {
+      // Partial match for the same reason as `setRegion` above: `useKey` adds `language` to
+      // the cached profile query key, so an exact key would not match.
+      client.setQueriesData<components['schemas']['Profile']>({ queryKey: [`/profiles`, { id: userId }] }, (old) => {
         if (old && typeof old === 'object') {
           const identity = old.identity;
           if (!identity) return old;
@@ -598,7 +596,7 @@ export function useProfile(userId: number) {
     onError: () => {
       // Roll back the optimistic onMutate patch if the write fails.
       client.refetchQueries({
-        queryKey: [`/profiles`, { id: userId, isAuthenticated }],
+        queryKey: [`/profiles`, { id: userId }],
       });
     },
   });
