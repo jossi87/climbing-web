@@ -12,7 +12,7 @@ import {
   Camera,
   Loader2,
 } from 'lucide-react';
-import { useMeta } from '../Meta/context';
+import { useGradeSystems, useMeta } from '../Meta/context';
 import { useActivity } from '../../../api';
 import { Avatar, AvatarGroup, Card, SectionHeader } from '../../ui';
 import { Stars } from '../../ui/Indicators';
@@ -129,12 +129,13 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
   }, [syncFilterUrl]);
 
   const meta = useMeta();
+  const gradeSystems = useGradeSystems();
 
   /** Region systems in the menu: the feed may hold problems of several systems, so offer every grade of every system. */
   const gradeOptions = useMemo(() => {
     const seen = new Set<string>();
     const rest: GradeOption[] = [];
-    for (const system of meta.gradeSystems) {
+    for (const system of gradeSystems) {
       for (const grade of system.grades) {
         if (!grade.grade) continue;
         const key = `${system.id}:${grade.grade}`;
@@ -146,10 +147,10 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
     /** Hardest first with “All” pinned on top — the same reading order as the old id-based grade list. */
     rest.sort((a, b) => b.weight - a.weight || a.grade.localeCompare(b.grade));
     return [ALL_GRADE_OPTION, ...rest];
-  }, [meta.gradeSystems]);
+  }, [gradeSystems]);
 
   /** Several systems in one menu need the system name next to the grade to stay unambiguous. */
-  const multiSystem = meta.gradeSystems.length > 1;
+  const multiSystem = gradeSystems.length > 1;
   const lowerGradeLabel = lowerGrade.systemId === 0 ? t('activity.allGrades') : shortGradeLabel(lowerGrade.grade);
 
   const {
@@ -292,7 +293,7 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
                       {multiSystem && option.systemId > 0 ? (
                         <span className='text-slate-500'>
                           {' '}
-                          · {meta.gradeSystems.find((system) => system.id === option.systemId)?.name}
+                          · {gradeSystems.find((system) => system.id === option.systemId)?.name}
                         </span>
                       ) : null}
                     </span>

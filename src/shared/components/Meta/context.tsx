@@ -1,6 +1,21 @@
 import { createContext, useContext, useMemo } from 'react';
 import type { components } from '../../../@types/buldreinfo/swagger';
 
+export type Grade = {
+  id: number;
+  grade: string;
+  labelMajor?: string;
+  labelCompact?: string;
+  weight?: number;
+  color?: string;
+};
+
+export type GradeSystem = {
+  id: number;
+  name: string;
+  grades: Grade[];
+};
+
 /**
  * Non-nullable version of the swagger Meta schema.
  * The provider only renders children once the API response is available,
@@ -19,19 +34,13 @@ export type Metadata = {
   languagePreference?: string;
   mediaIdentity?: components['schemas']['MediaIdentity'];
   title: string;
-  /** Grade systems declared for the requesting region; each area pins one of them. */
-  gradeSystems: {
-    id: number;
-    name: string;
-    grades: {
-      id: number;
-      grade: string;
-      labelMajor?: string;
-      labelCompact?: string;
-      weight?: number;
-      color?: string;
-    }[];
-  }[];
+  /**
+   * Every grade system the backend knows. Content opened from another region carries that region's grade system id,
+   * so id lookups must resolve here even when the active region does not declare the system.
+   */
+  allGradeSystems: GradeSystem[];
+  /** Ids of `allGradeSystems` declared by the active region; region-wide selectors must only offer these. */
+  regionGradeSystemIds: number[];
   faYears: number[];
   defaultZoom: number;
   defaultCenter: { lat: number; lng: number };
@@ -88,18 +97,23 @@ export const useMeta = (): Metadata => {
   return metadata;
 };
 
-export type GradeSystem = Metadata['gradeSystems'][number];
-export type Grade = GradeSystem['grades'][number];
-
 /** Grade systems declared for the requesting region. */
 export const useGradeSystems = () => {
-  return useMeta().gradeSystems;
+  const { allGradeSystems, regionGradeSystemIds } = useMeta();
+  return useMemo(
+    () => allGradeSystems.filter((system) => regionGradeSystemIds.includes(system.id)),
+    [allGradeSystems, regionGradeSystemIds],
+  );
 };
 
-/** The grade system with the given id — `undefined` for a mixed list (`0`) or an unknown id. */
+/**
+ * The grade system with the given id — `undefined` for a mixed list (`0`) or an unknown id.
+ *
+ * Resolves from the complete catalogue so content from another region works too.
+ */
 export const useGradeSystem = (gradeSystemId: number | undefined) => {
-  const gradeSystems = useGradeSystems();
-  return useMemo(() => gradeSystems.find((system) => system.id === gradeSystemId), [gradeSystems, gradeSystemId]);
+  const allGradeSystems = useMeta().allGradeSystems;
+  return useMemo(() => allGradeSystems.find((system) => system.id === gradeSystemId), [allGradeSystems, gradeSystemId]);
 };
 
 /**
@@ -108,10 +122,14 @@ export const useGradeSystem = (gradeSystemId: number | undefined) => {
  * Pass the grade system id of the rows when they are known to share one (single-system list, or the area/sector
  * being edited). Without it — a region-wide list that may mix several systems — all grades of the region are
  * merged, deduplicated by grade label and ordered by weight, which keeps each system's own order intact.
+ *
+ * A positive id always means exactly that system; an unknown id yields an empty domain instead of widening to the
+ * region's grades.
  */
 export const useGrades = (gradeSystemId?: number) => {
   const gradeSystems = useGradeSystems();
-  const system = useGradeSystem(gradeSystemId);
+  const scopedSystemId = gradeSystemId !== undefined && gradeSystemId > 0 ? gradeSystemId : undefined;
+  const scopedSystem = useGradeSystem(scopedSystemId);
 
   return useMemo(() => {
     const easyToHard: string[] = [];
@@ -120,7 +138,7 @@ export const useGrades = (gradeSystemId?: number) => {
     const color: Record<string, string> = {};
     const weight: Record<string, number> = {};
 
-    const grades = (system ? [system] : gradeSystems)
+    const grades = (scopedSystemId ? (scopedSystem ? [scopedSystem] : []) : gradeSystems)
       .flatMap((entry) => entry.grades)
       .filter(({ grade }) => grade !== undefined)
       .sort((a, b) => (a.weight ?? 0) - (b.weight ?? 0));
@@ -128,7 +146,7 @@ export const useGrades = (gradeSystemId?: number) => {
     for (const grade of grades) {
       const label = grade.grade!;
       /** Only the merged domain needs de-duplication; one system may legitimately repeat a label. */
-      if (!system && mapping[label] !== undefined) continue;
+      if (!scopedSystemId && mapping[label] !== undefined) continue;
       easyToHard.push(label);
       mapping[label] = easyToHard.length - 1;
       idToGrade[grade.id!] = label;
@@ -137,7 +155,7 @@ export const useGrades = (gradeSystemId?: number) => {
     }
 
     return { easyToHard, mapping, idToGrade, color, weight };
-  }, [gradeSystems, system]);
+  }, [gradeSystems, scopedSystem, scopedSystemId]);
 };
 
 export const useFaYears = () => {

@@ -1,7 +1,7 @@
 import { useCallback, type FormEvent, type ChangeEvent } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import Leaflet from '../../shared/components/Leaflet/Leaflet';
-import { useMeta } from '../../shared/components/Meta/context';
+import { useGradeSystems, useMeta } from '../../shared/components/Meta/context';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { useNavigate, useParams } from 'react-router-dom';
 import { VisibilitySelectorField } from '../../shared/ui/VisibilitySelector';
@@ -27,6 +27,7 @@ type ToggleProps = {
 export const AreaEdit = () => {
   const { t } = useTranslation();
   const meta = useMeta();
+  const gradeSystems = useGradeSystems();
   const navigate = useNavigate();
   const { areaId } = useParams();
   const {
@@ -45,7 +46,7 @@ export const AreaEdit = () => {
   } = useAreaEdit({ areaId: +(areaId ?? 0) });
 
   /** Only a region that declares several systems needs the area to pin one. */
-  const showGradeSystem = meta.gradeSystems.length > 1;
+  const showGradeSystem = gradeSystems.length > 1;
 
   const save = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
@@ -365,7 +366,7 @@ export const AreaEdit = () => {
                   onChange={(e) => setGradeSystem(Number(e.target.value))}
                   disabled={gradeSystemLocked}
                 >
-                  {meta.gradeSystems.map((system) => (
+                  {gradeSystems.map((system) => (
                     <option key={system.id} value={system.id}>
                       {system.name}
                     </option>

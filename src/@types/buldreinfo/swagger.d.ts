@@ -2060,9 +2060,9 @@ export type components = {
             gradeSystemId?: number;
             coordinates?: components["schemas"]["Coordinates"];
             tradGear?: boolean;
+            isBouldering?: boolean;
             isRopeClimbing?: boolean;
             isIceClimbing?: boolean;
-            isBouldering?: boolean;
         };
         ProblemSearchResult: {
             /** Format: int32 */
@@ -2125,7 +2125,8 @@ export type components = {
             themePreference?: string;
             languagePreference?: string;
             mediaIdentity?: components["schemas"]["MediaIdentity"];
-            gradeSystems?: components["schemas"]["GradeSystem"][];
+            allGradeSystems?: components["schemas"]["GradeSystem"][];
+            regionGradeSystemIds?: number[];
             faYears?: number[];
             /** Format: int32 */
             defaultZoom?: number;
