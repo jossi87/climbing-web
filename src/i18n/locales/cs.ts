@@ -776,7 +776,6 @@ export const cs: Catalog = {
     backendApi: 'Backend API',
     pdfMaps: 'PDF mapy',
     affiliation: 'Spolupráce',
-    community: 'Komunita',
     contact: 'Kontakt',
     license: 'Licence',
     privacy: 'Soukromí',

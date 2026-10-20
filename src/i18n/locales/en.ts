@@ -1063,7 +1063,6 @@ export const en = {
     backendApi: 'Backend API',
     pdfMaps: 'PDF Maps',
     affiliation: 'Affiliation',
-    community: 'Community',
     contact: 'Contact',
     license: 'License',
     privacy: 'Privacy',

@@ -35,11 +35,10 @@ const footerLegalTextClass = cn(designContract.typography.label, 'text-[9px] lea
 type NavCardProps = {
   to?: string;
   href?: string;
-  icon?: ElementType;
+  icon: ElementType;
   title: string;
   subtitle?: string;
   className?: string;
-  fallbackText?: string;
 };
 
 const Footer = () => {
@@ -47,7 +46,7 @@ const Footer = () => {
   const { t } = useTranslation();
   const currYear = new Date().getFullYear();
 
-  const NavCard = ({ to, href, icon: Icon, title, subtitle, className, fallbackText }: NavCardProps) => {
+  const NavCard = ({ to, href, icon: Icon, title, subtitle, className }: NavCardProps) => {
     const content = (
       <>
         <div
@@ -57,11 +56,7 @@ const Footer = () => {
             className,
           )}
         >
-          {Icon ? (
-            <Icon size={10} />
-          ) : (
-            <span className='text-[9px] font-semibold tracking-tight uppercase'>{fallbackText}</span>
-          )}
+          <Icon size={10} />
         </div>
         <div className='flex flex-col text-left'>
           <span
@@ -98,7 +93,7 @@ const Footer = () => {
       className={cn('bg-surface-nav isolate mt-0 w-full border-t py-3 sm:py-4', designContract.surfaces.shellHairline)}
     >
       <div className='max-w-container mx-auto px-4 sm:px-6'>
-        <div className='mb-3 grid grid-cols-2 gap-2 sm:mb-4 sm:gap-3 lg:grid-cols-4'>
+        <div className='mb-3 grid grid-cols-2 gap-x-2 gap-y-3 sm:mb-4 sm:gap-3 md:grid-cols-3'>
           <div className='space-y-1 sm:space-y-1.5'>
             <SectionLabel className={footerColumnHeadingClass}>{t('footer.navigation')}</SectionLabel>
             <div className='flex flex-col gap-1 sm:gap-1.5'>
@@ -135,7 +130,7 @@ const Footer = () => {
             </div>
           </div>
 
-          <div className='space-y-1 sm:space-y-1.5'>
+          <div className='col-span-2 space-y-1 sm:space-y-1.5 md:col-span-1'>
             <SectionLabel className={footerColumnHeadingClass}>{t('footer.affiliation')}</SectionLabel>
             <a
               href='https://brv.no'
@@ -170,16 +165,6 @@ const Footer = () => {
                 <span className={navCardSubtitleClass}>Bratte Rogalands Venner</span>
               </div>
             </a>
-          </div>
-
-          <div className='space-y-1 sm:space-y-1.5'>
-            <SectionLabel className={footerColumnHeadingClass}>{t('footer.community')}</SectionLabel>
-            <NavCard
-              href='https://www.facebook.com/groups/brattelinjer'
-              fallbackText='f'
-              title='Bratte Linjer'
-              subtitle='Facebook'
-            />
           </div>
         </div>
 
