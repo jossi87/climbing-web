@@ -2,12 +2,12 @@ import { useId, type ComponentType } from 'react';
 import { cn } from '../../lib/utils';
 
 /**
- * Inline flag artwork for a locale code — the visual token `LanguageSelect` shows for a language.
+ * Inline flag artwork for a locale code — the per-row marker `LanguageSelect`'s menu shows for a language.
  *
  * **Why hand-drawn SVG instead of Unicode flag emoji.** A regional-indicator pair (`🇨🇿`, `🇬🇧`) has no
  * glyph in the Windows emoji font, so Chrome/Edge on Windows paint the two letters instead of a flag —
- * the header control would look broken on the desktop most visitors use. Inline SVG paints the same on
- * every platform and, unlike an asset under `public/`, costs no request and follows the chip's ring.
+ * the menu would look broken on the desktop most visitors use. Inline SVG paints the same on every
+ * platform and, unlike an asset under `public/`, costs no request and follows the row's ring.
  *
  * **Why one aspect box.** Every artwork is drawn in a 3:2 box (`viewBox='0 0 60 40'`) so a single size
  * class fits them all. The Czech flag *is* 3:2; the Union Jack is 2:1 in its official form, so its
@@ -22,10 +22,9 @@ import { cn } from '../../lib/utils';
 type FlagProps = { className?: string };
 
 /**
- * Shared box: 3:2, sized for the 32px header button, clipped to the chip radius. The hairline ring is
- * theme-aware (`--color-surface-border`) because the flag is shown both on the near-black header
- * chrome and on the menu surface, and it is what stops the white half of the Czech flag from melting
- * into the light-mode menu card.
+ * Shared box: 3:2, sized for the menu rows, clipped to the chip radius. The hairline ring is
+ * theme-aware (`--color-surface-border`) so the flag still reads on the dark header chrome and on the
+ * light-mode menu card — it is what stops the white half of the Czech flag from melting into the card.
  */
 const FLAG_BOX = 'block h-[14px] w-[21px] shrink-0 overflow-hidden rounded-[3px] ring-1 ring-surface-border/60';
 

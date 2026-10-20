@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Check } from 'lucide-react';
+import { Check, ChevronDown } from 'lucide-react';
 import { useMeta } from './Meta/context';
 import { useSetLanguagePreference } from '../../api';
 import { SUPPORTED_LANGUAGES, type SupportedLanguage } from '../../i18n/config';
@@ -13,14 +13,21 @@ import { CHROME, CHROME_BORDER, CHROME_HOVER, CHROME_ICON } from './ThemeToggle'
 type LanguageOption = { code: SupportedLanguage; label: string };
 
 /**
- * Header language selector — a chrome square beside `ThemeToggle` whose menu offers every locale.
+ * Header language selector — a chrome pill beside `ThemeToggle` whose menu offers every locale.
  *
- * Why not the native `<select>` this replaced: a `<select>` popup is OS chrome, so it can neither show a
- * flag (an `<option>` is text-only, and emoji flags have no glyph on Windows) nor the language's own
- * name at a readable size. The button shows the active locale's flag and the menu lists each locale by
- * name with the active one checked; the control stays keyboard-operable (arrows/Home/End, Escape returns
- * to the button). The panel is anchored to the button like the account menu in `Header.tsx`, so it
- * follows the header when that slides away on scroll.
+ * **The trigger is a code, not a flag.** A lone national flag is a 1990s language-picker idiom: it names
+ * a country where the control is about a language, and it reads as an image asset next to the flat
+ * lucide glyphs already in the bar. The pill shows just the active locale's code (`EN`, `CS`) and a
+ * chevron — a glyph beside it was redundant once the letters name the language, and dropping it keeps
+ * the narrow control narrower still. Flags live in the menu, where they are a recognisable per-row
+ * marker beside the language's own name and cost no header space.
+ *
+ * Why not the native `<select>` this replaced: a `<select>` popup is OS chrome, so it can neither show
+ * flags nor the language's own name at a readable size. The button mirrors `aria-haspopup='menu'` and
+ * the menu lists each locale by name with the active one checked; the control stays
+ * keyboard-operable (arrows/Home/End, Escape returns to the button). The panel is anchored to the
+ * button like the account menu in `Header.tsx`, so it follows the header when that slides away on
+ * scroll.
  *
  * Only rendered when the visitor actually has a choice — see the early return.
  */
@@ -182,11 +189,21 @@ export function LanguageSelect() {
           border: CHROME_BORDER,
         }}
         className={cn(
-          'box-border flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors',
+          'box-border flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-2.5 transition-colors',
           'focus-visible:ring-brand-border/70 focus-visible:ring-offset-surface-dark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
         )}
       >
-        <LanguageFlag code={active} />
+        {/* The visible code *is* the label: locale codes are what the menu selects (`EN`, `CS`). */}
+        <span className='text-[11px] leading-none font-semibold tracking-[0.1em] uppercase'>
+          {active.toUpperCase()}
+        </span>
+        {/* Always visible: with no icon, the chevron is what makes the pill read as a menu on phones too. */}
+        <ChevronDown
+          size={12}
+          strokeWidth={2.5}
+          aria-hidden
+          className={cn('shrink-0 opacity-60 transition-transform duration-200', open && 'rotate-180')}
+        />
       </button>
 
       {open && (
