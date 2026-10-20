@@ -634,11 +634,22 @@ export function useSetThemePreference() {
  * rather than ignored.
  */
 export function useSetLanguagePreference() {
+  const client = useQueryClient();
   return usePostData<string>(`/profiles/language`, {
     createUrl: (languagePreference) =>
       `/profiles/language?languagePreference=${encodeURIComponent(languagePreference)}`,
     fetchOptions: {
       consistencyAction: 'nop',
+    },
+    onSuccess: (_data, languagePreference) => {
+      // `/meta` reports the stored preference, and every locale variant of it is cached under its own key
+      // (`useKey`). Switching language starts that variant's fetch while this write is still in flight, so its
+      // response can predate the update and leave the cached `languagePreference` stale — which `LanguageSync`
+      // would then re-apply as the user's choice. Partial match on purpose: an exact key never hits the entries
+      // `useKey` shaped. Without a cached payload there is nothing to patch, and a failed write patches nothing.
+      client.setQueriesData<{ languagePreference?: string }>({ queryKey: [`/meta`] }, (old) =>
+        old && typeof old === 'object' ? { ...old, languagePreference } : old,
+      );
     },
   });
 }

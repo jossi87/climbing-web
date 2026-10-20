@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { keepPreviousData } from '@tanstack/react-query';
 import { useData } from '../../../api';
 import { type Metadata } from './context';
 import { MetaContext } from './context';
@@ -27,6 +28,18 @@ export const MetaProvider = ({ children }: Props) => {
   const { data: meta, isPending } = useData<Metadata>(`/meta`, {
     select: selectNormalisedMeta,
     staleTime: Infinity,
+    /**
+     * `/meta` is localized, and `useKey` folds the active locale into every key — so a language switch asks for a
+     * second `/meta` under a key that has no data yet. Without placeholder data that fetch is `pending` and the
+     * provider below has nothing to hand its children, so the entire shell unmounted and blanked for the round trip.
+     * That unmount also disposed `LanguageSync`/`ThemeSync`'s once-per-load guards: they remounted and re-applied
+     * `languagePreference`/`themePreference` from the response of a request that had raced the preference POST
+     * (both are fired together), which reverted the choice the user had just made. Keeping the previous payload on
+     * screen until the localized one lands keeps the tree — and those guards — mounted.
+     *
+     * The first load has no previous payload, so the provider still holds back until `/meta` answers.
+     */
+    placeholderData: keepPreviousData,
   });
 
   if (isPending || !meta) {
