@@ -3,6 +3,14 @@ import { renderToString } from 'react-dom/server';
 import { Camera } from 'lucide-react';
 import { type ReactNode } from 'react';
 
+/**
+ * Map markers sit on top of every base layer (light topo/OSM, satellite imagery, snow, dark forest),
+ * so the glyph needs a backplate rather than relying on the map for contrast. The old disc was almost
+ * fully transparent (`0.04` white), which left the dark camera outline floating invisibly over dark
+ * green satellite tiles. This keeps the frosted-glass look, but with a near-opaque light disc that gives
+ * the glyph a readable background everywhere. A dark rim keeps the disc itself visible on light layers,
+ * and the outer white halo separates it from busy imagery.
+ */
 const createLucideIcon = (icon: ReactNode, color = '#ffffff') => {
   return L.divIcon({
     html: renderToString(
@@ -13,12 +21,12 @@ const createLucideIcon = (icon: ReactNode, color = '#ffffff') => {
           alignItems: 'center',
           width: '28px',
           height: '28px',
-          backgroundColor: 'rgba(255, 255, 255, 0.04)',
+          background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(226, 232, 240, 0.94) 100%)',
           color: color,
           borderRadius: '50%',
-          border: '1px solid rgba(255, 255, 255, 0.12)',
+          border: '1.5px solid rgba(15, 23, 42, 0.65)',
           backdropFilter: 'blur(4px)',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+          boxShadow: '0 0 0 1px rgba(255, 255, 255, 0.45), 0 3px 8px rgba(0, 0, 0, 0.55)',
         }}
       >
         {icon}
@@ -142,7 +150,7 @@ const weatherIcon = createLucideIcon(<Camera size={16} strokeWidth={2.4} />, '#0
 /** Highlighted camera icon used when a webcam marker is the active selection */
 const weatherIconActive = createLucideIcon(<Camera size={16} strokeWidth={2.4} />, '#0f172a');
 
-// Override the active icon with a brand-colored border and glow
+// Override the active icon with the same readable backplate, a brand-colored border and glow
 weatherIconActive.options.html = renderToString(
   <div
     style={{
@@ -151,12 +159,13 @@ weatherIconActive.options.html = renderToString(
       alignItems: 'center',
       width: '32px',
       height: '32px',
-      backgroundColor: 'rgba(255, 255, 255, 0.08)',
+      background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(226, 232, 240, 0.94) 100%)',
       color: '#0f172a',
       borderRadius: '50%',
       border: '2px solid #f59e0b',
       backdropFilter: 'blur(4px)',
-      boxShadow: '0 0 0 3px rgba(245, 158, 11, 0.3), 0 4px 16px rgba(0,0,0,0.6)',
+      boxShadow:
+        'inset 0 0 0 1px rgba(15, 23, 42, 0.35), 0 0 0 3px rgba(245, 158, 11, 0.35), 0 4px 16px rgba(0, 0, 0, 0.6)',
     }}
   >
     <Camera size={16} strokeWidth={2.4} />
