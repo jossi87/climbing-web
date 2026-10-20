@@ -6,7 +6,6 @@ import {
   MapContainer,
   TileLayer,
   LayersControl,
-  WMSTileLayer,
   ScaleControl,
   FeatureGroup,
   useMap,
@@ -19,6 +18,8 @@ import Markers, { type MarkerDef } from './markers';
 import Polygons from './polygons';
 import Polylines from './polylines';
 import MarkerClusterGroup from './ReactLeafletMarkerCluster';
+import OsmFallback from './osmfallback';
+import KartverketOverlays from './kartverketoverlays';
 import UseControl from '../../../utils/use-leaflet-control';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { useMeta } from '../Meta/context';
@@ -42,14 +43,11 @@ function computeCenterFromDegrees(coords: number[][]): [number, number] | null {
 }
 
 /**
- * Kartverket WMS overlays drawn on top of every base layer: place names (“Stedsnavn”) and the road
- * network (“Vegnett”). These were user-toggleable checkboxes that nobody ever changed, so they are
- * now always on and no longer clutter the layer control.
+ * 1×1 transparent GIF used for failed tiles. A regional base layer without coverage (or with a
+ * tile server that is down) then renders nothing, so the OSM fallback underneath shows through
+ * instead of a broken image.
  */
-const WMS_OVERLAYS = [
-  { url: 'https://openwms.statkart.no/skwms1/wms.topo4', wmsLayer: 'Stedsnavn' },
-  { url: 'https://openwms.statkart.no/skwms1/wms.vegnett', wmsLayer: 'all' },
-];
+const TRANSPARENT_TILE = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
 function MapEvent({
   onMouseClick,
@@ -317,21 +315,24 @@ const Leaflet = ({
           </button>
         </UseControlWrapper>
       )}
+      {/* World-wide underlay: covers areas (and tile failures) outside the region's base map coverage. */}
+      <OsmFallback maps={maps} />
       <LayersControl>
         {maps.map((base) => (
           <LayersControl.BaseLayer key={base.id} name={base.name} checked={base.isDefault}>
-            <TileLayer maxZoom={base.maxZoom} attribution={base.attribution} url={base.url} />
+            <TileLayer
+              maxZoom={base.maxZoom}
+              attribution={base.attribution}
+              url={base.url}
+              errorTileUrl={TRANSPARENT_TILE}
+              zIndex={1}
+            />
           </LayersControl.BaseLayer>
         ))}
       </LayersControl>
 
-      {WMS_OVERLAYS.map((overlay) => (
-        <WMSTileLayer
-          key={overlay.url}
-          url={overlay.url}
-          params={{ transparent: true, format: 'image/png', layers: overlay.wmsLayer, version: '1.3.0' }}
-        />
-      ))}
+      {/* Kartverket place names + roads, only requested where the services actually have data. */}
+      <KartverketOverlays maps={maps} />
       <FeatureGroup>
         {markerGroup}
         <Polygons
