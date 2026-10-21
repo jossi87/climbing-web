@@ -1054,7 +1054,9 @@ const Sector = () => {
                * the tab strip — matches the rhythm of `distribution` / `top` / `todo`. No `p-4` wrapper because
                * the Activity toolbar + rows supply their own horizontal padding (`px-4 sm:px-5`).
                */}
-              {effectiveTab === 'activity' && <Activity idArea={0} idSector={data.id ?? 0} embedded />}
+              {effectiveTab === 'activity' && (
+                <Activity idArea={0} idSector={data.id ?? 0} gradeSystemId={data.gradeSystemId ?? 0} embedded />
+              )}
             </div>
           </>
         )}

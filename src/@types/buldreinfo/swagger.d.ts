@@ -3995,8 +3995,7 @@ export interface operations {
             query: {
                 idArea: number;
                 idSector: number;
-                lowerGradeWeight?: number;
-                lowerGradeSystemId?: number;
+                gradeFilters?: string[];
                 fa?: boolean;
                 comments?: boolean;
                 ticks?: boolean;

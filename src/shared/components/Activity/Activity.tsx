@@ -12,7 +12,7 @@ import {
   Camera,
   Loader2,
 } from 'lucide-react';
-import { useGradeSystems, useMeta } from '../Meta/context';
+import { useGradeSystems, useGradeSystemsByIds, useMeta } from '../Meta/context';
 import { useActivity } from '../../../api';
 import { Avatar, AvatarGroup, Card, SectionHeader } from '../../ui';
 import { Stars } from '../../ui/Indicators';
@@ -34,8 +34,8 @@ import type { components } from '../../../@types/buldreinfo/swagger';
 type ActivitySchema = components['schemas']['Activity'];
 
 /**
- * One entry of the “Lowest grade” menu: a grade of a specific system. The server-side filter compares the grade's
- * real `weight` and only matches problems of that system, so a mixed feed can never be compared across systems.
+ * One entry of a per-system “Lowest grade” menu. The server-side filter compares the grade's real `weight` and only
+ * applies it to problems of the same grade system, so one system's threshold never hides another system's problems.
  */
 type GradeOption = { key: string; systemId: number; weight: number; grade: string };
 
@@ -50,10 +50,24 @@ const shortGradeLabel = (grade: string) => (grade.includes('(') ? grade.split('(
  * **inline** inside a parent panel (e.g. Area / Sector tab card) — no nested cards, no margin/border between the tab
  * strip and the feed. Used by the Area / Sector "Activity" tabs to keep the tab content flush with the tab strip,
  * matching the other tabs (map / distribution / top / todo).
+ *
+ * Grade filtering works **per grade system**: pass the surrounding area's / sector's `gradeSystemId` to get a single
+ * filter, or leave it out (region feed) to get one independent filter per grade system active in the region.
  */
-const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSector: number; embedded?: boolean }) => {
+const Activity = ({
+  idArea,
+  idSector,
+  gradeSystemId,
+  embedded = false,
+}: {
+  idArea: number;
+  idSector: number;
+  /** Grade system of the surrounding area / sector; scoped feeds only contain problems of that system. */
+  gradeSystemId?: number;
+  embedded?: boolean;
+}) => {
   const { t } = useTranslation();
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [openGradeSystemId, setOpenGradeSystemId] = useState<number | null>(null);
   const filterRef = useRef<HTMLDivElement>(null);
   const selectedGradeRef = useRef<HTMLButtonElement>(null);
 
@@ -70,7 +84,11 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
   const [searchParams, setSearchParams] = useSearchParams();
   const [initialPreset] = useState(() => parseActivityShowParam(searchParams.get(ACTIVITY_SHOW_PARAM)));
 
-  const [lowerGrade, setLowerGrade] = useState<GradeOption>(ALL_GRADE_OPTION);
+  /**
+   * Selected minimum grade per grade system. Thresholds are independent: a Saxon threshold only hides low Saxon
+   * grades and leaves Uiaa-graded problems alone (and vice versa), so a mixed feed keeps all systems readable.
+   */
+  const [lowerGrades, setLowerGrades] = useState<Record<number, GradeOption>>({});
   const [activityTypeFa, setActivityTypeFa] = useState(initialPreset?.fa ?? true);
   const [activityTypeTicks, setActivityTypeTicks] = useState(initialPreset?.ticks ?? true);
   const [activityTypeMedia, setActivityTypeMedia] = useState(initialPreset?.media ?? true);
@@ -129,29 +147,50 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
   }, [syncFilterUrl]);
 
   const meta = useMeta();
-  const gradeSystems = useGradeSystems();
+  const regionGradeSystems = useGradeSystems();
 
-  /** Region systems in the menu: the feed may hold problems of several systems, so offer every grade of every system. */
-  const gradeOptions = useMemo(() => {
-    const seen = new Set<string>();
-    const rest: GradeOption[] = [];
-    for (const system of gradeSystems) {
-      for (const grade of system.grades) {
-        if (!grade.grade) continue;
-        const key = `${system.id}:${grade.grade}`;
-        if (seen.has(key)) continue;
-        seen.add(key);
-        rest.push({ key, systemId: system.id, weight: grade.weight ?? 0, grade: grade.grade });
-      }
-    }
-    /** Hardest first with “All” pinned on top — the same reading order as the old id-based grade list. */
-    rest.sort((a, b) => b.weight - a.weight || a.grade.localeCompare(b.grade));
-    return [ALL_GRADE_OPTION, ...rest];
-  }, [gradeSystems]);
+  /**
+   * Scoped feed (Area / Sector tab): only the surrounding area's grade system is relevant. Region feed: every grade
+   * system active in the region gets its own, independent filter.
+   */
+  const scopedGradeSystemIds = useMemo(
+    () => (gradeSystemId && gradeSystemId > 0 ? [gradeSystemId] : undefined),
+    [gradeSystemId],
+  );
+  const scopedGradeSystems = useGradeSystemsByIds(scopedGradeSystemIds);
+  const gradeSystems = scopedGradeSystemIds ? scopedGradeSystems : regionGradeSystems;
 
-  /** Several systems in one menu need the system name next to the grade to stay unambiguous. */
+  /** One menu per system: every grade of that system, hardest first, with “All” pinned on top. */
+  const gradeMenus = useMemo(
+    () =>
+      gradeSystems.map((system) => {
+        const seen = new Set<string>();
+        const options: GradeOption[] = [];
+        for (const grade of system.grades) {
+          if (!grade.grade) continue;
+          const key = `${system.id}:${grade.grade}`;
+          if (seen.has(key)) continue;
+          seen.add(key);
+          options.push({ key, systemId: system.id, weight: grade.weight ?? 0, grade: grade.grade });
+        }
+        options.sort((a, b) => b.weight - a.weight || a.grade.localeCompare(b.grade));
+        return { system, options: [ALL_GRADE_OPTION, ...options] };
+      }),
+    [gradeSystems],
+  );
+
+  /** Several filters in one toolbar need the system name on the chip so the thresholds stay unambiguous. */
   const multiSystem = gradeSystems.length > 1;
-  const lowerGradeLabel = lowerGrade.systemId === 0 ? t('activity.allGrades') : shortGradeLabel(lowerGrade.grade);
+
+  /** Only systems with an active threshold are sent; "All grades" means the system is omitted entirely. */
+  const gradeFilters = useMemo(
+    () =>
+      gradeSystems.flatMap((system) => {
+        const selected = lowerGrades[system.id];
+        return selected && selected.weight > 0 ? [{ gradeSystemId: system.id, minWeight: selected.weight }] : [];
+      }),
+    [gradeSystems, lowerGrades],
+  );
 
   const {
     data: activity,
@@ -164,8 +203,7 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
   } = useActivity({
     idArea,
     idSector,
-    lowerGradeWeight: lowerGrade.weight,
-    lowerGradeSystemId: lowerGrade.systemId,
+    gradeFilters,
     fa: activityTypeFa,
     comments: activityTypeComments,
     ticks: activityTypeTicks,
@@ -174,19 +212,34 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (filterRef.current && !filterRef.current.contains(e.target as Node)) setIsFilterOpen(false);
+      if (filterRef.current && !filterRef.current.contains(e.target as Node)) setOpenGradeSystemId(null);
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   useEffect(() => {
-    if (!isFilterOpen || !selectedGradeRef.current) return;
+    if (openGradeSystemId === null || !selectedGradeRef.current) return;
     const frame = window.requestAnimationFrame(() => {
       selectedGradeRef.current?.scrollIntoView({ block: 'center' });
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [isFilterOpen, lowerGrade]);
+  }, [openGradeSystemId, lowerGrades]);
+
+  /** Select (or clear, for “All grades”) the threshold of one grade system, leaving the other systems untouched. */
+  const handleGradeSelect = (systemId: number, option: GradeOption) => {
+    setLowerGrades((prev) => {
+      const next = { ...prev };
+      if (option.weight > 0) {
+        next[systemId] = option;
+      } else {
+        delete next[systemId];
+      }
+      return next;
+    });
+    setOpenGradeSystemId(null);
+    setTimeout(refetch, 10);
+  };
 
   const handleFilterToggle = (type: string) => {
     if (type === 'fa') setActivityTypeFa(!activityTypeFa);
@@ -213,9 +266,12 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
    *
    * Mobile (< md) keeps `w-full justify-center` either way — the toolbar is `flex-col` and the chips are the
    * only meaningful affordance once the SectionHeader (when present) stacks above them.
+   *
+   * Since every grade system gets its own chip, the row must **wrap** instead of squeezing: a region with two systems
+   * plus the four type chips no longer fits on one phone line.
    */
   const chipsRowClassName = isScoped
-    ? 'flex w-full flex-nowrap items-center justify-center gap-0.5 sm:gap-1.5'
+    ? 'flex w-full flex-wrap items-center justify-center gap-x-0.5 gap-y-1.5 sm:gap-x-1.5 sm:gap-y-2'
     : designContract.layout.activityToolbarActionsFrontpage;
 
   /**
@@ -244,65 +300,80 @@ const Activity = ({ idArea, idSector, embedded = false }: { idArea: number; idSe
         ) : null}
 
         <div className={chipsRowClassName}>
-          <div className='relative shrink-0' ref={filterRef}>
-            <button
-              onClick={() => setIsFilterOpen(!isFilterOpen)}
-              className={cn(activityFilterChipBase, activityFilterChipOn, 'min-w-0 max-sm:max-w-[min(100%,8.5rem)]')}
-              aria-expanded={isFilterOpen}
-              type='button'
+          {gradeMenus.length > 0 ? (
+            <div
+              className='flex max-w-full min-w-0 flex-wrap items-center justify-center gap-x-0.5 gap-y-1.5 sm:gap-x-1.5 sm:gap-y-2'
+              ref={filterRef}
             >
-              <Filter size={12} className='shrink-0 text-slate-300' strokeWidth={2} />
-              <span className={cn(designContract.typography.uiCompact, 'min-w-0 truncate text-slate-300')}>
-                {lowerGradeLabel}
-              </span>
-              <ChevronDown
-                size={10}
-                className={cn('shrink-0 text-slate-300 transition-transform', isFilterOpen && 'rotate-180')}
-                strokeWidth={2}
-              />
-            </button>
+              {gradeMenus.map(({ system, options }) => {
+                const selected = lowerGrades[system.id];
+                const selectedKey = selected?.key ?? ALL_GRADE_OPTION.key;
+                const isOpen = openGradeSystemId === system.id;
+                const selectionLabel = selected ? shortGradeLabel(selected.grade) : t('activity.allGrades');
+                /** With several systems on screen the chip must name its system, otherwise “8a” is ambiguous. */
+                const chipLabel = multiSystem
+                  ? `${system.name} ${selected ? selectionLabel : ''}`.trim()
+                  : selectionLabel;
+                return (
+                  <div className='relative shrink-0' key={system.id}>
+                    <button
+                      onClick={() => setOpenGradeSystemId(isOpen ? null : system.id)}
+                      className={cn(
+                        activityFilterChipBase,
+                        activityFilterChipOn,
+                        'min-w-0 max-sm:max-w-[min(100%,8.5rem)]',
+                      )}
+                      aria-expanded={isOpen}
+                      aria-haspopup='menu'
+                      type='button'
+                    >
+                      <Filter size={12} className='shrink-0 text-slate-300' strokeWidth={2} />
+                      <span className={cn(designContract.typography.uiCompact, 'min-w-0 truncate text-slate-300')}>
+                        {chipLabel}
+                      </span>
+                      <ChevronDown
+                        size={10}
+                        className={cn('shrink-0 text-slate-300 transition-transform', isOpen && 'rotate-180')}
+                        strokeWidth={2}
+                      />
+                    </button>
 
-            {isFilterOpen && (
-              <div className='bg-surface-card border-surface-border absolute top-full left-0 z-[100] mt-1.5 max-h-[min(18rem,70vh)] w-[min(17.5rem,calc(100vw-1.25rem))] overflow-y-auto rounded-xl border py-1.5 shadow-2xl md:right-0 md:left-auto md:w-56'>
-                <div className='border-surface-border/40 px-3 py-2'>
-                  <span className={cn(designContract.typography.label, 'text-slate-400')}>
-                    {t('activity.lowestGrade')}
-                  </span>
-                </div>
-                <div className='border-surface-border/35 mb-1 border-t' />
-                {gradeOptions.map((option) => (
-                  <button
-                    ref={option.key === lowerGrade.key ? selectedGradeRef : null}
-                    key={option.key}
-                    type='button'
-                    className={cn(
-                      designContract.typography.menuItem,
-                      'flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left transition-colors',
-                      option.key === lowerGrade.key
-                        ? cn(designContract.surfaces.controlActive, 'font-semibold')
-                        : 'hover:bg-surface-raised text-slate-400 hover:text-slate-300',
+                    {isOpen && (
+                      <div className='bg-surface-card border-surface-border absolute top-full left-0 z-[100] mt-1.5 max-h-[min(18rem,70vh)] w-[min(17.5rem,calc(100vw-1.25rem))] overflow-y-auto rounded-xl border py-1.5 shadow-2xl md:right-0 md:left-auto md:w-56'>
+                        <div className='border-surface-border/40 px-3 py-2'>
+                          <span className={cn(designContract.typography.label, 'text-slate-400')}>
+                            {t('activity.lowestGrade')}
+                            {multiSystem ? <span className='text-slate-500'> · {system.name}</span> : null}
+                          </span>
+                        </div>
+                        <div className='border-surface-border/35 mb-1 border-t' />
+                        {options.map((option) => (
+                          <button
+                            ref={option.key === selectedKey ? selectedGradeRef : null}
+                            key={option.key}
+                            type='button'
+                            className={cn(
+                              designContract.typography.menuItem,
+                              'flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left transition-colors',
+                              option.key === selectedKey
+                                ? cn(designContract.surfaces.controlActive, 'font-semibold')
+                                : 'hover:bg-surface-raised text-slate-400 hover:text-slate-300',
+                            )}
+                            onClick={() => handleGradeSelect(system.id, option)}
+                          >
+                            <span className='min-w-0 truncate'>
+                              {option.systemId === 0 ? t('activity.allGrades') : option.grade}
+                            </span>
+                            {option.key === selectedKey && <Check size={14} className='shrink-0' />}
+                          </button>
+                        ))}
+                      </div>
                     )}
-                    onClick={() => {
-                      setLowerGrade(option);
-                      setIsFilterOpen(false);
-                      setTimeout(refetch, 10);
-                    }}
-                  >
-                    <span className='min-w-0 truncate'>
-                      {option.systemId === 0 ? t('activity.allGrades') : option.grade}
-                      {multiSystem && option.systemId > 0 ? (
-                        <span className='text-slate-500'>
-                          {' '}
-                          · {gradeSystems.find((system) => system.id === option.systemId)?.name}
-                        </span>
-                      ) : null}
-                    </span>
-                    {option.key === lowerGrade.key && <Check size={14} className='shrink-0' />}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : null}
 
           <FilterButton
             active={activityTypeFa}

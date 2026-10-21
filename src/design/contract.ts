@@ -124,7 +124,7 @@ export const designContract = {
      * With the header present (`/activity` page) the auto-margin is a no-op next to `justify-between`.
      */
     activityToolbarActionsFrontpage:
-      'flex w-full flex-nowrap items-center justify-center gap-0.5 sm:gap-1.5 md:ml-auto md:w-auto md:justify-end',
+      'flex w-full flex-wrap items-center justify-center gap-x-0.5 gap-y-1.5 sm:gap-x-1.5 sm:gap-y-2 md:ml-auto md:w-auto md:justify-end',
     /** Activity filters: one row; compact chips; labels always visible (tight gap on narrow screens). */
     toolbarActions: 'flex w-full flex-nowrap items-center justify-center gap-0.5 sm:gap-1.5 sm:w-auto sm:justify-end',
     /**

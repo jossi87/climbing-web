@@ -986,7 +986,9 @@ const Area = () => {
                   <Todo idArea={data.id ?? 0} idSector={0} />
                 </div>
               )}
-              {effectiveTab === 'activity' && <Activity idArea={data.id ?? 0} idSector={0} embedded />}
+              {effectiveTab === 'activity' && (
+                <Activity idArea={data.id ?? 0} idSector={0} gradeSystemId={data.gradeSystemId ?? 0} embedded />
+              )}
             </div>
           </>
         )}

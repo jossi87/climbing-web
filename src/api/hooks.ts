@@ -314,11 +314,16 @@ export function useToc() {
   return query;
 }
 
+/** Lowest grade (by weight) included for one grade system. Thresholds for different systems apply independently. */
+export type ActivityGradeFilter = {
+  gradeSystemId: number;
+  minWeight: number;
+};
+
 export function useActivity({
   idArea,
   idSector,
-  lowerGradeWeight,
-  lowerGradeSystemId,
+  gradeFilters,
   fa,
   comments,
   ticks,
@@ -326,10 +331,8 @@ export function useActivity({
 }: {
   idArea: number;
   idSector: number;
-  /** Real grade weight of the threshold (`0` = no grade filter). */
-  lowerGradeWeight: number;
-  /** Grade system the threshold belongs to; grades are only comparable within one system. */
-  lowerGradeSystemId: number;
+  /** One threshold per filtered grade system; a threshold only applies to problems graded in its own system. */
+  gradeFilters: ActivityGradeFilter[];
   fa: boolean;
   comments: boolean;
   ticks: boolean;
@@ -338,9 +341,22 @@ export function useActivity({
   const { isAuthenticated, getAccessTokenSilently, isLoading } = useAuth0();
   const authReady = !isLoading;
 
+  /** Stable `gradeSystemId:weight` signature, used both as cache-key part and as the `gradeFilters` param. */
+  const gradeFiltersParam = useMemo(
+    () =>
+      [...gradeFilters]
+        .filter(({ gradeSystemId, minWeight }) => gradeSystemId > 0 && minWeight > 0)
+        .sort((a, b) => a.gradeSystemId - b.gradeSystemId)
+        .map(({ gradeSystemId, minWeight }) => `${gradeSystemId}:${minWeight}`)
+        .join(','),
+    [gradeFilters],
+  );
+  const gradeFiltersQuery = gradeFiltersParam ? `&gradeFilters=${encodeURIComponent(gradeFiltersParam)}` : '';
+  const queryParams = `idArea=${idArea}&idSector=${idSector}${gradeFiltersQuery}&fa=${fa}&comments=${comments}&ticks=${ticks}&media=${media}`;
+
   const queryKey = useKey(
-    [`/activity`, { idArea, idSector, lowerGradeWeight, lowerGradeSystemId, fa, comments, ticks, media }],
-    `/activity?idArea=${idArea}&idSector=${idSector}&lowerGradeWeight=${lowerGradeWeight}&lowerGradeSystemId=${lowerGradeSystemId}&fa=${fa}&comments=${comments}&ticks=${ticks}&media=${media}`,
+    [`/activity`, { idArea, idSector, gradeFiltersParam, fa, comments, ticks, media }],
+    `/activity?${queryParams}`,
   );
 
   const query = useInfiniteQuery({
@@ -358,7 +374,7 @@ export function useActivity({
           accessToken = null;
         }
       }
-      const url = `/activity?idArea=${idArea}&idSector=${idSector}&lowerGradeWeight=${lowerGradeWeight}&lowerGradeSystemId=${lowerGradeSystemId}&fa=${fa}&comments=${comments}&ticks=${ticks}&media=${media}&offset=${pageParam}`;
+      const url = `/activity?${queryParams}&offset=${pageParam}`;
       const res = await makeAuthenticatedRequest(accessToken, url);
       if (!res.ok) {
         throw await createHttpErrorFromResponse(res, url);
