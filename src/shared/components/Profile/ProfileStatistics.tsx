@@ -189,13 +189,16 @@ const ProfileOverview = ({ disciplines }: { disciplines: components['schemas']['
           >
             <div className='bg-surface-raised px-4 py-3 sm:px-5'>
               {/*
-                The scale reads as the heading's subtitle: one line with it while it fits, one step down in size, weight
-                and ink (the meta row below keeps only how much was climbed). It wraps under the heading rather than
-                truncating when a two-column card gets too narrow for both, so the scale name is never cut.
+                The card is one discipline in one scale, so the scale follows the heading as its subtitle: one step down
+                in size, weight and ink, after a quiet middot. Plain inline flow, so a narrow column wraps the name onto
+                the next line instead of clipping either part.
               */}
-              <div className='flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0.5'>
-                <h3 className='min-w-0 truncate font-semibold text-slate-100'>{heading}</h3>
-                <span className='type-small shrink-0 font-normal'>{gradeSystem}</span>
+              <div className='min-w-0'>
+                <h3 className='inline font-semibold text-slate-100'>{heading}</h3>
+                <span aria-hidden='true' className='mx-1.5 text-[13px] text-slate-500'>
+                  ·
+                </span>
+                <span className='type-small font-normal'>{gradeSystem}</span>
               </div>
               <div className='mt-1 flex flex-wrap items-center gap-x-2 text-[13px] text-slate-400'>
                 <span className='tabular-nums'>

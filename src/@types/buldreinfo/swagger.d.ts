@@ -1958,6 +1958,7 @@ export type components = {
             type?: string;
             isBolted?: boolean;
             isBouldering?: boolean;
+            isIceClimbing?: boolean;
             /** Format: int32 */
             gradeSystemId?: number;
             gradeSystem?: string;
@@ -2070,9 +2071,9 @@ export type components = {
             gradeSystemId?: number;
             coordinates?: components["schemas"]["Coordinates"];
             tradGear?: boolean;
-            isRopeClimbing?: boolean;
-            isIceClimbing?: boolean;
             isBouldering?: boolean;
+            isIceClimbing?: boolean;
+            isRopeClimbing?: boolean;
         };
         ProblemSearchResult: {
             /** Format: int32 */
