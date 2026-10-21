@@ -1,8 +1,7 @@
-import { type Dispatch, useEffect, useMemo, useReducer } from 'react';
+import { type Dispatch, useCallback, useEffect, useMemo, useReducer } from 'react';
 import { neverGuard } from '../../../utils/neverGuard';
-import type { DispatchUpdate } from '../FilterForm/GradeSelect/GradeSelect';
 import { rowListTypeKey, type Row } from './types';
-import { useGradeSystems, useGrades } from '../Meta';
+import { buildGradeDomain, useGradeSystems, useMeta } from '../Meta';
 import { distinctDisciplines } from '../Profile/profileDiscipline';
 import { getLocales } from '../../../api';
 import { disciplineRank } from '../../../utils/discipline';
@@ -13,9 +12,29 @@ export type OrderOption =
 
 export type GroupOption = 'area' | 'none' | 'rock' | 'sector' | 'type';
 
+/** Grade range of one grade system; a system without an entry (or without bounds) is not filtered. */
+export type GradeRange = { low?: string; high?: string };
+
+/**
+ * One grade filter of the list: the grade domain of a system present on the rows, its active range, and the labels the
+ * content actually holds for it.
+ */
+export type GradeFilter = {
+  gradeSystemId: number;
+  name: string;
+  /** Grades of this system ordered easy → hard. */
+  easyToHard: string[];
+  /** Grade label → index in {@link easyToHard}. */
+  mapping: Record<string, number>;
+  /** Grade labels of this system present in the rows, ordered easy → hard. */
+  labels: string[];
+  low?: string;
+  high?: string;
+};
+
 type UiState = {
-  gradeLow: string | undefined;
-  gradeHigh: string | undefined;
+  /** Grade range per grade system (keyed by system id) — a list may hold grades of several systems. */
+  gradeRanges: Record<string, GradeRange>;
   order: OrderOption;
   groupBy: GroupOption;
   hideTicked: boolean;
@@ -36,17 +55,12 @@ type DerivedState = {
   /** Ordered disciplines found on the rows; empty for lists without a discipline facet (sector / area). */
   uniqueDisciplines: string[];
   /**
-   * False once rows span disciplines or grade systems: grades of another system carry weights relative to that
-   * system only, so a mixed list must not be grade-range filtered. Grade *sorting* stays available while mixed — it
-   * ranks each row's grade within its own discipline (see `useProblemListState`).
+   * One entry per grade system found on the rows, in catalogue order. Each system is filtered against its own range,
+   * so a list spanning several systems (a profile list covers every region the user has climbed in) stays filterable —
+   * grades of another system never hide a row. Grade *sorting* ranks each row within its own discipline, see
+   * `gradeRank`.
    */
-  gradeComparable: boolean;
-  /** Grade system shared by every row (`undefined` while mixed or unknown); drives `easyToHard` / `mapping`. */
-  gradeSystemId: number | undefined;
-  /** Grades of {@link gradeSystemId} ordered easy → hard, used for the grade range control. */
-  easyToHard: string[];
-  /** Grade label → index in {@link easyToHard}. */
-  mapping: Record<string, number>;
+  gradeFilters: GradeFilter[];
   containsFa: boolean;
   containsTicked: boolean;
   containsMultipitch: boolean;
@@ -55,7 +69,7 @@ type DerivedState = {
 export type State = UiState & DerivedState;
 
 type Update =
-  | DispatchUpdate
+  | { action: 'set-grade'; gradeSystemId: number; low?: string; high?: string }
   | { action: 'order-by'; order: UiState['order'] }
   | { action: 'group-by'; groupBy: UiState['groupBy'] }
   | { action: 'hide-ticked'; hideTicked?: UiState['hideTicked'] }
@@ -70,24 +84,18 @@ type Update =
 const uiStateReducer = (state: UiState, update: Update): UiState => {
   const { action } = update;
   switch (action) {
-    case 'set-grades': {
-      return {
-        ...state,
-        gradeLow: update.low,
-        gradeHigh: update.high,
-      };
-    }
-
     case 'set-grade': {
-      if ('low' in update) {
-        return {
-          ...state,
-          gradeLow: update.low,
-        };
-      }
+      const key = String(update.gradeSystemId);
       return {
         ...state,
-        gradeHigh: update.high,
+        gradeRanges: {
+          ...state.gradeRanges,
+          [key]: {
+            ...state.gradeRanges[key],
+            ...(update.low !== undefined ? { low: update.low } : {}),
+            ...(update.high !== undefined ? { high: update.high } : {}),
+          },
+        },
       };
     }
 
@@ -184,8 +192,7 @@ const uiStateReducer = (state: UiState, update: Update): UiState => {
       }
       return {
         ...state,
-        gradeLow: undefined,
-        gradeHigh: undefined,
+        gradeRanges: {},
         order: update.defaultOrder,
         groupBy: 'none',
         hideTicked: false,
@@ -295,37 +302,60 @@ export const useProblemListState = ({
 
   const filterStorageKey =
     filterPreferenceBucket != null ? `problemList/filterPreference/${filterPreferenceBucket}` : `problemList/${key}`;
-  const [storedGradeLow, setStoredGradeLow] = useLocalStorage<string | null>(`${filterStorageKey}/gradeLow`, null);
-  const [storedGradeHigh, setStoredGradeHigh] = useLocalStorage<string | null>(`${filterStorageKey}/gradeHigh`, null);
+  /**
+   * Grade ranges keyed by grade system id: a list can hold grades of several systems (a profile covers every region
+   * the user has climbed in) and weights are only comparable within one system, so each system keeps its own range.
+   */
+  const [storedGradeRanges, setStoredGradeRanges] = useLocalStorage<Record<string, GradeRange>>(
+    `${filterStorageKey}/gradeRanges`,
+    {},
+  );
+  /** Pre-per-system keys, read only to fold a saved range into {@link storedGradeRanges} (see the migration effect). */
+  const [legacyGradeLow, setLegacyGradeLow] = useLocalStorage<string | null>(`${filterStorageKey}/gradeLow`, null);
+  const [legacyGradeHigh, setLegacyGradeHigh] = useLocalStorage<string | null>(`${filterStorageKey}/gradeHigh`, null);
   const [storedTypes, setStoredTypes] = useLocalStorage<Record<string, boolean>>(`${filterStorageKey}/types`, {});
 
-  const gradeSystems = useGradeSystems();
+  const regionGradeSystems = useGradeSystems();
+  const { allGradeSystems } = useMeta();
 
   /**
-   * Grade system shared by the rows. `undefined` while the rows span several systems (weights are then relative to
-   * different systems) or while they have none and the region declares several; a region with a single system
-   * resolves rows without an explicit system to it.
+   * Grade system shared by every row, if there is one. `undefined` while the rows span several systems, and while they
+   * have none and the region declares several; a region with a single system resolves rows without one to it.
    */
-  const gradeSystemId = useMemo(() => {
+  const sharedGradeSystemId = useMemo(() => {
     const ids = new Set(rows.map((row) => row.gradeSystemId ?? 0));
     if (ids.size > 1) return undefined;
     const id = [...ids][0] ?? 0;
     if (id > 0) return id;
-    return gradeSystems.length === 1 ? gradeSystems[0].id : undefined;
-  }, [gradeSystems, rows]);
+    return regionGradeSystems.length === 1 ? regionGradeSystems[0].id : undefined;
+  }, [regionGradeSystems, rows]);
 
-  const { mapping, easyToHard } = useGrades(gradeSystemId);
+  /** Grade system of one row — rows without one adopt the list's single system (projects, older payloads). */
+  const resolveRowGradeSystemId = useCallback(
+    (row: Row) => {
+      const id = row.gradeSystemId ?? 0;
+      return id > 0 ? id : sharedGradeSystemId;
+    },
+    [sharedGradeSystemId],
+  );
+
+  /** Freshly stored ranges, or a one-time fold of the pre-per-system keys into the list's single system. */
+  const initialGradeRanges = useMemo<Record<string, GradeRange>>(() => {
+    if (Object.keys(storedGradeRanges).length > 0) return storedGradeRanges;
+    if (sharedGradeSystemId === undefined) return {};
+    if (legacyGradeLow === null && legacyGradeHigh === null) return {};
+    return {
+      [String(sharedGradeSystemId)]: { low: legacyGradeLow ?? undefined, high: legacyGradeHigh ?? undefined },
+    };
+  }, [legacyGradeHigh, legacyGradeLow, sharedGradeSystemId, storedGradeRanges]);
+
   const typeNames = useMemo(() => [...new Set(rows.map(rowListTypeKey))].sort(), [rows]);
   /** Profile lists only: the disciplines present on the rows, ordered by the discipline flags (bouldering → rope → ice). */
   const disciplineNames = useMemo(() => distinctDisciplines(rows), [rows]);
 
-  const validGradeLow = storedGradeLow !== null && easyToHard.includes(storedGradeLow) ? storedGradeLow : null;
-  const validGradeHigh = storedGradeHigh !== null && easyToHard.includes(storedGradeHigh) ? storedGradeHigh : null;
-
-  const [{ gradeLow, gradeHigh, hideTicked, onlyFa, onlyMultipitch, order, groupBy, types, disciplines }, dispatch] =
+  const [{ gradeRanges, hideTicked, onlyFa, onlyMultipitch, order, groupBy, types, disciplines }, dispatch] =
     useReducer(uiStateReducer, {
-      gradeLow: validGradeLow ?? undefined,
-      gradeHigh: validGradeHigh ?? undefined,
+      gradeRanges: initialGradeRanges,
       order: CLEANED_ORDER[storedOrderBy as OrderOption] ?? defaultOrder,
       /** Grouping is not persisted — default to none each visit. */
       groupBy: 'none',
@@ -350,23 +380,76 @@ export const useProblemListState = ({
   useEffect(() => setStoredOnlyFa(onlyFa), [onlyFa, setStoredOnlyFa]);
   useEffect(() => setStoredOnlyMultipitch(onlyMultipitch), [onlyMultipitch, setStoredOnlyMultipitch]);
   useEffect(() => setStoredOrderBy(order), [order, setStoredOrderBy]);
-  useEffect(() => setStoredGradeLow(gradeLow ?? null), [gradeLow, setStoredGradeLow]);
-  useEffect(() => setStoredGradeHigh(gradeHigh ?? null), [gradeHigh, setStoredGradeHigh]);
+  useEffect(() => setStoredGradeRanges(gradeRanges), [gradeRanges, setStoredGradeRanges]);
+  /** One-time migration: fold the pre-per-system keys into `gradeRanges` (the initial state already applies them). */
+  useEffect(() => {
+    if (legacyGradeLow === null && legacyGradeHigh === null) return;
+    /** No rows yet (still loading): keep the legacy keys for the render that knows the list's grade system. */
+    if (rows.length === 0) return;
+    if (Object.keys(storedGradeRanges).length === 0 && sharedGradeSystemId !== undefined) {
+      setStoredGradeRanges({
+        [String(sharedGradeSystemId)]: { low: legacyGradeLow ?? undefined, high: legacyGradeHigh ?? undefined },
+      });
+    }
+    setLegacyGradeLow(null);
+    setLegacyGradeHigh(null);
+  }, [
+    legacyGradeHigh,
+    legacyGradeLow,
+    rows.length,
+    setLegacyGradeHigh,
+    setLegacyGradeLow,
+    setStoredGradeRanges,
+    sharedGradeSystemId,
+    storedGradeRanges,
+  ]);
   useEffect(() => setStoredTypes((prev) => ({ ...prev, ...types })), [types, setStoredTypes]);
   useEffect(() => dispatch({ action: 'init-types', typeNames }), [typeNames]);
   useEffect(() => dispatch({ action: 'init-disciplines', disciplines: disciplineNames }), [disciplineNames]);
 
   /**
-   * The grade range is only offered while the visible list stays within one grade system and one discipline: its
-   * options come from `useGrades(gradeSystemId)`, which only knows that system's grades, so filtering a list holding
-   * grades of another system would silently drop them. While mixed, the stored range is parked (kept, not applied, so
-   * it comes back when narrowing to one system). Grade *sorting* is not gated — see {@link gradeRank} below.
+   * One grade filter per grade system found on the rows, in catalogue order (stable while sorting/filtering). Each
+   * filter owns its system's grade domain, so a range can never hide rows of another system — unlike a single range
+   * built from one system, which used to drop every row whose grade that system did not know.
+   *
+   * A stored bound that is not a grade of its system (stale preference, or a shared sector bucket that moved to an
+   * area with another system) is ignored; the entry itself is kept for when that system comes back.
    */
-  const gradeComparable = useMemo(
-    () =>
-      gradeSystemId !== undefined &&
-      disciplineNames.filter((discipline) => disciplines[discipline] !== false).length <= 1,
-    [disciplineNames, disciplines, gradeSystemId],
+  const gradeFilters = useMemo<GradeFilter[]>(() => {
+    const presentSystemIds = new Set<number>();
+    for (const row of rows) {
+      const systemId = resolveRowGradeSystemId(row);
+      if (systemId !== undefined) presentSystemIds.add(systemId);
+    }
+
+    return allGradeSystems.flatMap((system) => {
+      if (!presentSystemIds.has(system.id)) return [];
+      const { easyToHard, mapping } = buildGradeDomain([system], false);
+      const presentGrades = new Set<string>();
+      for (const row of rows) {
+        if (row.grade && resolveRowGradeSystemId(row) === system.id) presentGrades.add(row.grade);
+      }
+      /** A system may repeat a label; the content lists it once. */
+      const grades = [...new Set(easyToHard)];
+      const stored = gradeRanges[String(system.id)] ?? {};
+      return [
+        {
+          gradeSystemId: system.id,
+          name: system.name,
+          easyToHard: grades,
+          mapping,
+          labels: grades.filter((grade) => presentGrades.has(grade)),
+          low: stored.low !== undefined && mapping[stored.low] !== undefined ? stored.low : undefined,
+          high: stored.high !== undefined && mapping[stored.high] !== undefined ? stored.high : undefined,
+        },
+      ];
+    });
+  }, [allGradeSystems, gradeRanges, resolveRowGradeSystemId, rows]);
+
+  /** System id → filter, for the row predicate below (a map keeps the per-row lookup O(1)). */
+  const gradeFiltersById = useMemo(
+    () => new Map(gradeFilters.map((filter) => [filter.gradeSystemId, filter])),
+    [gradeFilters],
   );
 
   /**
@@ -423,12 +506,18 @@ export const useProblemListState = ({
       return !v;
     });
 
-    const lowestGrade = gradeComparable ? (gradeLow ?? easyToHard[0]) : easyToHard[0];
-    const highestGrade = gradeComparable
-      ? (gradeHigh ?? easyToHard[easyToHard.length - 1])
-      : easyToHard[easyToHard.length - 1];
-    const indexLow = mapping[lowestGrade] ?? 0;
-    const indexHigh = mapping[highestGrade] ?? Math.max(easyToHard.length - 1, 0);
+    const filterByGrade = (row: Row) => {
+      const systemId = resolveRowGradeSystemId(row);
+      if (systemId === undefined) return true;
+      const filter = gradeFiltersById.get(systemId);
+      if (!filter || (filter.low === undefined && filter.high === undefined)) return true;
+      const index = filter.mapping[row.grade];
+      /** Unknown grade (a project's empty grade, or a label the catalogue does not hold): never hide the row. */
+      if (index === undefined) return true;
+      const low = filter.low !== undefined ? filter.mapping[filter.low] : undefined;
+      const high = filter.high !== undefined ? filter.mapping[filter.high] : undefined;
+      return (low === undefined || index >= low) && (high === undefined || index <= high);
+    };
 
     const filtered = rows
       .filter((problem) => {
@@ -438,11 +527,8 @@ export const useProblemListState = ({
         const tKey = rowListTypeKey(problem);
         typeNames.add(tKey);
 
-        const index = mapping[problem.grade] ?? 0;
-
         return (
-          index >= indexLow &&
-          index <= indexHigh &&
+          filterByGrade(problem) &&
           (hideTicked ? !problem.ticked : true) &&
           (onlyFa ? problem.fa : true) &&
           (onlyMultipitch ? (problem.numPitches ?? 0) > 1 : true) &&
@@ -455,16 +541,13 @@ export const useProblemListState = ({
     return [filtered, [...areas].sort(), [...rocks].sort(), [...sectors].sort(), [...typeNames].sort()];
   }, [
     disciplines,
-    easyToHard,
-    gradeComparable,
-    gradeHigh,
-    gradeLow,
+    gradeFiltersById,
     gradeRank,
     hideTicked,
-    mapping,
     onlyFa,
     onlyMultipitch,
     order,
+    resolveRowGradeSystemId,
     rows,
     types,
   ]);
@@ -473,8 +556,7 @@ export const useProblemListState = ({
     dispatch,
 
     // UI state
-    gradeLow,
-    gradeHigh,
+    gradeRanges,
     order,
     groupBy,
     hideTicked,
@@ -491,10 +573,7 @@ export const useProblemListState = ({
     uniqueSectors,
     uniqueTypes,
     uniqueDisciplines: disciplineNames,
-    gradeComparable,
-    gradeSystemId,
-    easyToHard,
-    mapping,
+    gradeFilters,
     containsFa: !!rows.find(({ fa }) => !!fa),
     containsTicked: !!rows.find(({ ticked }) => !!ticked),
     containsMultipitch: !!rows.find(({ numPitches }) => (numPitches ?? 0) > 1),

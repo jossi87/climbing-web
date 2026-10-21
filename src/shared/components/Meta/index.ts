@@ -1,2 +1,2 @@
 export { MetaProvider } from './Meta';
-export { useFaYears, useGradeSystem, useGradeSystems, useGrades, useMeta } from './context';
+export { buildGradeDomain, useFaYears, useGradeSystem, useGradeSystems, useGrades, useMeta } from './context';

@@ -546,6 +546,7 @@ const MIN_ROWS_FOR_LIST_CONTROLS = 2;
 const GLOBAL_VIEW_MODE_KEY = 'problemList.detailed';
 
 const GradeRangeControl = ({
+  systemName,
   low,
   high,
   lowOptions,
@@ -553,6 +554,8 @@ const GradeRangeControl = ({
   onLowSelect,
   onHighSelect,
 }: {
+  /** Grade system this control filters; shown only while the list holds several systems. */
+  systemName?: string;
   low: string;
   high: string;
   lowOptions: ToolbarDropdownOption<string>[];
@@ -562,8 +565,14 @@ const GradeRangeControl = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <div className='inline-flex flex-wrap items-center gap-1.5 sm:gap-2'>
-      <span className={cn(designContract.typography.meta, 'shrink-0 text-slate-500')}>{t('problemList.grade')}</span>
+    <div
+      className='inline-flex flex-wrap items-center gap-1.5 sm:gap-2'
+      role='group'
+      aria-label={systemName ? t('problemList.gradeWithSystem', { system: systemName }) : t('problemList.grade')}
+    >
+      <span className={cn(designContract.typography.meta, 'shrink-0 text-slate-500')}>
+        {systemName ? t('problemList.gradeWithSystem', { system: systemName }) : t('problemList.grade')}
+      </span>
       <ToolbarDropdown
         compact
         variant='ghost'
@@ -630,8 +639,7 @@ export const ProblemList = ({
   }, [allRows]);
 
   const {
-    gradeLow,
-    gradeHigh,
+    gradeFilters,
     order,
     groupBy,
     hideTicked,
@@ -645,9 +653,6 @@ export const ProblemList = ({
     uniqueSectors,
     uniqueTypes,
     uniqueDisciplines,
-    gradeComparable,
-    easyToHard,
-    mapping,
     containsFa,
     containsTicked,
     containsMultipitch,
@@ -659,20 +664,6 @@ export const ProblemList = ({
     sortPreferenceBucket,
     filterPreferenceBucket,
   });
-
-  /**
-   * Grade labels actually present in the current content (ordered by difficulty) — drives the grade range options.
-   *
-   * Derived from the list state, which owns the grade domain (`easyToHard` / `mapping`) of the rows' grade system.
-   */
-  const contentGradeLabels = useMemo(() => {
-    const present = new Set<string>();
-    for (const row of allRows) {
-      const grade = row.grade;
-      if (grade && mapping[grade] !== undefined) present.add(grade);
-    }
-    return easyToHard.filter((grade) => present.has(grade));
-  }, [allRows, easyToHard, mapping]);
 
   /** Filter leading the toolbar when the profile rows span 2+ disciplines; ordered by their flags (see `utils/discipline`). */
   const disciplineOptions = useMemo(
@@ -699,31 +690,45 @@ export const ProblemList = ({
         .map(({ textKey, shortTextKey, ...opt }) => ({ ...opt, text: t(textKey), shortText: t(shortTextKey) })),
     [mode, excludedSortOptions, t],
   );
-  const maxGradeIndex = Math.max(easyToHard.length - 1, 0);
+  /**
+   * One grade range control per grade system in the list. A system only appears while its range can filter (2+ grades
+   * in the content) or a range is already set; with a single system the control keeps its traditional unlabelled look,
+   * while several systems each name their own (like the activity feed's per-system chips).
+   */
+  const gradeFilterControls = useMemo(() => {
+    const multiSystem = gradeFilters.length > 1;
+    return gradeFilters.flatMap((filter) => {
+      /** Content grades plus the current selection, so a stale persisted value still renders. */
+      const labels = [...filter.labels];
+      for (const grade of [filter.low, filter.high]) {
+        if (grade !== undefined && !labels.includes(grade)) labels.push(grade);
+      }
+      if (labels.length <= 1 && filter.low === undefined && filter.high === undefined) return [];
+      labels.sort((a, b) => (filter.mapping[a] ?? 0) - (filter.mapping[b] ?? 0));
 
-  /** Grade range options: content grades plus the current selection (so a stale persisted value still renders). */
-  const gradeRangeOptions = useMemo(() => {
-    const labels = [...contentGradeLabels];
-    for (const grade of [gradeLow, gradeHigh]) {
-      if (grade && !labels.includes(grade)) labels.push(grade);
-    }
-    labels.sort((a, b) => (mapping[a] ?? 0) - (mapping[b] ?? 0));
-    return labels.map((label) => ({ key: label, text: label, shortText: label, value: label }));
-  }, [contentGradeLabels, gradeLow, gradeHigh, mapping]);
+      const low = filter.low ?? labels[0] ?? filter.easyToHard[0];
+      const high = filter.high ?? labels[labels.length - 1] ?? filter.easyToHard[filter.easyToHard.length - 1];
+      if (low === undefined || high === undefined) return [];
 
-  const currentLow = gradeLow ?? contentGradeLabels[0] ?? easyToHard[0];
-  const currentHigh = gradeHigh ?? contentGradeLabels[contentGradeLabels.length - 1] ?? easyToHard[maxGradeIndex];
-  const lowestGradeOptions = gradeRangeOptions.filter(
-    ({ value }) => (mapping[value] ?? 0) <= (mapping[currentHigh] ?? maxGradeIndex),
-  );
-  const highestGradeOptions = gradeRangeOptions.filter(
-    ({ value }) => (mapping[value] ?? maxGradeIndex) >= (mapping[currentLow] ?? 0),
-  );
+      const options = labels.map((label) => ({ key: label, text: label, shortText: label, value: label }));
+      const maxIndex = Math.max(filter.easyToHard.length - 1, 0);
+      return [
+        {
+          filter,
+          systemName: multiSystem ? filter.name : undefined,
+          low,
+          high,
+          lowOptions: options.filter(({ value }) => (filter.mapping[value] ?? 0) <= (filter.mapping[high] ?? maxIndex)),
+          highOptions: options.filter(({ value }) => (filter.mapping[value] ?? maxIndex) >= (filter.mapping[low] ?? 0)),
+        },
+      ];
+    });
+  }, [gradeFilters]);
+
   const showListControls = allRows.length >= MIN_ROWS_FOR_LIST_CONTROLS;
 
   const hasActiveFilters =
-    /** A parked grade range (mixed disciplines) is not applied, so it must not light up the Filter chip. */
-    (gradeComparable && (gradeLow !== undefined || gradeHigh !== undefined)) ||
+    gradeFilters.some(({ low, high }) => low !== undefined || high !== undefined) ||
     Object.values(types).some((v) => !v) ||
     hideTicked ||
     onlyFa ||
@@ -921,27 +926,24 @@ export const ProblemList = ({
         aria-label={t('problemList.listFilters')}
       >
         {/**
-         * Show the grade range only when it can actually filter (2+ distinct grades) or a grade filter is already
-         * active — and only while the list stays within one grade system (`gradeComparable`).
+         * One range per grade system on the rows: a profile list spans regions, so it can hold several systems and each
+         * of them must stay filterable. A system's range only ever touches its own rows.
          */}
-        {gradeComparable && (gradeRangeOptions.length > 1 || gradeLow !== undefined || gradeHigh !== undefined) && (
-          <div className='flex flex-wrap items-center gap-x-3 gap-y-2'>
+        {gradeFilterControls.map(({ filter, systemName, low, high, lowOptions, highOptions }) => (
+          <div key={filter.gradeSystemId} className='flex flex-wrap items-center gap-x-3 gap-y-2'>
             <GradeRangeControl
-              low={currentLow}
-              high={currentHigh}
-              lowOptions={lowestGradeOptions}
-              highOptions={highestGradeOptions}
-              onLowSelect={(next) => dispatch({ action: 'set-grade', low: next })}
-              onHighSelect={(next) => dispatch({ action: 'set-grade', high: next })}
+              systemName={systemName}
+              low={low}
+              high={high}
+              lowOptions={lowOptions}
+              highOptions={highOptions}
+              onLowSelect={(next) => dispatch({ action: 'set-grade', gradeSystemId: filter.gradeSystemId, low: next })}
+              onHighSelect={(next) =>
+                dispatch({ action: 'set-grade', gradeSystemId: filter.gradeSystemId, high: next })
+              }
             />
           </div>
-        )}
-        {/** Mixed grade systems (or disciplines) park the persisted range (kept, not applied) — say so instead of showing a dead control. */}
-        {!gradeComparable && (gradeLow !== undefined || gradeHigh !== undefined) ? (
-          <span className={cn(designContract.typography.meta, 'text-slate-500')}>
-            {t('problemList.singleGradeSystem')}
-          </span>
-        ) : null}
+        ))}
         {allTypes.length > 1 && (
           <div className='flex flex-wrap items-center gap-x-4 gap-y-1.5'>
             {allTypes.map((type) => (

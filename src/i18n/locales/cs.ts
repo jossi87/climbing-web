@@ -359,6 +359,8 @@ export const cs: Catalog = {
   },
   problemList: {
     grade: 'Obtížnost',
+    // Popisek rozsahu jedné klasifikace, když seznam obsahuje víc klasifikací (např. „Obtížnost (UIAA)“).
+    gradeWithSystem: 'Obtížnost ({{system}})',
     // Spojka v rozsahu „od – do“; samostatný klíč, aby si ji jazyk mohl přeskládat.
     gradeTo: 'až',
     gradeLow: 'Nejnižší klsifikace',
@@ -378,7 +380,6 @@ export const cs: Catalog = {
     hideFilter: 'Skrýt filtr',
     resetAll: 'Zrušit filtry, řazení a seskupení',
     listFilters: 'Filtry seznamu',
-    singleGradeSystem: 'Rozsah stupňů platí jen v rámci jedné klasifikace obtížností.',
     onlyMultipitch: 'Jen vícedélkové',
     // „FA“ = first ascent (prvovýstup); zkratka se v češtině nepoužívá, proto celé slovo.
     onlyFa: 'Jen prvovýstupy',

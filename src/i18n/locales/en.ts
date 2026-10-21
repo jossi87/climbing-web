@@ -497,6 +497,8 @@ export const en = {
    */
   problemList: {
     grade: 'Grade',
+    /** Panel label of one system's range while the list spans several grade systems (e.g. “Grade (UIAA)”). */
+    gradeWithSystem: 'Grade ({{system}})',
     gradeTo: 'to',
     gradeLow: 'Lowest grade',
     gradeHigh: 'Highest grade',
@@ -517,8 +519,6 @@ export const en = {
     hideFilter: 'Hide filter',
     resetAll: 'Reset filters, sort and grouping',
     listFilters: 'List filters',
-    /** Shown when the list spans grade systems, so the parked grade range is not applied. */
-    singleGradeSystem: 'Grade range applies within a single grade system.',
     onlyMultipitch: 'Only multipitch',
     onlyFa: 'Only FA',
     groupHeader: '{{name}} ({{total}})',

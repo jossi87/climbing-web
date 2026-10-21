@@ -141,6 +141,47 @@ export const useGradeSystem = (gradeSystemId: number | undefined) => {
   return useMemo(() => allGradeSystems.find((system) => system.id === gradeSystemId), [allGradeSystems, gradeSystemId]);
 };
 
+export type GradeDomain = {
+  /** Grade labels ordered easy → hard. */
+  easyToHard: string[];
+  /** Grade label → index in {@link easyToHard}. */
+  mapping: Record<string, number>;
+  idToGrade: Record<number, string>;
+  color: Record<string, string>;
+  weight: Record<string, number>;
+};
+
+/**
+ * Grade domain of the given systems, ordered easy → hard.
+ *
+ * Labels are de-duplicated only when several systems are merged (`dedupeLabels`): one system may legitimately repeat a
+ * label, and its own domain must list every grade so the weights stay addressable.
+ */
+export const buildGradeDomain = (gradeSystems: GradeSystem[], dedupeLabels: boolean): GradeDomain => {
+  const easyToHard: string[] = [];
+  const mapping: Record<string, number> = {};
+  const idToGrade: Record<number, string> = {};
+  const color: Record<string, string> = {};
+  const weight: Record<string, number> = {};
+
+  const grades = gradeSystems
+    .flatMap((entry) => entry.grades)
+    .filter(({ grade }) => grade !== undefined)
+    .sort((a, b) => (a.weight ?? 0) - (b.weight ?? 0));
+
+  for (const grade of grades) {
+    const label = grade.grade!;
+    if (dedupeLabels && mapping[label] !== undefined) continue;
+    easyToHard.push(label);
+    mapping[label] = easyToHard.length - 1;
+    idToGrade[grade.id!] = label;
+    color[label] = grade.color ?? '';
+    weight[label] = grade.weight ?? 0;
+  }
+
+  return { easyToHard, mapping, idToGrade, color, weight };
+};
+
 /**
  * Grade domain used to filter/sort a list.
  *
@@ -156,31 +197,10 @@ export const useGrades = (gradeSystemId?: number) => {
   const scopedSystemId = gradeSystemId !== undefined && gradeSystemId > 0 ? gradeSystemId : undefined;
   const scopedSystem = useGradeSystem(scopedSystemId);
 
-  return useMemo(() => {
-    const easyToHard: string[] = [];
-    const mapping: Record<string, number> = {};
-    const idToGrade: Record<number, string> = {};
-    const color: Record<string, string> = {};
-    const weight: Record<string, number> = {};
-
-    const grades = (scopedSystemId ? (scopedSystem ? [scopedSystem] : []) : gradeSystems)
-      .flatMap((entry) => entry.grades)
-      .filter(({ grade }) => grade !== undefined)
-      .sort((a, b) => (a.weight ?? 0) - (b.weight ?? 0));
-
-    for (const grade of grades) {
-      const label = grade.grade!;
-      /** Only the merged domain needs de-duplication; one system may legitimately repeat a label. */
-      if (!scopedSystemId && mapping[label] !== undefined) continue;
-      easyToHard.push(label);
-      mapping[label] = easyToHard.length - 1;
-      idToGrade[grade.id!] = label;
-      color[label] = grade.color ?? '';
-      weight[label] = grade.weight ?? 0;
-    }
-
-    return { easyToHard, mapping, idToGrade, color, weight };
-  }, [gradeSystems, scopedSystem, scopedSystemId]);
+  return useMemo(
+    () => buildGradeDomain(scopedSystemId ? (scopedSystem ? [scopedSystem] : []) : gradeSystems, !scopedSystemId),
+    [gradeSystems, scopedSystem, scopedSystemId],
+  );
 };
 
 export const useFaYears = () => {
