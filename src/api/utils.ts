@@ -98,6 +98,9 @@ function getApiLanguage(): string {
 /**
  * Bare API URL for a suffix, without the `lang` parameter — only for endpoints that answer with the same
  * bytes in every language ({@link getMediaFileUrl}).
+ *
+ * The suffix is encoded here, exactly once: query values must be passed **raw**, never pre-encoded, or the
+ * escape is escaped again (`:` → `%3A` → `%253A`) and the API decodes the literal `%3A`.
  */
 function getBareUrl(urlSuffix: string): string {
   return encodeURI(`${getBaseUrl()}/api${urlSuffix}`);

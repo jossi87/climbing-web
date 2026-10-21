@@ -351,7 +351,13 @@ export function useActivity({
         .join(','),
     [gradeFilters],
   );
-  const gradeFiltersQuery = gradeFiltersParam ? `&gradeFilters=${encodeURIComponent(gradeFiltersParam)}` : '';
+  /**
+   * Ready-to-use query fragment. **Do not pre-encode the value here:** `getUrl` (via `encodeURI`) percent-encodes the
+   * finished URL exactly once, so an already-escaped `4%3A13` would go out as `4%253A13` and the API — which decodes a
+   * request parameter exactly once — would receive the literal `4%3A13` and reject the pair. `:` and `,` are legal in a
+   * query string and Spring splits one CSV value into the `List<String>` of the `gradeFilters` parameter.
+   */
+  const gradeFiltersQuery = gradeFiltersParam ? `&gradeFilters=${gradeFiltersParam}` : '';
   const queryParams = `idArea=${idArea}&idSector=${idSector}${gradeFiltersQuery}&fa=${fa}&comments=${comments}&ticks=${ticks}&media=${media}`;
 
   const queryKey = useKey(

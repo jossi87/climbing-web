@@ -2063,9 +2063,9 @@ export type components = {
             gradeSystemId?: number;
             coordinates?: components["schemas"]["Coordinates"];
             tradGear?: boolean;
+            isBouldering?: boolean;
             isRopeClimbing?: boolean;
             isIceClimbing?: boolean;
-            isBouldering?: boolean;
         };
         ProblemSearchResult: {
             /** Format: int32 */
