@@ -630,7 +630,7 @@ export const en = {
       displayRegions: 'Display Regions',
     },
     statistics: {
-      noDisciplineData: 'No discipline data available.',
+      noGradeData: 'No grade data available.',
       /** Heading above {@link loadError} when the ascents request failed. */
       error: 'Error',
       loadError: 'Unable to load profile statistics.',
@@ -664,10 +664,22 @@ export const en = {
       overviewTicks_one: '{{count}} tick',
       overviewTicks_few: '{{count}} ticks',
       overviewTicks_other: '{{count}} ticks',
+      /**
+       * Marker on an overview card whose ascents are all multi-pitch. Single-pitch is the unmarked default, and
+       * boulders / ice routes have no pitches at all, so they never carry it.
+       */
+      overviewMultiPitch: 'Multi-pitch',
+      /**
+       * Marker on an overview card whose ascents are on unbolted routes (`type.is_bolted = 0`, the app's trad).
+       * Boulders and ice routes are unbolted by nature, so they never carry it.
+       */
+      overviewTrad: 'Trad',
       /** Chip on a tick row marking the ascent as a repeat. */
       repeatChip: 'repeat',
-      /** Fallback heading when the API reports a discipline without a name. */
-      unknownDiscipline: 'Unknown discipline',
+      /** Fallback heading when the API reports a grade system without a name. */
+      unknownGradeSystem: 'Unknown grade system',
+      /** Fallback heading when the API reports a problem type without a name. */
+      unknownType: 'Unknown type',
     },
   },
   /**

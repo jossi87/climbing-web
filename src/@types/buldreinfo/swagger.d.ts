@@ -1955,8 +1955,13 @@ export type components = {
             disciplines?: components["schemas"]["ProfileDiscipline"][];
         };
         ProfileDiscipline: {
-            discipline?: string;
-            url?: string;
+            type?: string;
+            isBolted?: boolean;
+            isBouldering?: boolean;
+            /** Format: int32 */
+            gradeSystemId?: number;
+            gradeSystem?: string;
+            multiPitch?: boolean;
             gradeDistribution?: components["schemas"]["ProfileDisciplineGradeDistribution"][];
         };
         ProfileDisciplineGradeDistribution: {
@@ -2065,9 +2070,9 @@ export type components = {
             gradeSystemId?: number;
             coordinates?: components["schemas"]["Coordinates"];
             tradGear?: boolean;
-            isBouldering?: boolean;
             isRopeClimbing?: boolean;
             isIceClimbing?: boolean;
+            isBouldering?: boolean;
         };
         ProblemSearchResult: {
             /** Format: int32 */

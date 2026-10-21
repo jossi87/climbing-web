@@ -130,11 +130,16 @@ type ProfileStatisticsProps = {
   kpis?: components['schemas']['ProfileKpis'];
 };
 
-/** Overview sub-component — renders a card per discipline with grade distribution chart. */
+/**
+ * Overview sub-component — one card per problem type, grade system and pitch kind: a grade axis only means something
+ * inside a single system, and sport (`is_bolted = 1`) and trad (`is_bolted = 0`) are different efforts even when they
+ * share one. Multi-pitch is the exception: those charts drop the bolting style (the API reports no `is_bolted`), so
+ * sport and trad multi-pitch ascents of one type share a card.
+ */
 const ProfileOverview = ({ disciplines }: { disciplines: components['schemas']['ProfileDiscipline'][] }) => {
   const { t } = useTranslation();
   if (!disciplines.length) {
-    return <div className='py-10 text-center text-slate-500'>{t('profile.statistics.noDisciplineData')}</div>;
+    return <div className='py-10 text-center text-slate-500'>{t('profile.statistics.noGradeData')}</div>;
   }
 
   return (
@@ -144,17 +149,31 @@ const ProfileOverview = ({ disciplines }: { disciplines: components['schemas']['
         const totalAscents = gradeDist.reduce((sum, g) => sum + (g.fa ?? 0) + (g.tick ?? 0), 0);
         const totalFas = gradeDist.reduce((sum, g) => sum + (g.fa ?? 0), 0);
         const totalTicks = gradeDist.reduce((sum, g) => sum + (g.tick ?? 0), 0);
+        // A multi-pitch chart keeps its type but carries no bolting style (sport and trad multi-pitch share it), so the
+        // `Trad` chip only ever marks single-pitch charts; boulders and ice routes are unbolted by nature too, hence
+        // the `isBouldering` guard.
+        const heading = d.type ?? t('profile.statistics.unknownType');
+        const tradMarker = d.isBolted === false && !d.isBouldering;
 
         return (
-          <div key={d.discipline ?? 'unknown'} className='overflow-hidden'>
-            {/* Discipline header */}
+          <div
+            key={`${d.type ?? ''}-${d.isBolted ?? 'any'}-${d.gradeSystemId ?? 0}-${d.multiPitch ? 'multi' : 'single'}`}
+            className='overflow-hidden'
+          >
+            {/* Type is the heading; the pitch kind and the bolting style only mark it. */}
             <div className='bg-surface-raised px-4 py-3 sm:px-5'>
               <div className='flex min-w-0 items-center gap-2'>
-                <h3 className='type-h3 shrink-0 truncate font-semibold text-slate-100'>
-                  {d.discipline ?? t('profile.statistics.unknownDiscipline')}
-                </h3>
+                <h3 className='type-h3 shrink-0 truncate font-semibold text-slate-100'>{heading}</h3>
+                {tradMarker ? (
+                  <span className={cn(tickFlags, 'shrink-0')}>{t('profile.statistics.overviewTrad')}</span>
+                ) : null}
+                {d.multiPitch ? (
+                  <span className={cn(tickFlags, 'shrink-0')}>{t('profile.statistics.overviewMultiPitch')}</span>
+                ) : null}
               </div>
-              <div className='mt-1 text-[13px] text-slate-400'>
+              <div className='mt-1 flex flex-wrap items-center gap-x-2 text-[13px] text-slate-400'>
+                <span className='text-slate-300'>{d.gradeSystem ?? t('profile.statistics.unknownGradeSystem')}</span>
+                <span aria-hidden='true'>·</span>
                 <span className='tabular-nums'>
                   <Trans
                     i18nKey='profile.statistics.overviewAscents'
