@@ -1,30 +1,12 @@
 import type { components } from '../../@types/buldreinfo/swagger';
-import { type GradeSystem, buildGradeDomain } from '../../shared/components/Meta/context';
+import {
+  type GradeFilter,
+  type GradeRange,
+  buildGradeFilter,
+} from '../../shared/components/FilterForm/GradeSelect/gradeFilter';
+import type { GradeSystem } from '../../shared/components/Meta/context';
 
-/** Grade range of one grade system; a system without an entry (or without bounds) is not filtered. */
-export type GradeRange = { low?: string; high?: string };
-
-/**
- * One grade filter of the problems list: the grade domain of a system that has rows, the labels the list holds, and
- * the range currently selected for that system.
- */
-export type GradeFilter = {
-  gradeSystemId: number;
-  /** Grade system name (`Scandinavian/French`, `UIAA`, …), used to label the control while the list spans several. */
-  name: string;
-  /** Grades of this system ordered easy → hard. */
-  easyToHard: string[];
-  /** Grade label → index in {@link easyToHard}. */
-  mapping: Record<string, number>;
-  /**
-   * Grade labels of this system that the list holds and that a range can narrow, ordered easy → hard. The placeholder
-   * `n/a` (weight 0) is left out: it marks an ungraded problem, which no range can select.
-   */
-  labels: string[];
-  /** Active range, with bounds the system's own domain does not know dropped (see {@link buildGradeFilters}). */
-  low?: string;
-  high?: string;
-};
+export type { GradeFilter, GradeRange };
 
 /** Every area of the table of contents, across all regions it covers. */
 const areasOf = (data: components['schemas']['Toc'] | undefined) =>
@@ -71,21 +53,6 @@ export const buildGradeFilters = (
     const present = presentGrades.get(system.id);
     if (!present) return [];
 
-    const { easyToHard, mapping, weight } = buildGradeDomain([system], false);
-    /** A system may repeat a label; the list shows it once. */
-    const grades = [...new Set(easyToHard)];
-    const stored = gradeRanges[String(system.id)] ?? {};
-
-    return [
-      {
-        gradeSystemId: system.id,
-        name: system.name,
-        easyToHard: grades,
-        mapping,
-        labels: grades.filter((grade) => present.has(grade) && (weight[grade] ?? 0) > 0),
-        low: stored.low !== undefined && mapping[stored.low] !== undefined ? stored.low : undefined,
-        high: stored.high !== undefined && mapping[stored.high] !== undefined ? stored.high : undefined,
-      },
-    ];
+    return [buildGradeFilter(system, present, gradeRanges[String(system.id)] ?? {})];
   });
 };

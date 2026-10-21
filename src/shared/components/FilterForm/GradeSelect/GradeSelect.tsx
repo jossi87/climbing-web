@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import type { GradeFilter } from '../../../../features/Problems/gradeFilters';
+import type { GradeFilter } from './gradeFilter';
 import { ChevronDown } from 'lucide-react';
 
 /**

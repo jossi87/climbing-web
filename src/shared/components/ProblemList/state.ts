@@ -1,7 +1,8 @@
 import { type Dispatch, useCallback, useEffect, useMemo, useReducer } from 'react';
 import { neverGuard } from '../../../utils/neverGuard';
 import { rowListTypeKey, type Row } from './types';
-import { buildGradeDomain, useGradeSystems, useMeta } from '../Meta';
+import { useGradeSystems, useMeta } from '../Meta';
+import { buildGradeFilter, type GradeFilter, type GradeRange } from '../FilterForm/GradeSelect/gradeFilter';
 import { distinctDisciplines } from '../Profile/profileDiscipline';
 import { getLocales } from '../../../api';
 import { disciplineRank } from '../../../utils/discipline';
@@ -11,26 +12,6 @@ export type OrderOption =
   'ascents' | 'date' | 'first-ascent' | 'grade-asc' | 'grade-desc' | 'name' | 'number' | 'rating';
 
 export type GroupOption = 'area' | 'none' | 'rock' | 'sector' | 'type';
-
-/** Grade range of one grade system; a system without an entry (or without bounds) is not filtered. */
-export type GradeRange = { low?: string; high?: string };
-
-/**
- * One grade filter of the list: the grade domain of a system present on the rows, its active range, and the labels the
- * content actually holds for it.
- */
-export type GradeFilter = {
-  gradeSystemId: number;
-  name: string;
-  /** Grades of this system ordered easy → hard. */
-  easyToHard: string[];
-  /** Grade label → index in {@link easyToHard}. */
-  mapping: Record<string, number>;
-  /** Grade labels of this system present in the rows, ordered easy → hard. */
-  labels: string[];
-  low?: string;
-  high?: string;
-};
 
 type UiState = {
   /** Grade range per grade system (keyed by system id) — a list may hold grades of several systems. */
@@ -416,34 +397,21 @@ export const useProblemListState = ({
    * area with another system) is ignored; the entry itself is kept for when that system comes back.
    */
   const gradeFilters = useMemo<GradeFilter[]>(() => {
-    const presentSystemIds = new Set<number>();
+    /** Grade system id → grade labels the rows hold for it. */
+    const presentGrades = new Map<number, Set<string>>();
     for (const row of rows) {
       const systemId = resolveRowGradeSystemId(row);
-      if (systemId !== undefined) presentSystemIds.add(systemId);
+      if (systemId === undefined || !row.grade) continue;
+      const grades = presentGrades.get(systemId) ?? new Set<string>();
+      grades.add(row.grade);
+      presentGrades.set(systemId, grades);
     }
 
     return allGradeSystems.flatMap((system) => {
-      if (!presentSystemIds.has(system.id)) return [];
-      const { easyToHard, mapping, weight } = buildGradeDomain([system], false);
-      const presentGrades = new Set<string>();
-      for (const row of rows) {
-        if (row.grade && resolveRowGradeSystemId(row) === system.id) presentGrades.add(row.grade);
-      }
-      /** A system may repeat a label; the content lists it once. */
-      const grades = [...new Set(easyToHard)];
-      const stored = gradeRanges[String(system.id)] ?? {};
-      return [
-        {
-          gradeSystemId: system.id,
-          name: system.name,
-          easyToHard: grades,
-          mapping,
-          /** `n/a` (weight 0) marks an ungraded row, which no range can narrow. */
-          labels: grades.filter((grade) => presentGrades.has(grade) && (weight[grade] ?? 0) > 0),
-          low: stored.low !== undefined && mapping[stored.low] !== undefined ? stored.low : undefined,
-          high: stored.high !== undefined && mapping[stored.high] !== undefined ? stored.high : undefined,
-        },
-      ];
+      const present = presentGrades.get(system.id);
+      if (!present) return [];
+
+      return [buildGradeFilter(system, present, gradeRanges[String(system.id)] ?? {})];
     });
   }, [allGradeSystems, gradeRanges, resolveRowGradeSystemId, rows]);
 

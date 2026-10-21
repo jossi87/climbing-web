@@ -154,10 +154,11 @@ export type GradeDomain = {
 /**
  * Grade domain of the given systems, ordered easy → hard.
  *
- * Labels are de-duplicated only when several systems are merged (`dedupeLabels`): one system may legitimately repeat a
- * label, and its own domain must list every grade so the weights stay addressable.
+ * Every label appears exactly once: the domain is keyed by label (`mapping`, `color` and `weight` all are), so a
+ * repeated label — inside one system, or across the several systems of a region-wide list — can only have one position
+ * and one weight. The easiest occurrence wins, which is also the one an ordered picker reaches first.
  */
-export const buildGradeDomain = (gradeSystems: GradeSystem[], dedupeLabels: boolean): GradeDomain => {
+export const buildGradeDomain = (gradeSystems: GradeSystem[]): GradeDomain => {
   const easyToHard: string[] = [];
   const mapping: Record<string, number> = {};
   const idToGrade: Record<number, string> = {};
@@ -171,7 +172,7 @@ export const buildGradeDomain = (gradeSystems: GradeSystem[], dedupeLabels: bool
 
   for (const grade of grades) {
     const label = grade.grade!;
-    if (dedupeLabels && mapping[label] !== undefined) continue;
+    if (mapping[label] !== undefined) continue;
     easyToHard.push(label);
     mapping[label] = easyToHard.length - 1;
     idToGrade[grade.id!] = label;
@@ -187,7 +188,7 @@ export const buildGradeDomain = (gradeSystems: GradeSystem[], dedupeLabels: bool
  *
  * Pass the grade system id of the rows when they are known to share one (single-system list, or the area/sector
  * being edited). Without it — a region-wide list that may mix several systems — all grades of the region are
- * merged, deduplicated by grade label and ordered by weight, which keeps each system's own order intact.
+ * merged, ordered by weight, which keeps each system's own order intact and lets every row's label be looked up.
  *
  * A positive id always means exactly that system; an unknown id yields an empty domain instead of widening to the
  * region's grades.
@@ -198,7 +199,7 @@ export const useGrades = (gradeSystemId?: number) => {
   const scopedSystem = useGradeSystem(scopedSystemId);
 
   return useMemo(
-    () => buildGradeDomain(scopedSystemId ? (scopedSystem ? [scopedSystem] : []) : gradeSystems, !scopedSystemId),
+    () => buildGradeDomain(scopedSystemId ? (scopedSystem ? [scopedSystem] : []) : gradeSystems),
     [gradeSystems, scopedSystem, scopedSystemId],
   );
 };

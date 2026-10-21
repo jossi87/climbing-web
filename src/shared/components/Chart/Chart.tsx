@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { components } from '../../../@types/buldreinfo/swagger';
+import { NO_PERSONAL_GRADE_LABEL } from '../../ui/NoPersonalGradeBadge';
 
 type Props = {
   gradeDistribution: components['schemas']['ProfileDisciplineGradeDistribution'][];
@@ -27,8 +28,13 @@ function FaTickBar({
     return <div className='mx-0 h-1.5 w-full sm:h-2' />;
   }
 
-  const faColor = color ?? 'bg-red-400'; // full color for FA (more important)
-  const tickColor = color ?? 'bg-blue-400'; // full color for tick (base)
+  /**
+   * Segment colours. When the API sends a colour (it does for every profile chart) both segments share it and the tick
+   * segment is lightened below; the fallbacks are plain hex values, because an inline `backgroundColor` cannot take the
+   * `bg-red-400` class it used to hold.
+   */
+  const faColor = color ?? '#f87171'; // red-400
+  const tickColor = color ?? '#60a5fa'; // blue-400
 
   return (
     <div className='mx-0 w-full'>
@@ -93,11 +99,16 @@ function Chart({ gradeDistribution: data }: Props) {
             const tickPct = (tick / maxValue) * 100;
             const totalWidthPct = faPct + tickPct;
             const total = fa + tick;
+            /**
+             * An ungraded tick is charted under the API's `No personal grade` sentinel, which is a protocol value rather
+             * than copy — the table shows the translated phrase instead.
+             */
+            const label = g.grade === NO_PERSONAL_GRADE_LABEL ? t('tick.noPersonalGradeLabel') : (g.grade ?? '');
 
             return (
-              <tr key={[g.grade, fa, tick].join('/')} className='hover:bg-surface-raised-hover transition-colors'>
+              <tr key={label} className='hover:bg-surface-raised-hover transition-colors'>
                 <td className='px-1 py-0.5 text-[12px] leading-none font-medium whitespace-nowrap text-slate-400 sm:px-1.5 sm:py-0.5 sm:text-[13px]'>
-                  {g.grade}
+                  {label}
                 </td>
                 <td className='px-1 py-0.5 text-left text-[12px] leading-none whitespace-nowrap text-slate-400 sm:px-1.5 sm:py-0.5 sm:text-[13px]'>
                   {fa}
