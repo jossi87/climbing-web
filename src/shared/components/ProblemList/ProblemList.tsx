@@ -9,22 +9,16 @@ import { type GroupOption, type OrderOption, type State, useProblemListState } f
 import { ChevronDown, Filter, FolderTree, ArrowDownWideNarrow, RotateCcw, Check, Layers } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
-import { activityFilterChipBase, activityFilterChipOn } from '../../../design/activityFilterChips';
+import {
+  activityFilterChipBase,
+  activityFilterChipChanged,
+  activityFilterChipChangedInk,
+  activityFilterChipChangedText,
+  activityFilterChipOn,
+} from '../../../design/activityFilterChips';
 import { twInk } from '../../../design/twInk';
 import { FormSwitch } from '../../ui';
 import { ProblemListCompactContext } from './compactViewContext';
-
-/** Brand “active/changed” chip styling shared by the ProblemList toolbar chips (Filter, Group, Sort, Reset). */
-const problemListToolbarChipActive = cn(
-  'border-brand-border bg-brand/22 text-brand shadow-sm',
-  'light:border-brand light:bg-brand/28 light:shadow-sm',
-);
-
-/** Brand ink for icon/label text on active chips — brand in dark, slate-900 in light for contrast. */
-const problemListToolbarChipBrandInk = cn('text-brand', twInk.lightTextSlate900);
-
-/** Bold + brand ink for labels on changed chips — the bolder weight makes the “changed” state unmistakable. */
-const problemListToolbarChipChangedText = cn(problemListToolbarChipBrandInk, 'font-semibold');
 
 /** Subtle “open” affordance (matches ToolbarDropdown's open ring) — used for the Filter chip while its panel is open. */
 const problemListToolbarChipOpen = 'ring-1 ring-white/20 light:ring-slate-400/55';
@@ -395,7 +389,7 @@ const ToolbarDropdown = <T extends string>({
               ? 'inline-flex h-7 w-full min-w-0 items-center justify-start gap-1.5 rounded-md border px-1.5 text-[12px] leading-none font-medium transition-colors sm:px-2 sm:text-[13px] md:h-7'
               : cn(
                   activityFilterChipBase,
-                  changed ? problemListToolbarChipActive : activityFilterChipOn,
+                  changed ? activityFilterChipChanged : activityFilterChipOn,
                   isOpen && problemListToolbarChipOpen,
                   'w-full min-w-0 justify-start',
                 ),
@@ -418,7 +412,7 @@ const ToolbarDropdown = <T extends string>({
               'shrink-0 transition-colors',
               variant === 'default' && !compact && 'hidden md:block',
               changed
-                ? problemListToolbarChipBrandInk
+                ? activityFilterChipChangedInk
                 : variant === 'default' && !compact
                   ? 'text-slate-300'
                   : isOpen
@@ -433,7 +427,7 @@ const ToolbarDropdown = <T extends string>({
               className={cn(
                 'shrink-0 max-md:text-[10px] md:text-[11px]',
                 changed
-                  ? problemListToolbarChipChangedText
+                  ? activityFilterChipChangedText
                   : variant === 'default'
                     ? cn('text-slate-400', twInk.lightTextSlate700)
                     : 'text-slate-500',
@@ -454,7 +448,7 @@ const ToolbarDropdown = <T extends string>({
               <span
                 className={cn(
                   'min-w-0 flex-1 truncate text-left md:hidden',
-                  changed ? problemListToolbarChipChangedText : cn('text-slate-100', twInk.lightTextSlate900),
+                  changed ? activityFilterChipChangedText : cn('text-slate-100', twInk.lightTextSlate900),
                 )}
               >
                 {shortLabel}
@@ -462,7 +456,7 @@ const ToolbarDropdown = <T extends string>({
               <span
                 className={cn(
                   'hidden min-w-0 flex-1 truncate text-left md:block',
-                  changed ? problemListToolbarChipChangedText : cn('text-slate-100', twInk.lightTextSlate900),
+                  changed ? activityFilterChipChangedText : cn('text-slate-100', twInk.lightTextSlate900),
                 )}
               >
                 {fullLabel}
@@ -524,7 +518,7 @@ const ToolbarDropdown = <T extends string>({
                           <Check
                             size={13}
                             strokeWidth={2.5}
-                            className={cn('shrink-0', checked ? problemListToolbarChipBrandInk : 'text-transparent')}
+                            className={cn('shrink-0', checked ? activityFilterChipChangedInk : 'text-transparent')}
                           />
                           <span className='min-w-0 flex-1 truncate'>{opt.text}</span>
                         </>
@@ -859,24 +853,21 @@ export const ProblemList = ({
               onClick={() => setFilterShowing((v) => !v)}
               className={cn(
                 activityFilterChipBase,
-                hasActiveFilters ? problemListToolbarChipActive : activityFilterChipOn,
+                hasActiveFilters ? activityFilterChipChanged : activityFilterChipOn,
                 showFilter && problemListToolbarChipOpen,
                 'relative shrink-0 justify-center transition-[background-color,border-color,color,box-shadow]',
               )}
             >
               <Filter
                 size={12}
-                className={cn(
-                  'shrink-0',
-                  hasActiveFilters ? problemListToolbarChipBrandInk : problemListToolbarChipInk,
-                )}
+                className={cn('shrink-0', hasActiveFilters ? activityFilterChipChangedInk : problemListToolbarChipInk)}
                 strokeWidth={2}
               />
               <span
                 className={cn(
                   designContract.typography.uiCompact,
                   'whitespace-nowrap',
-                  hasActiveFilters ? problemListToolbarChipChangedText : problemListToolbarChipInk,
+                  hasActiveFilters ? activityFilterChipChangedText : problemListToolbarChipInk,
                 )}
               >
                 {t('problemList.filter')}
@@ -893,16 +884,16 @@ export const ProblemList = ({
                 }}
                 className={cn(
                   activityFilterChipBase,
-                  problemListToolbarChipActive,
+                  activityFilterChipChanged,
                   'relative shrink-0 justify-center transition-[background-color,border-color,color,box-shadow]',
                 )}
               >
-                <RotateCcw size={12} className={cn('shrink-0', problemListToolbarChipBrandInk)} strokeWidth={2} />
+                <RotateCcw size={12} className={cn('shrink-0', activityFilterChipChangedInk)} strokeWidth={2} />
                 <span
                   className={cn(
                     designContract.typography.uiCompact,
                     'whitespace-nowrap',
-                    problemListToolbarChipChangedText,
+                    activityFilterChipChangedText,
                   )}
                 >
                   {t('problemList.reset')}

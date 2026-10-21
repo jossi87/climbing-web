@@ -420,6 +420,9 @@ export const cs: Catalog = {
     chipMedia: 'Média',
     chipComments: 'Komentáře',
     chipCommentsShort: 'Koment.',
+    // Čip se zobrazí jen když se něco liší od výchozího stavu (viz `en.ts`).
+    reset: 'Zrušit',
+    resetFilters: 'Zrušit filtry',
     mediaAltOpenProblem: 'Zobrazit fotku aktivity, otevřít problém {{number}}',
     mediaAlt: 'Médium v aktivitě',
     empty: 'Zatím žádná aktivita.',

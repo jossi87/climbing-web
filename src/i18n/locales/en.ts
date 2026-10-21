@@ -566,6 +566,10 @@ export const en = {
     chipMedia: 'Media',
     chipComments: 'Comments',
     chipCommentsShort: 'Com',
+    /** Brand-tinted chip that clears every filter (grade thresholds + activity types); only shown when something changed. */
+    reset: 'Reset',
+    /** `title` / `aria-label` of that chip — the visible label is just `reset`. */
+    resetFilters: 'Reset filters',
     /** `role='img'` label of a media thumbnail in the feed (the thumbnail itself carries no text). */
     /** Accessible name of an activity thumbnail that links to its problem. */
     mediaAltOpenProblem: 'View activity photo, open problem {{number}}',

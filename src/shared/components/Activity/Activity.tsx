@@ -11,6 +11,7 @@ import {
   MessageSquare,
   Camera,
   Loader2,
+  RotateCcw,
 } from 'lucide-react';
 import { useGradeSystems, useGradeSystemsByIds, useMeta } from '../Meta/context';
 import { useActivity } from '../../../api';
@@ -21,6 +22,9 @@ import { designContract } from '../../../design/contract';
 import { twInk } from '../../../design/twInk';
 import {
   activityFilterChipBase,
+  activityFilterChipChanged,
+  activityFilterChipChangedInk,
+  activityFilterChipChangedText,
   activityFilterChipOff,
   activityFilterChipOn,
 } from '../../../design/activityFilterChips';
@@ -249,6 +253,28 @@ const Activity = ({
     setTimeout(refetch, 10);
   };
 
+  /**
+   * Any filter that differs from the feed's default (all four activity types on, no grade thresholds). Drives the
+   * brand-tinted **Reset** chip — the same “changed chips + one-click reset” language the ProblemList toolbar uses.
+   */
+  const hasGradeFilter = Object.keys(lowerGrades).length > 0;
+  const allTypesEnabled = activityTypeFa && activityTypeTicks && activityTypeMedia && activityTypeComments;
+  const hasFilterChanges = !allTypesEnabled || hasGradeFilter;
+
+  /**
+   * Back to the untouched feed: every activity type on, every grade system's threshold cleared. The `?show=` param is
+   * rewritten by the `syncFilterUrl` effect (all four on ⇒ it is dropped completely), so a reset is reload-safe too.
+   */
+  const handleResetFilters = () => {
+    setLowerGrades({});
+    setActivityTypeFa(true);
+    setActivityTypeTicks(true);
+    setActivityTypeMedia(true);
+    setActivityTypeComments(true);
+    setOpenGradeSystemId(null);
+    setTimeout(refetch, 10);
+  };
+
   const activityList = activity ?? [];
   const showActivityEmpty = !isPending && !isError && activityList.length === 0;
   const showActivityError = isError && activityList.length === 0;
@@ -310,6 +336,8 @@ const Activity = ({
                 const selectedKey = selected?.key ?? ALL_GRADE_OPTION.key;
                 const isOpen = openGradeSystemId === system.id;
                 const selectionLabel = selected ? shortGradeLabel(selected.grade) : t('activity.allGrades');
+                /** A threshold on this system is a changed filter ⇒ brand tint, like ProblemList's changed chips. */
+                const chipChanged = !!selected;
                 /** With several systems on screen the chip must name its system, otherwise “8a” is ambiguous. */
                 const chipLabel = multiSystem
                   ? `${system.name} ${selected ? selectionLabel : ''}`.trim()
@@ -320,15 +348,25 @@ const Activity = ({
                       onClick={() => setOpenGradeSystemId(isOpen ? null : system.id)}
                       className={cn(
                         activityFilterChipBase,
-                        activityFilterChipOn,
+                        chipChanged ? activityFilterChipChanged : activityFilterChipOn,
                         'min-w-0 max-sm:max-w-[min(100%,8.5rem)]',
                       )}
                       aria-expanded={isOpen}
                       aria-haspopup='menu'
                       type='button'
                     >
-                      <Filter size={12} className='shrink-0 text-slate-300' strokeWidth={2} />
-                      <span className={cn(designContract.typography.uiCompact, 'min-w-0 truncate text-slate-300')}>
+                      <Filter
+                        size={12}
+                        className={cn('shrink-0', chipChanged ? activityFilterChipChangedInk : 'text-slate-300')}
+                        strokeWidth={2}
+                      />
+                      <span
+                        className={cn(
+                          designContract.typography.uiCompact,
+                          'min-w-0 truncate',
+                          chipChanged ? activityFilterChipChangedText : 'text-slate-300',
+                        )}
+                      >
                         {chipLabel}
                       </span>
                       <ChevronDown
@@ -400,6 +438,32 @@ const Activity = ({
             label={t('activity.chipComments')}
             labelNarrow={t('activity.chipCommentsShort')}
           />
+
+          {/**
+           * **Reset** — appears only once something deviates from the default feed, in the same brand tint that marks
+           * the changed chips (ProblemList's toolbar behaves identically, so “tinted chip ⇒ there is a reset” holds
+           * across both surfaces). Sits last so it never shifts the chips the user is aiming for mid-row.
+           */}
+          {hasFilterChanges && (
+            <button
+              type='button'
+              aria-label={t('activity.resetFilters')}
+              title={t('activity.resetFilters')}
+              onClick={handleResetFilters}
+              className={cn(
+                activityFilterChipBase,
+                activityFilterChipChanged,
+                'justify-center transition-[background-color,border-color,color,box-shadow]',
+              )}
+            >
+              <RotateCcw size={12} className={cn('shrink-0', activityFilterChipChangedInk)} strokeWidth={2} />
+              <span
+                className={cn(designContract.typography.uiCompact, 'whitespace-nowrap', activityFilterChipChangedText)}
+              >
+                {t('activity.reset')}
+              </span>
+            </button>
+          )}
         </div>
       </div>
 

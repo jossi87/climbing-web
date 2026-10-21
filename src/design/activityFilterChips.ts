@@ -21,3 +21,20 @@ export const activityFilterChipOff = cn(
   'border border-surface-border/70 bg-surface-raised/55 text-slate-500 hover:border-surface-border hover:bg-surface-raised hover:text-slate-300 light:border-slate-300/90 light:bg-slate-100/70 light:text-slate-600 light:hover:border-slate-400 light:hover:bg-slate-200',
   twInk.lightHoverSlate800,
 );
+
+/**
+ * **Changed / active** chip — brand tint + border. `activityFilterChipOn` says “this control is available”, this one
+ * says “its value differs from the default”: several chip filters live side by side in one row (ProblemList Group /
+ * Sort / Filter, Activity grade thresholds), and without the brand tint an applied filter is invisible. Paired with
+ * {@link activityFilterChipChangedInk} (icon) and {@link activityFilterChipChangedText} (label).
+ */
+export const activityFilterChipChanged = cn(
+  'border-brand-border bg-brand/22 text-brand shadow-sm',
+  'light:border-brand light:bg-brand/28 light:shadow-sm',
+);
+
+/** Brand ink for an icon on a changed chip — brand in dark, slate-900 in light for contrast. */
+export const activityFilterChipChangedInk = cn('text-brand', twInk.lightTextSlate900);
+
+/** Bold + brand ink for a label on a changed chip — the bolder weight makes the “changed” state unmistakable. */
+export const activityFilterChipChangedText = cn(activityFilterChipChangedInk, 'font-semibold');
