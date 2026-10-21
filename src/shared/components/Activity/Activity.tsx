@@ -13,7 +13,7 @@ import {
   Loader2,
   RotateCcw,
 } from 'lucide-react';
-import { useGradeSystems, useGradeSystemsByIds, useMeta } from '../Meta/context';
+import { useGradeSystemsByIds, useMeta } from '../Meta/context';
 import { useActivity } from '../../../api';
 import { Avatar, AvatarGroup, Card, SectionHeader } from '../../ui';
 import { Stars } from '../../ui/Indicators';
@@ -56,7 +56,8 @@ const shortGradeLabel = (grade: string) => (grade.includes('(') ? grade.split('(
  * matching the other tabs (map / distribution / top / todo).
  *
  * Grade filtering works **per grade system**: pass the surrounding area's / sector's `gradeSystemId` to get a single
- * filter, or leave it out (region feed) to get one independent filter per grade system active in the region.
+ * filter, or leave it out (region feed) to get one independent filter per grade system the feed can contain — the
+ * active region's systems plus those of the regions this user follows in the same discipline.
  */
 const Activity = ({
   idArea,
@@ -151,17 +152,20 @@ const Activity = ({
   }, [syncFilterUrl]);
 
   const meta = useMeta();
-  const regionGradeSystems = useGradeSystems();
 
   /**
    * Scoped feed (Area / Sector tab): only the surrounding area's grade system is relevant. Region feed: every grade
-   * system active in the region gets its own, independent filter.
+   * system the feed can contain gets its own, independent filter — the active region's systems plus those of the
+   * regions this user follows in the same discipline (the API derives that set from the feed's own region rule), so
+   * e.g. a followed Czech region's UIAA/Saxon problems get chips next to Scandinavian/French instead of being
+   * unfilterable.
    */
   const scopedGradeSystemIds = useMemo(
     () => (gradeSystemId && gradeSystemId > 0 ? [gradeSystemId] : undefined),
     [gradeSystemId],
   );
   const scopedGradeSystems = useGradeSystemsByIds(scopedGradeSystemIds);
+  const regionGradeSystems = useGradeSystemsByIds(meta.activityGradeSystemIds);
   const gradeSystems = scopedGradeSystemIds ? scopedGradeSystems : regionGradeSystems;
 
   /** One menu per system: every grade of that system, hardest first, with “All” pinned on top. */

@@ -21,6 +21,13 @@ const selectNormalisedMeta = (data: Metadata) => {
   if (data.faYears) {
     data.faYears.sort((a, b) => a - b);
   }
+  /**
+   * A payload from an older API has no feed domain; fall back to the active region's own systems so the feed keeps
+   * its region filters instead of losing every grade chip.
+   */
+  if (!data.activityGradeSystemIds?.length) {
+    data.activityGradeSystemIds = data.regionGradeSystemIds;
+  }
   return data;
 };
 

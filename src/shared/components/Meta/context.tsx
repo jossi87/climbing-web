@@ -41,6 +41,12 @@ export type Metadata = {
   allGradeSystems: GradeSystem[];
   /** Ids of `allGradeSystems` declared by the active region; region-wide selectors must only offer these. */
   regionGradeSystemIds: number[];
+  /**
+   * Ids of every grade system the **activity feed** can contain: the active region's systems plus the systems of the
+   * regions this user follows within the same discipline. The API resolves this from the feed's own region rule, so
+   * the toolbar can offer each distinct system (e.g. Scandinavian/French, UIAA, Saxon) as its own filter.
+   */
+  activityGradeSystemIds: number[];
   faYears: number[];
   defaultZoom: number;
   defaultCenter: { lat: number; lng: number };
@@ -106,13 +112,23 @@ export const useGradeSystems = () => {
 /**
  * Grade systems declared by a specific region. Area payloads carry their own region's ids because cross-region
  * content must offer the systems of the region that owns the area, not those of the active domain region.
+ *
+ * The caller's order is preserved (the API lists the active region's systems before followed regions'), and duplicate
+ * ids are collapsed so a system declared by two regions still yields one entry.
  */
 export const useGradeSystemsByIds = (gradeSystemIds: number[] | undefined) => {
   const { allGradeSystems } = useMeta();
-  return useMemo(
-    () => allGradeSystems.filter((system) => gradeSystemIds?.includes(system.id)),
-    [allGradeSystems, gradeSystemIds],
-  );
+  return useMemo(() => {
+    if (!gradeSystemIds) return [];
+    const systemsById = new Map(allGradeSystems.map((system) => [system.id, system]));
+    const seen = new Set<number>();
+    return gradeSystemIds.flatMap((id) => {
+      const system = systemsById.get(id);
+      if (!system || seen.has(id)) return [];
+      seen.add(id);
+      return [system];
+    });
+  }, [allGradeSystems, gradeSystemIds]);
 };
 
 /**

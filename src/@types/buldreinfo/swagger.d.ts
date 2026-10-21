@@ -2130,6 +2130,7 @@ export type components = {
             mediaIdentity?: components["schemas"]["MediaIdentity"];
             allGradeSystems?: components["schemas"]["GradeSystem"][];
             regionGradeSystemIds?: number[];
+            activityGradeSystemIds?: number[];
             faYears?: number[];
             /** Format: int32 */
             defaultZoom?: number;
