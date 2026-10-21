@@ -665,15 +665,15 @@ export const en = {
       overviewTicks_few: '{{count}} ticks',
       overviewTicks_other: '{{count}} ticks',
       /**
-       * Marker on an overview card whose ascents are all multi-pitch. Single-pitch is the unmarked default, and
-       * boulders / ice routes have no pitches at all, so they never carry it.
+       * Card headings. Whole phrases on purpose: the API sends the singular type noun, while a card wants a plural and
+       * a word order the locale decides (“Sport routes” / “Boulders”). Ice climbs share the “Route” type name with rope
+       * routes, so {@link overviewHeadingIce} is what tells their card apart.
        */
-      overviewMultiPitch: 'Multi-pitch',
-      /**
-       * Marker on an overview card whose ascents are on unbolted routes (`type.is_bolted = 0`, the app's trad).
-       * Boulders and ice routes are unbolted by nature, so they never carry it.
-       */
-      overviewTrad: 'Trad',
+      overviewHeadingBoulder: 'Boulders',
+      overviewHeadingIce: 'Ice routes',
+      overviewHeadingMultiPitch: 'Multi-pitch routes',
+      overviewHeadingSport: 'Sport routes',
+      overviewHeadingTraditional: 'Traditional routes',
       /** Chip on a tick row marking the ascent as a repeat. */
       repeatChip: 'repeat',
       /** Fallback heading when the API reports a grade system without a name. */

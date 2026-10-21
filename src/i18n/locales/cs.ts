@@ -492,12 +492,13 @@ export const cs: Catalog = {
       overviewTicks_one: '{{count}} opakování',
       overviewTicks_few: '{{count}} opakování',
       overviewTicks_other: '{{count}} opakování',
-      // Značka na kartě přehledu, jejíž přelezy jsou všechny vícedélkové; jednodélkové zůstávají bez značky
-      // a bouldry ani ledy žádné délky nemají, takže ji nikdy nedostanou.
-      overviewMultiPitch: 'Vícedélková',
-      // Značka na kartě přehledu pro cesty bez jištění („is_bolted = 0“, tedy trad – stejné slovo jako v editoru).
-      // Bouldry ani ledy ji nedostanou, protože jsou „nejištěné“ ze své podstaty.
-      overviewTrad: 'Tradice',
+      // Nadpisy karet – celé fráze: API posílá jednotné číslo typu, kdežto karta chce množné a pořadí slov dané jazykem.
+      // Ledové cesty sdílejí s lanovými cestami název „Route“, proto je rozlišuje až tento klíč.
+      overviewHeadingBoulder: 'Bouldry',
+      overviewHeadingIce: 'Ledové cesty',
+      overviewHeadingMultiPitch: 'Vícedélkové cesty',
+      overviewHeadingSport: 'Sportovní cesty',
+      overviewHeadingTraditional: 'Tradiční cesty',
       repeatChip: 'opakování',
       unknownGradeSystem: 'Neznámý systém obtížnosti',
       unknownType: 'Neznámý typ',

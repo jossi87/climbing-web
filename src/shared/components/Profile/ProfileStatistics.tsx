@@ -1,4 +1,5 @@
 import { Trans, useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { Link } from 'react-router-dom';
 import Chart from '../Chart/Chart';
 import ProblemList from '../ProblemList';
@@ -131,10 +132,36 @@ type ProfileStatisticsProps = {
 };
 
 /**
+ * Heading of an overview card. A whole phrase per discipline rather than the API's type name plus a chip: the locale
+ * decides the word order and the plural (“Sport routes”, “Sportovní cesty”), while the API only sends the singular
+ * type noun. A combination the client does not model — an unnamed type, or one without a bolting style — falls back to
+ * the API name.
+ */
+const chartHeading = (d: components['schemas']['ProfileDiscipline'], t: TFunction): string => {
+  if (d.isBouldering) {
+    return t('profile.statistics.overviewHeadingBoulder');
+  }
+  if (d.isIceClimbing) {
+    return t('profile.statistics.overviewHeadingIce');
+  }
+  if (d.multiPitch) {
+    return t('profile.statistics.overviewHeadingMultiPitch');
+  }
+  if (d.isBolted == null) {
+    return d.type ?? t('profile.statistics.unknownType');
+  }
+  return d.isBolted ? t('profile.statistics.overviewHeadingSport') : t('profile.statistics.overviewHeadingTraditional');
+};
+
+/**
  * Overview sub-component — one card per problem type, grade system and pitch kind: a grade axis only means something
- * inside a single system, and sport (`is_bolted = 1`) and trad (`is_bolted = 0`) are different efforts even when they
- * share one. Multi-pitch is the exception: those charts drop the bolting style (the API reports no `is_bolted`), so
- * sport and trad multi-pitch ascents of one type share a card.
+ * inside a single system, and sport (`is_bolted = 1`) and traditional (`is_bolted = 0`) are different efforts even when
+ * they share one, so the style is part of the chart key. Multi-pitch is the exception: those charts drop the bolting
+ * style (the API reports no `is_bolted`), so sport and traditional multi-pitch ascents of one type share a card. Ice
+ * climbs get a card of their own because they share the “Route” type name with rope routes, and the API orders the
+ * cards with the visiting site's own disciplines first. The heading spells the discipline out instead of tacking a chip
+ * onto the type name — see {@link chartHeading} — and the scale it is graded in sits beside that heading as a quiet
+ * subtitle, because a card never spans two scales.
  */
 const ProfileOverview = ({ disciplines }: { disciplines: components['schemas']['ProfileDiscipline'][] }) => {
   const { t } = useTranslation();
@@ -149,31 +176,28 @@ const ProfileOverview = ({ disciplines }: { disciplines: components['schemas']['
         const totalAscents = gradeDist.reduce((sum, g) => sum + (g.fa ?? 0) + (g.tick ?? 0), 0);
         const totalFas = gradeDist.reduce((sum, g) => sum + (g.fa ?? 0), 0);
         const totalTicks = gradeDist.reduce((sum, g) => sum + (g.tick ?? 0), 0);
-        // A multi-pitch chart keeps its type but carries no bolting style (sport and trad multi-pitch share it), so the
-        // `Trad` chip only ever marks single-pitch charts; boulders and ice routes are unbolted by nature too, hence
-        // the `isBouldering` guard.
-        const heading = d.type ?? t('profile.statistics.unknownType');
-        const tradMarker = d.isBolted === false && !d.isBouldering;
+        // The heading carries the discipline; a multi-pitch chart has no bolting style (sport and traditional share it)
+        // and boulders are unbolted by nature, so their phrases name the discipline without a style.
+        const heading = chartHeading(d, t);
+        const discipline = d.isBouldering ? 'boulder' : d.isIceClimbing ? 'ice' : 'rope';
+        const gradeSystem = d.gradeSystem ?? t('profile.statistics.unknownGradeSystem');
 
         return (
           <div
-            key={`${d.type ?? ''}-${d.isBolted ?? 'any'}-${d.gradeSystemId ?? 0}-${d.multiPitch ? 'multi' : 'single'}`}
+            key={`${d.type ?? ''}-${d.isBolted ?? 'any'}-${d.gradeSystemId ?? 0}-${d.multiPitch ? 'multi' : 'single'}-${discipline}`}
             className='overflow-hidden'
           >
-            {/* Type is the heading; the pitch kind and the bolting style only mark it. */}
             <div className='bg-surface-raised px-4 py-3 sm:px-5'>
-              <div className='flex min-w-0 items-center gap-2'>
-                <h3 className='type-h3 shrink-0 truncate font-semibold text-slate-100'>{heading}</h3>
-                {tradMarker ? (
-                  <span className={cn(tickFlags, 'shrink-0')}>{t('profile.statistics.overviewTrad')}</span>
-                ) : null}
-                {d.multiPitch ? (
-                  <span className={cn(tickFlags, 'shrink-0')}>{t('profile.statistics.overviewMultiPitch')}</span>
-                ) : null}
+              {/*
+                The scale reads as the heading's subtitle: one line with it while it fits, one step down in size, weight
+                and ink (the meta row below keeps only how much was climbed). It wraps under the heading rather than
+                truncating when a two-column card gets too narrow for both, so the scale name is never cut.
+              */}
+              <div className='flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0.5'>
+                <h3 className='min-w-0 truncate font-semibold text-slate-100'>{heading}</h3>
+                <span className='type-small shrink-0 font-normal'>{gradeSystem}</span>
               </div>
               <div className='mt-1 flex flex-wrap items-center gap-x-2 text-[13px] text-slate-400'>
-                <span className='text-slate-300'>{d.gradeSystem ?? t('profile.statistics.unknownGradeSystem')}</span>
-                <span aria-hidden='true'>·</span>
                 <span className='tabular-nums'>
                   <Trans
                     i18nKey='profile.statistics.overviewAscents'
