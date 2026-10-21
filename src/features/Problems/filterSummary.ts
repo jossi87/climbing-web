@@ -155,13 +155,21 @@ export const describeActiveFilters = (t: TFunction, state: State, meta: Metadata
     });
   }
 
-  const { filterGradeLow, filterGradeHigh } = state;
-  if (filterGradeLow || filterGradeHigh) {
+  /**
+   * One chip per grade system with an active range. A page can span regions, and regions do not have to share a grade
+   * system, so “Grade: 6a – 7c” would not say which of the systems it narrows. The system is only named while the page
+   * actually holds more than one; a single-system list keeps the short label.
+   */
+  const multiGradeSystem = state.gradeFilters.length > 1;
+  for (const gradeFilter of state.gradeFilters) {
+    if (gradeFilter.low === undefined && gradeFilter.high === undefined) continue;
     filters.push({
-      id: 'grades',
-      label: t('filterSummary.grade'),
-      value: formatRange(t, filterGradeLow, filterGradeHigh),
-      clear: { action: 'reset', section: 'grades' },
+      id: `grade-${gradeFilter.gradeSystemId}`,
+      label: t(multiGradeSystem ? 'filterSummary.gradeWithSystem' : 'filterSummary.grade', {
+        system: gradeFilter.name,
+      }),
+      value: formatRange(t, gradeFilter.low, gradeFilter.high),
+      clear: { action: 'set-grade-range', gradeSystemId: gradeFilter.gradeSystemId },
     });
   }
 

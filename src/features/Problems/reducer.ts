@@ -1,14 +1,20 @@
 import { useCallback, useEffect, useReducer, useState } from 'react';
 import { neverGuard } from '../../utils/neverGuard';
-import { useGrades, useMeta } from '../../shared/components/Meta/context';
+import { type GradeSystem, useMeta } from '../../shared/components/Meta/context';
 import { itemLocalStorage } from '../../utils/use-local-storage';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { captureSentryException, captureSentryMessage } from '../../utils/sentry';
 import { applyFilterDiff, decodeFilterHash, encodeFilterHash, filterDiff } from './filterHash';
+import { type GradeFilter, type GradeRange, buildGradeFilters } from './gradeFilters';
 
 type FilterResults = {
   /** The catalogue with everything the active filter drops taken out — i.e. what the list renders. */
   filteredData: components['schemas']['Toc'];
+  /**
+   * One grade filter per grade system that has rows in `unfilteredData`, each with its own domain and range (see
+   * `buildGradeFilters`). Derived here rather than in the filter form so the control and the predicate always agree.
+   */
+  gradeFilters: GradeFilter[];
   /**
    * How much the active filter **dropped**, so the UI reports “showing” as `total* - hidden*`.
    * (Named after what it counts: these used to be `filtered*`, which read as “what survived filtering” and
@@ -26,8 +32,8 @@ type FilterInputs = {
   filterOnlySunOnWallAt: number;
   filterOnlyShadeOnWallAt: number;
   filterSectorOrientations: Record<number, boolean>;
-  filterGradeLow: string | undefined;
-  filterGradeHigh: string | undefined;
+  /** Grade range per grade system (keyed by system id) — the list can hold grades of several systems. */
+  filterGradeRanges: Record<string, GradeRange>;
   filterFaYearLow: number;
   filterFaYearHigh: number;
   filterStartingAltitudeLow: number;
@@ -54,8 +60,7 @@ type FilterInputs = {
 const DEFAULT_INITIAL_FILTER: FilterInputs = {
   filterRegionIds: {},
   filterAreaIds: {},
-  filterGradeLow: undefined,
-  filterGradeHigh: undefined,
+  filterGradeRanges: {},
   filterFaYearLow: 0,
   filterFaYearHigh: 0,
   filterStartingAltitudeLow: 0,
@@ -80,7 +85,8 @@ type UiState = {
 };
 
 type DataState = {
-  gradeDifficultyLookup: Record<string, number>;
+  /** Every grade system the catalogue knows; the source of each grade filter's domain (see `buildGradeFilters`). */
+  gradeSystems: GradeSystem[];
   totalRegions: number;
   totalAreas: number;
   totalSectors: number;
@@ -104,8 +110,7 @@ export const filterInputsOf = (state: State): FilterInputs => ({
   filterOnlySunOnWallAt: state.filterOnlySunOnWallAt,
   filterOnlyShadeOnWallAt: state.filterOnlyShadeOnWallAt,
   filterSectorOrientations: state.filterSectorOrientations,
-  filterGradeLow: state.filterGradeLow,
-  filterGradeHigh: state.filterGradeHigh,
+  filterGradeRanges: state.filterGradeRanges,
   filterFaYearLow: state.filterFaYearLow,
   filterFaYearHigh: state.filterFaYearHigh,
   filterStartingAltitudeLow: state.filterStartingAltitudeLow,
@@ -160,7 +165,7 @@ export const isFilterSectionActive = (state: State, section: ResetField): boolea
     case 'areas':
       return Object.keys(state.filterAreaIds).length > 0;
     case 'grades':
-      return !!state.filterGradeLow || !!state.filterGradeHigh;
+      return state.gradeFilters.some(({ low, high }) => low !== undefined || high !== undefined);
     case 'fa-year':
       return !!state.filterFaYearLow || !!state.filterFaYearHigh;
     case 'starting-altitude':
@@ -202,17 +207,16 @@ export type Update =
       checked: boolean;
     }
   | {
-      action: 'set-grade-mapping';
-      gradeDifficultyLookup: State['gradeDifficultyLookup'];
+      action: 'set-grade-systems';
+      gradeSystems: GradeSystem[];
     }
-  | { action: 'set-grades'; low: string; high: string }
+  | { action: 'set-grade-range'; gradeSystemId: number; low?: string; high?: string }
   | { action: 'set-fa-years'; low: number; high: number }
   | { action: 'set-starting-altitudes'; low: number; high: number }
   | { action: 'set-hide-ticked'; checked: boolean }
   | { action: 'set-only-admin'; checked: boolean }
   | { action: 'set-only-super-admin'; checked: boolean }
   | ({ action: 'set-starting-altitude' } & ({ low: number } | { high: number }))
-  | ({ action: 'set-grade' } & ({ low: string } | { high: string }))
   | ({ action: 'set-fa-year' } & ({ low: number } | { high: number }))
   | { action: 'close-filter' }
   | { action: 'open-filter' }
@@ -228,8 +232,7 @@ const filter = (state: State): State => {
     filterOnlySunOnWallAt,
     filterOnlyShadeOnWallAt,
     filterSectorOrientations,
-    filterGradeHigh,
-    filterGradeLow,
+    filterGradeRanges,
     filterFaYearHigh,
     filterFaYearLow,
     filterStartingAltitudeHigh,
@@ -239,9 +242,15 @@ const filter = (state: State): State => {
     filterOnlySuperAdmin,
     filterPitches,
     filterTypes,
-    gradeDifficultyLookup,
+    gradeSystems,
     unfilteredData,
   } = state;
+  /**
+   * One filter per grade system that has rows, each with its own domain and range. Computed from the unfiltered
+   * catalogue, so the controls keep their labels while a range narrows the list.
+   */
+  const gradeFilters = buildGradeFilters(unfilteredData, gradeSystems, filterGradeRanges);
+  const gradeFiltersById = new Map(gradeFilters.map((gradeFilter) => [gradeFilter.gradeSystemId, gradeFilter]));
   const filteredOut = {
     regions: 0,
     areas: 0,
@@ -260,6 +269,11 @@ const filter = (state: State): State => {
           ...region,
           areas: region.areas
             ?.map((area) => {
+              /**
+               * The grade filter of the area's own grade system — `undefined` while that system has no rows (or the
+               * payload predates `TocArea.gradeSystemId`), in which case the area's rows are not grade-filtered.
+               */
+              const areaGradeFilter = gradeFiltersById.get(area.gradeSystemId ?? 0);
               return {
                 ...area,
                 sectors: area.sectors
@@ -343,12 +357,29 @@ const filter = (state: State): State => {
                           }
                         }
 
-                        if (filterGradeLow || filterGradeHigh) {
-                          const low = gradeDifficultyLookup[filterGradeLow ?? 'undefined'] ?? Number.MIN_SAFE_INTEGER;
-                          const high = gradeDifficultyLookup[filterGradeHigh ?? 'undefined'] ?? Number.MAX_SAFE_INTEGER;
-                          const test = gradeDifficultyLookup[problem.grade ?? 'ungraded'];
+                        if (
+                          areaGradeFilter &&
+                          (areaGradeFilter.low !== undefined || areaGradeFilter.high !== undefined)
+                        ) {
+                          // Each system is filtered against its own range: a range set for one system never hides
+                          // rows graded in another (a region-wide list can hold several systems).
+                          const index = problem.grade ? areaGradeFilter.mapping[problem.grade] : undefined;
+                          const low =
+                            areaGradeFilter.low !== undefined
+                              ? areaGradeFilter.mapping[areaGradeFilter.low]
+                              : undefined;
+                          const high =
+                            areaGradeFilter.high !== undefined
+                              ? areaGradeFilter.mapping[areaGradeFilter.high]
+                              : undefined;
 
-                          if (test === undefined || test < low || test > high) {
+                          // A grade the system does not know (project, or a label missing from the catalogue) is hidden
+                          // like before: an active range means “only the grades I asked for”.
+                          if (
+                            index === undefined ||
+                            (low !== undefined && index < low) ||
+                            (high !== undefined && index > high)
+                          ) {
                             filteredOut.problems += 1;
                             return false;
                           }
@@ -443,6 +474,7 @@ const filter = (state: State): State => {
   return {
     ...state,
     filteredData,
+    gradeFilters,
     hiddenRegions: filteredOut.regions,
     hiddenAreas: filteredOut.areas,
     hiddenSectors: filteredOut.sectors,
@@ -563,30 +595,29 @@ const reducer = (state: State, update: Update): State => {
       };
     }
 
-    case 'set-grade-mapping': {
-      const { gradeDifficultyLookup } = update;
+    case 'set-grade-systems': {
+      const { gradeSystems } = update;
       return {
         ...state,
-        gradeDifficultyLookup,
+        gradeSystems,
       };
     }
 
-    case 'set-grades': {
-      const { low, high } = update;
-      return {
-        ...state,
-        filterGradeLow: low,
-        filterGradeHigh: high,
-      };
-    }
+    case 'set-grade-range': {
+      const { gradeSystemId, low, high } = update;
+      const key = String(gradeSystemId);
+      const filterGradeRanges = { ...state.filterGradeRanges };
 
-    case 'set-grade': {
-      const low = 'low' in update ? update.low : undefined;
-      const high = 'high' in update ? update.high : undefined;
+      // An entry without bounds is dropped, so a cleared system never lingers in the URL or storage.
+      if (low === undefined && high === undefined) {
+        delete filterGradeRanges[key];
+      } else {
+        filterGradeRanges[key] = { low, high };
+      }
+
       return {
         ...state,
-        filterGradeLow: low ?? state.filterGradeLow ?? undefined,
-        filterGradeHigh: high ?? state.filterGradeHigh ?? undefined,
+        filterGradeRanges,
       };
     }
 
@@ -679,8 +710,7 @@ const reducer = (state: State, update: Update): State => {
         case 'grades': {
           return {
             ...state,
-            filterGradeLow: DEFAULT_INITIAL_FILTER.filterGradeLow,
-            filterGradeHigh: DEFAULT_INITIAL_FILTER.filterGradeHigh,
+            filterGradeRanges: DEFAULT_INITIAL_FILTER.filterGradeRanges,
           };
         }
         case 'fa-year': {
@@ -777,8 +807,10 @@ const storageItems = {
   onlySunOnWallAt: itemLocalStorage('filter/only-sun-on-wall-at', DEFAULT_INITIAL_FILTER.filterOnlySunOnWallAt),
   onlyShadeOnWallAt: itemLocalStorage('filter/only-shade-on-wall-at', DEFAULT_INITIAL_FILTER.filterOnlyShadeOnWallAt),
   sectorOrientations: itemLocalStorage('filter/sector-orientations', DEFAULT_INITIAL_FILTER.filterSectorOrientations),
-  gradeHigh: itemLocalStorage('filter/grades/high', DEFAULT_INITIAL_FILTER.filterGradeHigh),
-  gradeLow: itemLocalStorage('filter/grades/low', DEFAULT_INITIAL_FILTER.filterGradeLow),
+  gradeRanges: itemLocalStorage<Record<string, GradeRange>>(
+    'filter/grade-ranges',
+    DEFAULT_INITIAL_FILTER.filterGradeRanges,
+  ),
   faYearHigh: itemLocalStorage('filter/fa-year/high', DEFAULT_INITIAL_FILTER.filterFaYearHigh),
   faYearLow: itemLocalStorage('filter/fa-year/low', DEFAULT_INITIAL_FILTER.filterFaYearLow),
   startingAltitudeLow: itemLocalStorage(
@@ -796,6 +828,14 @@ const storageItems = {
   types: itemLocalStorage('filter/types', DEFAULT_INITIAL_FILTER.filterTypes),
 };
 
+/**
+ * The pre-per-system grade keys held one label pair from the region's *merged* grades. A label cannot be attributed to
+ * one system any more (the list spans regions, and several systems may share a label), so the old bounds are dropped
+ * rather than guessed onto a system: anything else would apply a filter the user never chose for that system.
+ */
+window.localStorage.removeItem('filter/grades/low');
+window.localStorage.removeItem('filter/grades/high');
+
 const wrappedReducer: typeof reducer = (state, update) => {
   const reduced = reducer(state, update);
 
@@ -804,8 +844,7 @@ const wrappedReducer: typeof reducer = (state, update) => {
   storageItems.onlySunOnWallAt.set(reduced.filterOnlySunOnWallAt);
   storageItems.onlyShadeOnWallAt.set(reduced.filterOnlyShadeOnWallAt);
   storageItems.sectorOrientations.set(reduced.filterSectorOrientations);
-  storageItems.gradeHigh.set(reduced.filterGradeHigh);
-  storageItems.gradeLow.set(reduced.filterGradeLow);
+  storageItems.gradeRanges.set(reduced.filterGradeRanges);
   storageItems.faYearHigh.set(reduced.filterFaYearHigh);
   storageItems.faYearLow.set(reduced.filterFaYearLow);
   storageItems.startingAltitudeLow.set(reduced.filterStartingAltitudeLow);
@@ -835,8 +874,7 @@ const selectionFromStorage = (): FilterInputs => ({
   filterOnlySunOnWallAt: storageItems.onlySunOnWallAt.get(),
   filterOnlyShadeOnWallAt: storageItems.onlyShadeOnWallAt.get(),
   filterSectorOrientations: storageItems.sectorOrientations.get(),
-  filterGradeHigh: storageItems.gradeHigh.get(),
-  filterGradeLow: storageItems.gradeLow.get(),
+  filterGradeRanges: storageItems.gradeRanges.get(),
   filterFaYearHigh: storageItems.faYearHigh.get(),
   filterFaYearLow: storageItems.faYearLow.get(),
   filterStartingAltitudeHigh: storageItems.startingAltitudeHigh.get(),
@@ -884,8 +922,7 @@ const resolveInitialSelection = (): InitialSelection => {
 };
 
 export const useFilterState = (init?: Partial<UiState>) => {
-  const { mapping } = useGrades();
-  const { isAdmin, isSuperAdmin } = useMeta();
+  const { allGradeSystems, isAdmin, isSuperAdmin } = useMeta();
 
   // Resolved once during the first render (see `resolveInitialSelection`), before the URL is
   // written back and before anything is filtered.
@@ -893,7 +930,7 @@ export const useFilterState = (init?: Partial<UiState>) => {
 
   const [state, dispatch] = useReducer(wrappedReducer, {
     visible: false,
-    gradeDifficultyLookup: {},
+    gradeSystems: allGradeSystems,
     totalRegions: 0,
     totalAreas: 0,
     totalSectors: 0,
@@ -908,6 +945,7 @@ export const useFilterState = (init?: Partial<UiState>) => {
 
     // Filtered data
     filteredData: {},
+    gradeFilters: [],
     hiddenRegions: 0,
     hiddenAreas: 0,
     hiddenSectors: 0,
@@ -918,8 +956,8 @@ export const useFilterState = (init?: Partial<UiState>) => {
   });
 
   useEffect(() => {
-    dispatch({ action: 'set-grade-mapping', gradeDifficultyLookup: mapping });
-  }, [mapping]);
+    dispatch({ action: 'set-grade-systems', gradeSystems: allGradeSystems });
+  }, [allGradeSystems]);
 
   useEffect(() => {
     // Report how the page was opened. The selection itself was already read from the hash during

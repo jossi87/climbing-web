@@ -399,6 +399,8 @@ export const en = {
     title: 'Filter',
     clear: 'Clear filter',
     gradeBetween: 'Grade between',
+    /** One system's control while the page holds several grade systems (e.g. “Grade (UIAA)”). */
+    gradeWithSystem: 'Grade ({{system}})',
     faYearBetween: 'First ascent year between',
     startingAltitudeBetween: 'Starting altitude between',
     options: 'Options',
@@ -440,6 +442,8 @@ export const en = {
      * label in the form, the chip only has room for the noun).
      */
     grade: 'Grade',
+    /** One system's chip while the page holds several grade systems (e.g. “Grade (UIAA)”). */
+    gradeWithSystem: 'Grade ({{system}})',
     faYear: 'FA year',
     altitude: 'Altitude',
     sunAt: 'Sun at',

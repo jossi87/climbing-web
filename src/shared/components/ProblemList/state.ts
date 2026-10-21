@@ -424,7 +424,7 @@ export const useProblemListState = ({
 
     return allGradeSystems.flatMap((system) => {
       if (!presentSystemIds.has(system.id)) return [];
-      const { easyToHard, mapping } = buildGradeDomain([system], false);
+      const { easyToHard, mapping, weight } = buildGradeDomain([system], false);
       const presentGrades = new Set<string>();
       for (const row of rows) {
         if (row.grade && resolveRowGradeSystemId(row) === system.id) presentGrades.add(row.grade);
@@ -438,7 +438,8 @@ export const useProblemListState = ({
           name: system.name,
           easyToHard: grades,
           mapping,
-          labels: grades.filter((grade) => presentGrades.has(grade)),
+          /** `n/a` (weight 0) marks an ungraded row, which no range can narrow. */
+          labels: grades.filter((grade) => presentGrades.has(grade) && (weight[grade] ?? 0) > 0),
           low: stored.low !== undefined && mapping[stored.low] !== undefined ? stored.low : undefined,
           high: stored.high !== undefined && mapping[stored.high] !== undefined ? stored.high : undefined,
         },

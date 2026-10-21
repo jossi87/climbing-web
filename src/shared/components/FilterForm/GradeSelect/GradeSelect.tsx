@@ -1,25 +1,26 @@
 import type { CSSProperties } from 'react';
-import { useGrades } from '../../Meta';
+import type { GradeFilter } from '../../../../features/Problems/gradeFilters';
 import { ChevronDown } from 'lucide-react';
 
-export type DispatchUpdate =
-  | { action: 'set-grades'; low: string; high: string }
-  | { action: 'set-grade'; low: string }
-  | { action: 'set-grade'; high: string };
+/**
+ * One system's range update. Both bounds travel together — the reducer replaces the system's whole entry, so sending
+ * only the side that changed would drop the other one.
+ */
+export type GradeRangeUpdate = { action: 'set-grade-range'; gradeSystemId: number; low?: string; high?: string };
 
 type Props = {
-  low: string | undefined;
-  high: string | undefined;
-  dispatch: (update: DispatchUpdate) => void;
+  /** Grade system the control filters, with its domain and the range currently selected for it. */
+  filter: GradeFilter;
+  dispatch: (update: GradeRangeUpdate) => void;
   style?: CSSProperties;
 };
 
-export const GradeSelect = ({ low: filterGradeLow, high: filterGradeHigh, dispatch, style }: Props) => {
-  const { easyToHard, mapping: gradeIndexMapping } = useGrades();
+export const GradeSelect = ({ filter, dispatch, style }: Props) => {
+  const { gradeSystemId, easyToHard, mapping: gradeIndexMapping, low: selectedLow, high: selectedHigh } = filter;
 
   const max = Math.max(easyToHard.length - 1, 0);
-  const low = filterGradeLow || easyToHard[0];
-  const high = filterGradeHigh || easyToHard[max];
+  const low = selectedLow || easyToHard[0];
+  const high = selectedHigh || easyToHard[max];
 
   return (
     <div style={style} className='flex flex-col gap-4'>
@@ -30,8 +31,10 @@ export const GradeSelect = ({ low: filterGradeLow, high: filterGradeHigh, dispat
             value={low}
             onChange={(e) => {
               dispatch({
-                action: 'set-grade',
+                action: 'set-grade-range',
+                gradeSystemId,
                 low: e.target.value,
+                high: selectedHigh,
               });
             }}
             disabled={max === 0}
@@ -58,7 +61,9 @@ export const GradeSelect = ({ low: filterGradeLow, high: filterGradeHigh, dispat
             value={high}
             onChange={(e) => {
               dispatch({
-                action: 'set-grade',
+                action: 'set-grade-range',
+                gradeSystemId,
+                low: selectedLow,
                 high: e.target.value,
               });
             }}

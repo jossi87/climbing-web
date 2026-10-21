@@ -691,9 +691,10 @@ export const ProblemList = ({
     [mode, excludedSortOptions, t],
   );
   /**
-   * One grade range control per grade system in the list. A system only appears while its range can filter (2+ grades
-   * in the content) or a range is already set; with a single system the control keeps its traditional unlabelled look,
-   * while several systems each name their own (like the activity feed's per-system chips).
+   * One grade range control per grade system in the list. A system only appears while its range can filter (2+ narrowable
+   * grades in the content — `n/a` marks ungraded rows) or a range is already set; with a single system the control keeps
+   * its traditional unlabelled look, while several systems each name their own (like the activity feed's per-system
+   * chips).
    */
   const gradeFilterControls = useMemo(() => {
     const multiSystem = gradeFilters.length > 1;

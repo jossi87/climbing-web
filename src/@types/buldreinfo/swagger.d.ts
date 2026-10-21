@@ -1825,6 +1825,8 @@ export type components = {
         TocArea: {
             /** Format: int32 */
             id?: number;
+            /** Format: int32 */
+            gradeSystemId?: number;
             url?: string;
             name?: string;
             coordinates?: components["schemas"]["Coordinates"];

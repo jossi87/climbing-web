@@ -182,8 +182,7 @@ export const FilterForm = () => {
     filterAreaIds,
     filterOnlySunOnWallAt,
     filterOnlyShadeOnWallAt,
-    filterGradeHigh,
-    filterGradeLow,
+    gradeFilters,
     filterSectorOrientations,
     filterOnlyAdmin,
     filterOnlySuperAdmin,
@@ -195,6 +194,17 @@ export const FilterForm = () => {
 
   /** Any section deviating from the defaults — drives the header's “Clear filter”. */
   const anyFilterActive = isFilterSectionActive(filterState, 'all');
+
+  /**
+   * One control per grade system that can narrow the list. A system needs at least two narrowable grades in the content
+   * (`n/a` marks ungraded rows and is not one) to have a range worth choosing, or a range that is already set, so it
+   * stays visible and can be cleared.
+   */
+  const gradeSystemFilters = gradeFilters.filter(
+    (gradeFilter) => gradeFilter.labels.length > 1 || gradeFilter.low !== undefined || gradeFilter.high !== undefined,
+  );
+  /** Several systems on one page each name their own control; a single system keeps the traditional unlabelled pair. */
+  const multiGradeSystem = gradeFilters.length > 1;
 
   const disciplineOptions = meta.types
     .sort((a, b) => routeTypeLabel(a.type, a.subType).localeCompare(routeTypeLabel(b.type, b.subType), getLocales()))
@@ -254,12 +264,24 @@ export const FilterForm = () => {
 
       <div className='grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3'>
         <div className='space-y-6'>
-          <div>
-            <GroupHeader title={t('filter.gradeBetween')} reset='grades' />
-            <div className='px-1'>
-              <GradeSelect low={filterGradeLow} high={filterGradeHigh} dispatch={dispatch} />
+          {gradeSystemFilters.length > 0 && (
+            <div>
+              <GroupHeader title={t('filter.gradeBetween')} reset='grades' />
+              <div className='space-y-4 px-1'>
+                {gradeSystemFilters.map((gradeFilter) => (
+                  <div key={gradeFilter.gradeSystemId} className='space-y-1.5'>
+                    {/* A page can span regions, and regions do not have to share a grade system. */}
+                    {multiGradeSystem && (
+                      <div className={cn(designContract.typography.label, 'text-slate-400')}>
+                        {t('filter.gradeWithSystem', { system: gradeFilter.name })}
+                      </div>
+                    )}
+                    <GradeSelect filter={gradeFilter} dispatch={dispatch} />
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           <div>
             <GroupHeader title={t('filter.faYearBetween')} reset='fa-year' />

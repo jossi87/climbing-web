@@ -299,6 +299,8 @@ export const cs: Catalog = {
     clear: 'Zrušit filtr',
     // Rozsahy: české „mezi“ chce dva tvary, proto jsou hranice v popisku vyjádřené slovem „až“.
     gradeBetween: 'Obtížnost mezi',
+    // Vlastní ovládání pro jeden systém, když stránka obsahuje víc systémů obtížnosti.
+    gradeWithSystem: 'Obtížnost ({{system}})',
     faYearBetween: 'Rok prvovýstupu mezi',
     startingAltitudeBetween: 'Nástupní nadmořská výška mezi',
     options: 'Možnosti',
@@ -324,6 +326,8 @@ export const cs: Catalog = {
   // Aktivní filtr (čipy) — viz `en.ts`. Popisky sekcí se opakují z `filter.*`, hodnoty jsou zde.
   filterSummary: {
     grade: 'Obtížnost',
+    // Čip jednoho systému, když stránka obsahuje víc systémů obtížnosti.
+    gradeWithSystem: 'Obtížnost ({{system}})',
     faYear: 'Rok prvovýstupu',
     altitude: 'Nadmořská výška',
     sunAt: 'Slunce v',
