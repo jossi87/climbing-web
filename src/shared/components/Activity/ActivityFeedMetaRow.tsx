@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { cn } from '../../../lib/utils';
+import { useTimeAgo } from '../../../shared/hooks/useTimeAgo';
 import { ProblemLink } from './components/ProblemLink';
 
 type ActivitySchema = components['schemas']['Activity'];
@@ -26,6 +27,7 @@ export function ActivityFeedMetaRow({
   userLinkClass: string;
 }) {
   const { t } = useTranslation();
+  const timeAgo = useTimeAgo();
   const [numImg, numMov] = (a.media ?? []).reduce(
     (acc: number[], item) => (item.movie ? [acc[0], acc[1] + 1] : [acc[0] + 1, acc[1]]),
     [0, 0],
@@ -88,7 +90,7 @@ export function ActivityFeedMetaRow({
         <p className='m-0 min-w-0 flex-1 text-pretty break-words [overflow-wrap:anywhere] [&_*]:align-baseline'>
           {story}
         </p>
-        <span className={cn(timeClass, 'text-right')}>{a.timeAgo}</span>
+        <span className={cn(timeClass, 'text-right')}>{timeAgo(a.timestamp)}</span>
       </div>
     </div>
   );

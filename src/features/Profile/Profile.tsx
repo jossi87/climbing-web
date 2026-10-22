@@ -17,6 +17,7 @@ import {
   TAB_BAR_ICON_SIZE,
 } from '../../design/tabBar';
 import { Card, NotFoundCard } from '../../shared/ui';
+import { useTimeAgo } from '../../shared/hooks/useTimeAgo';
 
 enum Page {
   overview = 'overview',
@@ -31,6 +32,7 @@ const Profile = () => {
   const { userId, page } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const timeAgo = useTimeAgo();
   const meta = useMeta();
   const profileUserId = userId ? +userId : (meta.userId ?? -1);
   const { data: profile, isLoading, error } = useProfile(profileUserId);
@@ -102,6 +104,7 @@ const Profile = () => {
 
   const numMedia = (kpis?.numImageTags ?? 0) + (kpis?.numVideoTags ?? 0);
   const numCaptured = (kpis?.numImagesCreated ?? 0) + (kpis?.numVideosCreated ?? 0);
+  const lastActivity = timeAgo(identity?.lastActivity);
 
   const navItems = [
     { id: Page.overview, label: t('profile.page.overview'), icon: LayoutDashboard },
@@ -151,10 +154,10 @@ const Profile = () => {
                     <span className='min-w-0 break-all'>{email}</span>
                   </a>
                 ))}
-                {identity?.lastActivity && (
+                {lastActivity && (
                   <span className='inline-flex max-w-full min-w-0 items-center gap-1.5'>
                     <Clock size={12} className='shrink-0 text-slate-500' aria-hidden />
-                    <span className='min-w-0 break-words'>{t('profile.active', { when: identity.lastActivity })}</span>
+                    <span className='min-w-0 break-words'>{t('profile.active', { when: lastActivity })}</span>
                   </span>
                 )}
               </div>

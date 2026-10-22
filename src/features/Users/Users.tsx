@@ -20,6 +20,7 @@ import {
 import { Avatar, Card, ClickableAvatar, Loading, SearchInput, SectionHeader } from '../../shared/ui';
 import { useUsers } from '../../api';
 import { useMeta } from '../../shared/components/Meta/context';
+import { useTimeAgo } from '../../shared/hooks/useTimeAgo';
 import { designContract } from '../../design/contract';
 import { twInk } from '../../design/twInk';
 import { cn } from '../../lib/utils';
@@ -225,6 +226,7 @@ function buildGroups(data: AdminUser[], dismissedPairs: ReadonlySet<string>): Us
 
 const Users = () => {
   const { t } = useTranslation();
+  const timeAgo = useTimeAgo();
   const meta = useMeta();
   const [query, setQuery] = useState('');
   const [mode, setMode] = useState<'suggestions' | 'all'>('suggestions');
@@ -368,6 +370,7 @@ const Users = () => {
     const emails = user.emails ?? [];
     const regions = user.regions ?? [];
     const activityRegions = user.activityRegions ?? [];
+    const lastLogin = timeAgo(user.lastLogin);
     const profile = profileUrl(user, regions[0]);
     const linkProps = { href: profile, target: '_blank', rel: 'noopener noreferrer' };
     return (
@@ -406,7 +409,7 @@ const Users = () => {
                 {isSelf ? ' (you)' : ''}
               </span>
             </div>
-            {user.lastLogin && (
+            {lastLogin && (
               <p
                 className={cn(
                   'mt-0.5 flex min-w-0 items-center gap-1 text-[10px] leading-snug text-slate-500',
@@ -414,7 +417,7 @@ const Users = () => {
                 )}
               >
                 <Calendar size={9} className='shrink-0' aria-hidden />
-                <span className='min-w-0 truncate'>{t('users.seen', { date: user.lastLogin ?? '' })}</span>
+                <span className='min-w-0 truncate'>{t('users.seen', { date: lastLogin })}</span>
               </p>
             )}
             {emails.length > 0 && (

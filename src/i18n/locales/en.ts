@@ -76,6 +76,26 @@ export const en = {
     /** Puts a soft-deleted entry back (trash). */
     restore: 'Restore',
   },
+  /**
+   * Relative timestamps (`useTimeAgo`). The API sends a raw date-time and the wording lives here, one bucket per
+   * key, so every locale phrases its own buckets; the counted keys carry i18next's plural forms.
+   */
+  timeAgo: {
+    today: 'today',
+    yesterday: 'yesterday',
+    daysAgo_one: 'a day ago',
+    daysAgo_few: '{{count}} days ago',
+    daysAgo_other: '{{count}} days ago',
+    weeksAgo_one: 'a week ago',
+    weeksAgo_few: '{{count}} weeks ago',
+    weeksAgo_other: '{{count}} weeks ago',
+    monthsAgo_one: 'a month ago',
+    monthsAgo_few: '{{count}} months ago',
+    monthsAgo_other: '{{count}} months ago',
+    yearsAgo_one: 'a year ago',
+    yearsAgo_few: '{{count}} years ago',
+    yearsAgo_other: '{{count}} years ago',
+  },
   /** Header chrome: the logo link and the account menu. */
   header: {
     home: 'Home',

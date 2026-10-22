@@ -1455,6 +1455,7 @@ export type components = {
             emails?: string[];
             userRegions?: components["schemas"]["UserRegion"][];
             activityRegions?: string[];
+            /** Format: date-time */
             lastActivity?: string;
         };
         UserRegion: {
@@ -1608,6 +1609,7 @@ export type components = {
             userId?: number;
             name?: string;
             mediaIdentity?: components["schemas"]["MediaIdentity"];
+            /** Format: date-time */
             lastLogin?: string;
             adminRead?: boolean;
             adminWrite?: boolean;
@@ -1739,6 +1741,7 @@ export type components = {
             lastname?: string;
             canEditName?: boolean;
             mediaIdentity?: components["schemas"]["MediaIdentity"];
+            /** Format: date-time */
             lastLogin?: string;
             emails?: string[];
             regions?: components["schemas"]["AdminRegion"][];
@@ -2199,7 +2202,8 @@ export type components = {
             lastComments?: components["schemas"]["FrontpageLastComment"][];
         };
         FrontpageFirstAscent: {
-            timeAgo?: string;
+            /** Format: date-time */
+            timestamp?: string;
             /** Format: int32 */
             areaId?: number;
             areaName?: string;
@@ -2214,7 +2218,8 @@ export type components = {
             users?: components["schemas"]["User"][];
         };
         FrontpageLastComment: {
-            timeAgo?: string;
+            /** Format: date-time */
+            timestamp?: string;
             /** Format: int32 */
             areaId?: number;
             areaName?: string;
@@ -2257,7 +2262,8 @@ export type components = {
             tagged?: components["schemas"]["User"][];
         };
         FrontpageRecentAscent: {
-            timeAgo?: string;
+            /** Format: date-time */
+            timestamp?: string;
             /** Format: int32 */
             areaId?: number;
             areaName?: string;
@@ -2336,12 +2342,14 @@ export type components = {
             name?: string;
             emails?: string[];
             randomMedia?: components["schemas"]["MediaIdentity"];
+            /** Format: date-time */
             lastLogin?: string;
         };
         Activity: {
             activityIds?: number[];
             activityThumbnails?: components["schemas"]["ActivityThumbnail"][];
-            timeAgo?: string;
+            /** Format: date-time */
+            timestamp?: string;
             /** Format: int32 */
             areaId?: number;
             areaName?: string;

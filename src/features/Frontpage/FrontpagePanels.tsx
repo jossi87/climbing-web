@@ -18,6 +18,7 @@ import type { TranslationKey } from '../../i18n';
 import { VideoProcessingPlaceholder } from '../../shared/components/Media/VideoProcessingPlaceholder';
 import { VideoThumbnailPlayOverlay } from '../../shared/components/Media/VideoThumbnailPlayOverlay';
 import { useRetryingMediaImage } from '../../shared/hooks/useRetryingMediaImage';
+import { useTimeAgo } from '../../shared/hooks/useTimeAgo';
 import { activityShowHref, type ActivityShowCategory } from '../../shared/components/Activity/activityShowPreset';
 import { formatRouteTypeLabel } from '../../utils/routeTradGear';
 import { cn } from '../../lib/utils';
@@ -451,6 +452,7 @@ function NameList({ users }: { users: { id?: number; name?: string }[] }) {
  */
 function FirstAscentsPanel({ items, isBouldering }: { items: FirstAscent[]; isBouldering: boolean }) {
   const { t } = useTranslation();
+  const timeAgo = useTimeAgo();
   return (
     <PanelCard
       icon={<Plus size={13} strokeWidth={2.25} />}
@@ -493,7 +495,7 @@ function FirstAscentsPanel({ items, isBouldering }: { items: FirstAscent[]; isBo
                         problemLockedSuperadmin={a.problemLockedSuperadmin}
                       />
                     </p>
-                    <span className={timeAgoClass}>{a.timeAgo}</span>
+                    <span className={timeAgoClass}>{timeAgo(a.timestamp)}</span>
                   </div>
                   <div className={rowLineClass}>
                     <p className={sublineClass}>
@@ -518,6 +520,7 @@ function FirstAscentsPanel({ items, isBouldering }: { items: FirstAscent[]; isBo
 
 function RecentAscentsPanel({ items }: { items: Ascent[] }) {
   const { t } = useTranslation();
+  const timeAgo = useTimeAgo();
   return (
     <PanelCard
       icon={<Check size={13} strokeWidth={2.25} />}
@@ -558,7 +561,7 @@ function RecentAscentsPanel({ items }: { items: Ascent[] }) {
                         problemLockedSuperadmin={a.problemLockedSuperadmin}
                       />
                     </p>
-                    <span className={timeAgoClass}>{a.timeAgo}</span>
+                    <span className={timeAgoClass}>{timeAgo(a.timestamp)}</span>
                   </div>
                   <div className={rowLineClass}>
                     <p className={sublineClass}>
@@ -746,6 +749,7 @@ function NewestMediaPanel({ items }: { items: NewestMedia[] }) {
  */
 function CommentsPanel({ items }: { items: LastComment[] }) {
   const { t } = useTranslation();
+  const timeAgo = useTimeAgo();
   return (
     <PanelCard
       icon={<MessageSquare size={13} strokeWidth={2.25} />}
@@ -809,7 +813,7 @@ function CommentsPanel({ items }: { items: LastComment[] }) {
                         </>
                       ) : null}
                     </p>
-                    <span className={timeAgoClass}>{a.timeAgo}</span>
+                    <span className={timeAgoClass}>{timeAgo(a.timestamp)}</span>
                   </div>
                   {(a.comment || u) && (
                     <div className={rowLineClass}>
