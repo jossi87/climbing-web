@@ -836,6 +836,11 @@ export const cs: Catalog = {
     breadcrumb: 'Breadcrumb navigation',
     neighboursLead: 'V okolí:',
     problemsOnRock: 'Problémy na skále «{{rock}}»',
+    // Popisek při najetí na odkaz ve stejné skále; `{{label}}` je už sestavené „#nr název · obtížnost“.
+    sameRockTitle: 'Stejná skála: {{label}}',
+    rockLinkAria: 'Cesta na stejné skále: číslo {{nr}}, {{name}}, obtížnost {{grade}}',
+    // „V okolí“ drží stejný termín jako `neighboursLead`, ať řádek zní jednotně i pro nevidomé.
+    neighbourLinkAria: 'V okolí: číslo {{nr}}, {{name}}, obtížnost {{grade}}',
     missingSectorId: 'V adrese URL chybí parametr sectorId',
     missingAreaId: 'Chybí parametr areaId',
     notFoundSectorDescription: 'Zadaný sektor nelze najít, protože neexistuje nebo nemáte dostatečná oprávnění.',
@@ -884,6 +889,13 @@ export const cs: Catalog = {
     showingHiddenMedia: 'Zobrazena skrytá média',
     dangerReported: 'Nahlášeno nebezpečí na této cestě',
     comments: 'Komentáře',
+    // Výška = nadmořská výška nástupu, orientace = světová strana stěny; hodnoty jsou volný text z API.
+    routeAltitude: 'Výška {{value}}',
+    routeAspect: 'Orientace {{value}}',
+    routeDescent: 'Sestup {{value}}',
+    // Volný přelez = bez technických pomůcek; u cesty s technickým prvovýstupem výše jde o první volný přelez.
+    firstAscent: 'Prvovýstup:',
+    firstFreeAscent: 'První volný přelez:',
     firstAidAscent: 'Technický prvovýstup:',
     trivia: 'Zajímavosti:',
     rockHeading: 'Skála „{{rock}}“',

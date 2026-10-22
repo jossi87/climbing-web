@@ -129,9 +129,9 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
     mergedForFree.length > 0 || !!freeDate || !!data.originalGrade || (meta.isClimbing && !!typeLabel);
 
   const routeParts = [
-    data.startingAltitude ? `Alt ${data.startingAltitude}` : null,
-    data.aspect ? `Aspect ${data.aspect}` : null,
-    data.descent ? `Descent ${data.descent}` : null,
+    data.startingAltitude ? t('place.routeAltitude', { value: data.startingAltitude }) : null,
+    data.aspect ? t('place.routeAspect', { value: data.aspect }) : null,
+    data.descent ? t('place.routeDescent', { value: data.descent }) : null,
   ].filter(Boolean);
   const showRouteMeta = !meta.isBouldering && routeParts.length > 0;
 
@@ -148,7 +148,7 @@ export function ProblemAscentOverview({ data, meta, orderableMedia, carouselMedi
 
   if (!showAidBlock && !showFreeBlock && !showRouteMeta && !showTodoRow && !showTriviaBlock) return null;
 
-  const freeLead = faAid ? 'First free ascent:' : 'First ascent:';
+  const freeLead = t(faAid ? 'place.firstFreeAscent' : 'place.firstAscent');
 
   /** Keeps grade / type / date / climbers in one wrapping band so they share a line before breaking. */
   function factsBand(children: ReactNode[]) {

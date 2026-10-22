@@ -1153,6 +1153,12 @@ export const en = {
     neighboursLead: 'Neighbours:',
     /** Accessible name of the “problems on this rock” row; `{{rock}}` is the API rock name. */
     problemsOnRock: 'Problems on rock «{{rock}}»',
+    /** Hover title on a same-rock link; `{{label}}` is the already-rendered “#nr name · grade” text. */
+    sameRockTitle: 'Same rock: {{label}}',
+    /** Accessible name of a same-rock link — the visible row spelled out for a screen reader. */
+    rockLinkAria: 'Route on same rock: number {{nr}}, {{name}}, grade {{grade}}',
+    /** Accessible name of a neighbour link (a problem on a bouldering site, a route otherwise). */
+    neighbourLinkAria: 'Neighbour: number {{nr}}, {{name}}, grade {{grade}}',
     missingSectorId: 'Missing sectorId URL param',
     missingAreaId: 'Missing areaId parameter',
     notFoundSectorDescription:
@@ -1216,6 +1222,14 @@ export const en = {
     dangerReported: 'Danger reported for this route',
     /** Comment card heading on the problem page (the counted `aria-label` comes from `counts.comments`). */
     comments: 'Comments',
+    /** Compact route-meta facts (between the ascent rows and trivia); `{{value}}` is the API's free text. */
+    routeAltitude: 'Alt {{value}}',
+    routeAspect: 'Aspect {{value}}',
+    routeDescent: 'Descent {{value}}',
+    /** Ascent-overview lead on a route with no aid history; the colon is part of the copy, as in `firstAidAscent`. */
+    firstAscent: 'First ascent:',
+    /** Same lead when an aid ascent is listed above it (`firstAidAscent`), i.e. the free ascent came later. */
+    firstFreeAscent: 'First free ascent:',
     firstAidAscent: 'First aid ascent:',
     trivia: 'Trivia:',
     /** Meta-card heading; the guillemets are part of the copy so another locale can pick its own quotes. */

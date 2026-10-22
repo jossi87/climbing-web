@@ -22,17 +22,18 @@ export function SectorProblemLink({
   relation: 'neighbour' | 'rock';
   currentProblemId?: number;
 }) {
+  const { t } = useTranslation();
   const id = problem.id;
   if (id == null) return null;
   const nr = problem.nr ?? '';
   const name = problem.name ?? '';
   const grade = problem.grade ?? '';
   const label = `#${nr} ${name} · ${grade}`;
-  const title = relation === 'rock' ? `Same rock: ${label}` : label;
+  const title = relation === 'rock' ? t('place.sameRockTitle', { label }) : label;
   const ariaLabel =
     relation === 'rock'
-      ? `Route on same rock: number ${nr}, ${name}, grade ${grade}`
-      : `Neighbour: number ${nr}, ${name}, grade ${grade}`;
+      ? t('place.rockLinkAria', { nr, name, grade })
+      : t('place.neighbourLinkAria', { nr, name, grade });
   const isCurrent = currentProblemId != null && id === currentProblemId;
   const routeTicked = !!problem.ticked;
   const routeTodo = !!problem.todo && !routeTicked;
