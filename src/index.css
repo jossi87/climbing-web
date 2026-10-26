@@ -937,6 +937,20 @@ html[data-theme='light']
     touch-action: manipulation;
   }
 
+  /*
+   * Media carousel stage. The media elements below it allow `manipulation` (= pan-x + pan-y), so the
+   * stage has to take the horizontal axis away from the browser itself: vertical panning and
+   * pinch-zoom stay native, while every horizontal drag is delivered to the swipe handler. Without
+   * this iOS/Android claim the drag as a pan and cancel the touch sequence before the handler sees it.
+   * `overscroll-behavior` keeps a downward drag from triggering pull-to-refresh while the page is locked.
+   * `MediaModal` applies the class only while carousel swiping is enabled, so the 360° viewer (which pans
+   * with every drag) keeps the browser's default touch behaviour.
+   */
+  .touch-swipe-stage {
+    touch-action: pan-y pinch-zoom;
+    overscroll-behavior: contain;
+  }
+
   /* Global micro-typography normalization for legacy utility usage */
   .text-xs,
   .text-\[10px\],

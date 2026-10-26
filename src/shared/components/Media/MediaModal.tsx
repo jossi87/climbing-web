@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo, type MouseEvent, useRef, useCallback, Fra
 import { useTranslation } from 'react-i18next';
 import { useScrollLock } from '../../utils/scroll-lock';
 import { Link, useNavigate } from 'react-router-dom';
-import { useSwipeable } from 'react-swipeable';
 import {
   X,
   Info,
@@ -47,6 +46,7 @@ import {
 import SvgViewer from '../SvgViewer';
 import VideoPlayer from './VideoPlayer';
 import type { HlsQuality } from '../../hooks/useHlsVideo';
+import { useCarouselSwipe } from '../../hooks/useCarouselSwipe';
 import { VideoPlayOverlayDisc } from './VideoThumbnailPlayOverlay';
 import { ZoomableImage } from './ZoomableImage';
 import { PannellumViewer } from './PannellumViewer';
@@ -283,9 +283,7 @@ const MediaModal = ({
 
   const [problemIdHovered, setProblemIdHovered] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [visualViewportScale, setVisualViewportScale] = useState(() => window.visualViewport?.scale ?? 1);
   const [offsetX, setOffsetX] = useState(0);
-  const [isSwiping, setIsSwiping] = useState(false);
   const wasSwiping = useRef(false);
 
   useEffect(() => {
@@ -313,20 +311,6 @@ const MediaModal = ({
 
   /** Hide body/html scrollbar while modal is open (ref-counted, safe with nested ZoomableImage) */
   useScrollLock();
-
-  /** While pinch-zoomed, detach carousel swipe handlers so pan/zoom gestures stay native. */
-  useEffect(() => {
-    const vv = window.visualViewport;
-    if (!vv) return;
-    const sync = () => setVisualViewportScale(vv.scale);
-    sync();
-    vv.addEventListener('resize', sync);
-    vv.addEventListener('scroll', sync);
-    return () => {
-      vv.removeEventListener('resize', sync);
-      vv.removeEventListener('scroll', sync);
-    };
-  }, []);
 
   /**
    * Warm the on-demand high-res variants while the modal is open, so the zoom viewer
@@ -364,29 +348,40 @@ const MediaModal = ({
 
   const resetSwipe = useCallback(() => {
     setOffsetX(0);
-    setIsSwiping(false);
-    setTimeout(() => {
+    window.setTimeout(() => {
       wasSwiping.current = false;
     }, 100);
   }, []);
 
-  const handlers = useSwipeable({
-    onSwiping: (e) => {
-      if (carouselSize <= 1 || !isMobile || visualViewportScale > 1.05 || is360) return;
-      setIsSwiping(true);
+  /**
+   * Whether the carousel should follow a horizontal drag at all: a single media item has nothing to page
+   * to, and the 360° viewer pans with every drag, so it must keep the raw (unclaimed) touch stream.
+   */
+  const swipeEnabled = carouselSize > 1 && !m.is360;
+
+  /**
+   * Swipe-to-navigate for every media type.
+   *
+   * Bound to the stage instead of to a single slide, so the gesture is identical over a raster image, an
+   * inline topo `<svg>` and a `<video>` — the previous setup attached it to one wrapper and only for
+   * `isMobile`, and children that swallow touch events (topo hit areas, player overlays, native video
+   * controls) could prevent it from ever firing.
+   *
+   * Opting out is expressed as `enabled`, not as detached handlers: the 360° viewer pans with every drag,
+   * and pinch-zoom / native video seeking are detected per gesture inside the hook.
+   */
+  const stageRef = useCarouselSwipe({
+    enabled: swipeEnabled,
+    onDrag: (deltaX) => {
       wasSwiping.current = true;
-      setOffsetX(e.deltaX);
+      setOffsetX(deltaX);
     },
-    onSwipedLeft: () => {
-      if (carouselSize > 1 && isMobile && isSwiping && !is360) gotoNext();
+    onSwipe: (direction) => {
+      // Decided from the gesture that just ended — not from state, which has not rendered yet by `touchend`.
+      if (direction === 'next') gotoNext();
+      else if (direction === 'prev') gotoPrev();
       resetSwipe();
     },
-    onSwipedRight: () => {
-      if (carouselSize > 1 && isMobile && isSwiping && !is360) gotoPrev();
-      resetSwipe();
-    },
-    onTouchEndOrOnMouseUp: () => resetSwipe(),
-    delta: 50,
   });
 
   const svgs = useMemo(() => (m.svgs ?? []) as components['schemas']['Svg'][], [m.svgs]);
@@ -523,8 +518,6 @@ const MediaModal = ({
   const hasMenuTopActions = canDrawTopo || canDrawMedia || canOrder;
   const hasMenuBottomActions = !m.embedUrl || isInstagramEmbed || canRotate || canEdit || canDelete;
 
-  const attachCarouselSwipeHandlers = isMobile && carouselSize > 1 && visualViewportScale <= 1.05;
-
   /**
    * Round toolbar controls sit on `bg-slate-900`. Do not use `text-slate-*` here — global light-theme remaps
    * turn those into dark ink; Lucide icons then read as dark-on-dark. Hex keeps correct contrast in both themes.
@@ -631,8 +624,13 @@ const MediaModal = ({
         )}
 
         <div
-          className='relative flex h-full min-h-0 w-full min-w-0 flex-1 items-center justify-center overflow-hidden'
-          {...(attachCarouselSwipeHandlers ? handlers : {})}
+          ref={stageRef}
+          className={cn(
+            'relative flex h-full min-h-0 w-full min-w-0 flex-1 items-center justify-center overflow-hidden',
+            // Only claim the horizontal axis while swiping is live; otherwise the media keeps the browser's
+            // default touch behaviour it had before (`.touch-pan-pinch` on the children).
+            swipeEnabled && 'touch-swipe-stage',
+          )}
         >
           <div className='absolute top-3 right-3 z-170 flex max-w-[calc(100vw-1.5rem)] flex-nowrap items-center justify-end gap-1 sm:top-4 sm:right-4 sm:gap-2'>
             {canShowSidebar && (
@@ -928,7 +926,12 @@ const MediaModal = ({
             ) : null;
           })()}
           <div
-            className='flex h-full min-h-0 w-full min-w-0 transition-transform duration-300 ease-out'
+            className={cn(
+              'flex h-full min-h-0 w-full min-w-0',
+              // The transition only animates the snap-back / settle; while a finger is down the slide must
+              // follow it 1:1, so it is dropped for the duration of the drag.
+              offsetX === 0 && 'transition-transform duration-300 ease-out',
+            )}
             style={{ transform: `translateX(${offsetX}px)` }}
             onClick={handleBackdropClick}
           >

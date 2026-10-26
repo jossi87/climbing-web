@@ -9,8 +9,8 @@ const UPGRADE_DELAY_MS = 250;
  *
  * On mobile the browser zooms the whole page, which magnifies the editing surface without changing any
  * layout size. Folding this into the raster request keeps those magnified pixels sharp instead of
- * leaving the user with the same blurry raster they had before pinching (`MediaModal` reads the same
- * value to suspend its swipe handlers while pinch-zoomed).
+ * leaving the user with the same blurry raster they had before pinching (`useCarouselSwipe` checks the
+ * same value per gesture, so a pinch never pages the media carousel).
  */
 function useVisualViewportScale(): number {
   const [scale, setScale] = useState(() => (typeof window === 'undefined' ? 1 : (window.visualViewport?.scale ?? 1)));

@@ -40,6 +40,17 @@ type Props = Pick<ComponentProps<typeof MediaModal>, 'optProblemId'> & {
 /** Tab path segments on `/area`, `/problem`, and `/sector` share the same URL slot as numeric media ids. */
 const AREA_PROBLEM_SECTOR_TAB_SEGMENTS = new Set(['overview', 'map', 'distribution', 'top', 'todo', 'activity']);
 
+/**
+ * The grid that currently drives the shared media modal, or `null` when nobody has claimed it.
+ *
+ * A page can mount several `<Media>` grids over one carousel (`data.media` plus `data.triviaMedia`, or one
+ * grid per problem section) and each of them derives the open media from the URL. Carousel navigation moves
+ * between media that different grids list, so without a single owner two grids would mount two stacked
+ * modals for the same media — and play a video's audio twice. The owner is whichever grid last opened or
+ * paged the carousel; it hands ownership back when it closes or unmounts.
+ */
+let modalOwner: object | null = null;
+
 const useIds = () => {
   const { mediaId, pitch, segment } = useParams();
   // segment can be either a media ID (numeric, from /problem/:id/:mediaId) or a tab name (from /sector/:id/:tab/:mediaId).
@@ -144,6 +155,9 @@ const Media = ({
   const [userM, setUserM] = useState<MediaItem | null>(null);
   const prevMediaIdRef = useRef(mediaId);
 
+  /** Identity of this grid in the `modalOwner` handshake — stable for the lifetime of the component. */
+  const ownerToken = useMemo<object>(() => ({}), []);
+
   // Detect URL mediaId changes (back/forward navigation) and clear user override.
   if (prevMediaIdRef.current !== mediaId) {
     prevMediaIdRef.current = mediaId;
@@ -162,16 +176,24 @@ const Media = ({
    * Derive the modal media item from the URL mediaId param during render.
    * When the user has manually opened a modal (userM is set), that takes precedence.
    * This approach avoids any setState calls inside effects, complying with react-hooks/set-state-in-effect.
+   *
+   * Carousel navigation only ever moves through `carouselMedia`, which is wider than this grid's `media`
+   * (trivia media, other problem sections). The previous lookup searched `media` alone, so every swipe onto
+   * such an item resolved to `null` and tore the modal down — the carousel appeared to end at the first
+   * trivia topo or video. `carouselMedia` is therefore consulted as a fallback, restricted to the owning
+   * grid so a sibling grid cannot mount a duplicate modal for the same item.
    */
   const m = useMemo<MediaItem | null>(() => {
     if (userM) {
       return userM;
     }
-    if (mediaId && media) {
-      return media.find((x) => mediaIdentityId(x.identity) === mediaId) ?? null;
-    }
-    return null;
-  }, [userM, mediaId, media]);
+    if (!mediaId) return null;
+    const ownedByAnotherGrid = modalOwner !== null && modalOwner !== ownerToken;
+    const inGrid = media?.find((x) => mediaIdentityId(x.identity) === mediaId) ?? null;
+    if (inGrid) return ownedByAnotherGrid ? null : inGrid;
+    if (modalOwner !== ownerToken) return null;
+    return carouselMedia?.find((x) => mediaIdentityId(x.identity) === mediaId) ?? null;
+  }, [userM, mediaId, media, carouselMedia, ownerToken]);
 
   const carouselMediaRef = useRef(carouselMedia);
   carouselMediaRef.current = carouselMedia;
@@ -202,6 +224,9 @@ const Media = ({
         url = `${pathname}/${mediaIdentityId(newM.identity)}`;
       }
       setUserM(newM);
+      // This grid owns the modal from here on: it is the one that paged the carousel, so it is also the one
+      // that must keep showing media outside its own list (and no sibling grid may render it too).
+      modalOwner = ownerToken;
       const isCarousel = !!prevMediaId;
       if (!isCarousel) {
         mediaModalPushedRef.current = true;
@@ -211,13 +236,14 @@ const Media = ({
       const pitchChanged = !!prevPitch && !!newPitch && prevPitch !== newPitch;
       navigate(url, { replace: isCarousel || pitchChanged });
     },
-    [navigate, pitch, optProblemId],
+    [navigate, pitch, optProblemId, ownerToken],
   );
   const closeModal = useCallback(() => {
     const pathname = locationRef.current.pathname;
     const lastSlashIndex = pathname.lastIndexOf('/');
     const url = pathname.substring(0, lastSlashIndex);
     if (!pitch) setUserM(null);
+    if (modalOwner === ownerToken) modalOwner = null;
     setAutoPlayVideo(false);
     if (mediaModalPushedRef.current) {
       mediaModalPushedRef.current = false;
@@ -225,7 +251,20 @@ const Media = ({
     } else {
       navigate(url, { replace: true });
     }
-  }, [pitch, navigate]);
+  }, [pitch, navigate, ownerToken]);
+
+  /** Hand the shared modal back if this grid disappears while it still owns it. */
+  useEffect(
+    () => () => {
+      if (modalOwner === ownerToken) modalOwner = null;
+    },
+    [ownerToken],
+  );
+
+  /** Release the claim as soon as this grid stops showing a modal, so a stale one cannot block a sibling. */
+  useEffect(() => {
+    if (m === null && modalOwner === ownerToken) modalOwner = null;
+  }, [m, ownerToken]);
 
   const gotoPrev = useCallback(() => {
     const cur = mRef.current;
