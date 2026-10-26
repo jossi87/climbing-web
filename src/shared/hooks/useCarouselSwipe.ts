@@ -10,7 +10,7 @@ const VERTICAL_DOMINANCE = 1.25;
 const PAGE_ZOOM_BLOCK_SCALE = 1.05;
 /** Bottom strip of a `<video>` where the native control bar owns horizontal drags (seeking). */
 const VIDEO_CONTROLS_STRIP_PX = 56;
-/** Clicks synthesised after a swipe arrive within this window and must not activate anything. */
+/** Fallback lifetime of the click swallow: a browser that delivers the swipe's click late and without a press. */
 const CLICK_SUPPRESSION_MS = 350;
 
 export type CarouselSwipeDirection = 'prev' | 'next';
@@ -69,19 +69,41 @@ function startsOnNativeVideoControls(event: TouchEvent): boolean {
 }
 
 /**
- * Swallow the click synthesised after a swipe. Without this a swipe that ends on a topo route would
- * also open that problem, and a swipe that ends on the image would close the modal.
- * The listener removes itself on first use, so only the click belonging to this gesture is dropped —
- * a tap the user makes straight afterwards still works.
+ * Swallow the click the browser synthesises at the end of a **committed** swipe.
+ *
+ * Without this a swipe that ends on a topo route would also open that problem, and one that ends on
+ * the image would close the modal. Kept deliberately narrow, because an over-eager version ate the
+ * user's *next* tap — most visibly a video's play poster, which is a single click away from playing
+ * and then needed a second one:
+ *
+ * - Armed only for a page turn. A shorter drag never pages the carousel, and the browser stops
+ *   synthesising clicks long before the commit distance (its own slop is ~10 px), so such a tap has a
+ *   real click coming and it must activate whatever it landed on.
+ * - Released by the next press: every tap the user makes starts with a `pointerdown`/`touchstart`,
+ *   while the click belonging to the swipe is dispatched at the end of that same gesture and never
+ *   after a fresh press of its own.
+ * - The timeout only covers a browser that delivers that click late and without a press.
  */
 function suppressFollowingClick(element: HTMLElement) {
-  const swallow = (event: Event) => {
+  let timer = 0;
+
+  function release() {
+    element.removeEventListener('click', swallow, { capture: true });
+    window.removeEventListener('pointerdown', release, { capture: true });
+    window.removeEventListener('touchstart', release, { capture: true });
+    window.clearTimeout(timer);
+  }
+
+  function swallow(event: Event) {
     event.stopPropagation();
     event.preventDefault();
-    element.removeEventListener('click', swallow, { capture: true });
-  };
+    release();
+  }
+
+  timer = window.setTimeout(release, CLICK_SUPPRESSION_MS);
   element.addEventListener('click', swallow, { capture: true });
-  window.setTimeout(() => element.removeEventListener('click', swallow, { capture: true }), CLICK_SUPPRESSION_MS);
+  window.addEventListener('pointerdown', release, { capture: true });
+  window.addEventListener('touchstart', release, { capture: true });
 }
 
 /**
@@ -185,9 +207,12 @@ export function useCarouselSwipe({ enabled, onDrag, onSwipe }: CarouselSwipeOpti
 
       const touch = event.changedTouches[0];
       const deltaX = touch ? touch.clientX - gesture.startX : 0;
-      suppressFollowingClick(element);
       // A pinch that started during the drag re-zoomed the page: that gesture belongs to the browser.
       const committed = Math.abs(deltaX) >= COMMIT_DISTANCE_PX && !isPagePinchZoomed();
+      // Only a page turn gets its click suppressed. A drag shorter than that is what the user means as a
+      // tap (the thumb always wobbles a few pixels over a button), so the click it produces is a genuine
+      // one and has to reach the element it landed on — a video's play poster is the case that broke.
+      if (committed) suppressFollowingClick(element);
       onSwipeRef.current?.(committed ? (deltaX < 0 ? 'next' : 'prev') : null);
     };
 
