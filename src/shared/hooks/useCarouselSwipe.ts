@@ -44,8 +44,14 @@ type Gesture = {
 /** Fresh idle gesture. A factory rather than a shared constant: handlers mutate the object they hold. */
 const idleGesture = (): Gesture => ({ active: false, claimed: false, ignored: false, startX: 0, startY: 0 });
 
-/** Browsers report the page pinch-zoom factor here; `undefined` on desktop Chrome without zoom. */
-function pageIsPinchZoomed(): boolean {
+/**
+ * True while the browser has pinch-zoomed the page.
+ *
+ * Browsers report the factor on `visualViewport`; `undefined` on desktop Chrome without zoom. Exported
+ * because `MediaModal` has to act on it in CSS as well: while the page is zoomed, dragging pans the
+ * magnified image and must stay a native two-axis pan, so the stage may not claim the horizontal axis.
+ */
+export function isPagePinchZoomed(): boolean {
   const scale = window.visualViewport?.scale;
   return scale != null && scale > PAGE_ZOOM_BLOCK_SCALE;
 }
@@ -137,7 +143,7 @@ export function useCarouselSwipe({ enabled, onDrag, onSwipe }: CarouselSwipeOpti
       gestureRef.current = {
         active: true,
         claimed: false,
-        ignored: pageIsPinchZoomed() || startsOnNativeVideoControls(event),
+        ignored: isPagePinchZoomed() || startsOnNativeVideoControls(event),
         startX: touch.clientX,
         startY: touch.clientY,
       };
@@ -181,7 +187,7 @@ export function useCarouselSwipe({ enabled, onDrag, onSwipe }: CarouselSwipeOpti
       const deltaX = touch ? touch.clientX - gesture.startX : 0;
       suppressFollowingClick(element);
       // A pinch that started during the drag re-zoomed the page: that gesture belongs to the browser.
-      const committed = Math.abs(deltaX) >= COMMIT_DISTANCE_PX && !pageIsPinchZoomed();
+      const committed = Math.abs(deltaX) >= COMMIT_DISTANCE_PX && !isPagePinchZoomed();
       onSwipeRef.current?.(committed ? (deltaX < 0 ? 'next' : 'prev') : null);
     };
 

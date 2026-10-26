@@ -943,8 +943,9 @@ html[data-theme='light']
    * pinch-zoom stay native, while every horizontal drag is delivered to the swipe handler. Without
    * this iOS/Android claim the drag as a pan and cancel the touch sequence before the handler sees it.
    * `overscroll-behavior` keeps a downward drag from triggering pull-to-refresh while the page is locked.
-   * `MediaModal` applies the class only while carousel swiping is enabled, so the 360° viewer (which pans
-   * with every drag) keeps the browser's default touch behaviour.
+   * `MediaModal` applies the class only while carousel swiping is live — not for the 360° viewer (which pans
+   * with every drag) and not while the page is pinch-zoomed (a magnified image is panned in both axes) — so
+   * those cases keep the browser's default touch behaviour.
    */
   .touch-swipe-stage {
     touch-action: pan-y pinch-zoom;

@@ -46,7 +46,7 @@ import {
 import SvgViewer from '../SvgViewer';
 import VideoPlayer from './VideoPlayer';
 import type { HlsQuality } from '../../hooks/useHlsVideo';
-import { useCarouselSwipe } from '../../hooks/useCarouselSwipe';
+import { useCarouselSwipe, isPagePinchZoomed } from '../../hooks/useCarouselSwipe';
 import { VideoPlayOverlayDisc } from './VideoThumbnailPlayOverlay';
 import { ZoomableImage } from './ZoomableImage';
 import { PannellumViewer } from './PannellumViewer';
@@ -283,6 +283,15 @@ const MediaModal = ({
 
   const [problemIdHovered, setProblemIdHovered] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  /**
+   * True while the browser has pinch-zoomed the page.
+   *
+   * A pinch zooms the page rather than the image, and the user then pans the magnified picture by
+   * dragging — a pan that needs both axes. `touch-action: pan-y` on the stage would swallow the
+   * horizontal half of it, so the swipe styling has to come off while zoomed. Only the zoom *factor*
+   * matters here, and `visualViewport` fires `resize` exactly when it changes (panning fires `scroll`).
+   */
+  const [pageZoomed, setPageZoomed] = useState(isPagePinchZoomed);
   const [offsetX, setOffsetX] = useState(0);
   const wasSwiping = useRef(false);
 
@@ -290,6 +299,15 @@ const MediaModal = ({
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const sync = () => setPageZoomed(isPagePinchZoomed());
+    sync();
+    vv.addEventListener('resize', sync);
+    return () => vv.removeEventListener('resize', sync);
   }, []);
 
   /** Dismiss the quality menu on outside click / Escape (same idiom as `ActionMenuChip`). */
@@ -627,9 +645,11 @@ const MediaModal = ({
           ref={stageRef}
           className={cn(
             'relative flex h-full min-h-0 w-full min-w-0 flex-1 items-center justify-center overflow-hidden',
-            // Only claim the horizontal axis while swiping is live; otherwise the media keeps the browser's
-            // default touch behaviour it had before (`.touch-pan-pinch` on the children).
-            swipeEnabled && 'touch-swipe-stage',
+            // Claim the horizontal axis only while swiping is live *and* the page is not pinch-zoomed.
+            // While zoomed, a drag pans the magnified image in both directions, so the media keeps the
+            // browser's default behaviour (`.touch-pan-pinch` on the children) and swipe stays off —
+            // exactly what the user expects from a zoomed photo.
+            swipeEnabled && !pageZoomed && 'touch-swipe-stage',
           )}
         >
           <div className='absolute top-3 right-3 z-170 flex max-w-[calc(100vw-1.5rem)] flex-nowrap items-center justify-end gap-1 sm:top-4 sm:right-4 sm:gap-2'>
