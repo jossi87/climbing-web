@@ -1,8 +1,8 @@
-import { useRef, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AlertTriangle, Loader2, RefreshCw } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
+import { useTapActivation } from '../../hooks/useTapActivation';
 import { VideoPlayOverlayDisc } from './VideoThumbnailPlayOverlay';
 
 /**
@@ -42,57 +42,6 @@ const retryButtonClass = cn(
   'inline-flex min-h-9 items-center justify-center gap-2 rounded-lg px-4 py-2 text-[13px] font-semibold transition-transform active:scale-95',
 );
 
-/** Travel (px) still counted as a tap: enough for a wobbling finger, far too little for a swipe. */
-const TAP_SLOP_PX = 10;
-
-/**
- * One touch produces a `pointerup` *and* a `click`. Whatever the first one already answered is not asked again
- * within this window, so a single tap can never start the stream twice.
- */
-const ACTIVATION_WINDOW_MS = 400;
-
-/**
- * Tap activation for a disc.
- *
- * `click` alone is the obvious choice and the one every other control here uses, but it is not always what arrives:
- * the carousel arms a click-suppressor for the tap that ends a swipe (`useCarouselSwipe`), and a browser that hands
- * that click over late — or not at all — leaves the disc looking dead however correct the handler behind it is.
- * `pointerup` is the same gesture with none of that in the way, so the disc answers both and activates once.
- */
-function useTapActivation(onTap: () => void) {
-  const pressRef = useRef<{ id: number; x: number; y: number } | null>(null);
-  const lastActivationRef = useRef(0);
-
-  const activate = () => {
-    const now = Date.now();
-    if (now - lastActivationRef.current < ACTIVATION_WINDOW_MS) return;
-    lastActivationRef.current = now;
-    onTap();
-  };
-
-  return {
-    onPointerDown: (event: ReactPointerEvent<HTMLElement>) => {
-      pressRef.current = { id: event.pointerId, x: event.clientX, y: event.clientY };
-    },
-    onPointerUp: (event: ReactPointerEvent<HTMLElement>) => {
-      const press = pressRef.current;
-      pressRef.current = null;
-      // Only the pointer that went down here, and only if it stayed put: a swipe is not a tap.
-      if (!press || press.id !== event.pointerId) return;
-      if (Math.hypot(event.clientX - press.x, event.clientY - press.y) > TAP_SLOP_PX) return;
-      activate();
-    },
-    // A cancelled pointer (the browser took the gesture for a scroll, or a pinch) never was a tap.
-    onPointerCancel: () => {
-      pressRef.current = null;
-    },
-    onClick: (event: ReactMouseEvent<HTMLElement>) => {
-      event.stopPropagation();
-      activate();
-    },
-  };
-}
-
 /**
  * Stage overlay for a video that is not simply playing: not asked for yet, still loading, waiting for a gesture,
  * paused, stalled, or dead. Rendered on top of the `<video>`, which is what makes a tap mean one thing per phase
@@ -101,7 +50,10 @@ function useTapActivation(onTap: () => void) {
 export function VideoPlaybackOverlay({ phase, onEnsurePlayback, onRetry }: Props) {
   const { t } = useTranslation();
   // Called before the early return below so the hook order stays stable for a stage with no overlay.
-  const tap = useTapActivation(onEnsurePlayback);
+  // The disc answers `pointerup` as well as `click` (`useTapActivation`): a click the carousel suppressor or the
+  // browser withholds would otherwise leave it dead however correct `onEnsurePlayback` is. This is a real `<button>`,
+  // so a click with no press behind it (keyboard, assistive tech) counts as a tap too.
+  const tap = useTapActivation({ onTap: onEnsurePlayback, activateOnClick: true });
   if (phase === null) return null;
 
   if (phase === 'idle') {

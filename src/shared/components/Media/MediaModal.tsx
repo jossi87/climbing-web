@@ -47,6 +47,7 @@ import SvgViewer from '../SvgViewer';
 import VideoPlayer from './VideoPlayer';
 import type { HlsQuality } from '../../hooks/useHlsVideo';
 import { useCarouselSwipe, isPagePinchZoomed } from '../../hooks/useCarouselSwipe';
+import { useTapActivation } from '../../hooks/useTapActivation';
 import { ZoomableImage } from './ZoomableImage';
 import { PannellumViewer } from './PannellumViewer';
 import { Descent, Rappel } from '../../../utils/svg-utils';
@@ -449,6 +450,19 @@ const MediaModal = ({
     }
     onClose();
   }, [canShowSidebar, showSidebar, onClose, setShowSidebar]);
+
+  /**
+   * Tap-to-dismiss for a photo.
+   *
+   * The picture closes the viewer on a **tap**, and `useTapActivation` answers that on `pointerup` rather than on the
+   * `click` the browser may or may not still deliver. That is what makes the first tap work: after a carousel swipe
+   * the click belonging to that gesture competes with the swipe machinery (`useCarouselSwipe` suppresses it, the
+   * page turn remounts this modal, the browser drops a click that moved past its own slop), so a tap that only
+   * listens for `click` reads as ignored and the second one — by then nothing is in flight — closes the viewer. The
+   * hook's tap slop also replaces the `wasSwiping`/`offsetX` test this handler used to carry: a drag is not a tap,
+   * decided from the gesture itself instead of from state a fresh mount had already reset.
+   */
+  const closeOnTap = useTapActivation({ onTap: closeSidebarOrModal });
 
   const handleDimmerClick = (e: MouseEvent) => {
     if ((e.target as HTMLElement).closest('[data-modal-media-root]')) return;
@@ -982,10 +996,7 @@ const MediaModal = ({
                   )}
                   sizes='100vw'
                   alt=''
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (!wasSwiping.current && offsetX === 0) closeSidebarOrModal();
-                  }}
+                  {...closeOnTap}
                 />
               )
             ) : m.embedUrl && !isInstagramEmbed ? (
@@ -1051,10 +1062,7 @@ const MediaModal = ({
                 )}
                 sizes='100vw'
                 alt=''
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (!wasSwiping.current && offsetX === 0) closeSidebarOrModal();
-                }}
+                {...closeOnTap}
               />
             ) : (
               <div
