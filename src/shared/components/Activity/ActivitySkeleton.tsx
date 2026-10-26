@@ -76,21 +76,13 @@ export const ActivityFrontpageSuspenseFallback = () => {
           <SectionHeader title={t('activity.title')} icon={ActivityIcon} className='mb-0 w-full md:w-auto' />
 
           <div className={designContract.layout.activityToolbarActionsFrontpage}>
-            <div className='flex max-w-full min-w-0 flex-wrap items-center justify-center gap-x-0.5 gap-y-1.5 sm:gap-x-1.5 sm:gap-y-2'>
-              <div className='relative shrink-0'>
-                <div
-                  className={cn(
-                    activityFilterChipBase,
-                    activityFilterChipOn,
-                    'min-w-0 max-sm:max-w-[min(100%,8.5rem)]',
-                  )}
-                >
-                  <Filter size={12} className='shrink-0 text-slate-300' strokeWidth={2} />
-                  <span className={cn(designContract.typography.uiCompact, 'min-w-0 truncate text-slate-300')}>
-                    {t('activity.allGrades')}
-                  </span>
-                  <ChevronDown size={10} className='shrink-0 text-slate-300' strokeWidth={2} />
-                </div>
+            <div className='relative shrink-0 max-sm:max-w-[min(100%,8.5rem)]'>
+              <div className={cn(activityFilterChipBase, activityFilterChipOn, 'max-w-full min-w-0')}>
+                <Filter size={12} className='shrink-0 text-slate-300' strokeWidth={2} />
+                <span className={cn(designContract.typography.uiCompact, 'min-w-0 truncate text-slate-300')}>
+                  {t('activity.allGrades')}
+                </span>
+                <ChevronDown size={10} className='shrink-0 text-slate-300' strokeWidth={2} />
               </div>
             </div>
             <ToolbarChipPlaceholder icon={Plus} label={t('activity.chipFa')} />

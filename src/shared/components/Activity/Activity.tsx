@@ -284,24 +284,25 @@ const Activity = ({
   const showActivityError = isError && activityList.length === 0;
 
   /**
-   * **Chip row alignment** is conditional on whether the SectionHeader is present:
+   * **One** wrapping line, right-aligned — like right-aligned text: the chips pack in order and every wrapped line
+   * ends at the toolbar's right inset.
    *
-   * - **Standalone `/activity`** (`!isScoped`) — the header sits on the left, chips on the right, anchored by the
-   *   parent toolbar's `md:justify-between`. `md:ml-auto md:w-auto md:justify-end` keeps the chip cluster pinned
-   *   right (the contract default).
-   * - **Embedded** (`isScoped`, Area / Sector tab) — there's no SectionHeader to balance the left side, so right-
-   *   aligning the chips left them stranded in the corner with empty space to their left (visible in the
-   *   tab-card layout). Center the cluster across the full toolbar width instead so it reads as the deliberate
-   *   focal point of the header band.
+   * - **Standalone `/activity`** (`!isScoped`) — the `SectionHeader` sits on the left and the chips on the right,
+   *   anchored by the parent toolbar's `md:justify-between`. `md:ml-auto md:w-auto` keeps the cluster pinned right.
+   * - **Embedded** (`isScoped`, Area / Sector tab) — no `SectionHeader` to balance the left side, so from `md` up the
+   *   cluster centers across the full toolbar width; phones keep the same right alignment as `/activity`.
    *
-   * Mobile (< md) keeps `w-full justify-center` either way — the toolbar is `flex-col` and the chips are the
-   * only meaningful affordance once the SectionHeader (when present) stacks above them.
+   * The grade chips and the type chips must stay siblings inside **this** row: every grade system adds a chip, and
+   * when the grade chips got their own wrapping container that container clamped to the row width and broke its own
+   * lines — leaving a phone with a line holding one chip shoved to the right, another line holding a partly filled
+   * group, and the type chips on a third line. Chips that read as left / center / right at once.
    *
-   * Since every grade system gets its own chip, the row must **wrap** instead of squeezing: a region with two systems
-   * plus the four type chips no longer fits on one phone line.
+   * The small `contents` wrapper around the grade chips exists only to scope `filterRef` (outside-click for the open
+   * grade menu). `display: contents` generates no box, so those chips still lay out in this row like the siblings
+   * they are.
    */
   const chipsRowClassName = isScoped
-    ? 'flex w-full flex-wrap items-center justify-center gap-x-0.5 gap-y-1.5 sm:gap-x-1.5 sm:gap-y-2'
+    ? 'flex w-full flex-wrap items-center justify-end gap-x-0.5 gap-y-1.5 sm:gap-x-1.5 sm:gap-y-2 md:justify-center'
     : designContract.layout.activityToolbarActionsFrontpage;
 
   /**
@@ -331,10 +332,7 @@ const Activity = ({
 
         <div className={chipsRowClassName}>
           {gradeMenus.length > 0 ? (
-            <div
-              className='flex max-w-full min-w-0 flex-wrap items-center justify-center gap-x-0.5 gap-y-1.5 sm:gap-x-1.5 sm:gap-y-2'
-              ref={filterRef}
-            >
+            <div className='contents' ref={filterRef}>
               {gradeMenus.map(({ system, options }) => {
                 const selected = lowerGrades[system.id];
                 const selectedKey = selected?.key ?? ALL_GRADE_OPTION.key;
@@ -347,13 +345,13 @@ const Activity = ({
                   ? `${system.name} ${selected ? selectionLabel : ''}`.trim()
                   : selectionLabel;
                 return (
-                  <div className='relative shrink-0' key={system.id}>
+                  <div className='relative min-w-0 shrink-0 max-sm:max-w-[min(100%,8.5rem)]' key={system.id}>
                     <button
                       onClick={() => setOpenGradeSystemId(isOpen ? null : system.id)}
                       className={cn(
                         activityFilterChipBase,
                         chipChanged ? activityFilterChipChanged : activityFilterChipOn,
-                        'min-w-0 max-sm:max-w-[min(100%,8.5rem)]',
+                        'max-w-full min-w-0',
                       )}
                       aria-expanded={isOpen}
                       aria-haspopup='menu'

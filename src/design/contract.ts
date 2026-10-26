@@ -122,9 +122,14 @@ export const designContract = {
      * toolbar even when the sibling `SectionHeader` is **omitted** (embedded mode in Area / Sector tabs) — without it,
      * the parent's `justify-between` would push the only remaining child to the start, breaking right-alignment.
      * With the header present (`/activity` page) the auto-margin is a no-op next to `justify-between`.
+     *
+     * **`justify-end` is the base, not a `md:` override**: below `md` the row is `w-full`, so it wraps as soon as the
+     * chips (one per grade system + the four type chips) no longer fit. Ending every wrapped line at the right inset
+     * keeps the cluster reading as one block — centering the lines made each line centre *independently*, so two chips
+     * sat indented on line 1 while the chip that overflowed floated alone in the middle of line 2.
      */
     activityToolbarActionsFrontpage:
-      'flex w-full flex-wrap items-center justify-center gap-x-0.5 gap-y-1.5 sm:gap-x-1.5 sm:gap-y-2 md:ml-auto md:w-auto md:justify-end',
+      'flex w-full flex-wrap items-center justify-end gap-x-0.5 gap-y-1.5 sm:gap-x-1.5 sm:gap-y-2 md:ml-auto md:w-auto',
     /** Activity filters: one row; compact chips; labels always visible (tight gap on narrow screens). */
     toolbarActions: 'flex w-full flex-nowrap items-center justify-center gap-0.5 sm:gap-1.5 sm:w-auto sm:justify-end',
     /**
