@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, type FC, type MouseEvent } from 'react';
+import { useCallback, useRef, useState, useEffect, type FC, type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { List } from 'lucide-react';
 import type { components } from '../../../@types/buldreinfo/swagger';
@@ -12,8 +12,8 @@ type Props = {
   /**
    * Start the movie without waiting for a tap. Off by default: the stage then keeps the poster up with its play disc
    * on it, and dismissing that disc is the tap that starts playback — inside the gesture the browser's autoplay
-   * policy demands. A `play()` raised later, from `loadedmetadata`, has no gesture behind it and is refused, which is
-   * exactly why a movie opened from its poster used to take two taps.
+   * policy demands. A request raised later has no gesture behind it, and an element with no media yet can drop one
+   * outright, which is why a single tap used to be so easy to lose (see `playIntentRef`).
    */
   autoPlay?: boolean;
   className?: string;
@@ -34,6 +34,14 @@ type Props = {
 };
 
 type MediaProblem = components['schemas']['MediaProblem'];
+
+/**
+ * How long the tap's `play()` is given to take before it is checked once more.
+ *
+ * Long enough that a request the element did accept has already cleared `paused` (which it does synchronously), short
+ * enough to be invisible next to a stream start-up. See `requestPlayback`.
+ */
+const PLAY_RECHECK_MS = 350;
 
 /**
  * Format milliseconds to a display string like "1:23" or "1:02:34".
@@ -83,6 +91,24 @@ const VideoPlayer: FC<Props> = ({
    * poster is the whole stage, so there is no load in progress to report — see `overlayPhase`.
    */
   const [playRequested, setPlayRequested] = useState(autoPlay);
+  /**
+   * Playback somebody asked for that the element has not managed to start yet.
+   *
+   * Set by the tap that asks for it, cleared only once a frame is actually running. It has to outlive the call:
+   * a `play()` issued before the element has a byte of media behind it is dropped outright — native HLS on iOS
+   * is the usual offender, and a movie that was mounted a moment ago (the one just swiped to) is always in that
+   * state — and none of that reaches us: no rejection, no event, `paused` simply stays `true`. Re-asking on the
+   * element's own "I can play now" events is what turns that one tap into playback. Without it the tap looked
+   * ignored and the movie needed a second one, by which time data had arrived.
+   */
+  const playIntentRef = useRef(autoPlay);
+  /**
+   * Mirror of `playRequested` for the tap handlers. One tap can reach them twice (`pointerup`, then the `click` that
+   * follows it), and the second must not ask hls.js to start the stream again — `startLoad()` restarts the load.
+   */
+  const playRequestedRef = useRef(autoPlay);
+  /** Pending "did the element take that request?" check — see `requestPlayback`. */
+  const playRecheckRef = useRef(0);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const chaptersContainerRef = useRef<HTMLDivElement>(null);
@@ -105,6 +131,8 @@ const VideoPlayer: FC<Props> = ({
     setHasEnded(false);
     // A different movie has not been asked for yet: the stage goes back to that movie's poster and play disc.
     setPlayRequested(autoPlay);
+    playIntentRef.current = autoPlay;
+    playRequestedRef.current = autoPlay;
   }
 
   const chapters: MediaProblem[] = (media.problems ?? [])
@@ -204,18 +232,91 @@ const VideoPlayer: FC<Props> = ({
   } = useHlsVideo(videoRef, videoSrc);
 
   /**
+   * Ask the element to play, and remember that somebody did.
+   *
+   * `play()` comes first and alone: it is the one call that has to happen inside the gesture that asked for it,
+   * so nothing — the stream request included — may get the chance to throw or stall ahead of it. A refusal is
+   * reported instead of swallowed, because a silent one is indistinguishable from the tap never arriving; the
+   * request itself stays outstanding in `playIntentRef` and is re-asked as soon as the element can honour it.
+   */
+  const requestPlayback = useCallback(() => {
+    playIntentRef.current = true;
+    const video = videoRef.current;
+    if (!video) return;
+    // `play()` clears `paused` outright, so the playing state is claimed now and the element hands it back if it
+    // pauses (or the refusal below does): that keeps the overlay on the spinner for the moment between the tap and
+    // the element's own `play` event, instead of showing "tap to play" over a stream that is on its way.
+    setIsPlaying(true);
+    void video.play().catch((error: unknown) => {
+      // Nothing to undo beyond that claim: what the stage shows follows the element's own events. When the browser
+      // really does refuse (no gesture, data saver) the overlay reports it and the next tap asks again.
+      setIsPlaying(false);
+      console.warn('[video] play() was not accepted', error);
+    });
+    // Nothing is guaranteed to happen after a request that went nowhere — an element that is dropped *with* data
+    // ready has no further media event to hang the retry below on — so the request is checked once instead of being
+    // left for the user to notice. An accepted or pending `play()` has already cleared `paused`, and `playing` has
+    // cleared the intent, so a request that did take is never repeated and a pause the user asked for is never undone.
+    window.clearTimeout(playRecheckRef.current);
+    playRecheckRef.current = window.setTimeout(() => {
+      // The stage may have moved to another movie in the meantime; that element is gone and has its own request.
+      if (videoRef.current !== video) return;
+      if (!playIntentRef.current || !video.paused || video.ended) return;
+      void video.play().catch(() => {
+        // Refused again: the overlay says so, and the next tap asks again.
+      });
+    }, PLAY_RECHECK_MS);
+  }, []);
+
+  /** The recheck above must not outlive the player. */
+  useEffect(() => () => window.clearTimeout(playRecheckRef.current), []);
+
+  /**
+   * Re-ask for playback whenever the element reports that it could play.
+   *
+   * This is what makes one tap enough. The request is recorded before the element has media behind it (see
+   * `playIntentRef`), the browser drops it without a trace, and the first data event afterwards is the moment it
+   * can be honoured — no second tap, no waiting for the user to notice.
+   *
+   * Keyed by media because the `<video>` is replaced per movie; `playing` — the event that ends the request — is
+   * what clears the intent, so a pause the user asked for is never overruled here.
+   */
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const askAgain = () => {
+      if (!playIntentRef.current || !video.paused || video.ended) return;
+      // Same claim as `requestPlayback`: data has arrived and the request is being re-issued, so the stage is loading,
+      // not waiting for a tap. `pause` or a refusal puts it back.
+      setIsPlaying(true);
+      void video.play().catch(() => {
+        // Still not playable: the overlay says so, and another data event will ask again.
+        setIsPlaying(false);
+      });
+    };
+    video.addEventListener('loadedmetadata', askAgain);
+    video.addEventListener('loadeddata', askAgain);
+    video.addEventListener('canplay', askAgain);
+    return () => {
+      video.removeEventListener('loadedmetadata', askAgain);
+      video.removeEventListener('loadeddata', askAgain);
+      video.removeEventListener('canplay', askAgain);
+    };
+  }, [mediaId]);
+
+  /**
    * `autoPlay` is a caller saying playback was asked for before this player existed, so the request is served from
    * here. `startLoad` is part of that: the hook buffers nothing until it is called, and an empty element never fires
    * `loadedmetadata` on its own, so waiting for that event (how this used to start) would now wait forever.
    *
    * No state is set here on purpose — `playRequested` already starts out as `autoPlay`, and the element reports the
-   * outcome through `play`/`playing` (or the rejection below) like any other attempt.
+   * outcome through `play`/`playing` (or the warning above) like any other attempt.
    */
   useEffect(() => {
     if (!autoPlay) return;
+    requestPlayback();
     startLoad();
-    void videoRef.current?.play().catch(() => setIsPlaying(false));
-  }, [autoPlay, startLoad, mediaId]);
+  }, [autoPlay, requestPlayback, startLoad, mediaId]);
 
   // Report the quality state up; the control itself is rendered by the parent's toolbar (see `MediaModal`).
   // The cleanup reports `null` so the control disappears when this player goes away (modal switched to an image).
@@ -260,19 +361,18 @@ const VideoPlayer: FC<Props> = ({
    * is in flight the element's own control already reads "pause", so a tap that toggled it would stop the very movie
    * the user was trying to start.
    *
-   * The stream is requested from here as well, and both calls sit inside the tap on purpose: `play()` only gets past
-   * an autoplay policy when it runs within the gesture that asked for it.
+   * The `play()` is raised first, inside the tap, and the stream is requested after it: the gesture is what makes
+   * the browser accept the first, while the request is what makes it possible at all. The request is also
+   * remembered (`playIntentRef`), because an element with no media yet drops the call instead of queueing it.
    */
   const ensurePlaying = () => {
+    requestPlayback();
     // The first ask also fetches the stream (the hook buffers nothing before it); after that a tap only resumes
     // playback, and re-asking would tell hls.js to start over.
-    if (!playRequested) {
-      setPlayRequested(true);
-      startLoad();
-    }
-    void videoRef.current?.play().catch(() => {
-      // Still refused (no gesture yet, data saver): the overlay stays up and the next tap tries again.
-    });
+    if (playRequestedRef.current) return;
+    playRequestedRef.current = true;
+    setPlayRequested(true);
+    startLoad();
   };
 
   return (
@@ -321,6 +421,8 @@ const VideoPlayer: FC<Props> = ({
           setHasStarted(true);
           setIsPlaying(true);
           setIsWaiting(false);
+          // Playback is running, so the outstanding request has been honoured: from now on a pause is the user's.
+          playIntentRef.current = false;
         }}
         onPause={() => setIsPlaying(false)}
         onWaiting={() => setIsWaiting(true)}

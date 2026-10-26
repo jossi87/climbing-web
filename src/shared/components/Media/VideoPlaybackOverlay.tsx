@@ -1,3 +1,4 @@
+import { useRef, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AlertTriangle, Loader2, RefreshCw } from 'lucide-react';
 import { cn } from '../../../lib/utils';
@@ -41,6 +42,57 @@ const retryButtonClass = cn(
   'inline-flex min-h-9 items-center justify-center gap-2 rounded-lg px-4 py-2 text-[13px] font-semibold transition-transform active:scale-95',
 );
 
+/** Travel (px) still counted as a tap: enough for a wobbling finger, far too little for a swipe. */
+const TAP_SLOP_PX = 10;
+
+/**
+ * One touch produces a `pointerup` *and* a `click`. Whatever the first one already answered is not asked again
+ * within this window, so a single tap can never start the stream twice.
+ */
+const ACTIVATION_WINDOW_MS = 400;
+
+/**
+ * Tap activation for a disc.
+ *
+ * `click` alone is the obvious choice and the one every other control here uses, but it is not always what arrives:
+ * the carousel arms a click-suppressor for the tap that ends a swipe (`useCarouselSwipe`), and a browser that hands
+ * that click over late — or not at all — leaves the disc looking dead however correct the handler behind it is.
+ * `pointerup` is the same gesture with none of that in the way, so the disc answers both and activates once.
+ */
+function useTapActivation(onTap: () => void) {
+  const pressRef = useRef<{ id: number; x: number; y: number } | null>(null);
+  const lastActivationRef = useRef(0);
+
+  const activate = () => {
+    const now = Date.now();
+    if (now - lastActivationRef.current < ACTIVATION_WINDOW_MS) return;
+    lastActivationRef.current = now;
+    onTap();
+  };
+
+  return {
+    onPointerDown: (event: ReactPointerEvent<HTMLElement>) => {
+      pressRef.current = { id: event.pointerId, x: event.clientX, y: event.clientY };
+    },
+    onPointerUp: (event: ReactPointerEvent<HTMLElement>) => {
+      const press = pressRef.current;
+      pressRef.current = null;
+      // Only the pointer that went down here, and only if it stayed put: a swipe is not a tap.
+      if (!press || press.id !== event.pointerId) return;
+      if (Math.hypot(event.clientX - press.x, event.clientY - press.y) > TAP_SLOP_PX) return;
+      activate();
+    },
+    // A cancelled pointer (the browser took the gesture for a scroll, or a pinch) never was a tap.
+    onPointerCancel: () => {
+      pressRef.current = null;
+    },
+    onClick: (event: ReactMouseEvent<HTMLElement>) => {
+      event.stopPropagation();
+      activate();
+    },
+  };
+}
+
 /**
  * Stage overlay for a video that is not simply playing: not asked for yet, still loading, waiting for a gesture,
  * paused, stalled, or dead. Rendered on top of the `<video>`, which is what makes a tap mean one thing per phase
@@ -48,20 +100,18 @@ const retryButtonClass = cn(
  */
 export function VideoPlaybackOverlay({ phase, onEnsurePlayback, onRetry }: Props) {
   const { t } = useTranslation();
+  // Called before the early return below so the hook order stays stable for a stage with no overlay.
+  const tap = useTapActivation(onEnsurePlayback);
   if (phase === null) return null;
 
   if (phase === 'idle') {
     // The poster is doing the talking, so this has to look exactly like the disc the poster carried before there was
     // a player to hang it on: no scrim, no wording, nothing over the picture but the button. It spans the whole stage
-    // because a movie starts on a tap anywhere on it — and that tap has to land in the same handler as the `play()`
-    // it leads to, or the autoplay policy will refuse it.
+    // because a movie starts on a tap anywhere on it — and that tap has to be the one that leads to `play()`.
     return (
       <button
         type='button'
-        onClick={(event) => {
-          event.stopPropagation();
-          onEnsurePlayback();
-        }}
+        {...tap}
         aria-label={t('media.play')}
         className='absolute inset-0 z-20 flex cursor-pointer items-center justify-center'
       >
@@ -92,10 +142,7 @@ export function VideoPlaybackOverlay({ phase, onEnsurePlayback, onRetry }: Props
       <div className='pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-black/25'>
         <button
           type='button'
-          onClick={(event) => {
-            event.stopPropagation();
-            onEnsurePlayback();
-          }}
+          {...tap}
           aria-label={t('media.play')}
           /* The padded hit area is what makes the disc a comfortable touch target; the disc itself keeps the poster's
              size, so the stage looks unchanged when the player takes over the thumbnail. */
