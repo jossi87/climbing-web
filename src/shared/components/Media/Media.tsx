@@ -142,7 +142,6 @@ const Media = ({
   const location = useLocation();
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
-  const [autoPlayVideo, setAutoPlayVideo] = useState(false);
   const { isLoading, getAccessTokenSilently } = useAuth0();
   const [confirmation, setConfirmation] = useState<{ message: string; action: () => void } | null>(null);
   /** True after we opened the viewer with a history push from this page; close with pop so we do not duplicate the base URL. */
@@ -244,7 +243,6 @@ const Media = ({
     const url = pathname.substring(0, lastSlashIndex);
     if (!pitch) setUserM(null);
     if (modalOwner === ownerToken) modalOwner = null;
-    setAutoPlayVideo(false);
     if (mediaModalPushedRef.current) {
       mediaModalPushedRef.current = false;
       navigate(-1);
@@ -434,7 +432,6 @@ const Media = ({
             m={m}
             pitch={pitch ?? 0}
             pitches={pitches ?? []}
-            autoPlayVideo={autoPlayVideo}
             onDelete={onDeleteMedia}
             onRotate={(deg) =>
               executeMediaAction((token) => putMediaJpegRotate(token, mediaIdentityId(m.identity), deg))
@@ -453,8 +450,6 @@ const Media = ({
             showLocation={showLocation}
             gotoPrev={gotoPrev}
             gotoNext={gotoNext}
-            playVideo={() => setAutoPlayVideo(true)}
-            stopVideo={() => setAutoPlayVideo(false)}
             optProblemId={optProblemId}
           />,
           document.body,

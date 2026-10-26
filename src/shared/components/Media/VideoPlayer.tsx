@@ -9,6 +9,12 @@ import { cn } from '../../../lib/utils';
 
 type Props = {
   media: components['schemas']['Media'];
+  /**
+   * Start the movie without waiting for a tap. Off by default: the stage then keeps the poster up with its play disc
+   * on it, and dismissing that disc is the tap that starts playback — inside the gesture the browser's autoplay
+   * policy demands. A `play()` raised later, from `loadedmetadata`, has no gesture behind it and is refused, which is
+   * exactly why a movie opened from its poster used to take two taps.
+   */
   autoPlay?: boolean;
   className?: string;
   style?: React.CSSProperties;
@@ -46,7 +52,7 @@ function formatMs(ms: number): string {
 
 const VideoPlayer: FC<Props> = ({
   media,
-  autoPlay = true,
+  autoPlay = false,
   className,
   style,
   optProblemId,
@@ -72,6 +78,11 @@ const VideoPlayer: FC<Props> = ({
   const [isWaiting, setIsWaiting] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [hasEnded, setHasEnded] = useState(false);
+  /**
+   * Whether anyone has asked for playback yet. Until they have, nothing but the manifest has been fetched and the
+   * poster is the whole stage, so there is no load in progress to report — see `overlayPhase`.
+   */
+  const [playRequested, setPlayRequested] = useState(autoPlay);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const chaptersContainerRef = useRef<HTMLDivElement>(null);
@@ -92,6 +103,8 @@ const VideoPlayer: FC<Props> = ({
     setIsWaiting(false);
     setIsReady(false);
     setHasEnded(false);
+    // A different movie has not been asked for yet: the stage goes back to that movie's poster and play disc.
+    setPlayRequested(autoPlay);
   }
 
   const chapters: MediaProblem[] = (media.problems ?? [])
@@ -180,7 +193,29 @@ const VideoPlayer: FC<Props> = ({
 
   // Movies are served as an HLS master playlist; hls.js fetches the manifest/segments (Safari plays it natively).
   const videoSrc = getMediaFileUrl(mediaIdentityId(media.identity), mediaIdentityVersionStamp(media.identity), true);
-  const { levels, activeIndex, isAuto, setLevel, error: playbackError, retry } = useHlsVideo(videoRef, videoSrc);
+  const {
+    levels,
+    activeIndex,
+    isAuto,
+    setLevel,
+    error: playbackError,
+    retry,
+    startLoad,
+  } = useHlsVideo(videoRef, videoSrc);
+
+  /**
+   * `autoPlay` is a caller saying playback was asked for before this player existed, so the request is served from
+   * here. `startLoad` is part of that: the hook buffers nothing until it is called, and an empty element never fires
+   * `loadedmetadata` on its own, so waiting for that event (how this used to start) would now wait forever.
+   *
+   * No state is set here on purpose — `playRequested` already starts out as `autoPlay`, and the element reports the
+   * outcome through `play`/`playing` (or the rejection below) like any other attempt.
+   */
+  useEffect(() => {
+    if (!autoPlay) return;
+    startLoad();
+    void videoRef.current?.play().catch(() => setIsPlaying(false));
+  }, [autoPlay, startLoad, mediaId]);
 
   // Report the quality state up; the control itself is rendered by the parent's toolbar (see `MediaModal`).
   // The cleanup reports `null` so the control disappears when this player goes away (modal switched to an image).
@@ -196,6 +231,9 @@ const VideoPlayer: FC<Props> = ({
    * What the stage shows while the element is not simply playing. `null` leaves it completely uncovered, so healthy
    * playback keeps the native controls — and their hit area — to itself.
    *
+   * `idle` is the state before anything has been asked of the player: the poster is still the whole picture and the
+   * disc on it *is* the way in, so nothing may cover the picture and nothing may pretend to be loading.
+   *
    * `blocked` is the case worth spelling out: before the first frame, a paused element that already has data means
    * the browser refused the autoplay and is waiting for a gesture (an accepted `play()` clears `paused` right away).
    * Showing that as "loading" is the ambiguity this overlay exists to remove, and showing it as "pause" is what used
@@ -204,9 +242,11 @@ const VideoPlayer: FC<Props> = ({
   const overlayPhase: VideoOverlayPhase | null = playbackError
     ? 'error'
     : !hasStarted
-      ? isReady && !isPlaying
-        ? 'blocked'
-        : 'loading'
+      ? !playRequested
+        ? 'idle' // Nothing asked for yet: the poster is up, so the stage owes the play disc, not a spinner.
+        : isReady && !isPlaying
+          ? 'blocked'
+          : 'loading'
       : isPlaying
         ? isWaiting
           ? 'buffering'
@@ -219,8 +259,17 @@ const VideoPlayer: FC<Props> = ({
    * The only thing a tap during start-up may do. Deliberately `play()` and never `pause()`: while the first fragment
    * is in flight the element's own control already reads "pause", so a tap that toggled it would stop the very movie
    * the user was trying to start.
+   *
+   * The stream is requested from here as well, and both calls sit inside the tap on purpose: `play()` only gets past
+   * an autoplay policy when it runs within the gesture that asked for it.
    */
   const ensurePlaying = () => {
+    // The first ask also fetches the stream (the hook buffers nothing before it); after that a tap only resumes
+    // playback, and re-asking would tell hls.js to start over.
+    if (!playRequested) {
+      setPlayRequested(true);
+      startLoad();
+    }
     void videoRef.current?.play().catch(() => {
       // Still refused (no gesture yet, data saver): the overlay stays up and the next tap tries again.
     });

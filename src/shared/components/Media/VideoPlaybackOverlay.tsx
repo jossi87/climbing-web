@@ -8,13 +8,15 @@ import { VideoPlayOverlayDisc } from './VideoThumbnailPlayOverlay';
  * What the video stage is doing. Every state except `buffering` is something a user must be able to tell apart at a
  * glance — "nothing is happening yet" and "I paused it by accident" used to look identical.
  *
+ * - `idle`: nothing has been asked of the player yet. The poster is the stage and its play disc is what starts the
+ *   stream, so this is the one phase whose tap must reach a `play()` call *inside* the gesture.
  * - `loading`: playback was requested, no frame yet — the network is the bottleneck.
  * - `blocked`: the element has data but sits paused, so the browser refused the autoplay and waits for a gesture.
  * - `paused`: a frame is on screen and playback is paused (by the user, or after seeking / a chapter jump).
  * - `buffering`: playing, but the next fragment has not arrived — the last frame stays on screen.
  * - `error`: fatal failure; the stream will not continue without a reload.
  */
-export type VideoOverlayPhase = 'loading' | 'blocked' | 'paused' | 'buffering' | 'error';
+export type VideoOverlayPhase = 'idle' | 'loading' | 'blocked' | 'paused' | 'buffering' | 'error';
 
 type Props = {
   /** `null` leaves the stage untouched — the healthy, playing case. */
@@ -40,13 +42,33 @@ const retryButtonClass = cn(
 );
 
 /**
- * Stage overlay for a video that is not simply playing: still loading, waiting for a gesture, paused, stalled, or
- * dead. Rendered on top of the `<video>`, which is what makes a tap mean one thing per phase instead of reaching a
- * native control whose state (play or pause) the user cannot see.
+ * Stage overlay for a video that is not simply playing: not asked for yet, still loading, waiting for a gesture,
+ * paused, stalled, or dead. Rendered on top of the `<video>`, which is what makes a tap mean one thing per phase
+ * instead of reaching a native control whose state (play or pause) the user cannot see.
  */
 export function VideoPlaybackOverlay({ phase, onEnsurePlayback, onRetry }: Props) {
   const { t } = useTranslation();
   if (phase === null) return null;
+
+  if (phase === 'idle') {
+    // The poster is doing the talking, so this has to look exactly like the disc the poster carried before there was
+    // a player to hang it on: no scrim, no wording, nothing over the picture but the button. It spans the whole stage
+    // because a movie starts on a tap anywhere on it — and that tap has to land in the same handler as the `play()`
+    // it leads to, or the autoplay policy will refuse it.
+    return (
+      <button
+        type='button'
+        onClick={(event) => {
+          event.stopPropagation();
+          onEnsurePlayback();
+        }}
+        aria-label={t('media.play')}
+        className='absolute inset-0 z-20 flex cursor-pointer items-center justify-center'
+      >
+        <VideoPlayOverlayDisc size='modal' />
+      </button>
+    );
+  }
 
   if (phase === 'buffering') {
     // Deliberately no scrim and no hit target: the last frame must stay visible — that is what separates a stall

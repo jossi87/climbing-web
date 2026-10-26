@@ -51,6 +51,13 @@ export type HlsPlayback = HlsQuality & {
    * so a fresh player — and, on the native path, a fresh `load()` — is the only recovery.
    */
   retry: () => void;
+  /**
+   * Fetch this stream's segments and buffer them. Only the master playlist is downloaded before this is called (see
+   * the lazy-loading note on {@link useHlsVideo}), so a caller that keeps a poster up until the user asks for
+   * playback has to call it from the gesture that starts it — nothing else will. Safe to call repeatedly, and a
+   * no-op on the native path, where the element loads its own source.
+   */
+  startLoad: () => void;
 };
 
 /** Prefer the playlist's NAME (e.g. "720p"); fall back to the decoded height. */
@@ -117,6 +124,10 @@ const INITIAL_BANDWIDTH_ESTIMATE_BPS = 10_000_000; // 10 Mbps
  * A null `src` (for example while the editor is showing something other than a stored movie) leaves the element
  * untouched, and changing the URL tears the previous attachment down first.
  *
+ * Loading is lazy: attaching the source costs one master playlist, and `startLoad` is what pulls the fragments. A
+ * caller that keeps a poster up until the user asks for playback therefore spends nothing on a movie that is swiped
+ * straight past, while still getting the rendition list the manifest carries.
+ *
  * Returns the available renditions plus the one currently playing, so callers can surface a quality control.
  */
 export function useHlsVideo(videoRef: RefObject<HTMLVideoElement | null>, src: string | null): HlsPlayback {
@@ -124,10 +135,23 @@ export function useHlsVideo(videoRef: RefObject<HTMLVideoElement | null>, src: s
   const [state, setState] = useState<HlsQualityState>(EMPTY_STATE);
   /** Bumped by `retry` to build the stream again from scratch. */
   const [attempt, setAttempt] = useState(0);
+  /** Set once a caller asked for the stream, so a player rebuilt by `retry` knows it still has to load. */
+  const wantsLoadRef = useRef(false);
+  /** The URL those settings belong to — a different movie is a different request. */
+  const loadedSrcRef = useRef<string | null>(null);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video || !src) return;
+
+    /**
+     * Another movie's URL means another movie's answer: nobody has asked to watch this one yet. A retry keeps the
+     * same URL and therefore keeps the flag, which is the point of it (see below).
+     */
+    if (loadedSrcRef.current !== src) {
+      loadedSrcRef.current = src;
+      wantsLoadRef.current = false;
+    }
 
     /**
      * Where hls.js is not driving the element there is nothing in between to notice a failure, so the element's own
@@ -148,10 +172,20 @@ export function useHlsVideo(videoRef: RefObject<HTMLVideoElement | null>, src: s
       // The optimistic bandwidth seed (see INITIAL_BANDWIDTH_ESTIMATE_BPS) belongs to a first, hopeful attempt. A
       // retry only ever happens after that attempt died, so it gets hls.js's own conservative default instead —
       // otherwise the retry would confidently pick the very rung that just failed.
-      const hls = new Hls(attempt === 0 ? { abrEwmaDefaultEstimate: INITIAL_BANDWIDTH_ESTIMATE_BPS } : undefined);
+      const hls = new Hls({
+        // Nothing is buffered until `startLoad`: the manifest alone is what a stage showing a poster needs (it is
+        // where the rendition list comes from), and a movie nobody has asked to watch has no business pulling
+        // fragments over a phone's data connection.
+        autoStartLoad: false,
+        ...(attempt === 0 ? { abrEwmaDefaultEstimate: INITIAL_BANDWIDTH_ESTIMATE_BPS } : {}),
+      });
       hlsRef.current = hls;
       hls.loadSource(src);
       hls.attachMedia(video);
+      // A retry replaces a player that died, but not the fact that someone asked to watch this movie: without this
+      // the replacement would sit on an empty buffer forever. (Calling `startLoad` before the manifest arrives is
+      // fine — hls.js remembers it and starts as soon as the playlist is parsed.)
+      if (wantsLoadRef.current) hls.startLoad();
 
       const onManifestParsed = () => {
         setState({
@@ -238,6 +272,13 @@ export function useHlsVideo(videoRef: RefObject<HTMLVideoElement | null>, src: s
     setAttempt((n) => n + 1);
   }, []);
 
+  const startLoad = useCallback(() => {
+    // Remembered even when there is no player yet (a caller can ask before the attach effect has run): the effect
+    // checks the flag and starts the buffer as soon as it exists.
+    wantsLoadRef.current = true;
+    hlsRef.current?.startLoad();
+  }, []);
+
   // Until the current stream reports its own manifest, expose a clean adaptive state rather than the previous one.
   const current = state.src === src ? state : EMPTY_STATE;
   return {
@@ -247,5 +288,6 @@ export function useHlsVideo(videoRef: RefObject<HTMLVideoElement | null>, src: s
     setLevel,
     error: current.error,
     retry,
+    startLoad,
   };
 }

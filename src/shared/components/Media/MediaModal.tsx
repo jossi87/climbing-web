@@ -47,7 +47,6 @@ import SvgViewer from '../SvgViewer';
 import VideoPlayer from './VideoPlayer';
 import type { HlsQuality } from '../../hooks/useHlsVideo';
 import { useCarouselSwipe, isPagePinchZoomed } from '../../hooks/useCarouselSwipe';
-import { VideoPlayOverlayDisc } from './VideoThumbnailPlayOverlay';
 import { ZoomableImage } from './ZoomableImage';
 import { PannellumViewer } from './PannellumViewer';
 import { Descent, Rappel } from '../../../utils/svg-utils';
@@ -216,9 +215,6 @@ type Props = {
   showLocation: boolean;
   gotoPrev: () => void;
   gotoNext: () => void;
-  playVideo: () => void;
-  stopVideo: () => void;
-  autoPlayVideo: boolean;
   optProblemId: number | null;
 };
 
@@ -238,9 +234,6 @@ const MediaModal = ({
   showLocation,
   gotoPrev,
   gotoNext,
-  playVideo,
-  stopVideo,
-  autoPlayVideo,
   optProblemId,
 }: Props) => {
   const { t } = useTranslation();
@@ -466,7 +459,7 @@ const MediaModal = ({
   /**
    * Letterboxed area around media: dismiss when clicking the empty stage.
    * `e.target === e.currentTarget` alone is wrong here — the flex layer is often the click target for
-   * letterboxing *around* a centered poster/video, which incorrectly closed the modal before `playVideo` ran.
+   * letterboxing *around* a centered poster/video, which incorrectly closed the modal before the media saw the tap.
    */
   const handleBackdropClick = (e: MouseEvent<HTMLDivElement>) => {
     if (wasSwiping.current || offsetX !== 0) return;
@@ -560,9 +553,10 @@ const MediaModal = ({
   })();
 
   /**
-   * Server-generated JPEG poster for this movie: the still the stage shows before a frame has been decoded. Shared by
-   * the tap-to-play branch and by `VideoPlayer`'s own `poster`, so both sides of the swap use the same image (and the
-   * same cache entry) and a slow start keeps the thumbnail instead of going black.
+   * Server-generated JPEG poster for this movie (`isMovie: false` on the URL asks for the still; `true` would be the
+   * video file itself and renders black in an `<img>`). It is what `VideoPlayer` hands the element as `poster`, so a
+   * movie shows this picture — the same cache entry the thumbnail used — until a frame is decoded, and it is also all
+   * the stage shows until the user asks for playback.
    */
   const moviePosterUrl = getMediaFileUrl(mediaIdentityId(m.identity), mediaIdentityVersionStamp(m.identity), false, {
     targetWidth: 1080,
@@ -896,10 +890,7 @@ const MediaModal = ({
                   {canEdit && (
                     <button
                       type='button'
-                      onClick={() => {
-                        stopVideo();
-                        navigate(`/media/edit/${mediaIdentityId(m.identity)}`);
-                      }}
+                      onClick={() => navigate(`/media/edit/${mediaIdentityId(m.identity)}`)}
                       className={mediaMenuItemClass}
                     >
                       <Edit size={14} className={mediaMenuIconClass} strokeWidth={2} /> {t('media.edit')}
@@ -1026,40 +1017,26 @@ const MediaModal = ({
                 </div>
               </div>
             ) : isInstagramEmbed && isVideo ? (
-              autoPlayVideo ? (
-                <div
-                  data-modal-media-root
-                  className='flex h-full min-h-0 w-full max-w-[100vw] items-center justify-center'
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <VideoPlayer
-                    media={m}
-                    optProblemId={optProblemId}
-                    className='h-full max-h-screen w-full'
-                    /* Same poster the branch above shows: the element keeps it up until the first frame. */
-                    poster={moviePosterUrl}
-                    onQualityChange={setVideoQuality}
-                  />
-                </div>
-              ) : (
-                <div
-                  data-modal-media-root
-                  className='group relative flex h-full min-h-0 w-full min-w-0 cursor-pointer'
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    playVideo();
-                  }}
-                >
-                  <img
-                    className='h-full min-h-0 w-full min-w-0 object-contain opacity-90 transition-opacity group-hover:opacity-100'
-                    src={moviePosterUrl}
-                    alt=''
-                  />
-                  <div className='pointer-events-none absolute inset-0 flex items-center justify-center'>
-                    <VideoPlayOverlayDisc size='modal' />
-                  </div>
-                </div>
-              )
+              <div
+                data-modal-media-root
+                className='flex h-full min-h-0 w-full max-w-[100vw] items-center justify-center'
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/*
+                 * The player is mounted whether or not playback has been asked for. Its `<video>` is the poster (the
+                 * same JPEG the branch here used to be an `<img>` of) and its overlay hangs the play disc on it, so
+                 * the tap that starts the movie lands on a `play()` *inside* the gesture. Mounting the player from
+                 * that tap instead — what this used to do — left `play()` with no gesture behind it, so the browser
+                 * refused and the first tap looked like it did nothing.
+                 */}
+                <VideoPlayer
+                  media={m}
+                  optProblemId={optProblemId}
+                  className='h-full max-h-screen w-full'
+                  poster={moviePosterUrl}
+                  onQualityChange={setVideoQuality}
+                />
+              </div>
             ) : isInstagramEmbed ? (
               <img
                 data-modal-media-root
@@ -1079,44 +1056,21 @@ const MediaModal = ({
                   if (!wasSwiping.current && offsetX === 0) closeSidebarOrModal();
                 }}
               />
-            ) : autoPlayVideo ? (
+            ) : (
               <div
                 data-modal-media-root
                 className='flex h-full min-h-0 w-full max-w-[100vw] items-center justify-center'
                 onClick={(e) => e.stopPropagation()}
               >
+                {/* Mounted from the start for the same reason as the Instagram branch above: the poster is the
+                    element's own, and the tap that dismisses it has to reach `play()` inside the gesture. */}
                 <VideoPlayer
                   media={m}
                   optProblemId={optProblemId}
                   className='h-full max-h-screen w-full'
-                  /* Same poster the branch above shows: the element keeps it up until the first frame. */
                   poster={moviePosterUrl}
                   onQualityChange={setVideoQuality}
                 />
-              </div>
-            ) : (
-              <div
-                data-modal-media-root
-                className='group relative flex h-full min-h-0 w-full min-w-0 cursor-pointer'
-                onClick={(e) => {
-                  e.stopPropagation();
-                  playVideo();
-                }}
-              >
-                {/*
-                 * Third arg must be `isMovie: false` — that requests the server-generated JPEG poster.
-                 * `true` is for the video file (VideoPlayer) and breaks `<img src>` (black / no frame).
-                 * Match the image branch: fill the swipe stage with h-full w-full + object-contain so the poster
-                 * centers on mobile; max-* only caps intrinsic size and left the play overlay misaligned.
-                 */}
-                <img
-                  className='h-full min-h-0 w-full min-w-0 object-contain opacity-90 transition-opacity group-hover:opacity-100'
-                  src={moviePosterUrl}
-                  alt=''
-                />
-                <div className='pointer-events-none absolute inset-0 flex items-center justify-center'>
-                  <VideoPlayOverlayDisc size='modal' />
-                </div>
               </div>
             )}
           </div>
