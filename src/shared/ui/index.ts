@@ -28,5 +28,12 @@ export * from './TextLink';
 export * from './Timeline';
 export * from './TradGearMarker';
 export * from './UserCard';
-export * from './UserSelector';
+/*
+ * `UserSelector` is deliberately **not** re-exported here. It is the only module in this barrel that imports
+ * `react-select` (81 KB raw / 28 KB brotli), and Rollup/Rolldown treat local modules as side-effectful by default,
+ * so a single `export *` was enough to keep the whole `react-select` chunk in the entry's static graph — i.e. every
+ * visitor downloaded and parsed it before the frontpage's first API request, although only the media/problem
+ * editors use it. Import it directly instead: `import { UserSelector } from '../../ui/UserSelector'`
+ * (see `MediaMetadataCard`, `ProblemEdit`).
+ */
 export * from './VisibilitySelector';

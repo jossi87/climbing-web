@@ -1,5 +1,5 @@
 import AppRoutes from './routes/AppRoutes';
-import { MetaProvider } from './shared/components/Meta';
+import { FrontpagePrefetch, MetaProvider } from './shared/components/Meta';
 import Header from './shared/layout/Header';
 import Footer from './shared/layout/Footer';
 import { ThemeSync } from './shared/components/ThemeSync';
@@ -13,50 +13,55 @@ const App = () => {
   const { t } = useTranslation();
 
   return (
-    <MetaProvider>
-      <ThemeSync />
-      <LanguageSync />
-      <div className='bg-surface-dark flex min-h-screen flex-col font-sans text-slate-300 antialiased'>
-        <a
-          href='#main-content'
-          className='focus:border-brand-border focus:bg-surface-card focus:ring-brand-border/80 focus:ring-offset-surface-dark sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[10000] focus:inline-flex focus:rounded-md focus:border focus:px-4 focus:py-2.5 focus:text-sm focus:font-medium focus:text-slate-100 focus:shadow-lg focus:ring-2 focus:ring-offset-2 focus:outline-none'
-        >
-          {t('a11y.skipToContent')}
-        </a>
-        <Header />
-        {/*
-          Desktop (>= 1024px): solid dark band behind the page content so the header's backdrop-filter samples
-          charcoal, not the pale page canvas. Positioned at the top of the page, behind the main content (z-[45]),
-          above the page background. The header's backdrop-filter samples this strip when there's no page content
-          behind the nav, and samples the page content (cards, images) when the nav is over data.
-        */}
-        <div aria-hidden className={appShellLightBackdropStripClass} role='presentation' />
-        {/*
-          `.app-shell-main` reserves the first screen (viewport minus header) for page content **below `lg`**. Without
-          it the shell's `min-h-screen` + `grow` pin the footer inside the first viewport while a route is loading,
-          and pushing it out again once the content lands cost 0.11–0.30 CLS on mobile. From `lg` up `grow` alone
-          bottom-anchors the footer (a reservation there only added a dead band and hid the footer on tall screens).
-          See `.app-shell-main` in `index.css`.
-        */}
-        <main
-          id='main-content'
-          className='app-shell-main max-w-container relative z-[46] mx-auto flex w-full min-w-0 grow flex-col px-4 pt-0 pb-10 sm:px-6 sm:pt-0 sm:pb-10 lg:px-8 lg:pt-4 lg:pb-6 xl:pt-5 xl:pb-8'
-        >
-          <Suspense
-            fallback={
-              <div className='flex min-h-0 w-full min-w-0 flex-1 flex-col'>
-                <Loading />
-              </div>
-            }
+    <>
+      {/* Above `MetaProvider` on purpose: that provider renders `null` until `/meta` answers, so a child of it could
+          not start the `/frontpage` request in parallel. See the component doc in `shared/components/Meta/Meta.tsx`. */}
+      <FrontpagePrefetch />
+      <MetaProvider>
+        <ThemeSync />
+        <LanguageSync />
+        <div className='bg-surface-dark flex min-h-screen flex-col font-sans text-slate-300 antialiased'>
+          <a
+            href='#main-content'
+            className='focus:border-brand-border focus:bg-surface-card focus:ring-brand-border/80 focus:ring-offset-surface-dark sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[10000] focus:inline-flex focus:rounded-md focus:border focus:px-4 focus:py-2.5 focus:text-sm focus:font-medium focus:text-slate-100 focus:shadow-lg focus:ring-2 focus:ring-offset-2 focus:outline-none'
           >
-            <div className='flex min-h-0 w-full min-w-0 flex-1 flex-col'>
-              <AppRoutes />
-            </div>
-          </Suspense>
-        </main>
-        <Footer />
-      </div>
-    </MetaProvider>
+            {t('a11y.skipToContent')}
+          </a>
+          <Header />
+          {/*
+            Desktop (>= 1024px): solid dark band behind the page content so the header's backdrop-filter samples
+            charcoal, not the pale page canvas. Positioned at the top of the page, behind the main content (z-[45]),
+            above the page background. The header's backdrop-filter samples this strip when there's no page content
+            behind the nav, and samples the page content (cards, images) when the nav is over data.
+          */}
+          <div aria-hidden className={appShellLightBackdropStripClass} role='presentation' />
+          {/*
+            `.app-shell-main` reserves the first screen (viewport minus header) for page content **below `lg`**. Without
+            it the shell's `min-h-screen` + `grow` pin the footer inside the first viewport while a route is loading,
+            and pushing it out again once the content lands cost 0.11–0.30 CLS on mobile. From `lg` up `grow` alone
+            bottom-anchors the footer (a reservation there only added a dead band and hid the footer on tall screens).
+            See `.app-shell-main` in `index.css`.
+          */}
+          <main
+            id='main-content'
+            className='app-shell-main max-w-container relative z-[46] mx-auto flex w-full min-w-0 grow flex-col px-4 pt-0 pb-10 sm:px-6 sm:pt-0 sm:pb-10 lg:px-8 lg:pt-4 lg:pb-6 xl:pt-5 xl:pb-8'
+          >
+            <Suspense
+              fallback={
+                <div className='flex min-h-0 w-full min-w-0 flex-1 flex-col'>
+                  <Loading />
+                </div>
+              }
+            >
+              <div className='flex min-h-0 w-full min-w-0 flex-1 flex-col'>
+                <AppRoutes />
+              </div>
+            </Suspense>
+          </main>
+          <Footer />
+        </div>
+      </MetaProvider>
+    </>
   );
 };
 

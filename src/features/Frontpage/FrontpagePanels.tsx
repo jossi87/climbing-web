@@ -1,4 +1,4 @@
-import { Fragment, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Camera, Check, MessageSquare, Plus } from 'lucide-react';
 import Linkify from 'linkify-react';
@@ -1012,16 +1012,21 @@ export const FrontpagePanels = ({ frontpage, isLoading = false }: Props) => {
    * entries), but a small region returns far less in one or more buckets — and every logged-in visitor browses their
    * *own* region (`getAuthenticatedFrontpage(userId)`), so a large share of mobile sessions gets a sparse payload.
    * Without this the panels collapse on settle and drag everything below them — footer included — up the page:
-   * measured **0.29 CLS** on the mobile frontpage with a sparse payload
-   * (`node scripts/cwv-probe.mjs --sparse=2 --scroll=950 https://brattelinjer.no/`), the same value CrUX reports for `/`.
+   * measured **0.29 CLS** on the mobile frontpage with a sparse payload (DevTools Performance panel, skeleton → settle,
+   * mobile CPU/network throttling), the same value CrUX reports for `/`.
    *
    * The height is read from the rendered skeleton (no magic numbers, and it tracks the responsive grid) and applied as
    * `min-height` to the loaded stack — so a fuller payload can still grow, but a thinner one can no longer shrink it.
-   * Measured in a layout effect, i.e. before the browser paints the skeleton.
+   *
+   * Read in a **passive** effect, not a layout effect. The value is only consumed when the payload arrives — hundreds
+   * of milliseconds later — while a layout effect reads `getBoundingClientRect()` in the very commit that just mutated
+   * the DOM, which forces a synchronous style + layout of the whole document *before* the first paint. That is the
+   * "forced reflow" PageSpeed attributed to the entry chunk (~70 ms on a throttled mobile CPU), and it sat right in
+   * front of the LCP.
    */
   const stackRef = useRef<HTMLDivElement>(null);
   const [reservedHeight, setReservedHeight] = useState<number>();
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (isLoading && stackRef.current) {
       setReservedHeight(stackRef.current.getBoundingClientRect().height);
     }

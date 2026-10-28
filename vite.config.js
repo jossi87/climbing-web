@@ -35,54 +35,26 @@ export default defineConfig(({ mode }) => {
       outDir: 'build',
       target: 'esnext',
       cssCodeSplit: true,
-      modulePreload: {
-        /**
-         * Keep frontpage startup lean by avoiding eager modulepreload for route-only/heavy feature chunks.
-         * Chunks still load on-demand when those routes/components are requested.
-         */
-        resolveDependencies: (_filename, deps) => {
-          const preloadDenylist = [
-            'vendor-auth',
-            'vendor-charts',
-            'vendor-date-fns',
-            'vendor-datepicker',
-            'vendor-leaflet',
-            'vendor-flat',
-            'vendor-select',
-            'vendor-sentry',
-          ];
-          return deps.filter((dep) => !preloadDenylist.some((name) => dep.includes(name)));
-        },
-      },
       chunkSizeWarningLimit: 1000,
-      // Rolldown output options (Vite 8). Both manualChunks and the oxc minifier
-      // live here — providing `rolldownOptions` replaces the legacy `rollupOptions`
-      // compat shim entirely.
+      /**
+       * **No hand-written chunk groups.** Grouping every library into a fixed `vendor-*` chunk made those chunks
+       * import each other, because several of them share transitive dependencies (`clsx`, `date-fns`, `react-is`).
+       * A chunk that only *needs one shared binding* from another chunk becomes a static import of it, so the
+       * route-only libraries — recharts, react-datepicker, react-select — ended up in the entry's static graph and
+       * therefore on the frontpage's critical path: 234 KB (brotli) of recharts/datepicker/select downloaded and
+       * parsed before the first API request could even start, while `src/features/Problem` and
+       * `src/features/Sector` — the only modules that import them — are `React.lazy` routes.
+       *
+       * Rolldown's default chunking follows the `React.lazy` boundaries instead, so a route-only library stays in
+       * that route's chunk. It also cannot emit cross-vendor cycles, because it derives shared chunks itself.
+       *
+       * The former `modulePreload.resolveDependencies` denylist is gone with it: it only *hid* the eager chunks
+       * from the preload list (they still loaded, just discovered late, which is strictly worse than either
+       * preloading or not needing them), and its chunk-name matching would no longer resolve now that chunks are
+       * named by Rolldown.
+       */
       rolldownOptions: {
         output: {
-          manualChunks(id) {
-            if (id.includes('node_modules')) {
-              if (id.includes('recharts')) return 'vendor-charts';
-              if (id.includes('leaflet')) return 'vendor-leaflet';
-              if (id.includes('lucide-react')) return 'vendor-icons';
-              if (id.includes('react-datepicker')) return 'vendor-datepicker';
-              if (id.includes('date-fns')) return 'vendor-date-fns';
-              if (id.includes('react-select')) return 'vendor-select';
-              if (id.includes('flat')) return 'vendor-flat';
-              if (id.includes('@auth0')) return 'vendor-auth';
-              if (id.includes('@sentry')) return 'vendor-sentry';
-              const isReactCoreLib =
-                /[\\/]node_modules[\\/]react[\\/]/.test(id) ||
-                /[\\/]node_modules[\\/]react-dom[\\/]/.test(id) ||
-                /[\\/]node_modules[\\/]react-router[\\/]/.test(id) ||
-                /[\\/]node_modules[\\/]react-router-dom[\\/]/.test(id) ||
-                /[\\/]node_modules[\\/]scheduler[\\/]/.test(id);
-              if (isReactCoreLib) {
-                return 'vendor-react-core';
-              }
-              return undefined;
-            }
-          },
           // Oxc minifier (Vite 8 default). Drop console/debugger in production builds.
           minify: {
             compress: {

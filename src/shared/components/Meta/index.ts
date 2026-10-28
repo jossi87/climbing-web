@@ -1,2 +1,2 @@
-export { MetaProvider } from './Meta';
+export { FrontpagePrefetch, MetaProvider } from './Meta';
 export { buildGradeDomain, useFaYears, useGradeSystem, useGradeSystems, useGrades, useMeta } from './context';

@@ -3,6 +3,34 @@
 /* App theme is `html[data-theme]` (not OS `prefers-color-scheme`) — use `light:*` utilities alongside dark defaults */
 @custom-variant light (&:where([data-theme='light'] *));
 
+/*
+ * Inter — self-hosted variable font (`public/fonts`, wght 100–900), preloaded from index.html.
+ * Replaces the Google Fonts stylesheet: one same-origin, long-cached request instead of preconnect + DNS + TLS +
+ * cross-origin CSS before the first font byte. Only two subsets ship: `latin` and `latin-ext` — the `cs` locale needs
+ * ř/č/ě/ů/ž — and the browser fetches a subset only when rendered text falls inside its `unicode-range`.
+ */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-latin-wght-normal.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC,
+    U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-latin-ext-wght-normal.woff2') format('woff2');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+    U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
 @theme {
   /* Slightly cleaner than legacy #c6a15b — less olive on dark panels, still clearly “site gold”. */
   --color-brand: #c9ac62;

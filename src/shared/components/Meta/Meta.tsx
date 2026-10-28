@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import { keepPreviousData } from '@tanstack/react-query';
+import { useLocation } from 'react-router-dom';
 import { useData } from '../../../api';
+import type { Success } from '../../../@types/buldreinfo';
 import { type Metadata } from './context';
 import { MetaContext } from './context';
 
@@ -29,6 +31,29 @@ const selectNormalisedMeta = (data: Metadata) => {
     data.activityGradeSystemIds = data.regionGradeSystemIds;
   }
   return data;
+};
+
+/**
+ * **Warms the aggregate `/frontpage` payload while `/meta` is still in flight.**
+ *
+ * `MetaProvider` renders no children until `/meta` answers (consumers read `Metadata` as non-nullable), so
+ * `Frontpage` — and with it the `useData('/frontpage')` call — used to mount only *after* that round trip: the two
+ * requests were strictly serial, even though they are independent. `/frontpage` is the slower of the two (~515 ms of
+ * server time) and it carries the LCP image, so the serialization sat directly in the LCP critical chain.
+ *
+ * This is the same hook with the same arguments, so `useKey` derives the identical query key
+ * (`['/frontpage', { isAuthenticated, language }]`): React Query dedupes while it is in flight and `Frontpage` then
+ * reads the very same cache entry, with no second request and no key mismatch for signed-in visitors.
+ *
+ * It renders nothing. `App` mounts it **above** `MetaProvider` — as a child of the provider it would only mount after
+ * `/meta` had answered, i.e. exactly the serialization this exists to remove. As its own component the cache update it
+ * receives re-renders nothing else, and the `useLocation()` gate keeps non-frontpage entries from paying for a payload
+ * they never read.
+ */
+export const FrontpagePrefetch = () => {
+  const isFrontpage = useLocation().pathname === '/';
+  useData<Success<'getFrontpage'>>('/frontpage', { enabled: isFrontpage });
+  return null;
 };
 
 export const MetaProvider = ({ children }: Props) => {
