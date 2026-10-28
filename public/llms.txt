@@ -7,6 +7,7 @@ Important notes:
 - All content is community-contributed and edited. Route information, grades and access rules can change over time; verify locally when it matters.
 - Areas, sectors and problems have stable URLs: `/area/<id>`, `/sector/<id>`, `/problem/<id>`. The complete machine-readable list of URLs is in `/api/sitemap.txt`.
 - The backend API is documented with OpenAPI at `/api/swagger-ui` and `/api/v3/api-docs`.
+- Agents and registries can discover the API through the ARD manifest at `/.well-known/ard.json`.
 
 ## Core pages
 - [Front page](/): Region overview, statistics and recent ascents.

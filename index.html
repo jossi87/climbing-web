@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="describedby" href="/llms.txt" />
+    <link rel="ard" href="/.well-known/ard.json" type="application/json" />
     <link rel="preload" href="/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=6.0, minimum-scale=1.0, user-scalable=yes" />
     <meta name="description" content="Climbing guide for Norway, covering bouldering, route climbing, and ice climbing." />
@@ -44,12 +45,6 @@
       })();
     </script>
     <script>
-      /*
-       * Sets <html lang> before the bundle loads, so :lang() styles and assistive tech agree with the
-       * locale i18next is about to pick. Mirrors resolveInitialLanguage() in src/i18n/config.ts, which
-       * likewise runs before /meta brings the region default: stored override, then browser, then
-       * English. Keep `supported`/`fallback` in sync with SUPPORTED_LANGUAGES.
-       */
       (function () {
         var supported = ['en', 'cs'];
         var fallback = 'en';
