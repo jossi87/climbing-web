@@ -216,7 +216,29 @@ const PanelCard = ({
  * behind. With `truncate` on every text cell, long routes / areas / names ellipsize instead of wrapping back to a
  * third line — the whole point of the redesign.
  */
-const rowClass = 'group/row flex items-start gap-3 px-4 py-2 sm:px-5 sm:py-2.5';
+/**
+ * **Row shell** — avatar + `gap-3` + the two-line text block. The vertical padding is added per panel, because the
+ * amount a row needs depends on how much of its **line 2** is reserved for the location link's tap target (see
+ * {@link rowClass} vs {@link feedRowClass}).
+ */
+const rowBaseClass = 'group/row flex items-start gap-3 px-4 sm:px-5';
+/**
+ * Comments rows: line 2 is the (up to 2-line) comment body, which already fills the row, so the row keeps its own
+ * `py-2 sm:py-2.5` breathing room and no line is stretched for a tap target.
+ */
+const rowClass = cn(rowBaseClass, 'py-2 sm:py-2.5');
+/**
+ * **FA / Recent rows** — line 2 reserves ~10px of extra height *under* its text for the location link's tap target
+ * (see {@link sublineClass}), so the row comes out ~50.8px mobile / ~56.8px `sm+` against 50 / 56.6px before. That
+ * extra height lands below the location text, which means the panel's padding-to-content ratio is unchanged in the
+ * place the eye actually reads — the route and its location stay as tightly paired as they always were.
+ */
+const feedRowClass = cn(rowBaseClass, 'py-1');
+/**
+ * **No extra gap between the two lines.** The location cell reserves its tap height *downwards* (see
+ * {@link sublineClass}), so nothing here has to buy vertical room: the location text still sits one line box below the
+ * route name, exactly like before the tap target existed.
+ */
 const rowGridClass = 'min-w-0 flex-1 space-y-0 sm:space-y-0.5';
 const rowLineClass = 'flex items-baseline justify-between gap-3';
 /**
@@ -236,8 +258,10 @@ const headlineLineClass = 'm-0 min-w-0 truncate text-[13px] leading-tight sm:tex
  * That left a phantom 4–5px under each row vs. the location `<p>` (which is 12px × 1.25 = 15px), and made it
  * impossible to size the skeleton to match the real row exactly (skeleton looked taller than data on settle).
  *
- * With `leading-tight` here AND on `bylineRightClass`, line 2 = `max(15px, 15px) = 15px`, identical for rows
- * with-or-without a byline. Skeleton can floor at `min-h-[15px]` and the panel doesn't shift on data load.
+ * With `leading-tight` here AND on `bylineRightClass`, the right column never out-grows the row: on line 1 the
+ * headline `<p>` (16.25px) still dictates the flex line, and on line 2 the location `<p>` reserves the tap height for
+ * its link *below* the text (see {@link sublineClass}), so the byline's 15px line box is what the baseline sits on,
+ * unchanged. That keeps the skeleton able to mirror the real row exactly — see {@link SkeletonFeedRow}.
  */
 const timeAgoClass =
   'shrink-0 whitespace-nowrap text-[11px] font-normal leading-tight tabular-nums tracking-tight text-slate-500 sm:text-[12px]';
@@ -257,9 +281,10 @@ const timeAgoClass =
  * the location means: names fit → they render in full, right-aligned; names don't fit → both sides truncate and the
  * "…" is pinned to the row edge, never floating mid-row.
  *
- * `leading-tight` keeps the line box at 15px so it doesn't out-grow the location `<p>` (see {@link timeAgoClass}).
- * The Comments panel re-adds a capped, non-shrinking variant at its call site — there the byline shares line 2 with
- * the **wrapping** comment body, which has to keep its own share of the row.
+ * `leading-tight` keeps the line box at 15px so the byline keeps its size while line 2 reserves tap height for the
+ * location link (see {@link sublineClass}) — the reservation happens *under* the text, so the byline's baseline doesn't
+ * move. The Comments panel re-adds a capped, non-shrinking variant at its call site — there the byline shares line 2
+ * with the **wrapping** comment body, which has to keep its own share of the row.
  */
 const bylineRightClass =
   'min-w-0 truncate whitespace-nowrap text-right text-[11px] font-normal leading-tight tracking-tight text-slate-500 sm:text-[12px]';
@@ -275,8 +300,12 @@ const bylineRightClass =
  * single-link route name lost its ellipsis altogether. Plain inline text is cut at the clip edge, so the "…" always
  * lands exactly where the cell ends.
  *
- * Tap area is unchanged in practice: these links live in cells that clip overflow, so on a 15–17px line box the
- * padding was only partly hittable either way.
+ * Tap area depends on the **cell around the link**, which the link cannot grow on its own: these links live in cells that
+ * clip overflow (`truncate`), so only the part of the padding that still fits inside the cell is hittable
+ * ({@link sublineClass} reserves exactly that room for the FA / Recent location link and grows its box *downward*). The
+ * cells that stay on a tight line box are the headline links (route, and the location link of the Comments panel): there
+ * the 15–17px line box clips most of the padding, but those links sit inside a text block, which exempts them from the
+ * 24px minimum.
  */
 const hitBoxLink = 'py-0.5';
 /**
@@ -292,8 +321,32 @@ const problemLinkClass = cn(designContract.typography.feed.routeTitle, hitBoxLin
  * takes its slice of the row. **Don't reuse this for content that should wrap** (e.g. the multi-line comment body) —
  * `truncate` includes `white-space: nowrap` which would defeat any `line-clamp-N` you stack on top. The Comments
  * panel uses {@link commentBodyClass} instead.
+ *
+ * **The extra height *under* the text is the location link's tap target — don't remove `pb-2.5 sm:pb-3`.**
+ *
+ * The cell holds one link and no other text, so axe's `target-size` rule (WCAG 2.5.8 / Lighthouse "Touch targets") sees
+ * it as a standalone widget rather than as text inline in a sentence — the exemption that covers the route link in line
+ * 1, which shares its block with the grade. A standalone target needs **24×24px**, but an inline element's height comes
+ * from its font, not from `line-height`, so the box has to be built from padding: `[&>a]:pt-0 [&>a]:pb-[10px]` turns the
+ * ~15px text into a **25px** box (26px at `sm+`) — a pixel of margin over the minimum so font-metric rounding can't
+ * land exactly on the line. This cell's `pb` reserves that much room *inside* `truncate`'s clip so no part of the box
+ * is cut off (cell 16 + 10 = 26px mobile, 17 + 12 = 29px `sm+`).
+ *
+ * **The padding is deliberately one-sided.** A centred box (`py-[5px]`, which is what an earlier pass used) forces the
+ * text *down* to make room above itself, and the location visibly detaches from the route name — measured 8px of gap
+ * where there used to be 0. Growing the box downward instead keeps the text exactly one line box below the route (the
+ * gap is unchanged: {@link rowGridClass} adds nothing) and spends the tap height on the row's lower whitespace, where
+ * nothing is drawn. That is why {@link feedRowClass} only needs `py-1`: the reserved height sits inside line 2.
+ *
+ * Child selectors outrank the link's own {@link hitBoxLink} `py-0.5` (0,1,1 vs 0,1,0), so this one link grows
+ * downward while every other inline link in the row keeps its normal centred padding.
+ *
+ * The rule wants ≥24px in **both** axes: the width comes from the area name (41px for the shortest name in the live
+ * dataset), so a hypothetical 1–3 character area name would still sit under 24px wide. A taller cell can't fix that —
+ * the cell would have to grow horizontally (or the link would need to swallow the byline gap).
  */
-const sublineClass = 'm-0 min-w-0 truncate text-[11.5px] leading-tight text-slate-400 sm:text-[12px]';
+const sublineClass =
+  'm-0 min-w-0 truncate pb-2.5 text-[11.5px] leading-4 text-slate-400 sm:pb-3 sm:text-[12px] sm:leading-[17px] [&>a]:pt-0 [&>a]:pb-[10px]';
 /**
  * Comment body line — same metrics as `sublineClass` but **wraps** to allow `line-clamp-2`. `slate-300` is one notch
  * brighter than the surrounding slate-400 metadata so the comment reads as the row's actual content (the panel
@@ -489,7 +542,10 @@ function FirstAscentsPanel({ items, isBouldering }: { items: FirstAscent[]; isBo
           {items.map((a, i) => {
             const users = Array.isArray(a.users) ? a.users : [];
             return (
-              <li key={`fa-${a.problemId ?? i}-${i}`} className={cn(rowClass, i >= FEED_MOBILE_CAP && 'max-sm:hidden')}>
+              <li
+                key={`fa-${a.problemId ?? i}-${i}`}
+                className={cn(feedRowClass, i >= FEED_MOBILE_CAP && 'max-sm:hidden')}
+              >
                 <div className='shrink-0 pt-0.5'>
                   <AvatarGroup
                     items={users.map((u) => ({
@@ -556,7 +612,7 @@ function RecentAscentsPanel({ items }: { items: Ascent[] }) {
             return (
               <li
                 key={`tick-${a.problemId ?? i}-${u?.id ?? i}-${i}`}
-                className={cn(rowClass, i >= FEED_MOBILE_CAP && 'max-sm:hidden')}
+                className={cn(feedRowClass, i >= FEED_MOBILE_CAP && 'max-sm:hidden')}
               >
                 <div className='shrink-0 pt-0.5'>
                   <ClickableAvatar
@@ -881,25 +937,26 @@ function CommentsPanel({ items }: { items: LastComment[] }) {
  *   - Line 1: headline `<p>` is `13px × leading-tight (1.25) = 16.25px` mobile, `14px × 1.25 = 17.5px` on `sm+`. The
  *     right-side `timeAgo` span is `11–12px × leading-tight = 13.75–15px` — the `<p>` dominates, so the flex line is
  *     **~17px mobile / ~18px sm+**. Skeleton floors at `min-h-[17px] sm:min-h-[18px]`.
- *   - Line 2: location `<p>` (`sublineClass`, 12px × 1.25 = 15px) and byline `<span>` (`bylineRightClass`, 12px ×
- *     **`leading-tight`** = 15px). With both pinned to `leading-tight`, the flex line is **15px regardless of
- *     whether the row has a byline**. Without `leading-tight` on the span, it inherited body's `leading-relaxed`
- *     (1.625) = ~19.5px, making the skeleton look ~5px tall per row vs. the eventual data — that's the "skeleton
- *     bigger than data → panel shrinks on load" jump the user reported.
+ *   - Line 2: location `<p>` (`sublineClass`) is **26px** mobile / **29px** `sm+` — that is the 15–17px line box plus the
+ *     `pb-2.5 sm:pb-3` the cell reserves *below* the text for the location link's tap box (25px tall; 24px is the WCAG
+ *     2.5.8 minimum — see {@link sublineClass}). The byline `<span>` (`bylineRightClass`) stays at `leading-tight` and
+ *     baseline-aligned with the location text, so it doesn't affect the line height. Skeleton floors at `min-h-[26px]
+ *     sm:min-h-[29px]` and pins its bars to the **top** of that band (`items-start`), because the reserved space is
+ *     below the text.
  *
  * Bars: `h-3 sm:h-3.5` on line 1 (12 / 14px) approximates cap height of `13 / 14px` text; `h-2.5` on line 2 (10px)
- * matches the smaller subline / byline. Total content = ~32px mobile / ~33px sm+, matching the real row to the px
- * (was 35px before the headline was pinned to feed sizing).
+ * matches the smaller subline / byline. Total content = ~43px mobile / ~49px sm+, matching the real row to the px —
+ * the panel doesn't shift when the data lands.
  */
 const SkeletonFeedRow = ({ hideOnMobile = false, spacer = false }: { hideOnMobile?: boolean; spacer?: boolean }) => (
-  <div className={cn(rowClass, spacer ? 'invisible' : 'animate-pulse', hideOnMobile && 'max-sm:hidden')}>
+  <div className={cn(feedRowClass, spacer ? 'invisible' : 'animate-pulse', hideOnMobile && 'max-sm:hidden')}>
     <div className='skeleton-bar h-8 w-8 shrink-0 rounded-full' />
     <div className={rowGridClass}>
       <div className={cn(rowLineClass, 'min-h-[17px] sm:min-h-[18px]')}>
         <div className='skeleton-bar h-3 w-[55%] min-w-0 rounded sm:h-3.5' />
         <div className='skeleton-bar-muted h-3 w-10 shrink-0 rounded' />
       </div>
-      <div className={cn(rowLineClass, 'min-h-[15px]')}>
+      <div className={cn(rowLineClass, 'min-h-[26px] items-start sm:min-h-[29px]')}>
         <div className='skeleton-bar-muted h-2.5 w-[42%] min-w-0 rounded' />
         <div className='skeleton-bar-muted h-2.5 w-[28%] shrink-0 rounded' />
       </div>
