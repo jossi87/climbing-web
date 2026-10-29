@@ -1,6 +1,7 @@
 import type { components } from '../../@types/buldreinfo/swagger';
 import { saveFile } from '../../utils/saveFile';
 import { buildXlsx, type XlsxCell, type XlsxSheet } from '../../utils/xlsx';
+import { startingAltitudeOf } from './startingAltitude';
 
 /**
  * The export button's client-side path: writes the rows the filter leaves (what the list is showing) as a workbook,
@@ -8,8 +9,9 @@ import { buildXlsx, type XlsxCell, type XlsxSheet } from '../../utils/xlsx';
  *
  * The sheet mirrors the API's own `/toc/xlsx` export (`MetaController.writeSheetToc`) — same tab name, same column
  * labels, same discipline-dependent FA/FFA columns, same file name pattern — so both downloads read alike. What it
- * adds is `ASCENTS`, and what it does not have is the second sheet with the individual pitches of multi-pitch routes:
- * that data comes from a separate API call (`/toc/pitches`) and is not part of the filtered list.
+ * adds is `ASCENTS`, and what it fills in is `STARTING_ALTITUDE` (the map elevation where a problem has no registered
+ * one, see {@link startingAltitudeOf}). What it does not have is the second sheet with the individual pitches of
+ * multi-pitch routes: that data comes from a separate API call (`/toc/pitches`) and is not part of the filtered list.
  */
 
 type Toc = components['schemas']['Toc'];
@@ -88,6 +90,12 @@ const absoluteUrl = (origin: string, path: string | undefined): string => {
  * The FA/FFA columns follow the discipline: a boulder rarely has a separate aid ascent, so the API's bouldering sheet
  * writes the first *free* ascent into `FA_YEAR`/`FA_USER` and skips the `FFA_*` pair, while routes get both. `null`
  * leaves the cell empty, which is what an unknown year/altitude should read as.
+ *
+ * `STARTING_ALTITUDE` is the number the list shows, not just the registered field: a problem without one falls back to
+ * its map elevation ({@link startingAltitudeOf}), which is what the altitude filter already matches on — a downloaded
+ * row can therefore carry a value in a column the API's own sheet would leave empty. It stays a plain number (no `~`)
+ * so the column sorts and sums in Excel; the `~` on the page means "read from the map", which the empty registered
+ * value already implies.
  */
 const problemRecord = (
   problem: TocProblem,
@@ -96,6 +104,7 @@ const problemRecord = (
   const { region, area, sector, options } = context;
   const { isBouldering, origin } = options;
   const url = absoluteUrl(origin, problem.url);
+  const startingAltitude = startingAltitudeOf(problem);
 
   return {
     REGION: region,
@@ -107,7 +116,7 @@ const problemRecord = (
     GRADE: problem.grade ?? '',
     FA_YEAR: (isBouldering ? problem.ffaYear : problem.faYear) ?? null,
     LENGTH_METER: problem.lengthMeter ?? null,
-    STARTING_ALTITUDE: problem.startingAltitude ?? null,
+    STARTING_ALTITUDE: startingAltitude?.meters ?? null,
     // “Boulder (Outdoor)”, the same label the list and the API's sheet use.
     TYPE: problem.t ? `${problem.t.type ?? ''} (${problem.t.subType ?? ''})` : '',
     ...(isBouldering ? {} : { PITCHES: Math.max(problem.numPitches ?? 1, 1) }),

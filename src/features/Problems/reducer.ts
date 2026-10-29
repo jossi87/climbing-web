@@ -6,6 +6,7 @@ import type { components } from '../../@types/buldreinfo/swagger';
 import { captureSentryException, captureSentryMessage } from '../../utils/sentry';
 import { applyFilterDiff, decodeFilterHash, encodeFilterHash, filterDiff } from './filterHash';
 import { type GradeFilter, type GradeRange, buildGradeFilters } from './gradeFilters';
+import { startingAltitudeOf } from './startingAltitude';
 
 type FilterResults = {
   /** The catalogue with everything the active filter drops taken out — i.e. what the list renders. */
@@ -482,10 +483,10 @@ const filter = (state: State): State => {
                           // 0 means "no bound" on either side of the range.
                           const low = filterStartingAltitudeLow || Number.MIN_SAFE_INTEGER;
                           const high = filterStartingAltitudeHigh || Number.MAX_SAFE_INTEGER;
-                          const actualAlt: number =
-                            ((problem.startingAltitude ?? 0) > 0
-                              ? problem.startingAltitude
-                              : (problem.coordinates?.elevation ?? 0)) ?? 0;
+                          // The altitude the list shows for the row — registered value, else its map elevation
+                          // (`startingAltitudeOf`). A problem with neither reads as 0, which is what it has always
+                          // compared as: out of range for a minimum, but inside a maximum-only range.
+                          const actualAlt = startingAltitudeOf(problem)?.meters ?? 0;
 
                           if (actualAlt < low || actualAlt > high) {
                             filteredOut.problems += 1;

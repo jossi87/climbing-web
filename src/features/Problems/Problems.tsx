@@ -7,6 +7,7 @@ import TableOfContents from '../../shared/components/TableOfContents';
 import { isFilterSectionActive, useFilterState } from './reducer';
 import { describeFilterResult } from './filterSummary';
 import { downloadFilteredTocXlsx } from './exportToc';
+import { startingAltitudeOf } from './startingAltitude';
 import { ActiveFilterSummary, FilterContext, FilterForm } from '../../shared/components/FilterForm';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { ProblemsMap } from '../../shared/components/TableOfContents/ProblemsMap';
@@ -155,17 +156,14 @@ export const Problems = ({ filterOpen }: Props) => {
                           if (problem.numTicks) {
                             metaParts.push(t('problems.metaAscents', { count: problem.numTicks }));
                           }
-                          const sAlt = problem.startingAltitude;
-                          const cElev = problem.coordinates?.elevation;
-                          const elev =
-                            (sAlt ?? 0) > 0
-                              ? { v: sAlt as number, p: '' }
-                              : typeof cElev === 'number'
-                                ? { v: cElev, p: '~' }
-                                : null;
-
-                          if (elev) {
-                            metaParts.push(t('problems.metaAltitude', { mark: elev.p, meters: Math.round(elev.v) }));
+                          const altitude = startingAltitudeOf(problem);
+                          if (altitude) {
+                            metaParts.push(
+                              t('problems.metaAltitude', {
+                                mark: altitude.approximate ? '~' : '',
+                                meters: altitude.meters,
+                              }),
+                            );
                           }
                           const metaString = metaParts.length ? `(${metaParts.join(', ')})` : '';
                           const faText = formatFaDisplay(
@@ -191,7 +189,7 @@ export const Problems = ({ filterOpen }: Props) => {
                             text: text,
                             subText: problem.description,
                             faYear: problem.faYear ?? 0,
-                            mAsl: (problem.startingAltitude ?? 0) > 0 ? (problem.startingAltitude ?? 0) : (cElev ?? 0),
+                            mAsl: altitude?.meters ?? 0,
                             passiveGearTooltip,
                           } satisfies FilterProblem;
                         }) ?? [],
