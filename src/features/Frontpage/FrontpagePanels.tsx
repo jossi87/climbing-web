@@ -137,6 +137,18 @@ const PanelCard = ({
 }: PanelProps) => {
   const { t } = useTranslation();
   const href = seeMoreCategory ? activityShowHref(seeMoreCategory) : '/activity';
+  const seeMoreLabel = seeAllLabel ?? t('common.seeMore');
+  /**
+   * Descriptive name for the See-more link, or `undefined` when this panel has no category preset to describe.
+   *
+   * While the title is still a skeleton bar the FA panel hasn't told us its discipline yet, so the per-discipline
+   * override is dropped and the category's discipline-neutral default (`seeMoreAriaFa`) is used instead. The name
+   * therefore exists in **both** states — a crawler that lands mid-hydration must not see a bare "See more".
+   */
+  const seeMoreDescriptionKey: TranslationKey | undefined = seeMoreCategory
+    ? ((titleLoading ? undefined : seeMoreAriaLabel) ?? seeMoreAriaKeys[seeMoreCategory])
+    : undefined;
+  const seeMoreDescription = seeMoreDescriptionKey ? t(seeMoreDescriptionKey) : null;
   return (
     <Card flush>
       <div className={sectionHeaderRowClass}>
@@ -160,17 +172,24 @@ const PanelCard = ({
           className={seeAllLinkClass}
           /**
            * All four panels label this link "See more", so the accessible name is what tells them apart — when the
-           * panel deep-links a category, name that category (a panel may override it, e.g. FA per discipline). While
-           * the title is still a skeleton bar there is no destination to name yet, so it falls back to the label.
+           * panel deep-links a category, name that category (a panel may override it, e.g. FA per discipline). Without
+           * a category preset there is no destination to name, so it falls back to the visible label.
            */
-          aria-label={
-            !titleLoading && seeMoreCategory
-              ? t(seeMoreAriaLabel ?? seeMoreAriaKeys[seeMoreCategory])
-              : t('common.seeMore')
-          }
+          aria-label={seeMoreDescription ?? seeMoreLabel}
         >
-          {seeAllLabel ?? t('common.seeMore')}
-          <ArrowRight size={11} strokeWidth={2.25} />
+          {seeMoreLabel}
+          {/*
+           * **Visually hidden description — for crawlers, not for people.** Lighthouse's SEO audit (`link-text`)
+           * compares the anchor's *`innerText`* against a blocklist that literally contains "see more", and its
+           * gatherer reads only `node.innerText` — `aria-label` is never consulted. So the aria-label above keeps the
+           * audit red even though assistive tech already gets a descriptive name.
+           *
+           * This span adds the description to the rendered text (clipped, not `display:none`, so `innerText` still
+           * collects it) without touching the design: the visible label stays exactly "See more". Screen readers
+           * announce the `aria-label` instead of the content, so the hidden copy costs them nothing.
+           */}
+          {seeMoreDescription ? <span className='sr-only'>{seeMoreDescription}</span> : null}
+          <ArrowRight size={11} strokeWidth={2.25} aria-hidden />
         </Link>
       </div>
       <div className={dividerClass} />
