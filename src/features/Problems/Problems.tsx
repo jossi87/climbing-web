@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { useMeta } from '../../shared/components/Meta/context';
@@ -11,13 +11,21 @@ import { startingAltitudeOf } from './startingAltitude';
 import { ActiveFilterSummary, FilterContext, FilterForm } from '../../shared/components/FilterForm';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { ProblemsMap } from '../../shared/components/TableOfContents/ProblemsMap';
-import { Filter, Download, Database } from 'lucide-react';
+import { Filter, Download, Database, Link2, Check } from 'lucide-react';
 import { Card, SectionHeader } from '../../shared/ui';
+import { copyText } from '../../utils/clipboard';
 import { formatPassiveGearMarkerLine, formatRouteTypeLabel } from '../../utils/routeTradGear';
 import { formatFaDisplay } from '../../utils/firstAscentDisplay';
 import { cn } from '../../lib/utils';
 
 type Props = { filterOpen?: boolean };
+
+/**
+ * The toolbar's pill buttons (`Copy link`, `Download`). The `Filter` toggle beside them is the same shape with the
+ * brand “on” styling, which depends on the filter state and is therefore computed in the component.
+ */
+const toolbarButtonClass =
+  'border-surface-border bg-surface-raised hover:bg-surface-raised-hover inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[12px] leading-none font-medium text-slate-300 transition-colors hover:text-slate-200 sm:text-[13px]';
 
 type FilterProblem = {
   id: number;
@@ -76,12 +84,18 @@ export const Problems = ({ filterOpen }: Props) => {
   const accessToken = useAccessToken();
   const { data: loadedData, status } = useToc();
   const [isSaving, setIsSaving] = useState(false);
+  /** True for a couple of seconds after the share button copied the URL — the button's “Link copied” state. */
+  const [linkCopied, setLinkCopied] = useState(false);
+  const copiedTimeout = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     if (status === 'success' && loadedData) {
       dispatch({ action: 'set-data', data: loadedData });
     }
   }, [dispatch, loadedData, status]);
+
+  // The confirmation is on a timer, and the page can be left while it is still pending.
+  useEffect(() => () => window.clearTimeout(copiedTimeout.current), []);
 
   const { totalRegions, totalAreas, totalSectors, totalProblems, filteredData, visible } = state;
 
@@ -107,6 +121,20 @@ export const Problems = ({ filterOpen }: Props) => {
 
   /** The header subheader keeps listing what is available; this is how much of it survives the filter. */
   const filterResult = anyFilterActive ? describeFilterResult(t, state, things) : undefined;
+
+  /**
+   * The filter is mirrored into the URL's fragment (`useFilterState` keeps it in sync with `replaceState`), so the
+   * address bar already *is* the link that reproduces what is on screen — admin-only filters included. There is
+   * nothing to encode here, only to copy; the button exists because nothing on the page said the URL held the filter.
+   */
+  const shareFilter = async () => {
+    if (!(await copyText(window.location.href))) {
+      return;
+    }
+    setLinkCopied(true);
+    window.clearTimeout(copiedTimeout.current);
+    copiedTimeout.current = window.setTimeout(() => setLinkCopied(false), 2500);
+  };
 
   const areas: FilterArea[] =
     filteredData?.regions?.flatMap((region) => {
@@ -237,6 +265,22 @@ export const Problems = ({ filterOpen }: Props) => {
                 >
                   <Filter size={12} /> {t('filter.title')}
                 </button>
+                {/*
+                 * Only while something is filtered: with no filter there is nothing the URL adds over a plain link to
+                 * the page, and the toolbar is the place the user is already looking for what to do with the list.
+                 */}
+                {anyFilterActive && (
+                  <button
+                    onClick={() => {
+                      void shareFilter();
+                    }}
+                    title={t('problems.shareFilterHint')}
+                    className={toolbarButtonClass}
+                  >
+                    {linkCopied ? <Check size={12} /> : <Link2 size={12} />}
+                    {linkCopied ? t('problems.shareFilterCopied') : t('problems.shareFilter')}
+                  </button>
+                )}
                 <button
                   onClick={() => {
                     /**
@@ -260,7 +304,7 @@ export const Problems = ({ filterOpen }: Props) => {
                   }}
                   disabled={isSaving}
                   title={t(anyFilterActive ? 'problems.downloadFilteredHint' : 'problems.downloadAllHint')}
-                  className='border-surface-border bg-surface-raised hover:bg-surface-raised-hover inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[12px] leading-none font-medium text-slate-300 transition-colors hover:text-slate-200 disabled:cursor-wait disabled:opacity-50 sm:text-[13px]'
+                  className={cn(toolbarButtonClass, 'disabled:cursor-wait disabled:opacity-50')}
                 >
                   <Download size={12} /> {isSaving ? t('problems.downloading') : t('problems.download')}
                 </button>

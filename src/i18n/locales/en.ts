@@ -529,6 +529,14 @@ export const en = {
     downloadAllHint: 'Downloads the whole catalogue as a spreadsheet',
     downloadFilteredHint: 'Downloads the rows the filter is showing',
     /**
+     * Share button of the toolbar. It appears only while a filter is on, because the filter lives in the URL's
+     * fragment (`#…`) — the address bar *is* the link to share, and nothing on the page said so. The button copies
+     * it verbatim; `shareFilterCopied` is the short-lived confirmation that replaces the label.
+     */
+    shareFilter: 'Copy link',
+    shareFilterHint: 'Copies a link that opens this page with the same filter',
+    shareFilterCopied: 'Link copied',
+    /**
      * Row meta abbreviations, glued into one parenthetical: “(2p, 4 asc, 350m a.s.l.)”.
      * `mark` is `~` when the altitude is read off the problem's coordinates instead of a surveyed value.
      */

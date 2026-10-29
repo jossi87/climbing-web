@@ -392,6 +392,10 @@ export const cs: Catalog = {
     // Popisek tlačítka exportu: s filtrem to jsou řádky na obrazovce, bez filtru celý katalog z API.
     downloadAllHint: 'Stáhne celý katalog jako tabulku',
     downloadFilteredHint: 'Stáhne řádky, které filtr zobrazuje',
+    // Sdílení filtru: filtr je ve fragmentu adresy (`#…`), tlačítko jen zkopíruje adresní řádek.
+    shareFilter: 'Kopírovat odkaz',
+    shareFilterHint: 'Zkopíruje odkaz, který tuto stránku otevře se stejným filtrem',
+    shareFilterCopied: 'Odkaz zkopírován',
     // Zkratky v závorce u řádku: „(2d., 4 výst., 350 m n. m.)“. `mark` je „~“ u výšky odečtené ze souřadnic.
     metaPitches: '{{count}}d.',
     metaAscents_one: '{{count}} výst.',
