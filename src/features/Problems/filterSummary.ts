@@ -67,6 +67,9 @@ export const describeFilterResult = (
 /** How many names of a multi-select are spelled out before the rest collapses into “+n”. */
 const NAMES_SHOWN = 3;
 
+/** Longest search term a chip spells out before it is cut short (the full text stays in the field). */
+const SEARCH_TERM_SHOWN = 40;
+
 const formatNames = (t: TFunction, names: string[]): string =>
   names.length <= NAMES_SHOWN
     ? names.join(', ')
@@ -116,6 +119,18 @@ const toggledIds = (record: Record<number, boolean>): number[] =>
 export const describeActiveFilters = (t: TFunction, state: State, meta: Metadata): ActiveFilter[] => {
   const filters: ActiveFilter[] = [];
   const regions = state.unfilteredData?.regions ?? [];
+
+  const searchTerm = state.filterSearch.trim();
+  if (searchTerm) {
+    const shown =
+      searchTerm.length > SEARCH_TERM_SHOWN ? `${searchTerm.slice(0, SEARCH_TERM_SHOWN).trimEnd()}…` : searchTerm;
+    filters.push({
+      id: 'search',
+      label: t('filterSummary.search'),
+      value: t('filterSummary.searchText', { text: shown }),
+      clear: { action: 'reset', section: 'search' },
+    });
+  }
 
   // Names come from the loaded tree, but the *selection* drives the chips: a stored/shared filter may point
   // at a region or area the current tree no longer contains, and that id still has to show up in the summary
@@ -191,11 +206,38 @@ export const describeActiveFilters = (t: TFunction, state: State, meta: Metadata
     });
   }
 
+  // Stars and ascents get a chip each, like sun/shade: either can be dropped without losing the other.
+  if (state.filterMinStars) {
+    filters.push({
+      id: 'min-stars',
+      label: t('filterSummary.stars'),
+      value: t('filterSummary.starsAtLeast', { stars: state.filterMinStars }),
+      clear: { action: 'set-min-stars', stars: 0 },
+    });
+  }
+
+  if (state.filterMinAscents) {
+    filters.push({
+      id: 'min-ascents',
+      label: t('filterSummary.ascents'),
+      value: t('filterSummary.ascentsAtLeast', { ascents: state.filterMinAscents }),
+      clear: { action: 'set-min-ascents', ascents: 0 },
+    });
+  }
+
   if (state.filterHideTicked) {
     filters.push({
       id: 'hide-ticked',
       value: t('filter.hideTicked'),
       clear: { action: 'set-hide-ticked', checked: false },
+    });
+  }
+
+  if (state.filterOnlyTodo) {
+    filters.push({
+      id: 'only-todo',
+      value: t('filter.onlyTodo'),
+      clear: { action: 'set-only-todo', checked: false },
     });
   }
 

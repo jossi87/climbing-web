@@ -27,6 +27,11 @@ type FilterResults = {
 };
 
 type FilterInputs = {
+  /**
+   * Free text matched against the problem's name and description (see `filter`). Empty means “no search”, like
+   * `0` does for the numeric bounds.
+   */
+  filterSearch: string;
   filterRegionIds: Record<number, true>;
   filterAreaIds: Record<number, true>;
   filterOnlySunOnWallAt: number;
@@ -38,12 +43,18 @@ type FilterInputs = {
   filterFaYearHigh: number;
   filterStartingAltitudeLow: number;
   filterStartingAltitudeHigh: number;
+  /** Lower bound on the average star rating; `0` means “no bound”. */
+  filterMinStars: number;
+  /** Lower bound on the number of registered ascents; `0` means “no bound”. */
+  filterMinAscents: number;
   filterTypes: Record<number, boolean>;
   filterPitches: {
     'Single-pitch': boolean;
     'Multi-pitch': boolean;
   };
   filterHideTicked: boolean;
+  /** Only the problems the signed-in user has on their todo list. */
+  filterOnlyTodo: boolean;
   filterOnlyAdmin: boolean;
   filterOnlySuperAdmin: boolean;
 };
@@ -52,12 +63,13 @@ type FilterInputs = {
  * Default (unfiltered) state of the filter form.
  *
  * `0` is the "no bound" value for both numeric ranges (`filterFaYear*` and
- * `filterStartingAltitude*`). Code that applies the ranges must therefore treat `0` as
- * "unbounded" (using `||`, not `??`) — otherwise an unset bound is compared as a real
- * year/altitude and hides every row (e.g. "FA year from 1990" while `filterFaYearHigh`
- * is still 0 matches nothing).
+ * `filterStartingAltitude*`) and for the thresholds (`filterMinStars`, `filterMinAscents`).
+ * Code that applies them must therefore treat `0` as "unbounded" (using `||`, not `??`) —
+ * otherwise an unset bound is compared as a real year/altitude/threshold and hides every row
+ * (e.g. "FA year from 1990" while `filterFaYearHigh` is still 0 matches nothing).
  */
 const DEFAULT_INITIAL_FILTER: FilterInputs = {
+  filterSearch: '',
   filterRegionIds: {},
   filterAreaIds: {},
   filterGradeRanges: {},
@@ -65,7 +77,10 @@ const DEFAULT_INITIAL_FILTER: FilterInputs = {
   filterFaYearHigh: 0,
   filterStartingAltitudeLow: 0,
   filterStartingAltitudeHigh: 0,
+  filterMinStars: 0,
+  filterMinAscents: 0,
   filterHideTicked: false,
+  filterOnlyTodo: false,
   filterPitches: {
     'Single-pitch': false,
     'Multi-pitch': false,
@@ -105,6 +120,7 @@ export type State = UiState & DataState & FilterState;
  * fields whose default is a non-empty object, so e.g. pitch filters could never be shared.
  */
 export const filterInputsOf = (state: State): FilterInputs => ({
+  filterSearch: state.filterSearch,
   filterRegionIds: state.filterRegionIds,
   filterAreaIds: state.filterAreaIds,
   filterOnlySunOnWallAt: state.filterOnlySunOnWallAt,
@@ -115,15 +131,19 @@ export const filterInputsOf = (state: State): FilterInputs => ({
   filterFaYearHigh: state.filterFaYearHigh,
   filterStartingAltitudeLow: state.filterStartingAltitudeLow,
   filterStartingAltitudeHigh: state.filterStartingAltitudeHigh,
+  filterMinStars: state.filterMinStars,
+  filterMinAscents: state.filterMinAscents,
   filterTypes: state.filterTypes,
   filterPitches: state.filterPitches,
   filterHideTicked: state.filterHideTicked,
+  filterOnlyTodo: state.filterOnlyTodo,
   filterOnlyAdmin: state.filterOnlyAdmin,
   filterOnlySuperAdmin: state.filterOnlySuperAdmin,
 });
 
 export type ResetField =
   | 'all'
+  | 'search'
   | 'regions'
   | 'areas'
   | 'fa-year'
@@ -133,15 +153,18 @@ export type ResetField =
   | 'pitches'
   | 'types'
   | 'grades'
-  | 'starting-altitude';
+  | 'starting-altitude'
+  | 'stars-ascents';
 
 /** Filter form sections, in the order they are rendered (`'all'` is the header's “Clear filter”). */
 export const FILTER_SECTIONS = [
+  'search',
   'regions',
   'areas',
   'grades',
   'fa-year',
   'starting-altitude',
+  'stars-ascents',
   'options',
   'types',
   'pitches',
@@ -160,6 +183,9 @@ export const isFilterSectionActive = (state: State, section: ResetField): boolea
   switch (section) {
     case 'all':
       return FILTER_SECTIONS.some((s) => isFilterSectionActive(state, s));
+    case 'search':
+      // Whitespace-only is not a search: the form treats a blank field as “no filter” too.
+      return state.filterSearch.trim().length > 0;
     case 'regions':
       return Object.keys(state.filterRegionIds).length > 0;
     case 'areas':
@@ -170,8 +196,11 @@ export const isFilterSectionActive = (state: State, section: ResetField): boolea
       return !!state.filterFaYearLow || !!state.filterFaYearHigh;
     case 'starting-altitude':
       return !!state.filterStartingAltitudeLow || !!state.filterStartingAltitudeHigh;
+    case 'stars-ascents':
+      return !!state.filterMinStars || !!state.filterMinAscents;
     case 'options':
-      return state.filterHideTicked || state.filterOnlyAdmin || state.filterOnlySuperAdmin;
+      return state.filterHideTicked || state.filterOnlyTodo || state.filterOnlyAdmin || state.filterOnlySuperAdmin;
+
     case 'types':
       return Object.values(state.filterTypes).some(Boolean);
     case 'pitches':
@@ -213,7 +242,12 @@ export type Update =
   | { action: 'set-grade-range'; gradeSystemId: number; low?: string; high?: string }
   | { action: 'set-fa-years'; low: number; high: number }
   | { action: 'set-starting-altitudes'; low: number; high: number }
+  | { action: 'set-search'; text: string }
+  /** `0` clears the threshold (see `DEFAULT_INITIAL_FILTER`). */
+  | { action: 'set-min-stars'; stars: number }
+  | { action: 'set-min-ascents'; ascents: number }
   | { action: 'set-hide-ticked'; checked: boolean }
+  | { action: 'set-only-todo'; checked: boolean }
   | { action: 'set-only-admin'; checked: boolean }
   | { action: 'set-only-super-admin'; checked: boolean }
   | ({ action: 'set-starting-altitude' } & ({ low: number } | { high: number }))
@@ -225,8 +259,26 @@ export type Update =
   // Not intended to be used "externally" (ie, at the component level)
   | ({ action: 'init-filter-state' } & Partial<FilterInputs>);
 
+/**
+ * Case- and diacritic-insensitive form of a string, for matching typed text against problem names.
+ *
+ * Searching is a convenience, not an exact lookup, so “ostlandet” has to find “Østlandet” and a user without
+ * Norwegian letters on the keyboard is not locked out. `normalize('NFD')` + stripping the combining marks
+ * handles å/ä/é, but not æ/ø/đ, which have no decomposition, so those are folded by hand.
+ */
+const searchKey = (value: string): string =>
+  value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/æ/g, 'ae')
+    .replace(/ø/g, 'o')
+    .replace(/đ/g, 'd')
+    .replace(/ß/g, 'ss');
+
 const filter = (state: State): State => {
   const {
+    filterSearch,
     filterRegionIds,
     filterAreaIds,
     filterOnlySunOnWallAt,
@@ -237,7 +289,10 @@ const filter = (state: State): State => {
     filterFaYearLow,
     filterStartingAltitudeHigh,
     filterStartingAltitudeLow,
+    filterMinStars,
+    filterMinAscents,
     filterHideTicked,
+    filterOnlyTodo,
     filterOnlyAdmin,
     filterOnlySuperAdmin,
     filterPitches,
@@ -260,6 +315,13 @@ const filter = (state: State): State => {
 
   const filterRegionIdsCount = Object.keys(filterRegionIds).length;
   const filterAreaIdsCount = Object.keys(filterAreaIds).length;
+
+  /**
+   * Search terms, normalised once for the whole pass. Every word has to appear in the name or the description,
+   * so “kant cruiser” matches “… kant … cruiser …” in either order — a single `includes` would fail on the
+   * moment the user adds a second word.
+   */
+  const searchWords = searchKey(filterSearch).split(/\s+/).filter(Boolean);
 
   const filteredData = {
     ...unfilteredData,
@@ -289,6 +351,14 @@ const filter = (state: State): State => {
                         }
                         if (filterAreaIdsCount > 0) {
                           if (!filterAreaIds[area.id ?? -1]) {
+                            filteredOut.problems += 1;
+                            return false;
+                          }
+                        }
+
+                        if (searchWords.length > 0) {
+                          const haystack = searchKey(`${problem.name ?? ''} ${problem.description ?? ''}`);
+                          if (!searchWords.every((word) => haystack.includes(word))) {
                             filteredOut.problems += 1;
                             return false;
                           }
@@ -331,6 +401,13 @@ const filter = (state: State): State => {
 
                         if (filterHideTicked) {
                           if (problem.ticked) {
+                            filteredOut.problems += 1;
+                            return false;
+                          }
+                        }
+
+                        if (filterOnlyTodo) {
+                          if (!problem.todo) {
                             filteredOut.problems += 1;
                             return false;
                           }
@@ -415,6 +492,20 @@ const filter = (state: State): State => {
                             return false;
                           }
                         }
+
+                        // Star ratings are averages (`2.67`), so the threshold is a floor rather than a bucket: “2 ★
+                        // and up” keeps the 2.67 as well. An unrated problem fails every non-zero bound.
+                        if (filterMinStars > 0 && (problem.stars ?? 0) < filterMinStars) {
+                          filteredOut.problems += 1;
+                          return false;
+                        }
+
+                        // A problem nobody has ascended has no `numTicks` (zero ascents), which fails every bound.
+                        if (filterMinAscents > 0 && (problem.numTicks ?? 0) < filterMinAscents) {
+                          filteredOut.problems += 1;
+                          return false;
+                        }
+
                         if (filterOnlySuperAdmin) {
                           const locked = problem.lockedSuperadmin;
                           if (!locked) {
@@ -568,6 +659,16 @@ const reducer = (state: State, update: Update): State => {
       };
     }
 
+    case 'set-search': {
+      const { text } = update;
+      // Stored exactly as typed (trailing spaces and all) so the caret does not jump while editing; the
+      // predicate splits and trims when it matches.
+      return {
+        ...state,
+        filterSearch: text,
+      };
+    }
+
     case 'set-only-sun-on-wall-at': {
       const { hour } = update;
       return {
@@ -659,11 +760,35 @@ const reducer = (state: State, update: Update): State => {
       };
     }
 
+    case 'set-min-stars': {
+      const { stars } = update;
+      return {
+        ...state,
+        filterMinStars: stars,
+      };
+    }
+
+    case 'set-min-ascents': {
+      const { ascents } = update;
+      return {
+        ...state,
+        filterMinAscents: ascents,
+      };
+    }
+
     case 'set-hide-ticked': {
       const { checked } = update;
       return {
         ...state,
         filterHideTicked: checked,
+      };
+    }
+
+    case 'set-only-todo': {
+      const { checked } = update;
+      return {
+        ...state,
+        filterOnlyTodo: checked,
       };
     }
 
@@ -693,6 +818,12 @@ const reducer = (state: State, update: Update): State => {
           return {
             ...state,
             ...DEFAULT_INITIAL_FILTER,
+          };
+        }
+        case 'search': {
+          return {
+            ...state,
+            filterSearch: DEFAULT_INITIAL_FILTER.filterSearch,
           };
         }
         case 'regions': {
@@ -727,10 +858,18 @@ const reducer = (state: State, update: Update): State => {
             filterStartingAltitudeHigh: DEFAULT_INITIAL_FILTER.filterStartingAltitudeHigh,
           };
         }
+        case 'stars-ascents': {
+          return {
+            ...state,
+            filterMinStars: DEFAULT_INITIAL_FILTER.filterMinStars,
+            filterMinAscents: DEFAULT_INITIAL_FILTER.filterMinAscents,
+          };
+        }
         case 'options': {
           return {
             ...state,
             filterHideTicked: DEFAULT_INITIAL_FILTER.filterHideTicked,
+            filterOnlyTodo: DEFAULT_INITIAL_FILTER.filterOnlyTodo,
             filterOnlyAdmin: DEFAULT_INITIAL_FILTER.filterOnlyAdmin,
             filterOnlySuperAdmin: DEFAULT_INITIAL_FILTER.filterOnlySuperAdmin,
           };
@@ -802,6 +941,7 @@ const reducer = (state: State, update: Update): State => {
 };
 
 const storageItems = {
+  search: itemLocalStorage('filter/search', DEFAULT_INITIAL_FILTER.filterSearch),
   regionIds: itemLocalStorage('filter/region-ids', DEFAULT_INITIAL_FILTER.filterRegionIds),
   areaIds: itemLocalStorage('filter/area-ids', DEFAULT_INITIAL_FILTER.filterAreaIds),
   onlySunOnWallAt: itemLocalStorage('filter/only-sun-on-wall-at', DEFAULT_INITIAL_FILTER.filterOnlySunOnWallAt),
@@ -821,7 +961,10 @@ const storageItems = {
     'filter/starting-altitude/high',
     DEFAULT_INITIAL_FILTER.filterStartingAltitudeHigh,
   ),
+  minStars: itemLocalStorage('filter/min-stars', DEFAULT_INITIAL_FILTER.filterMinStars),
+  minAscents: itemLocalStorage('filter/min-ascents', DEFAULT_INITIAL_FILTER.filterMinAscents),
   hideTicked: itemLocalStorage('filter/hide-ticked', DEFAULT_INITIAL_FILTER.filterHideTicked),
+  onlyTodo: itemLocalStorage('filter/only-todo', DEFAULT_INITIAL_FILTER.filterOnlyTodo),
   onlyAdmin: itemLocalStorage('filter/only-admin', DEFAULT_INITIAL_FILTER.filterOnlyAdmin),
   onlySuperAdmin: itemLocalStorage('filter/only-super-admin', DEFAULT_INITIAL_FILTER.filterOnlySuperAdmin),
   pitches: itemLocalStorage('filter/pitches', DEFAULT_INITIAL_FILTER.filterPitches),
@@ -839,6 +982,7 @@ window.localStorage.removeItem('filter/grades/high');
 const wrappedReducer: typeof reducer = (state, update) => {
   const reduced = reducer(state, update);
 
+  storageItems.search.set(reduced.filterSearch);
   storageItems.regionIds.set(reduced.filterRegionIds);
   storageItems.areaIds.set(reduced.filterAreaIds);
   storageItems.onlySunOnWallAt.set(reduced.filterOnlySunOnWallAt);
@@ -849,7 +993,10 @@ const wrappedReducer: typeof reducer = (state, update) => {
   storageItems.faYearLow.set(reduced.filterFaYearLow);
   storageItems.startingAltitudeLow.set(reduced.filterStartingAltitudeLow);
   storageItems.startingAltitudeHigh.set(reduced.filterStartingAltitudeHigh);
+  storageItems.minStars.set(reduced.filterMinStars);
+  storageItems.minAscents.set(reduced.filterMinAscents);
   storageItems.hideTicked.set(reduced.filterHideTicked);
+  storageItems.onlyTodo.set(reduced.filterOnlyTodo);
   storageItems.onlyAdmin.set(reduced.filterOnlyAdmin);
   storageItems.onlySuperAdmin.set(reduced.filterOnlySuperAdmin);
   storageItems.pitches.set(reduced.filterPitches);
@@ -858,17 +1005,54 @@ const wrappedReducer: typeof reducer = (state, update) => {
   return filter(reduced);
 };
 
+/** Longest search text accepted from a shared link — a filter hash is user input, and a match is linear in it. */
+const MAX_SEARCH_LENGTH = 200;
+
+/**
+ * Keeps the fields a hash carried in a usable shape, and drops the rest so they fall back to their defaults.
+ *
+ * A hash is typed, pasted and hand-edited, and `applyFilterDiff` hands over whatever JSON it decoded: a number
+ * where a string belongs (or `null`) would end up in the state and break the predicate — `filterSearch.split`
+ * on `null`, or `'2' < 1` comparing a string. Dropping the key (rather than writing `undefined`) is what makes
+ * the default apply, since the selection is spread over it.
+ */
+const sanitizeHashSelection = (selection: Partial<FilterInputs>): Partial<FilterInputs> => {
+  const sanitized = { ...selection };
+
+  if (typeof sanitized.filterSearch === 'string') {
+    sanitized.filterSearch = sanitized.filterSearch.slice(0, MAX_SEARCH_LENGTH);
+  } else {
+    delete sanitized.filterSearch;
+  }
+
+  for (const key of ['filterMinStars', 'filterMinAscents'] as const) {
+    const value = sanitized[key];
+    if (typeof value === 'number' && Number.isFinite(value) && value > 0) {
+      sanitized[key] = value;
+    } else {
+      delete sanitized[key];
+    }
+  }
+
+  if (typeof sanitized.filterOnlyTodo !== 'boolean') {
+    delete sanitized.filterOnlyTodo;
+  }
+
+  return sanitized;
+};
+
 const parseHash = (hash: string): Partial<FilterInputs> => {
   const diff = decodeFilterHash(hash);
   if (!diff) {
     throw new Error('Invalid filter hash');
   }
 
-  return applyFilterDiff(diff, DEFAULT_INITIAL_FILTER) as Partial<FilterInputs>;
+  return sanitizeHashSelection(applyFilterDiff(diff, DEFAULT_INITIAL_FILTER) as Partial<FilterInputs>);
 };
 
 /** The filter selection stored on this device. */
 const selectionFromStorage = (): FilterInputs => ({
+  filterSearch: storageItems.search.get(),
   filterRegionIds: storageItems.regionIds.get(),
   filterAreaIds: storageItems.areaIds.get(),
   filterOnlySunOnWallAt: storageItems.onlySunOnWallAt.get(),
@@ -879,7 +1063,10 @@ const selectionFromStorage = (): FilterInputs => ({
   filterFaYearLow: storageItems.faYearLow.get(),
   filterStartingAltitudeHigh: storageItems.startingAltitudeHigh.get(),
   filterStartingAltitudeLow: storageItems.startingAltitudeLow.get(),
+  filterMinStars: storageItems.minStars.get(),
+  filterMinAscents: storageItems.minAscents.get(),
   filterHideTicked: storageItems.hideTicked.get(),
+  filterOnlyTodo: storageItems.onlyTodo.get(),
   filterOnlyAdmin: storageItems.onlyAdmin.get(),
   filterOnlySuperAdmin: storageItems.onlySuperAdmin.get(),
   filterPitches: storageItems.pitches.get(),

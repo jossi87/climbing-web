@@ -319,8 +319,19 @@ export const cs: Catalog = {
     gradeWithSystem: 'Obtížnost ({{system}})',
     faYearBetween: 'Rok prvovýstupu mezi',
     startingAltitudeBetween: 'Nástupní nadmořská výška mezi',
+    // Prahy oblíbenosti; možnosti se čtou jako „2 ★“, „25+ výstupů“.
+    starsAscents: 'Hvězdy a výstupy',
+    minStars: 'Nejméně hvězd',
+    starsAtLeast: '{{stars}} ★',
+    minAscents: 'Nejméně výstupů',
+    ascentsAtLeast: '{{ascents}}+',
     options: 'Možnosti',
+    // Fulltextové hledání v názvu a popisu problému.
+    search: 'Hledat',
+    // Zástupný text pole: oba texty, do kterých hledání nahlíží.
+    searchPlaceholder: 'Název nebo popis',
     hideTicked: 'Skrýt vylezené',
+    onlyTodo: 'Jen v seznamu úkolů',
     onlyAdmin: 'Jen pro správce',
     onlySuperAdmin: 'Jen pro hlavního správce',
     types: 'Typy',
@@ -346,6 +357,14 @@ export const cs: Catalog = {
     gradeWithSystem: 'Obtížnost ({{system}})',
     faYear: 'Rok prvovýstupu',
     altitude: 'Nadmořská výška',
+    // Čip hledání: popisek a hledaný výraz v českých uvozovkách.
+    search: 'Hledání',
+    searchText: '„{{text}}“',
+    // Čipy oblíbenosti: „Hvězdy: 2 ★ a více“, „Výstupy: 25+“.
+    stars: 'Hvězdy',
+    starsAtLeast: '{{stars}} ★ a více',
+    ascents: 'Výstupy',
+    ascentsAtLeast: '{{ascents}}+',
     sunAt: 'Slunce v',
     shadeAt: 'Stín v',
     // Rozsah; hranice už nesou jednotku („100 m“), čeština potřebuje „od/do“.
@@ -370,6 +389,9 @@ export const cs: Catalog = {
     description: '{{regions}}, {{areas}}, {{sectors}}, {{items}}',
     download: 'Stáhnout',
     downloading: 'Stahování…',
+    // Popisek tlačítka exportu: s filtrem to jsou řádky na obrazovce, bez filtru celý katalog z API.
+    downloadAllHint: 'Stáhne celý katalog jako tabulku',
+    downloadFilteredHint: 'Stáhne řádky, které filtr zobrazuje',
     // Zkratky v závorce u řádku: „(2d., 4 výst., 350 m n. m.)“. `mark` je „~“ u výšky odečtené ze souřadnic.
     metaPitches: '{{count}}d.',
     metaAscents_one: '{{count}} výst.',

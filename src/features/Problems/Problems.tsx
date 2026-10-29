@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Loading } from '../../shared/ui/StatusWidgets';
 import { useMeta } from '../../shared/components/Meta/context';
-import { downloadTocXlsx, useAccessToken, useToc } from '../../api';
+import { downloadTocXlsx, getBaseUrl, useAccessToken, useToc } from '../../api';
 import TableOfContents from '../../shared/components/TableOfContents';
 import { isFilterSectionActive, useFilterState } from './reducer';
 import { describeFilterResult } from './filterSummary';
+import { downloadFilteredTocXlsx } from './exportToc';
 import { ActiveFilterSummary, FilterContext, FilterForm } from '../../shared/components/FilterForm';
 import type { components } from '../../@types/buldreinfo/swagger';
 import { ProblemsMap } from '../../shared/components/TableOfContents/ProblemsMap';
@@ -240,12 +241,27 @@ export const Problems = ({ filterOpen }: Props) => {
                 </button>
                 <button
                   onClick={() => {
+                    /**
+                     * While a filter is on, the download is the list on screen: the API's `/toc/xlsx` writes the whole
+                     * catalogue and would ignore every chip above (and needs a round trip and a token for it). With no
+                     * filter the two are the same sheet, so the API path stays the one that also carries the per-pitch
+                     * sheet of multi-pitch routes.
+                     */
+                    if (anyFilterActive) {
+                      downloadFilteredTocXlsx(filteredData, {
+                        isBouldering: meta.isBouldering,
+                        origin: getBaseUrl(),
+                      });
+                      return;
+                    }
+
                     setIsSaving(true);
                     downloadTocXlsx(accessToken).finally(() => {
                       setIsSaving(false);
                     });
                   }}
                   disabled={isSaving}
+                  title={t(anyFilterActive ? 'problems.downloadFilteredHint' : 'problems.downloadAllHint')}
                   className='border-surface-border bg-surface-raised hover:bg-surface-raised-hover inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-[12px] leading-none font-medium text-slate-300 transition-colors hover:text-slate-200 disabled:cursor-wait disabled:opacity-50 sm:text-[13px]'
                 >
                   <Download size={12} /> {isSaving ? t('problems.downloading') : t('problems.download')}

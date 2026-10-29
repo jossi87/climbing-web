@@ -418,13 +418,24 @@ export const en = {
   filter: {
     title: 'Filter',
     clear: 'Clear filter',
+    /** Free-text search over the problem's name and description. */
+    search: 'Search',
+    /** Placeholder of the search field: the two texts the search looks at. */
+    searchPlaceholder: 'Name or description',
     gradeBetween: 'Grade between',
     /** One system's control while the page holds several grade systems (e.g. “Grade (UIAA)”). */
     gradeWithSystem: 'Grade ({{system}})',
     faYearBetween: 'First ascent year between',
     startingAltitudeBetween: 'Starting altitude between',
+    /** Popularity thresholds; the options read as “2 ★”, “25+ ascents”. */
+    starsAscents: 'Stars and ascents',
+    minStars: 'Minimum stars',
+    starsAtLeast: '{{stars}} ★',
+    minAscents: 'Minimum ascents',
+    ascentsAtLeast: '{{ascents}}+',
     options: 'Options',
     hideTicked: 'Hide ticked',
+    onlyTodo: 'Only todo',
     onlyAdmin: 'Only admin',
     onlySuperAdmin: 'Only superadmin',
     types: 'Types',
@@ -466,6 +477,14 @@ export const en = {
     gradeWithSystem: 'Grade ({{system}})',
     faYear: 'FA year',
     altitude: 'Altitude',
+    /** Free-text search chip: the label, then the term in typographic quotes. */
+    search: 'Search',
+    searchText: '“{{text}}”',
+    /** Popularity chips: “Stars: 2 ★ and up”, “Ascents: 25+”. */
+    stars: 'Stars',
+    starsAtLeast: '{{stars}} ★ and up',
+    ascents: 'Ascents',
+    ascentsAtLeast: '{{ascents}}+',
     sunAt: 'Sun at',
     shadeAt: 'Shade at',
     /** Two-sided / one-sided numeric range; `low`/`high` already carry their unit. */
@@ -503,6 +522,12 @@ export const en = {
     /** Export button of the toolbar, and its state while the workbook is being written. */
     download: 'Download',
     downloading: 'Downloading...',
+    /**
+     * Tooltip of the export button, which follows the filter: with a filter on, the file is the rows on screen
+     * (written in the browser); with none, it is the whole catalogue from the API.
+     */
+    downloadAllHint: 'Downloads the whole catalogue as a spreadsheet',
+    downloadFilteredHint: 'Downloads the rows the filter is showing',
     /**
      * Row meta abbreviations, glued into one parenthetical: “(2p, 4 asc, 350m a.s.l.)”.
      * `mark` is `~` when the altitude is read off the problem's coordinates instead of a surveyed value.

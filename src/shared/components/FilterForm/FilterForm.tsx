@@ -13,7 +13,7 @@ import { StartingAltitudeSelect } from './StartingAltitudeSelect';
 import { ChevronDown, Trash2, X, Maximize2, Minimize2 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
-import { FormSwitch } from '../../ui';
+import { FormSwitch, SearchInput } from '../../ui';
 
 /**
  * Pitch-count filter options. `key`/`value` stay the literals the reducer keys on (and the API expects);
@@ -31,6 +31,18 @@ const CLIMBING_OPTIONS = [
     labelKey: 'filter.pitchMulti',
   },
 ] as const;
+
+/**
+ * Thresholds offered by the “minimum stars” dropdown. Star ratings are averages over 0–3, so the bounds are floors
+ * rather than buckets: “2” keeps a 2.67 as well.
+ */
+const STAR_OPTIONS = [1, 2, 3] as const;
+
+/**
+ * Thresholds offered by the “minimum ascents” dropdown — from “at least one” up to a well-trafficked classic, which is
+ * the spread that separates “established” from “popular” in a catalogue where most rows have a handful of ascents.
+ */
+const ASCENT_OPTIONS = [1, 5, 10, 25, 50, 100] as const;
 
 type GroupHeaderProps = {
   title: string;
@@ -178,15 +190,19 @@ export const FilterForm = () => {
   const filterState = useFilter();
   const {
     unfilteredData,
+    filterSearch,
     filterRegionIds,
     filterAreaIds,
     filterOnlySunOnWallAt,
     filterOnlyShadeOnWallAt,
+    filterMinStars,
+    filterMinAscents,
     gradeFilters,
     filterSectorOrientations,
     filterOnlyAdmin,
     filterOnlySuperAdmin,
     filterHideTicked,
+    filterOnlyTodo,
     filterPitches,
     filterTypes,
     dispatch,
@@ -262,6 +278,23 @@ export const FilterForm = () => {
         </div>
       </div>
 
+      <div>
+        <GroupHeader title={t('filter.search')} reset='search' />
+        <div className='px-1'>
+          <SearchInput
+            type='text'
+            inputMode='search'
+            autoComplete='off'
+            spellCheck={false}
+            value={filterSearch}
+            placeholder={t('filter.searchPlaceholder')}
+            ariaLabel={t('filter.search')}
+            onChange={(e) => dispatch({ action: 'set-search', text: e.target.value })}
+            onClear={() => dispatch({ action: 'set-search', text: '' })}
+          />
+        </div>
+      </div>
+
       <div className='grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3'>
         <div className='space-y-6'>
           {gradeSystemFilters.length > 0 && (
@@ -296,6 +329,58 @@ export const FilterForm = () => {
               <StartingAltitudeSelect />
             </div>
           </div>
+
+          <div>
+            <GroupHeader title={t('filter.starsAscents')} reset='stars-ascents' />
+            <div className='flex flex-col gap-4 px-1'>
+              <div className='flex items-center gap-2'>
+                <span className='text-sm text-slate-300'>{t('filter.minStars')}</span>
+                <div className='relative'>
+                  <select
+                    className='bg-surface-nav border-surface-border type-body focus:border-brand appearance-none rounded-md border px-3 py-1.5 pr-8 focus:outline-none'
+                    value={filterMinStars || 0}
+                    onChange={(e) => {
+                      dispatch?.({ action: 'set-min-stars', stars: Number(e.target.value) });
+                    }}
+                  >
+                    <option value={0}>{t('common.any')}</option>
+                    {STAR_OPTIONS.map((stars) => (
+                      <option key={stars} value={stars}>
+                        {t('filter.starsAtLeast', { stars })}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown
+                    size={14}
+                    className='pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-slate-500'
+                  />
+                </div>
+              </div>
+              <div className='flex items-center gap-2'>
+                <span className='text-sm text-slate-300'>{t('filter.minAscents')}</span>
+                <div className='relative'>
+                  <select
+                    className='bg-surface-nav border-surface-border type-body focus:border-brand appearance-none rounded-md border px-3 py-1.5 pr-8 focus:outline-none'
+                    value={filterMinAscents || 0}
+                    onChange={(e) => {
+                      dispatch?.({ action: 'set-min-ascents', ascents: Number(e.target.value) });
+                    }}
+                  >
+                    <option value={0}>{t('common.any')}</option>
+                    {ASCENT_OPTIONS.map((ascents) => (
+                      <option key={ascents} value={ascents}>
+                        {t('filter.ascentsAtLeast', { ascents })}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown
+                    size={14}
+                    className='pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-slate-500'
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className='space-y-6'>
@@ -307,6 +392,13 @@ export const FilterForm = () => {
                 checked={!!filterHideTicked}
                 disabled={!meta.isAuthenticated}
                 onChange={(e) => dispatch?.({ action: 'set-hide-ticked', checked: !!e.target.checked })}
+              />
+              {/* Same login requirement as “Hide ticked”: the todo flag is per user, so it is empty when signed out. */}
+              <CheckboxLabel
+                label={t('filter.onlyTodo')}
+                checked={!!filterOnlyTodo}
+                disabled={!meta.isAuthenticated}
+                onChange={(e) => dispatch?.({ action: 'set-only-todo', checked: !!e.target.checked })}
               />
               {meta.isAdmin && (
                 <CheckboxLabel
