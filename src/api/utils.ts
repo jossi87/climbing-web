@@ -72,7 +72,7 @@ export function getLocales() {
 
 export function getBaseUrl(): string {
   if (import.meta.env.DEV) {
-    return 'https://buldreinfo.com';
+    return 'https://brattelinjer.no';
   }
   return window.origin;
 }
