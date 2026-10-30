@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ensureCatalog } from './catalogs';
 import { FALLBACK_LANGUAGE, isSupportedLanguage, type SupportedLanguage } from './config';
 import { writeStoredLanguage } from './languageStorage';
 
@@ -20,7 +21,10 @@ export function useLanguage() {
    */
   const applyLanguage = useCallback(
     (next: SupportedLanguage) => {
-      void i18n.changeLanguage(next);
+      // The catalog may still be a chunk at this point (a client-side switch, or the region default that
+      // arrives with `/meta`): register it first, so `changeLanguage` resolves every key against the new locale
+      // instead of mixing in the fallback. `ensureCatalog` never rejects, so this cannot strand the switch.
+      void ensureCatalog(next).then(() => i18n.changeLanguage(next));
     },
     [i18n],
   );

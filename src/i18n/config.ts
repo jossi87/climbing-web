@@ -10,8 +10,9 @@ import { readStoredLanguage } from './languageStorage';
  * this list with `meta.languages`, so an unshipped code — or one the backend does not offer — simply
  * drops out).
  *
- * Adding a locale takes three edits: a `locales/<code>.ts` catalog, an entry here, and the inline
- * `<html lang>` bootstrap in `index.html`.
+ * Adding a locale takes four edits: a `locales/<code>.ts` catalog, a loader for it in `catalogs.ts` (only
+ * the base locale's catalog is in the entry chunk; every other one is fetched on demand), an entry here,
+ * and the inline `<html lang>` bootstrap in `index.html`.
  */
 export const SUPPORTED_LANGUAGES = ['en', 'cs'] as const;
 

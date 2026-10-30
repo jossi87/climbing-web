@@ -1,5 +1,5 @@
 import './index.css';
-import './i18n';
+import { i18nReady } from './i18n';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, useNavigate } from 'react-router-dom';
 import { Auth0Provider } from '@auth0/auth0-react';
@@ -130,4 +130,9 @@ const Index = () => (
 );
 
 const root = createRoot(document.getElementById('root') as HTMLElement);
-root.render(<Index />);
+
+// Not a top-level await: the entry stays synchronous for everything that does not need translations, and the
+// render waits only for the one catalog the boot locale needs — none at all for the base locale.
+void i18nReady.then(() => {
+  root.render(<Index />);
+});

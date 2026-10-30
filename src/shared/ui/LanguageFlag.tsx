@@ -15,7 +15,7 @@ import { cn } from '../../lib/utils';
  * flag icon sets ship as their 3:2 and 4:3 variants.
  *
  * **A code without artwork is not an error.** It renders the code itself, in the same box, which keeps
- * "adding a locale takes three edits" (see `i18n/config.ts`) true: a new locale shows its letters until
+ * "adding a locale takes four edits" (see `i18n/config.ts`) true: a new locale shows its letters until
  * someone draws it a flag.
  */
 
