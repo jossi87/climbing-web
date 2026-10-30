@@ -1,4 +1,4 @@
-import { useState, type FC, Fragment, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type FC, Fragment, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import 'leaflet/dist/leaflet.css';
 import {
@@ -10,7 +10,7 @@ import {
   FeatureGroup,
   useMap,
 } from 'react-leaflet';
-import { type LeafletMouseEventHandlerFn, latLngBounds } from 'leaflet';
+import { type LatLng, type LatLngBounds, type LeafletMouseEventHandlerFn, latLngBounds } from 'leaflet';
 import { Activity } from 'lucide-react';
 import Locate from './locate';
 import FullscreenControl from './fullscreencontrol';
@@ -79,9 +79,21 @@ type TrailDef = {
 };
 
 type Props = {
+  /**
+   * Frame the map on what it draws (markers, outlines, trails) instead of the region's
+   * `defaultCenter`/`defaultZoom`. The view follows the content's extent, so e.g. a profile map shows
+   * where that user has actually climbed. Without any coordinates the defaults are used.
+   */
   autoZoom?: boolean;
+  /**
+   * Zoom for `autoZoom` content that has no box to fit (one marker, or markers on the same spot / in
+   * a straight line) — a centre is all there is. Defaults to `defaultZoom`.
+   */
+  autoZoomPointZoom?: number;
   clusterMarkers?: boolean;
+  /** Fallback centre — only used when the map does not `autoZoom`, or the content has no coordinates. */
   defaultCenter: { lat: number; lng: number };
+  /** Fallback zoom — only used when the map does not `autoZoom`, or the content has no coordinates. */
   defaultZoom: number;
   flyToId?: number | null;
   height?: number | string;
@@ -108,18 +120,15 @@ type Props = {
   children?: ReactNode | ((state: { showElevation: boolean }) => ReactNode);
 };
 
-const UpdateBounds = ({
-  autoZoom,
-  markers,
-  outlines,
-  trails,
-}: Pick<Props, 'autoZoom' | 'markers' | 'outlines' | 'trails'>) => {
-  const map = useMap();
+type ContentProps = Pick<Props, 'markers' | 'outlines' | 'trails'>;
 
-  if (!autoZoom) {
-    return null;
-  }
-
+/**
+ * Geographic extent of everything the map draws — markers, outlines and trails.
+ *
+ * `autoZoom` frames the map on this instead of the region's `defaultCenter`/`defaultZoom`. `null`
+ * means the content has no usable coordinates, so the caller's defaults stay in charge.
+ */
+function computeContentBounds({ markers, outlines, trails }: ContentProps): LatLngBounds | null {
   const bounds = latLngBounds([]);
   markers
     ?.filter(({ coordinates }) => (coordinates?.latitude ?? 0) > 0 && (coordinates?.longitude ?? 0) > 0)
@@ -138,14 +147,70 @@ const UpdateBounds = ({
         bounds.extend({ lat: (c.latitude ?? 0) as number, lng: (c.longitude ?? 0) as number });
       });
     });
+  return bounds.isValid() ? bounds : null;
+}
 
-  if (
-    bounds.isValid() &&
-    bounds.getNorthWest().lat !== bounds.getSouthEast().lat &&
-    bounds.getNorthWest().lng !== bounds.getSouthEast().lng
-  ) {
-    map.fitBounds(bounds);
-  }
+/**
+ * Bounds that cannot be fitted: they have no extent in at least one axis (a single coordinate, or
+ * several on the same spot / in a straight line). `fitBounds` divides by the box's pixel size and
+ * would ask for an infinite zoom, so such content is framed as a centre plus a zoom instead.
+ */
+function isPointLike(bounds: LatLngBounds): boolean {
+  const northWest = bounds.getNorthWest();
+  const southEast = bounds.getSouthEast();
+  return northWest.lat === southEast.lat || northWest.lng === southEast.lng;
+}
+
+type AutoZoomView = { center: LatLng; zoom: number } | { bounds: LatLngBounds };
+
+/**
+ * View for `autoZoom` content: its box, or its centre plus a zoom when there is no box to fit. A box
+ * is handed to `MapContainer` as `bounds`, which fits it the moment the map is created — with the
+ * container's real size — so the very first frame is already framed on the content.
+ */
+function getAutoZoomView(bounds: LatLngBounds | null, pointZoom: number): AutoZoomView | null {
+  if (!bounds) return null;
+  return isPointLike(bounds) ? { center: bounds.getCenter(), zoom: pointZoom } : { bounds };
+}
+
+const UpdateBounds = ({
+  autoZoom,
+  bounds,
+  pointZoom,
+}: {
+  autoZoom?: boolean;
+  bounds: LatLngBounds | null;
+  pointZoom: number;
+}) => {
+  const map = useMap();
+  /*
+   * Refit only when the content's extent changes — a filter hides some areas, a trail/outline appears
+   * — never on every render: a pan or zoom the user made must survive unrelated re-renders. The box
+   * string is the key because that is all `fitBounds` depends on.
+   */
+  const viewKey = bounds?.toBBoxString() ?? '';
+  const latestBounds = useRef(bounds);
+  latestBounds.current = bounds;
+
+  useEffect(() => {
+    const next = latestBounds.current;
+    if (!autoZoom || !viewKey || !next) {
+      return;
+    }
+    if (isPointLike(next)) {
+      /*
+       * No box to fit. `MapContainer` already centred this content on creation; only recentre when it
+       * moved outside the current view, so marking a spot by clicking the map (the edit pages) does
+       * not yank the map out from under the pointer.
+       */
+      const center = next.getCenter();
+      if (!map.getBounds().contains(center)) {
+        map.setView(center, pointZoom);
+      }
+      return;
+    }
+    map.fitBounds(next);
+  }, [autoZoom, map, pointZoom, viewKey]);
 
   return null;
 };
@@ -153,6 +218,7 @@ const UpdateBounds = ({
 const Leaflet = ({
   activeMarkerPosition,
   autoZoom,
+  autoZoomPointZoom,
   clusterMarkers,
   defaultCenter,
   defaultZoom,
@@ -174,6 +240,23 @@ const Leaflet = ({
   const [showElevation, setShowElevation] = useState(false);
   /** Base maps offered by the active region; the region's default is the one selected on load. */
   const { maps } = useMeta();
+
+  /** Extent of the drawn content — what an `autoZoom` map is framed on. */
+  const contentBounds = useMemo(
+    () => (autoZoom ? computeContentBounds({ markers, outlines, trails }) : null),
+    [autoZoom, markers, outlines, trails],
+  );
+  /** Zoom for content with no box to fit; `defaultZoom` keeps the caller's scale unless overridden. */
+  const pointZoom = autoZoomPointZoom ?? defaultZoom;
+  const autoZoomView = getAutoZoomView(contentBounds, pointZoom);
+  /*
+   * `MapContainer` applies its view once, on creation. A content box therefore goes in as `bounds`
+   * (fitted right there, at the container's real size), while a point goes in as `center` + `zoom`;
+   * only a map with no content falls back to the region's `defaultCenter`/`defaultZoom`.
+   */
+  const viewBounds = autoZoomView && 'bounds' in autoZoomView ? autoZoomView.bounds : undefined;
+  const viewCenter = autoZoomView ? ('center' in autoZoomView ? autoZoomView.center : undefined) : defaultCenter;
+  const viewZoom = autoZoomView ? ('zoom' in autoZoomView ? autoZoomView.zoom : undefined) : defaultZoom;
 
   const opacity = 0.6;
   const addEventHandlers = !onMouseClick && !onMouseMove;
@@ -262,10 +345,11 @@ const Leaflet = ({
     <MapContainer
       style={{ height: height ? height : '500px', width: '100%', zIndex: 0 }}
       zoomControl={true}
-      zoom={defaultZoom}
-      center={defaultCenter}
+      zoom={viewZoom}
+      center={viewCenter}
+      bounds={viewBounds}
     >
-      <UpdateBounds outlines={outlines} autoZoom={autoZoom} markers={markers} trails={trails} />
+      <UpdateBounds autoZoom={autoZoom} bounds={contentBounds} pointZoom={pointZoom} />
 
       <MapEvent onMouseClick={onMouseClick} onMouseMove={onMouseMove} />
       <FullscreenControl />

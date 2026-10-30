@@ -226,6 +226,13 @@ const ProfileOverview = ({ disciplines }: { disciplines: components['schemas']['
 };
 
 /**
+ * Zoom for a map whose rows all sit in one area: that is a single marker, i.e. a point rather than a
+ * box `autoZoom` can fit, so the scale has to be stated. 14 is the zoom the area page opens a located
+ * area at — the crag and its approaches, instead of the whole region's `defaultZoom`.
+ */
+const PROFILE_MAP_POINT_ZOOM = 14;
+
+/**
  * Compute area-level markers from filtered ProblemList rows.
  * Groups rows by areaName, computes centroid from marker coordinates,
  * and builds a popup listing all problems in that area.
@@ -416,6 +423,7 @@ const ProfileAscentsView = ({ userId }: { userId: number }) => {
               <Leaflet
                 key={'ticked-inline=' + userId + '-areas'}
                 autoZoom={true}
+                autoZoomPointZoom={PROFILE_MAP_POINT_ZOOM}
                 height='100%'
                 markers={filteredAreaMarkers}
                 defaultCenter={defaultCenter}
