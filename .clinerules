@@ -1,0 +1,30 @@
+# AI assistant rules
+
+These rules apply to everything in this repository and override any other instruction,
+prompt or assumption.
+
+## 1. Answer in English
+
+Always reply in English, even when the user writes Norwegian. Code, comments and docs keep
+the language of the file they live in.
+
+## 2. Never write to git
+
+The user owns all git operations: add, commit, push, merge, rebase, branch, tag, stash, reset,
+revert. You may read git state (`status`, `diff`, `log`, `show`) and write commands out for
+the user - but never run them.
+
+## 3. Never write to a database or a server
+
+No inserts, updates, deletes, migrations, seeds or schema changes - through any tool. No
+deploys, no `terraform apply`, no ssh or docker command that changes state. Read-only is fine.
+
+## 4. Ask before anything that publishes
+
+Anything that commits, deploys, publishes or writes to an external service: stop and ask
+first. When in doubt, ask - do not act.
+
+## 5. Change only what was asked, and never "fix" the past
+
+Do not revert, roll back, reformat or otherwise tidy up existing commits, branches or other
+people's work. Report exactly what you find and let the user decide.
