@@ -1,4 +1,4 @@
-# Buldreinfo / Bratte Linjer — Climbing guide for Norway
+# Buldreinfo / Bratte Linjer — User-driven climbing guide
 
 > Community-edited climbing guide covering bouldering (buldreinfo.com), route climbing (brattelinjer.no) and ice climbing (is.brattelinjer.no). The same app runs on all three domains and the links below are relative, so they resolve to whichever domain you are on.
 
