@@ -56,6 +56,30 @@ export function downloadUsersTicks(accessToken: string | null) {
   return downloadFileWithProgress(accessToken, getUrl(`/users/ticks`));
 }
 
+/**
+ * Preview (`dryRun=true`) or import (`dryRun=false`) ticks from an uploaded xlsx file.
+ *
+ * The backend runs the exact same matching for both calls, so the preview rows are what a commit saves. Only a
+ * commit invalidates queries; the preview is a read-only dry run.
+ */
+export function postTicksImport(
+  accessToken: string | null,
+  file: File,
+  dryRun: boolean,
+): Promise<components['schemas']['TickImportResult']> {
+  const url = `/users/ticks/import?dryRun=${dryRun}`;
+  const formData = new FormData();
+  formData.append('file', file);
+  return makeAuthenticatedRequest(accessToken, url, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      Accept: 'application/json',
+    },
+    ...(dryRun ? {} : invalidateQueriesAfter),
+  }).then((response) => ensureOkJson(response, url, {} as components['schemas']['TickImportResult']));
+}
+
 export function postComment(
   accessToken: string | null,
   id: number,

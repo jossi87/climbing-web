@@ -58,6 +58,23 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/users/ticks/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Preview (dryRun=true) or import (dryRun=false) ticks from an uploaded Excel file (xlsx) */
+        post: operations["postUsersTicksImport"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/users/regions": {
         parameters: {
             query?: never;
@@ -670,6 +687,23 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/users/ticks/template": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get template (xlsx) for batch registration of ticks */
+        get: operations["getUsersTicksTemplate"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/users/search": {
         parameters: {
             query?: never;
@@ -1095,6 +1129,23 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/.well-known/security.txt": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get security.txt (vulnerability disclosure, RFC 9116) */
+        get: operations["getSecurityTxt"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/.well-known/ard.json": {
         parameters: {
             query?: never;
@@ -1248,6 +1299,32 @@ export type components = {
             id?: number;
             name?: string;
             mediaIdentity?: components["schemas"]["MediaIdentity"];
+        };
+        TickImportResult: {
+            rows?: components["schemas"]["TickImportRow"][];
+            /** Format: int32 */
+            numSaved?: number;
+            /** Format: int32 */
+            numSkipped?: number;
+            /** Format: int32 */
+            numFailed?: number;
+            committed?: boolean;
+        };
+        TickImportRow: {
+            /** Format: int32 */
+            row?: number;
+            area?: string;
+            sector?: string;
+            name?: string;
+            date?: string;
+            /** Format: double */
+            stars?: number;
+            comment?: string;
+            /** Format: int32 */
+            idProblem?: number;
+            /** @enum {string} */
+            status?: "OK" | "SAVED" | "DUPLICATE" | "DUPLICATE_IN_FILE" | "NOT_FOUND" | "AMBIGUOUS" | "INVALID";
+            message?: string;
         };
         Coordinates: {
             /** Format: int32 */
@@ -2091,9 +2168,9 @@ export type components = {
             gradeSystemId?: number;
             coordinates?: components["schemas"]["Coordinates"];
             tradGear?: boolean;
+            isRopeClimbing?: boolean;
             isBouldering?: boolean;
             isIceClimbing?: boolean;
-            isRopeClimbing?: boolean;
         };
         ProblemSearchResult: {
             /** Format: int32 */
@@ -2560,6 +2637,35 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    postUsersTicksImport: {
+        parameters: {
+            query?: {
+                dryRun?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TickImportResult"];
+                };
             };
         };
     };
@@ -3518,6 +3624,26 @@ export interface operations {
             };
         };
     };
+    getUsersTicksTemplate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+                };
+            };
+        };
+    };
     getUsersSearch: {
         parameters: {
             query: {
@@ -4063,6 +4189,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Activity"][];
+                };
+            };
+        };
+    };
+    getSecurityTxt: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
                 };
             };
         };

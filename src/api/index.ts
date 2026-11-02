@@ -15,6 +15,7 @@ export {
   postRegionOutline,
   postSector,
   postTicks,
+  postTicksImport,
   postTrails,
   postUserRegion,
   postMediaImage,

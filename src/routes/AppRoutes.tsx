@@ -27,6 +27,7 @@ const SectorEdit = lazy(() => import('../features/SectorEdit'), 'sector-edit');
 const Regions = lazy(() => import('../features/Regions/Regions'), 'regions');
 const SvgEdit = lazy(() => import('../features/SvgEdit'), 'svg-edit');
 const Ticks = lazy(() => import('../features/Ticks/Ticks'), 'ticks');
+const TicksImport = lazy(() => import('../features/TicksImport/TicksImport'), 'ticks-import');
 const Trash = lazy(() => import('../features/Trash/Trash'), 'trash');
 const Webcams = lazy(() => import('../features/Webcams/Webcams'), 'webcams');
 
@@ -130,6 +131,14 @@ function AppRoutes() {
               element={
                 <AuthContainer level='admin'>
                   <SectorEdit />
+                </AuthContainer>
+              }
+            />
+            <Route
+              path='/ticks/import'
+              element={
+                <AuthContainer level='logged-in'>
+                  <TicksImport />
                 </AuthContainer>
               }
             />

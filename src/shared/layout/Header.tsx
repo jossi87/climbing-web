@@ -2,7 +2,19 @@ import { useState, useEffect, useRef, type ElementType, type ReactNode } from 'r
 import { useAuth0 } from '@auth0/auth0-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { User, Settings, Download, LogOut, Trash2, Users, Code, LogIn, Loader2, UserCog } from 'lucide-react';
+import {
+  User,
+  Settings,
+  Download,
+  LogOut,
+  Trash2,
+  Users,
+  Code,
+  LogIn,
+  Loader2,
+  UserCog,
+  FileSpreadsheet,
+} from 'lucide-react';
 import { useMeta } from '../components/Meta/context';
 import SearchBox from '../components/SearchBox/SearchBox';
 import { Avatar } from '../ui';
@@ -120,6 +132,8 @@ const Header = () => {
                 {t('header.settings')}
               </DropdownItem>
 
+              <div className='border-surface-border/35 mx-2 my-1 border-t' />
+
               <button
                 type='button'
                 onClick={() => {
@@ -136,6 +150,10 @@ const Header = () => {
                 )}
                 {t('header.exportAscents')}
               </button>
+
+              <DropdownItem to='/ticks/import' icon={FileSpreadsheet} onClick={() => setIsAccountOpen(false)}>
+                {t('header.importAscents')}
+              </DropdownItem>
 
               <div className='border-surface-border/35 mx-2 my-1 border-t' />
 
