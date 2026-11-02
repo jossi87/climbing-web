@@ -94,6 +94,9 @@
     "i18n:usage": "node .i18n-usage.mjs",
     "prepare": "husky"
   },
+  "overrides": {
+    "minimatch": "^11.0.4"
+  },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix",
