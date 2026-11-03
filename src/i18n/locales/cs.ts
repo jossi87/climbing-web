@@ -796,6 +796,9 @@ export const cs: Catalog = {
   ticksImport: {
     title: 'Import přelezů',
     metaDescription: 'Hromadný import přelezů ze souboru Excel',
+    // Krátký odstavec pod nadpisem: co stránka dělá a co uložené přelezy dostanou.
+    description:
+      'Vyplňte šablonu — jeden přelez na řádek — a nahrajte ji zde. Každý řádek zkontrolujeme, než se cokoli uloží (duplicity přeskočíme, nejednoznačné shody označíme), a každý přelez se uloží s obtížností, kterou má cesta jako konsenzus.',
     stepTemplate: 'Získejte šablonu',
     downloadTemplate: 'Stáhnout šablonu',
     stepUpload: 'Nahrajte soubor',

@@ -189,9 +189,14 @@ const TicksImport = () => {
       <meta name='description' content={t('ticksImport.metaDescription')} />
 
       <Card flush className='min-w-0 border-0'>
-        {/* Title, then one hairline-separated block per step: template → upload → review. */}
+        {/* Title with a two-sentence intro, then one hairline-separated block per step: template → upload → review. */}
         <div className='border-surface-border/40 border-b px-4 py-4 sm:px-6 sm:py-5'>
-          <SectionHeader title={t('ticksImport.title')} icon={FileSpreadsheet} className='mb-0' />
+          <SectionHeader
+            title={t('ticksImport.title')}
+            icon={FileSpreadsheet}
+            description={t('ticksImport.description')}
+            className='mb-0'
+          />
         </div>
 
         <div className='divide-surface-border/40 divide-y'>

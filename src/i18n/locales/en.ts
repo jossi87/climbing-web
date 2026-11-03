@@ -1092,6 +1092,9 @@ export const en = {
   ticksImport: {
     title: 'Import ascents',
     metaDescription: 'Import ascents in bulk from an Excel file',
+    /** One short paragraph under the title: what the page does, and what the saved ascents get. */
+    description:
+      'Fill in the template with one ascent per row and upload it here — every row is checked before anything is saved, so duplicates are skipped and unclear matches are flagged. Each ascent is registered with the consensus grade of its problem.',
     stepTemplate: 'Get the template',
     downloadTemplate: 'Download template',
     stepUpload: 'Upload the file',
