@@ -3,6 +3,7 @@ import { useMeta } from '../../shared/components/Meta/context';
 import { useData } from '../../api';
 import { Flag, FileText, Info, Users, Pencil, Book, Code, Globe, Heart, Camera, ExternalLink } from 'lucide-react';
 import type { Success } from '../../@types/buldreinfo';
+import { CONTACT_MAILTO } from '../../constants/contact';
 import {
   BRV_PLATFORM_AGREEMENT_DATE_LABEL,
   BRV_PLATFORM_AGREEMENT_PDF,
@@ -21,11 +22,14 @@ import {
 } from '../../shared/ui';
 
 /**
- * The maintainer's mailto link, defined once and handed to each `<Trans>` as its `link` slot: three sentences mention it,
+ * The maintainer's mailto link, defined once and handed to each `<Trans>` as its `mail` slot: two sentences mention it,
  * and the visible name stays inside the catalog sentence (see `about.statutes.createdBy`). `children` stays empty here
  * because `<Trans>` supplies the translated text when it clones the slot.
+ *
+ * The slot must not be called `link`: react-i18next parses the sentence as HTML, where `<link>` is a void element, so
+ * `<link>Jostein</link>` would render an empty anchor with the name dumped next to it.
  */
-const maintainerLink = <TextLink href='mailto:jostein.oygarden@gmail.com' children={null} />;
+const maintainerLink = <TextLink href={CONTACT_MAILTO} children={null} />;
 
 const About = () => {
   const meta = useMeta();
@@ -45,7 +49,7 @@ const About = () => {
             <SectionHeader title={t('about.statutes.title')} icon={Info} subheader={t('about.statutes.subheader')} />
             <List>
               <ListItem>
-                <Trans i18nKey='about.statutes.createdBy' components={{ link: maintainerLink }} />
+                <Trans i18nKey='about.statutes.createdBy' components={{ mail: maintainerLink }} />
               </ListItem>
               <ListItem>{t('about.statutes.aim')}</ListItem>
               <ListItem>{t('about.statutes.nonProfit')}</ListItem>
@@ -62,7 +66,7 @@ const About = () => {
             />
             <List>
               <ListItem>
-                <Trans i18nKey='about.collaboration.contact' components={{ link: maintainerLink }} />
+                <Trans i18nKey='about.collaboration.contact' components={{ mail: maintainerLink }} />
               </ListItem>
               <ListItem>
                 <Trans
@@ -109,15 +113,13 @@ const About = () => {
               subheader={t('about.moderation.subheader')}
             />
             <List>
-              <ListItem>
-                <Trans i18nKey='about.moderation.reportErrors' components={{ link: maintainerLink }} />
-              </ListItem>
+              <ListItem>{t('about.moderation.reportErrors')}</ListItem>
               <ListItem>{t('about.moderation.namesTrivia')}</ListItem>
               <ListItem>
                 <Trans
                   i18nKey='about.moderation.namingGuidance'
                   components={{
-                    link: (
+                    guidelines: (
                       <TextLink
                         href='https://klatring.no/siteassets/dokumenter/klatrefelt-og-anlegg/klatrefelt/2022-retningslinjer-for-rutenavn-.pdf'
                         children={null}

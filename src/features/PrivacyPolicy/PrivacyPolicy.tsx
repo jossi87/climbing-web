@@ -7,6 +7,7 @@ import {
   BRV_WEBSITE_URL,
 } from '../../constants/legalLinks';
 import { Card, SectionHeader, TextLink } from '../../shared/ui';
+import { CONTACT_MAILTO } from '../../constants/contact';
 
 const PrivacyPolicy = () => {
   const { t } = useTranslation();
@@ -69,7 +70,7 @@ const PrivacyPolicy = () => {
               <li className='type-body'>
                 <Trans
                   i18nKey='privacy.deletingContact'
-                  components={{ mail: <TextLink href='mailto:jostein.oygarden@gmail.com' children={null} /> }}
+                  components={{ mail: <TextLink href={CONTACT_MAILTO} children={null} /> }}
                 />
               </li>
             </ul>

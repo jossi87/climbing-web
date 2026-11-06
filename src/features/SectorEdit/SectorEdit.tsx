@@ -44,6 +44,7 @@ import { cn } from '../../lib/utils';
 import { designContract } from '../../design/contract';
 import { Card, FormSwitch, MarkdownFieldLabel, NotFoundCard, SectionHeader } from '../../shared/ui';
 import { sanitizeCoordInput, useCoordinateText } from '../../shared/hooks/useCoordinateText';
+import { CONTACT_MAILTO } from '../../constants/contact';
 
 type Area = components['schemas']['Area'];
 type Sector = components['schemas']['Sector'];
@@ -583,12 +584,7 @@ export const SectorEdit = ({ sector, area }: Props) => {
                   <Trans
                     i18nKey='sectorEdit.contact'
                     components={{
-                      link: (
-                        <a
-                          href='mailto:jostein.oygarden@gmail.com'
-                          className='hover:text-brand font-semibold text-slate-200'
-                        />
-                      ),
+                      mail: <a href={CONTACT_MAILTO} className='hover:text-brand font-semibold text-slate-200' />,
                     }}
                   />
                 </>

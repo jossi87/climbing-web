@@ -14,7 +14,7 @@ export function MarkdownFieldLabel({ children, className }: Props) {
       <Trans
         i18nKey='markdownField.supports'
         components={{
-          link: (
+          demo: (
             <a
               href='https://jonschlinkert.github.io/remarkable/demo/'
               target='_blank'

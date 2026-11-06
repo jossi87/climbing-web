@@ -24,6 +24,7 @@ import {
   useProblem,
 } from '../../api';
 import { Loading } from '../../shared/ui/StatusWidgets';
+import { CONTACT_MAILTO } from '../../constants/contact';
 import { useNavigate, useParams } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import { VisibilitySelectorField } from '../../shared/ui/VisibilitySelector';
@@ -360,12 +361,7 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                     i18nKey='problemEdit.contact'
                     values={{ noun }}
                     components={{
-                      link: (
-                        <a
-                          href='mailto:jostein.oygarden@gmail.com'
-                          className='hover:text-brand font-semibold text-slate-200'
-                        />
-                      ),
+                      mail: <a href={CONTACT_MAILTO} className='hover:text-brand font-semibold text-slate-200' />,
                     }}
                   />
                 </>

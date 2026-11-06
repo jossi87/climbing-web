@@ -4,6 +4,7 @@ import { Lock, LogIn, AlertTriangle, RefreshCw } from 'lucide-react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Card } from './Card';
 import { cn } from '../../lib/utils';
+import { CONTACT_MAILTO } from '../../constants/contact';
 import { designContract } from '../../design/contract';
 
 type LoadingProps = {
@@ -115,7 +116,7 @@ export const InsufficientPrivileges = () => {
               components={{
                 contact: (
                   <a
-                    href='mailto:jostein.oygarden@gmail.com'
+                    href={CONTACT_MAILTO}
                     className='decoration-brand/35 hover:text-brand active:text-brand focus-visible:text-brand focus-visible:ring-brand-border/55 font-semibold text-slate-200 underline underline-offset-4 transition-colors focus-visible:rounded-sm focus-visible:ring-2 focus-visible:outline-none'
                   />
                 ),

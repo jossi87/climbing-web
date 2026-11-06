@@ -858,6 +858,7 @@ export const cs: Catalog = {
     descriptionProblems: 'Problémy seskupené podle obtížnosti',
     descriptionRoutes: 'Cesty seskupené podle obtížnosti',
     clickBarForDetails: 'Klikněte na sloupec pro podrobnosti',
+    cardSubheader: '{{problems}} · {{hint}}',
   },
   footer: {
     navigation: 'Navigace',
@@ -984,7 +985,7 @@ export const cs: Catalog = {
     statutes: {
       title: 'Stanovy',
       subheader: 'Neziskový web vytvořený lezci pro lezce',
-      createdBy: 'Web vytváří a spravuje <link>Jostein Øygarden</link>',
+      createdBy: 'Web vytváří a spravuje <mail>Jostein Øygarden</mail>',
       aim: 'Cílem je poskytovat co nejlepší lezecké informace v regionu',
       nonProfit: 'Web je neziskový a zdarma pro všechny',
       editors: 'Editory je řada aktivních lezců v jednotlivých regionech',
@@ -993,7 +994,7 @@ export const cs: Catalog = {
     collaboration: {
       title: 'Spolupráce',
       subheader: 'Zřiďte si vlastního průvodce',
-      contact: 'Pokud si chcete pro svůj region zřídit vlastního online průvodce, kontaktujte <link>Josteina</link>.',
+      contact: 'Pokud si chcete pro svůj region zřídit vlastního online průvodce, kontaktujte <mail>Josteina</mail>.',
       hostingFee: 'Roční poplatek za hosting (stav k roku 2026) je přibližně <amount>250,- NOK</amount>.',
       brvAgreement:
         'V Rogalandu má <brv>BRV</brv> podepsanou dohodu ({{date}}) o používání platformy a vlastnictví dat. <pdf/>. Toto krátké upozornění opakujeme u každého regionálního průvodce, aby bylo snadno k nalezení.',
@@ -1014,12 +1015,11 @@ export const cs: Catalog = {
     moderation: {
       title: 'Obsah a moderace',
       subheader: 'Pomozte nám udržet platformu přesnou a bezpečnou',
-      reportErrors:
-        'Pokud najdete věcné chyby, překlepy nebo zastaralé informace, nahlaste je regionálnímu správci nebo <link>Josteinovi</link>.',
+      reportErrors: 'Pokud najdete věcné chyby, překlepy nebo zastaralé informace, nahlaste je regionálnímu správci.',
       namesTrivia:
         'Názvy dávají prvovýstupci. U některých cest a boulderů je uvedena zajímavost, která vysvětluje kontext názvu.',
       namingGuidance:
-        'Doporučení pro vytváření přívětivých názvů najdete v <link>doporučeních Norského lezeckého svazu pro pojmenování cest <icon/></link>.',
+        'Doporučení pro vytváření přívětivých názvů najdete v <guidelines>doporučeních Norského lezeckého svazu pro pojmenování cest <icon/></guidelines>.',
       reportOffensive: 'Pokud narazíte na urážlivý nebo nevhodný obsah, kontaktujte regionálního správce.',
     },
     history: {
@@ -1100,7 +1100,7 @@ export const cs: Catalog = {
     problemOrder: 'Pořadí problémů',
     confirmTrash: 'Opravdu chcete přesunout sektor do koše?',
     save: 'Uložit sektor',
-    contact: 'Kontaktujte <link>Josteina Øygardena</link>, pokud chcete sektor přesunout nebo rozdělit.',
+    contact: 'Kontaktujte <mail>Josteina Øygardena</mail>, pokud chcete sektor přesunout nebo rozdělit.',
   },
   svgEdit: {
     title: 'Editor topa',
@@ -1141,7 +1141,7 @@ export const cs: Catalog = {
     addNoun: 'Přidat {{noun}}',
     editNoun: 'Upravit {{noun}}',
     saveNoun: 'Uložit {{noun}}',
-    contact: 'Kontaktujte <link>Josteina Øygardena</link>, pokud chcete tento {{noun}} přesunout do jiného sektoru.',
+    contact: 'Kontaktujte <mail>Josteina Øygardena</mail>, pokud chcete tento {{noun}} přesunout do jiného sektoru.',
     name: 'Název',
     nameRequired: 'Název je povinný',
     number: 'Číslo',
@@ -1260,7 +1260,7 @@ export const cs: Catalog = {
     sectorOrder: 'Pořadí sektorů',
     confirmTrash: 'Opravdu chcete přesunout oblast do koše?',
     save: 'Uložit oblast',
-    contact: 'Kontaktujte <link>Josteina Øygardena</link>, pokud chcete oblast rozdělit.',
+    contact: 'Kontaktujte <mail>Josteina Øygardena</mail>, pokud chcete oblast rozdělit.',
   },
   mediaSvgEdit: {
     title: 'Kreslení do obrázku',
@@ -1372,7 +1372,7 @@ export const cs: Catalog = {
     allYearLeash: 'Celoroční povinnost vodítka',
   },
   markdownField: {
-    supports: '(podporuje <link>markdown</link>)',
+    supports: '(podporuje <demo>markdown</demo>)',
   },
   userSelector: {
     create: 'Vytvořit „{{name}}“',

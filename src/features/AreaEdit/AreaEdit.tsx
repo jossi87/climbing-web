@@ -14,6 +14,7 @@ import { Info, AlertTriangle, Hash, Edit, MapPin, Save, Loader2, Plus } from 'lu
 import { cn } from '../../lib/utils';
 import { Card, FormSwitch, MarkdownFieldLabel, SectionHeader } from '../../shared/ui';
 import { sanitizeCoordInput, useCoordinateText } from '../../shared/hooks/useCoordinateText';
+import { CONTACT_MAILTO } from '../../constants/contact';
 
 const dummyEvent = {} as ChangeEvent<HTMLInputElement>;
 
@@ -160,12 +161,7 @@ export const AreaEdit = () => {
                   <Trans
                     i18nKey='areaEdit.contact'
                     components={{
-                      link: (
-                        <a
-                          href='mailto:jostein.oygarden@gmail.com'
-                          className='hover:text-brand font-semibold text-slate-200'
-                        />
-                      ),
+                      mail: <a href={CONTACT_MAILTO} className='hover:text-brand font-semibold text-slate-200' />,
                     }}
                   />
                 </>

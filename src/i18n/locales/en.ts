@@ -1160,6 +1160,11 @@ export const en = {
     descriptionProblems: 'Problems grouped by grade',
     descriptionRoutes: 'Routes grouped by grade',
     clickBarForDetails: 'Click bar for details',
+    /**
+     * Subtitle of one grade system's card: the chart's total (`problems`, a `counts.*` phrase) beside the click hint.
+     * Same shape as {@link webcams.subheader} — the separator is locale-owned.
+     */
+    cardSubheader: '{{problems}} · {{hint}}',
   },
   /**
    * Footer. Club, product, and link names (`BRV`, `Bratte Linjer`, `React / TS`) stay proper nouns in
@@ -1341,7 +1346,7 @@ export const en = {
     statutes: {
       title: 'Statutes',
       subheader: 'A nonprofit website created by climbers, for climbers',
-      createdBy: 'The webpage is created and maintained by <link>Jostein Øygarden</link>',
+      createdBy: 'The webpage is created and maintained by <mail>Jostein Øygarden</mail>',
       aim: 'The aim is to provide the best possible climbing information in the region',
       nonProfit: 'The site is non-profit and free to use for everyone',
       editors: 'The editors are a variety of active climbers in the different regions',
@@ -1350,7 +1355,7 @@ export const en = {
     collaboration: {
       title: 'Collaboration',
       subheader: 'Get your own guide',
-      contact: 'Contact <link>Jostein</link> if you want to establish your own online guidebook for your region.',
+      contact: 'Contact <mail>Jostein</mail> if you want to establish your own online guidebook for your region.',
       hostingFee: 'The yearly hosting fee (as for 2026) is approximately <amount>250,- NOK</amount>.',
       /** `<pdf/>` is a self-closing slot: the link (label + icon) lives in the component, its sentence does not. */
       brvAgreement:
@@ -1373,11 +1378,11 @@ export const en = {
       title: 'Content & Moderation',
       subheader: 'Help us keep the platform accurate and safe',
       reportErrors:
-        'If you find any factual errors, typos, or outdated information, please report them to a regional administrator or <link>Jostein</link>.',
+        'If you find any factual errors, typos, or outdated information, please report them to a regional administrator.',
       namesTrivia:
         'Names are given by the first ascensionists. Some routes and boulders have trivia to provide context behind the name.',
       namingGuidance:
-        "For guidance on creating welcoming names, see the <link>Norwegian Climbing Federation's recommendations for route naming <icon/></link>.",
+        "For guidance on creating welcoming names, see the <guidelines>Norwegian Climbing Federation's recommendations for route naming <icon/></guidelines>.",
       reportOffensive: 'If you find any content offensive or inappropriate, please contact a regional administrator.',
     },
     /**
@@ -1475,7 +1480,7 @@ export const en = {
     confirmTrash: 'Are you sure you want to move sector to trash?',
     save: 'Save sector',
     /** `<Trans>`: the mailto link is the `link` slot, so the name stays with the sentence it belongs to. */
-    contact: 'Contact <link>Jostein Øygarden</link> if you want to move or split the sector.',
+    contact: 'Contact <mail>Jostein Øygarden</mail> if you want to move or split the sector.',
   },
   /**
    * Topo editor (`/problem/svg-edit/…`): the SVG overlay editor for a single pitch strip.
@@ -1534,7 +1539,7 @@ export const en = {
     editNoun: 'Edit {{noun}}',
     saveNoun: 'Save {{noun}}',
     /** `<Trans>`: the mailto link is the `link` slot and `noun` is interpolated. */
-    contact: 'Contact <link>Jostein Øygarden</link> if you want to move this {{noun}} to another sector.',
+    contact: 'Contact <mail>Jostein Øygarden</mail> if you want to move this {{noun}} to another sector.',
     name: 'Name',
     nameRequired: 'Name required',
     number: 'Number',
@@ -1663,7 +1668,7 @@ export const en = {
     confirmTrash: 'Are you sure you want to move area to trash?',
     save: 'Save area',
     /** `<Trans>`: the mailto link is the `link` slot. */
-    contact: 'Contact <link>Jostein Øygarden</link> if you want to split the area.',
+    contact: 'Contact <mail>Jostein Øygarden</mail> if you want to split the area.',
   },
   /**
    * Media topo editor (`MediaSvgEdit`): draws descent lines and rappel stations on a photo.
@@ -1822,9 +1827,9 @@ export const en = {
     title: 'No dogs allowed',
     allYearLeash: 'Helårsbåndtvang',
   },
-  /** Markdown hint next to a field label; `<Trans>`: `<link>` is the Remarkable demo link. */
+  /** Markdown hint next to a field label; `<Trans>`: `<demo>` is the Remarkable demo link. */
   markdownField: {
-    supports: '(supports <link>markdown</link>)',
+    supports: '(supports <demo>markdown</demo>)',
   },
   /**
    * Creatable user picker (`UserSelector` / `UsersSelector`).
