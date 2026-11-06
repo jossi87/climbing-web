@@ -1,7 +1,6 @@
 import { type ElementType } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Mail,
   Info,
   ShieldCheck,
   FileDown,
@@ -180,12 +179,6 @@ const Footer = () => {
               footerLegalTextClass,
             )}
           >
-            <a
-              href='mailto:jostein.oygarden@gmail.com'
-              className='hover:text-brand hover:decoration-brand/55 light:text-slate-600 light:decoration-slate-400/55 light:hover:bg-slate-300/55 light:hover:decoration-brand/60 flex shrink-0 items-center gap-1 rounded px-1 py-0.5 font-bold text-slate-300 underline decoration-white/22 underline-offset-[3px] transition-[color,background-color,text-decoration-color] duration-200 hover:bg-white/[0.07]'
-            >
-              <Mail className='h-2.5 w-2.5 shrink-0' strokeWidth={2} /> {t('footer.contact')}
-            </a>
             <a
               href='/gpl-3.0.txt'
               target='_blank'

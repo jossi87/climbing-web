@@ -872,7 +872,6 @@ export const cs: Catalog = {
     backendApi: 'Backend API',
     pdfMaps: 'PDF mapy',
     affiliation: 'Spolupráce',
-    contact: 'Kontakt',
     license: 'Licence',
     privacy: 'Soukromí',
     donate: 'Podpořit',
@@ -1021,8 +1020,7 @@ export const cs: Catalog = {
         'Názvy dávají prvovýstupci. U některých cest a boulderů je uvedena zajímavost, která vysvětluje kontext názvu.',
       namingGuidance:
         'Doporučení pro vytváření přívětivých názvů najdete v <link>doporučeních Norského lezeckého svazu pro pojmenování cest <icon/></link>.',
-      reportOffensive:
-        'Pokud narazíte na urážlivý nebo nevhodný obsah, kontaktujte regionálního správce nebo <link>Josteina</link>.',
+      reportOffensive: 'Pokud narazíte na urážlivý nebo nevhodný obsah, kontaktujte regionálního správce.',
     },
     history: {
       title: 'Historie',

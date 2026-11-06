@@ -983,7 +983,7 @@ export type paths = {
             path?: never;
             cookie?: never;
         };
-        /** Get graph (number of boulders/routes grouped by grade) */
+        /** Get graph (number of boulders/routes grouped by grade), one graph per grade system */
         get: operations["getGraph"];
         put?: never;
         post?: never;
@@ -2168,9 +2168,9 @@ export type components = {
             gradeSystemId?: number;
             coordinates?: components["schemas"]["Coordinates"];
             tradGear?: boolean;
-            isRopeClimbing?: boolean;
             isBouldering?: boolean;
             isIceClimbing?: boolean;
+            isRopeClimbing?: boolean;
         };
         ProblemSearchResult: {
             /** Format: int32 */
@@ -2284,6 +2284,14 @@ export type components = {
         };
         GradeDistributionType: {
             type?: components["schemas"]["Type"];
+            /** Format: int32 */
+            num?: number;
+        };
+        GradeGraph: {
+            /** Format: int32 */
+            gradeSystemId?: number;
+            gradeSystem?: string;
+            gradeDistribution?: components["schemas"]["GradeDistribution"][];
             /** Format: int32 */
             num?: number;
         };
@@ -4009,7 +4017,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GradeDistribution"][];
+                    "application/json": components["schemas"]["GradeGraph"][];
                 };
             };
         };

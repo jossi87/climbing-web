@@ -1178,7 +1178,6 @@ export const en = {
     backendApi: 'Backend API',
     pdfMaps: 'PDF Maps',
     affiliation: 'Affiliation',
-    contact: 'Contact',
     license: 'License',
     privacy: 'Privacy',
     donate: 'Donate',
@@ -1379,8 +1378,7 @@ export const en = {
         'Names are given by the first ascensionists. Some routes and boulders have trivia to provide context behind the name.',
       namingGuidance:
         "For guidance on creating welcoming names, see the <link>Norwegian Climbing Federation's recommendations for route naming <icon/></link>.",
-      reportOffensive:
-        'If you find any content offensive or inappropriate, please contact a regional administrator or <link>Jostein</link>.',
+      reportOffensive: 'If you find any content offensive or inappropriate, please contact a regional administrator.',
     },
     /**
      * History timeline. Titles are the *domain* each era lived on (not copy), so only the descriptions are catalogued —

@@ -127,9 +127,7 @@ const About = () => {
                   }}
                 />
               </ListItem>
-              <ListItem>
-                <Trans i18nKey='about.moderation.reportOffensive' components={{ link: maintainerLink }} />
-              </ListItem>
+              <ListItem>{t('about.moderation.reportOffensive')}</ListItem>
             </List>
           </Card>
         </div>
