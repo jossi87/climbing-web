@@ -35,7 +35,7 @@
     "tailwindcss": "^4.3.5",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.72.1",
-    "vite": "^8.3.6"
+    "vite": "^8.3.7"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.30.0",

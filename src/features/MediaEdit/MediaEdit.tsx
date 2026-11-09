@@ -204,7 +204,19 @@ const MediaEdit = () => {
     isVideo && m
       ? getMediaFileUrl(mediaIdentityId(m.identity), mediaIdentityVersionStamp(m.identity), !!m.isMovie)
       : null;
-  useHlsVideo(videoRef, moviePreviewSrc);
+  const moviePreview = useHlsVideo(videoRef, moviePreviewSrc);
+  const startMoviePreview = moviePreview.startLoad;
+
+  /**
+   * The player hook is lazy: attaching the source only fetches the master playlist, and an element that has never had a
+   * fragment appended never fires `loadedmetadata`. The thumbnail picker below is driven entirely by that event — it
+   * is where the duration comes from, and `currentTime` on this same element is what puts the picked frame on screen —
+   * so a preview that never asks for the stream sits on a black stage with the range input stuck at 0:00 / 0:00, and
+   * the frame cannot be changed at all. Asking here is the same contract the problem page's `VideoPlayer` follows.
+   */
+  useEffect(() => {
+    if (moviePreviewSrc) startMoviePreview();
+  }, [moviePreviewSrc, startMoviePreview]);
 
   /** Whether the embed URL is an Instagram URL (not a YouTube/Vimeo iframe embed) */
   const isInstagramEmbed =
