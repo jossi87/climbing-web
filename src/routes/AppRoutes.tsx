@@ -20,6 +20,7 @@ const PrivacyPolicy = lazy(() => import('../features/PrivacyPolicy/PrivacyPolicy
 const Problem = lazy(() => import('../features/Problem'), 'problem');
 const ProblemEdit = lazy(() => import('../features/ProblemEdit/ProblemEdit'), 'problem-edit');
 const Problems = lazy(() => import('../features/Problems'), 'problems');
+const ProblemsImport = lazy(() => import('../features/ProblemsImport/ProblemsImport'), 'problems-import');
 const Profile = lazy(() => import('../features/Profile/Profile'), 'profile');
 const Settings = lazy(() => import('../features/Settings/Settings'), 'settings');
 const Sector = lazy(() => import('../features/Sector/Sector'), 'sector');
@@ -123,6 +124,14 @@ function AppRoutes() {
               }
             />
             <Route path='/problems' element={<Problems />} />
+            <Route
+              path='/problems/import'
+              element={
+                <AuthContainer level='admin'>
+                  <ProblemsImport />
+                </AuthContainer>
+              }
+            />
             <Route path='/regions/:type' element={<Regions />} />
             <Route path='/sites/:type' element={<RedirectSitesUrlToRegions />} />
             <Route path='/sector/:sectorId/:segment?' element={<Sector />} />

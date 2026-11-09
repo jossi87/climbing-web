@@ -33,7 +33,7 @@ type DropdownItemProps = {
 };
 
 const Header = () => {
-  const { isSuperAdmin, isAuthenticated, authenticatedName, mediaIdentity, userId } = useMeta();
+  const { isAdmin, isSuperAdmin, isAuthenticated, authenticatedName, mediaIdentity, userId } = useMeta();
   const { isLoading, loginWithRedirect, logout } = useAuth0();
   const accessToken = useAccessToken();
   const location = useLocation();
@@ -154,6 +154,12 @@ const Header = () => {
               <DropdownItem to='/ticks/import' icon={FileSpreadsheet} onClick={() => setIsAccountOpen(false)}>
                 {t('header.importAscents')}
               </DropdownItem>
+
+              {isAdmin && (
+                <DropdownItem to='/problems/import' icon={FileSpreadsheet} onClick={() => setIsAccountOpen(false)}>
+                  {t('header.importProblems')}
+                </DropdownItem>
+              )}
 
               <div className='border-surface-border/35 mx-2 my-1 border-t' />
 

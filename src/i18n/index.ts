@@ -19,6 +19,19 @@ import type { Catalog } from './locales/en';
 export type TranslationKey = ParseKeys;
 
 /**
+ * The catalog keys under `Prefix`, as a union narrow enough to hand to `t()`.
+ *
+ * i18next types each message together with its `{{variables}}`, and a `t()` call without options must
+ * satisfy the variables of *the key it is called with*. With the whole {@link TranslationKey} union
+ * that requirement becomes the intersection over every message in the catalog — a plural or
+ * `{{count}}` key needs options the other 1200 keys would then also demand — so `t(key)` on such a
+ * variable does not compile. Narrowing the annotation to the family the table actually holds
+ * (`TranslationKeyUnder<'problemList.sortBy.'>`) keeps the compile-time key check that
+ * {@link TranslationKey} exists for, without asking every key's options at once.
+ */
+export type TranslationKeyUnder<Prefix extends string> = Extract<TranslationKey, `${Prefix}${string}`>;
+
+/**
  * Catalog for the boot locale, or `null` when it is not needed (the boot locale *is* the base locale) or
  * cannot be fetched — in which case the app boots on `en` instead of painting catalog keys.
  */

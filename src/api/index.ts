@@ -16,6 +16,7 @@ export {
   postSector,
   postTicks,
   postTicksImport,
+  postProblemsImport,
   postTrails,
   postUserRegion,
   postMediaImage,

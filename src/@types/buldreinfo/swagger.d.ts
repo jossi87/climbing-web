@@ -336,6 +336,23 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/problems/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Preview (dryRun=true) or import (dryRun=false) problems and their sectors from an uploaded Excel file (xlsx) */
+        post: operations["postProblemsImport"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/permissions": {
         parameters: {
             query?: never;
@@ -934,6 +951,23 @@ export type paths = {
         };
         /** Get problem PDF by id */
         get: operations["getProblemsPdf"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/problems/import/template": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get template (xlsx) for batch registration of problems and sectors */
+        get: operations["getProblemsImportTemplate"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1697,6 +1731,45 @@ export type components = {
             idUser?: number;
             mediaIdentity?: components["schemas"]["MediaIdentity"];
             name?: string;
+        };
+        ProblemImportResult: {
+            rows?: components["schemas"]["ProblemImportRow"][];
+            /** Format: int32 */
+            numSaved?: number;
+            /** Format: int32 */
+            numSkipped?: number;
+            /** Format: int32 */
+            numFailed?: number;
+            /** Format: int32 */
+            numSectorsCreated?: number;
+            /** Format: int32 */
+            numUsersCreated?: number;
+            committed?: boolean;
+        };
+        ProblemImportRow: {
+            /** Format: int32 */
+            row?: number;
+            area?: string;
+            sector?: string;
+            /** Format: int32 */
+            nr?: number;
+            name?: string;
+            description?: string;
+            type?: string;
+            grade?: string;
+            faDate?: string;
+            faUsers?: string;
+            /** Format: int32 */
+            idArea?: number;
+            /** Format: int32 */
+            idSector?: number;
+            /** Format: int32 */
+            idProblem?: number;
+            newSector?: boolean;
+            newUsers?: string[];
+            /** @enum {string} */
+            status?: "OK" | "SAVED" | "DUPLICATE" | "DUPLICATE_IN_FILE" | "NOT_FOUND" | "AMBIGUOUS" | "INVALID" | "FORBIDDEN";
+            message?: string;
         };
         PermissionUser: {
             /** Format: int32 */
@@ -3139,6 +3212,35 @@ export interface operations {
             };
         };
     };
+    postProblemsImport: {
+        parameters: {
+            query?: {
+                dryRun?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemImportResult"];
+                };
+            };
+        };
+    };
     getPermissions: {
         parameters: {
             query?: never;
@@ -3948,6 +4050,26 @@ export interface operations {
                 };
                 content: {
                     "application/pdf": components["schemas"]["StreamingResponseBody"];
+                };
+            };
+        };
+    };
+    getProblemsImportTemplate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
                 };
             };
         };

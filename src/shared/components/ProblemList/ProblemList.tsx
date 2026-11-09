@@ -1,7 +1,7 @@
 import { type ComponentProps, type ReactNode, useMemo, useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import type { TranslationKey } from '../../../i18n';
+import type { TranslationKeyUnder } from '../../../i18n';
 import { createPortal } from 'react-dom';
 import AccordionContainer from './AccordionContainer';
 import { rowListTypeKey, type Row } from './types';
@@ -53,8 +53,16 @@ type Props = {
 /**
  * Sort options hold translation keys instead of text: `t` is only available inside the component, and a
  * module-scope table of English prose is exactly what would leak untranslated into a localized page.
+ *
+ * The keys are narrowed to the `problemList.sortBy.*` family — `t()` demands the interpolation variables
+ * of the key it is given, which the whole catalog's union cannot satisfy (see `TranslationKeyUnder`).
  */
-type OrderByOption = { key: string; textKey: TranslationKey; shortTextKey: TranslationKey; value: OrderOption };
+type OrderByOption = {
+  key: string;
+  textKey: TranslationKeyUnder<'problemList.sortBy.'>;
+  shortTextKey: TranslationKeyUnder<'problemList.sortBy.'>;
+  value: OrderOption;
+};
 
 const ORDER_BY_OPTIONS: Record<'sector' | 'user', OrderByOption[]> = {
   sector: [
@@ -192,9 +200,9 @@ const GROUP_BY: Record<
 type GroupByOption = {
   key: string;
   /** Translation keys; resolved in the component, where `t` is in scope (see `OrderByOption`). */
-  textKey: TranslationKey;
+  textKey: TranslationKeyUnder<'problemList.groupBy.'>;
   /** Short label for dense toolbars (defaults to `textKey`). */
-  shortTextKey?: TranslationKey;
+  shortTextKey?: TranslationKeyUnder<'problemList.groupBy.'>;
   value: GroupOption;
   isApplicable: (state: Pick<State, 'uniqueAreas' | 'uniqueRocks' | 'uniqueSectors' | 'uniqueTypes'>) => boolean;
 };

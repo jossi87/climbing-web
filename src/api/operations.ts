@@ -80,6 +80,31 @@ export function postTicksImport(
   }).then((response) => ensureOkJson(response, url, {} as components['schemas']['TickImportResult']));
 }
 
+/**
+ * Preview (`dryRun=true`) or import (`dryRun=false`) problems, and the sectors they belong to, from an uploaded xlsx
+ * file. Areas must already exist; a sector is reused by name or created, a problem is always created.
+ *
+ * The backend runs the exact same checks for both calls, so the preview rows are what a commit writes. Only a commit
+ * invalidates queries; the preview is a read-only dry run.
+ */
+export function postProblemsImport(
+  accessToken: string | null,
+  file: File,
+  dryRun: boolean,
+): Promise<components['schemas']['ProblemImportResult']> {
+  const url = `/problems/import?dryRun=${dryRun}`;
+  const formData = new FormData();
+  formData.append('file', file);
+  return makeAuthenticatedRequest(accessToken, url, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      Accept: 'application/json',
+    },
+    ...(dryRun ? {} : invalidateQueriesAfter),
+  }).then((response) => ensureOkJson(response, url, {} as components['schemas']['ProblemImportResult']));
+}
+
 export function postComment(
   accessToken: string | null,
   id: number,

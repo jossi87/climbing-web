@@ -14,7 +14,7 @@ import {
 import { AvatarGroup, Card, ClickableAvatar, SectionLabel, TradGearMarker } from '../../shared/ui';
 import { LockSymbol } from '../../shared/ui/Indicators';
 import { useMeta } from '../../shared/components/Meta/context';
-import type { TranslationKey } from '../../i18n';
+import type { TranslationKeyUnder } from '../../i18n';
 import { VideoProcessingPlaceholder } from '../../shared/components/Media/VideoProcessingPlaceholder';
 import { VideoThumbnailPlayOverlay } from '../../shared/components/Media/VideoThumbnailPlayOverlay';
 import { useRetryingMediaImage } from '../../shared/hooks/useRetryingMediaImage';
@@ -52,11 +52,20 @@ function rowLockBlock(a: LockFlags) {
 /* ──────────────────────────── Shared shell ──────────────────────────── */
 
 /**
+ * The accessible-name keys of the See-more link (`frontpage.seeMoreAria*`).
+ *
+ * Narrowed to that family rather than the whole catalog: `t()` requires the interpolation variables of
+ * whatever key it is given, so a wide `TranslationKey` variable would demand every message's options at
+ * once and fail to compile (see `TranslationKeyUnder`).
+ */
+type SeeMoreAriaKey = TranslationKeyUnder<'frontpage.seeMoreAria'>;
+
+/**
  * Default accessible name per See-more destination. Keys are written out (not built from the category) so the
  * catalog stays greppable — the FA panel overrides its entry, because "newest boulders" vs "newest routes" is a
  * discipline decision the shared key can't make (see {@link PanelProps.seeMoreAriaLabel}).
  */
-const seeMoreAriaKeys: Record<ActivityShowCategory, TranslationKey> = {
+const seeMoreAriaKeys: Record<ActivityShowCategory, SeeMoreAriaKey> = {
   fa: 'frontpage.seeMoreAriaFa',
   ticks: 'frontpage.seeMoreAriaTicks',
   media: 'frontpage.seeMoreAriaMedia',
@@ -73,7 +82,7 @@ type PanelProps = {
    * and handing it already-translated copy would send that copy back into `t()` as a lookup key — where a `:` or `.`
    * in the sentence would be read as i18next's namespace / key separator.
    */
-  seeMoreAriaLabel?: TranslationKey;
+  seeMoreAriaLabel?: SeeMoreAriaKey;
   /**
    * Which `/activity` filter the See-more link should preselect. The destination page applies the preset on mount and
    * cleans the URL — see {@link activityShowHref} and `activityShowPreset.ts`. Omit to fall back to a plain `/activity`
@@ -145,7 +154,7 @@ const PanelCard = ({
    * override is dropped and the category's discipline-neutral default (`seeMoreAriaFa`) is used instead. The name
    * therefore exists in **both** states — a crawler that lands mid-hydration must not see a bare "See more".
    */
-  const seeMoreDescriptionKey: TranslationKey | undefined = seeMoreCategory
+  const seeMoreDescriptionKey: SeeMoreAriaKey | undefined = seeMoreCategory
     ? ((titleLoading ? undefined : seeMoreAriaLabel) ?? seeMoreAriaKeys[seeMoreCategory])
     : undefined;
   const seeMoreDescription = seeMoreDescriptionKey ? t(seeMoreDescriptionKey) : null;
