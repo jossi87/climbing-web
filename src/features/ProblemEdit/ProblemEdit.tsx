@@ -17,6 +17,7 @@ import { useGrades, useMeta } from '../../shared/components/Meta/context';
 import {
   convertFromDateToString,
   convertFromStringToDate,
+  parsePickedDate,
   postProblem,
   spaPathFromRedirectResponse,
   useAccessToken,
@@ -134,20 +135,16 @@ const ProblemEdit = ({ problem, sector }: Props) => {
   /** Grades of the area this sector belongs to — a problem's grade must come from that system. */
   const { easyToHard: grades } = useGrades(sector.gradeSystemId);
 
-  const onFaDateChanged = useCallback((newFaDate: Date | undefined) => {
-    if (!newFaDate) {
-      setData((prev) => ({ ...prev, faDate: undefined }));
-      return;
-    }
-    const year = newFaDate.getFullYear();
-    const isValid = !isNaN(newFaDate.getTime()) && year > 1000;
-    if (isValid) {
-      const dateString = convertFromDateToString(newFaDate);
-      setData((prevState) => {
-        if (prevState.faDate === dateString) return prevState;
-        return { ...prevState, faDate: dateString };
-      });
-    }
+  const onFaDateChanged = useCallback((newFaDate: Date | null) => {
+    // `undefined` = the year is not typed yet, so keep the current value instead of storing a
+    // half-written date (e.g. "11-11-2", which the picker parses as year 2).
+    const dateString = parsePickedDate(newFaDate);
+    if (dateString === undefined) return;
+    setData((prevState) => {
+      const faDate = dateString ?? undefined;
+      if (prevState.faDate === faDate) return prevState;
+      return { ...prevState, faDate };
+    });
   }, []);
 
   const save = useCallback(
@@ -467,8 +464,8 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                     wrapperClassName='w-full'
                     className={cn(inputClasses, 'pr-3 pl-10', faDateWithoutGradeOrUsers && 'border-red-500/50')}
                     dateFormat='dd-MM-yyyy'
-                    selected={data.faDate ? convertFromStringToDate(data.faDate) : undefined}
-                    onChange={(date: Date | null) => onFaDateChanged(date ?? undefined)}
+                    selected={data.faDate ? (convertFromStringToDate(data.faDate) ?? undefined) : undefined}
+                    onChange={onFaDateChanged}
                   />
                   <Calendar
                     size={16}
@@ -632,10 +629,13 @@ const ProblemEdit = ({ problem, sector }: Props) => {
                             data.faAid.date ? (convertFromStringToDate(data.faAid.date) ?? undefined) : undefined
                           }
                           onChange={(date: Date | null) => {
+                            // Ignore half-typed dates (e.g. "11-11-2" -> year 2): they are not a
+                            // real date, and the backend rejects anything but yyyy-MM-dd.
+                            const dateString = parsePickedDate(date);
+                            if (dateString === undefined) return;
                             setData((prev) => {
                               if (!prev.faAid) return prev;
-                              const dateString = date ? (convertFromDateToString(date) ?? '') : '';
-                              return { ...prev, faAid: { ...prev.faAid, date: dateString } };
+                              return { ...prev, faAid: { ...prev.faAid, date: dateString ?? '' } };
                             });
                           }}
                         />

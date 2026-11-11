@@ -240,14 +240,48 @@ export function convertFromDateToString(date: Date | null): string | undefined {
   return y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
 }
 
+const ISO_DATE_PATTERN = /^(\d{4})-(\d{1,2})-(\d{1,2})$/;
+
 export function convertFromStringToDate(yyyy_MM_dd: string): Date | null {
   if (!yyyy_MM_dd) {
     return null;
   }
-  const year = parseInt(yyyy_MM_dd.substring(0, 4));
-  const month = parseInt(yyyy_MM_dd.substring(5, 7));
-  const day = parseInt(yyyy_MM_dd.substring(8, 10));
-  return new Date(year, month - 1, day);
+  const match = ISO_DATE_PATTERN.exec(yyyy_MM_dd.trim());
+  if (!match) {
+    return null;
+  }
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const date = new Date(year, month - 1, day);
+  // Reject impossible dates (e.g. 2026-02-30) instead of letting them roll over, and
+  // never return an Invalid Date: react-datepicker gets stuck in an endless update loop
+  // (React error #185) when `selected` is an Invalid Date.
+  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+    return null;
+  }
+  return date;
+}
+
+/**
+ * Normalises the value a `react-datepicker` `onChange` hands back into the app's `yyyy-MM-dd`
+ * string format. The picker fires on every keystroke and its parser happily turns a partial year
+ * into a real one ("11-11-2" becomes year 2), so typing must not be committed blindly: feeding
+ * such a date back as `selected` makes the picker re-render forever (React error #185).
+ *
+ * Tri-state on purpose, so callers can tell "cleared" from "not finished typing":
+ * - `null`      the user cleared the field (e.g. the clear button)
+ * - `undefined` ignore this change; the year is not typed yet or the date is not a real date
+ * - `string`    a complete, valid date ready to be stored
+ */
+export function parsePickedDate(value: Date | null): string | undefined | null {
+  if (value === null) {
+    return null;
+  }
+  if (isNaN(value.getTime()) || value.getFullYear() < 1000) {
+    return undefined;
+  }
+  return convertFromDateToString(value);
 }
 
 const ABSOLUTE_PATTERN = /^https?:\/\//;

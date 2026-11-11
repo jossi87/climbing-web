@@ -44,6 +44,7 @@ export {
   numberWithCommas,
   convertFromDateToString,
   convertFromStringToDate,
+  parsePickedDate,
   mediaIdentityId,
   mediaIdentityVersionStamp,
   mediaObjectPositionStyle,

@@ -7,6 +7,7 @@ import {
   convertFromStringToDate,
   invalidateProblemQueries,
   invalidateSectorQueries,
+  parsePickedDate,
   postTicks,
   useAccessToken,
 } from '../../../api';
@@ -105,7 +106,14 @@ const TickModal = ({
   }, [open, onClose, isSaving]);
 
   const today = new Date();
-  const validDate = !date || (convertFromStringToDate(date) ?? new Date()) <= today;
+  const parsedDate = date ? convertFromStringToDate(date) : null;
+  const validDate = !date || (parsedDate !== null && parsedDate <= today);
+
+  const handleDateChange = useCallback((newDate: Date | null) => {
+    const nextDate = parsePickedDate(newDate);
+    if (nextDate === undefined) return;
+    setDate(nextDate ?? undefined);
+  }, []);
 
   const handleUpdateRepeat = useCallback(
     (index: number, field: 'date' | 'comment', value: string | Date | null | undefined) => {
@@ -114,6 +122,12 @@ const TickModal = ({
         const updatedRepeat = { ...newRepeats[index] };
 
         if (field === 'date') {
+          // Ignore partial input (e.g. the first digit of the year, which the picker
+          // parses as year 2); committing it would leave the repeat picker with an
+          // invalid `selected` date and crash the modal.
+          if (value instanceof Date && parsePickedDate(value) === undefined) {
+            return currentRepeats;
+          }
           updatedRepeat.date =
             value instanceof Date || value === null
               ? (convertFromDateToString(value as Date | null) ?? updatedRepeat.date)
@@ -256,8 +270,8 @@ const TickModal = ({
                   showMonthDropdown
                   showYearDropdown
                   dropdownMode='select'
-                  selected={date ? convertFromStringToDate(date) : undefined}
-                  onChange={(newDate: Date | null) => setDate(newDate ? convertFromDateToString(newDate) : undefined)}
+                  selected={date ? (convertFromStringToDate(date) ?? undefined) : undefined}
+                  onChange={handleDateChange}
                   className={cn(
                     'bg-surface-nav type-body w-full rounded-xl border py-2.5 pr-4 pl-10 transition-colors focus:border-white/20 focus:outline-none',
                     !validDate ? 'border-red-500/50' : 'border-surface-border',
@@ -396,7 +410,7 @@ const TickModal = ({
                             <DatePicker
                               placeholderText='dd-mm-yyyy'
                               dateFormat='dd-MM-yyyy'
-                              selected={r.date ? convertFromStringToDate(r.date) : undefined}
+                              selected={r.date ? (convertFromStringToDate(r.date) ?? undefined) : undefined}
                               onChange={(date: Date | null) => handleUpdateRepeat(index, 'date', date)}
                               className='bg-surface-raised border-surface-border type-small min-w-0 flex-1 rounded-lg border px-2.5 py-1.5 focus:border-white/20 focus:outline-none sm:max-w-[10.5rem] sm:py-2'
                             />
