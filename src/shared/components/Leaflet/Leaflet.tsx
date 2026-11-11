@@ -215,6 +215,45 @@ const UpdateBounds = ({
   return null;
 };
 
+/**
+ * Keeps Leaflet's internal size in sync with its container. Leaflet itself only watches window
+ * resizes, so a map embedded in a layout that grows with its sibling content (the Area/Sector
+ * overview split view) would otherwise keep the size it had on creation and leave the new space
+ * unpainted.
+ */
+const AutoResize = () => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (typeof ResizeObserver === 'undefined') {
+      return;
+    }
+    const container = map.getContainer();
+    let frame = 0;
+    let width = 0;
+    let height = 0;
+    const observer = new ResizeObserver(([entry]) => {
+      const nextWidth = entry?.contentRect.width ?? container.offsetWidth;
+      const nextHeight = entry?.contentRect.height ?? container.offsetHeight;
+      if (nextWidth === width && nextHeight === height) {
+        return;
+      }
+      width = nextWidth;
+      height = nextHeight;
+      cancelAnimationFrame(frame);
+      /* `pan: false`: only the size is recomputed, a view the user panned/zoomed is left alone. */
+      frame = requestAnimationFrame(() => map.invalidateSize({ pan: false }));
+    });
+    observer.observe(container);
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
+  }, [map]);
+
+  return null;
+};
+
 const Leaflet = ({
   activeMarkerPosition,
   autoZoom,
@@ -350,6 +389,7 @@ const Leaflet = ({
       bounds={viewBounds}
     >
       <UpdateBounds autoZoom={autoZoom} bounds={contentBounds} pointZoom={pointZoom} />
+      <AutoResize />
 
       <MapEvent onMouseClick={onMouseClick} onMouseMove={onMouseMove} />
       <FullscreenControl />

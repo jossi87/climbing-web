@@ -616,14 +616,24 @@ const Area = () => {
     return result;
   }, [data]);
 
+  /** Map is also useful without markers: an area may only have coordinates for the area itself. */
+  const hasMapContent =
+    markers.length > 0 || outlines.length > 0 || trails.length > 0 || !!getCoordinatesCenter(data?.coordinates);
+
+  /**
+   * An area without a single photo has nothing visual above its description, while the map is the one thing that
+   * shows where it is and which sectors it contains. Those areas get the map folded into the overview — in the spot
+   * the photo tiles would have taken — instead of hiding it behind a map tab of its own.
+   */
+  const mergeMapIntoOverview =
+    hasMapContent && (data?.media?.length ?? 0) === 0 && (data?.triviaMedia?.length ?? 0) === 0;
+
   const tabs = useMemo(() => {
     const items: { id: string; label: string; icon: typeof LayoutDashboard }[] = [];
     if (!data) return items;
     items.push({ id: 'overview', label: t('place.overview'), icon: LayoutDashboard });
-    /** Map is also useful without markers: an area may only have coordinates for the area itself. */
-    const hasMapContent =
-      markers.length > 0 || outlines.length > 0 || trails.length > 0 || !!getCoordinatesCenter(data.coordinates);
-    if (hasMapContent) items.push({ id: 'map', label: t('place.map'), icon: MapIcon });
+    /* A merged overview already shows the map, so those areas get no map tab. */
+    if (hasMapContent && !mergeMapIntoOverview) items.push({ id: 'map', label: t('place.map'), icon: MapIcon });
     if (data.sectors?.length) {
       const problemCount = countAreaProblems(data);
       if (problemCount > 0) {
@@ -635,7 +645,7 @@ const Area = () => {
       items.push({ id: 'activity', label: t('place.activity'), icon: Clock });
     }
     return items;
-  }, [data, markers.length, outlines.length, trails.length, t]);
+  }, [data, hasMapContent, mergeMapIntoOverview, t]);
 
   /** Path segments: `/area/:id`, `/area/:id/overview`, `/area/:id/map`, …; numeric segment = media deep link. */
   const effectiveTab = useMemo(() => {
@@ -743,6 +753,56 @@ const Area = () => {
       </div>
     ) : null;
 
+  /**
+   * The area map, rendered either in the map tab or — for photo-less areas — as the overview hero. The two hosts are
+   * mutually exclusive per area, so the shared element keeps the props (and the sectors/problems toggle) in one place.
+   */
+  const areaMap = (
+    <Leaflet
+      key={'area=' + data.id + (showProblemsOnMap ? '-problems' : '-sectors')}
+      autoZoom={true}
+      height='100%'
+      markers={markers}
+      outlines={showProblemsOnMap ? undefined : outlines}
+      trails={showProblemsOnMap ? undefined : trails}
+      rocks={showProblemsOnMap ? uniqueRocks : undefined}
+      defaultCenter={areaMapCenter ?? meta.defaultCenter}
+      defaultZoom={areaMapCenter ? 14 : meta.defaultZoom}
+      clusterMarkers={showProblemsOnMap}
+      flyToId={null}
+      mapOverlay={
+        problemMarkers.length > 0 ? (
+          <div className='flex items-center gap-1.5 rounded-lg bg-black/60 px-2.5 py-1.5 backdrop-blur-sm'>
+            <button
+              type='button'
+              onClick={() => setShowProblemsOnMap(false)}
+              className={cn(
+                'rounded-md px-2 py-1 text-[11px] leading-none font-semibold transition-colors',
+                !showProblemsOnMap
+                  ? 'bg-brand text-slate-950 shadow-sm'
+                  : 'light:!text-[rgb(203_213_225)] light:hover:!text-[rgb(255_255_255)] text-slate-400 hover:text-slate-200',
+              )}
+            >
+              {t('place.sectors')}
+            </button>
+            <button
+              type='button'
+              onClick={() => setShowProblemsOnMap(true)}
+              className={cn(
+                'rounded-md px-2 py-1 text-[11px] leading-none font-semibold transition-colors',
+                showProblemsOnMap
+                  ? 'bg-brand text-slate-950 shadow-sm'
+                  : 'light:!text-[rgb(203_213_225)] light:hover:!text-[rgb(255_255_255)] text-slate-400 hover:text-slate-200',
+              )}
+            >
+              {t(meta.isBouldering ? 'problems.titleBouldering' : 'problems.titleRoped')}
+            </button>
+          </div>
+        ) : undefined
+      }
+    />
+  );
+
   return (
     <div className='w-full min-w-0'>
       <title>{`${data.name} | ${meta?.title}`}</title>
@@ -822,41 +882,60 @@ const Area = () => {
       </div>
 
       <Card flush className='min-w-0 border-0'>
-        {tabs.length > 1 && (
+        {tabs.length > 0 && (
           <>
-            <div
-              className={tabBarStripContainerClassName('equal')}
-              style={{ display: 'grid', gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
-              role='tablist'
-              aria-label={t('place.areaSections')}
-            >
-              {tabs.map((tab) => {
-                const IconComp = tab.icon;
-                const isActive = effectiveTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    type='button'
-                    role='tab'
-                    aria-selected={isActive}
-                    onClick={() => setAreaTab(tab.id)}
-                    className={tabBarButtonClassName(isActive)}
-                  >
-                    <IconComp
-                      size={TAB_BAR_ICON_SIZE}
-                      strokeWidth={isActive ? 2.3 : 2}
-                      className={tabBarIconClassName(isActive)}
-                    />
-                    <span className={designContract.controls.tabBarLabel}>{tab.label}</span>
-                  </button>
-                );
-              })}
-            </div>
+            {/* A merged overview can leave a single tab, so only draw the strip when there is something to switch. */}
+            {tabs.length > 1 && (
+              <div
+                className={tabBarStripContainerClassName('equal')}
+                style={{ display: 'grid', gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
+                role='tablist'
+                aria-label={t('place.areaSections')}
+              >
+                {tabs.map((tab) => {
+                  const IconComp = tab.icon;
+                  const isActive = effectiveTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type='button'
+                      role='tab'
+                      aria-selected={isActive}
+                      onClick={() => setAreaTab(tab.id)}
+                      className={tabBarButtonClassName(isActive)}
+                    >
+                      <IconComp
+                        size={TAB_BAR_ICON_SIZE}
+                        strokeWidth={isActive ? 2.3 : 2}
+                        className={tabBarIconClassName(isActive)}
+                      />
+                      <span className={designContract.controls.tabBarLabel}>{tab.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
 
             <div>
               {effectiveTab === 'overview' && (
                 <div className='space-y-4 p-4 sm:p-5'>
                   {areaAccessRestrictions}
+                  {/*
+                   * Merged overview: an area with no photos at all gets the map where the photo strip would have
+                   * been. It runs edge to edge (the negative margins cancel the panel padding) and keeps the
+                   * sectors/problems toggle, so the overview is not just text.
+                   */}
+                  {mergeMapIntoOverview && (
+                    <div
+                      className={cn(
+                        'relative z-0 -mx-4 h-[40vh] max-h-[460px] min-h-[220px] overflow-hidden sm:-mx-5 sm:h-[50vh] sm:max-h-[560px]',
+                        /* Flush with the card top, unless an access restriction above keeps the first slot. */
+                        !areaAccessRestrictions && '-mt-4 sm:-mt-5',
+                      )}
+                    >
+                      {areaMap}
+                    </div>
+                  )}
                   {(data.media?.length ?? 0) > 0 && (
                     <Media
                       pitches={null}
@@ -925,49 +1004,7 @@ const Area = () => {
                   className='relative z-0 -mx-px w-[calc(100%+2px)] overflow-hidden sm:mx-0 sm:w-full'
                   style={{ height: 'calc(100vh - 14rem)' }}
                 >
-                  <Leaflet
-                    key={'area=' + data.id + (showProblemsOnMap ? '-problems' : '-sectors')}
-                    autoZoom={true}
-                    height='100%'
-                    markers={markers}
-                    outlines={showProblemsOnMap ? undefined : outlines}
-                    trails={showProblemsOnMap ? undefined : trails}
-                    rocks={showProblemsOnMap ? uniqueRocks : undefined}
-                    defaultCenter={areaMapCenter ?? meta.defaultCenter}
-                    defaultZoom={areaMapCenter ? 14 : meta.defaultZoom}
-                    clusterMarkers={showProblemsOnMap}
-                    flyToId={null}
-                    mapOverlay={
-                      problemMarkers.length > 0 ? (
-                        <div className='flex items-center gap-1.5 rounded-lg bg-black/60 px-2.5 py-1.5 backdrop-blur-sm'>
-                          <button
-                            type='button'
-                            onClick={() => setShowProblemsOnMap(false)}
-                            className={cn(
-                              'rounded-md px-2 py-1 text-[11px] leading-none font-semibold transition-colors',
-                              !showProblemsOnMap
-                                ? 'bg-brand text-slate-950 shadow-sm'
-                                : 'light:!text-[rgb(203_213_225)] light:hover:!text-[rgb(255_255_255)] text-slate-400 hover:text-slate-200',
-                            )}
-                          >
-                            {t('place.sectors')}
-                          </button>
-                          <button
-                            type='button'
-                            onClick={() => setShowProblemsOnMap(true)}
-                            className={cn(
-                              'rounded-md px-2 py-1 text-[11px] leading-none font-semibold transition-colors',
-                              showProblemsOnMap
-                                ? 'bg-brand text-slate-950 shadow-sm'
-                                : 'light:!text-[rgb(203_213_225)] light:hover:!text-[rgb(255_255_255)] text-slate-400 hover:text-slate-200',
-                            )}
-                          >
-                            {t(meta.isBouldering ? 'problems.titleBouldering' : 'problems.titleRoped')}
-                          </button>
-                        </div>
-                      ) : undefined
-                    }
-                  />
+                  {areaMap}
                 </div>
               )}
 

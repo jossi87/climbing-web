@@ -284,11 +284,19 @@ function ProblemLoaded({
    */
   const mapDefaultZoom = markers.length > 0 || hasTrails || hasSectorOutline ? 16 : 14;
 
+  /**
+   * A problem without a single photo has nothing visual above its details, while the map is the one thing that shows
+   * where it is and how to get there. Those "simple" problems get the map folded into the overview — in the spot the
+   * photo tiles would have taken — instead of hiding it behind a map tab of its own.
+   */
+  const mergeMapIntoOverview = showMapTab && (data.media?.length ?? 0) === 0 && (data.triviaMedia?.length ?? 0) === 0;
+
   /** `/problem/:id`, `/problem/:id/overview`, and `/problem/:id/map` — same pattern as profile pages. */
   const activeTab = useMemo<'overview' | 'map'>(() => {
-    if (!showMapTab) return 'overview';
+    /* A merged overview already shows the map, so there is no map tab left to activate. */
+    if (!showMapTab || mergeMapIntoOverview) return 'overview';
     return segment === 'map' ? 'map' : 'overview';
-  }, [showMapTab, segment]);
+  }, [showMapTab, mergeMapIntoOverview, segment]);
 
   const setProblemTab = useCallback(
     (tab: 'overview' | 'map') => {
@@ -300,10 +308,10 @@ function ProblemLoaded({
   );
 
   useEffect(() => {
-    if (!showMapTab && segment === 'map') {
+    if ((!showMapTab || mergeMapIntoOverview) && segment === 'map') {
       navigate(`/problem/${data.id}`, { replace: true });
     }
-  }, [showMapTab, segment, data.id, navigate]);
+  }, [showMapTab, mergeMapIntoOverview, segment, data.id, navigate]);
 
   /** Legacy `?tab=map` → `/problem/:id/map`. */
   useEffect(() => {
@@ -387,7 +395,8 @@ function ProblemLoaded({
             : []),
         ]}
       />
-      {hasTrails && (
+      {/* The chip jumps to the map tab; a merged overview already shows the map and the trail profiles. */}
+      {hasTrails && !mergeMapIntoOverview && (
         <Link
           to={`/problem/${data.id}/map`}
           className={cn(
@@ -443,9 +452,53 @@ function ProblemLoaded({
       </div>
     ) : null;
 
+  /**
+   * The problem map, rendered either in the map tab or — for photo-less problems — as the overview hero. The two hosts
+   * are mutually exclusive per problem, so the shared element keeps the props in one place.
+   */
+  const problemMap = (
+    <Leaflet
+      key={'map-' + data.id}
+      autoZoom
+      height='100%'
+      markers={markers}
+      outlines={
+        data.sectorOutline?.length && !data.coordinates
+          ? [
+              {
+                url: '/sector/' + data.sectorId,
+                label: data.sectorName!,
+                outline: data.sectorOutline,
+              },
+            ]
+          : undefined
+      }
+      trails={trails}
+      defaultCenter={{ lat: conditionLat, lng: conditionLng }}
+      defaultZoom={mapDefaultZoom}
+      clusterMarkers={false}
+      flyToId={null}
+    />
+  );
+
   const overviewPanel = (
     <div className='space-y-3 p-4 sm:space-y-3.5 sm:p-5'>
       {problemAccessRestrictions}
+      {/*
+       * Merged overview: a problem with no photos at all gets the map where the photo tiles would have been. It runs
+       * edge to edge (the negative margins cancel the panel padding) and keeps the trail profiles within reach.
+       */}
+      {mergeMapIntoOverview && (
+        <div
+          className={cn(
+            'relative z-0 -mx-4 h-[40vh] max-h-[460px] min-h-[220px] overflow-hidden sm:-mx-5 sm:h-[50vh] sm:max-h-[560px]',
+            /* Flush with the card top, unless an access restriction above keeps the first slot. */
+            !problemAccessRestrictions && '-mt-4 sm:-mt-5',
+          )}
+        >
+          {problemMap}
+        </div>
+      )}
       {(data.media?.length ?? 0) > 0 && (
         <Media
           pitches={data.sections}
@@ -677,7 +730,8 @@ function ProblemLoaded({
       </div>
 
       <Card flush className='min-w-0 border-0 shadow-sm'>
-        {showMapTab ? (
+        {/* A merged overview is the only view left, so the tab strip is skipped entirely. */}
+        {showMapTab && !mergeMapIntoOverview ? (
           <>
             <div
               className={tabBarStripContainerClassName('equal')}
@@ -727,28 +781,7 @@ function ProblemLoaded({
               overviewPanel
             ) : (
               <div className='relative z-0 -mx-px h-[35vh] min-h-[220px] w-[calc(100%+2px)] overflow-hidden sm:mx-0 sm:h-[50vh] sm:w-full'>
-                <Leaflet
-                  key={'map-' + data.id}
-                  autoZoom
-                  height='100%'
-                  markers={markers}
-                  outlines={
-                    data.sectorOutline?.length && !data.coordinates
-                      ? [
-                          {
-                            url: '/sector/' + data.sectorId,
-                            label: data.sectorName!,
-                            outline: data.sectorOutline,
-                          },
-                        ]
-                      : undefined
-                  }
-                  trails={trails}
-                  defaultCenter={{ lat: conditionLat, lng: conditionLng }}
-                  defaultZoom={mapDefaultZoom}
-                  clusterMarkers={false}
-                  flyToId={null}
-                />
+                {problemMap}
               </div>
             )}
           </>
@@ -762,7 +795,7 @@ function ProblemLoaded({
           className={cn(
             'mt-4 min-w-0 sm:mt-5',
             'max-sm:-mx-4 max-sm:w-[calc(100%+2rem)] sm:mx-0 sm:w-full',
-            !(showMapTab && activeTab === 'map') && 'hidden',
+            !(mergeMapIntoOverview || (showMapTab && activeTab === 'map')) && 'hidden',
           )}
         >
           <div className='columns-1 gap-3 sm:columns-2 sm:gap-4 [&>div]:break-inside-avoid'>

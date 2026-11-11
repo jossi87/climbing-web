@@ -466,22 +466,38 @@ const Sector = () => {
 
   /**
    * Parent-area coordinates — an area may have coordinates while its sectors have neither parking, outline
-   * nor located problems. The map tab then still renders (centered on the area, without any markers).
+   * nor located problems. The map then still has something to show (centered on the area, without markers).
    */
   const areaMapCenter = getCoordinatesCenter(data?.areaCoordinates);
+
+  /** Sector outlines are only drawn on climbing sites, or when there are no markers to show instead. */
+  const addPolygon = meta.isClimbing || markers.length === 0;
+
+  /** Everything the map needs to be worth rendering — the same test the map tab used to make. */
+  const hasMapContent =
+    markers.length > 0 ||
+    ((data?.outline ?? []).length > 0 && addPolygon) ||
+    (data?.trails ?? []).length > 0 ||
+    !!areaMapCenter;
+
+  /**
+   * A sector without a single photo has nothing visual above its description, while the map is the one thing that
+   * shows where it is and how to get there. Those "simple" sectors get the map folded into the overview — in the
+   * spot the photo tiles would have taken — instead of hiding it behind a map tab of its own.
+   */
+  const mergeMapIntoOverview =
+    hasMapContent && (data?.media?.length ?? 0) === 0 && (data?.triviaMedia?.length ?? 0) === 0;
 
   const tabs = useMemo(() => {
     if (!data) return [] as { id: string; label: string; icon: LucideIcon; hasMedia?: boolean }[];
     const items: { id: string; label: string; icon: LucideIcon; hasMedia?: boolean }[] = [];
     items.push({ id: 'overview', label: t('place.overview'), icon: LayoutDashboard });
-    const addPolygon = meta.isClimbing || markers.length === 0;
-    const hasOutlineOnMap = (data.outline ?? []).length > 0 && addPolygon;
-    const hasApproachOrDescent = (data.trails ?? []).length > 0;
     const trailsWithRichContent = (data.trails ?? []).filter(
       (tr) => (tr.media ?? []).length > 0 || (tr.description ?? '').trim().length > 0,
     );
 
-    if (markers.length > 0 || hasOutlineOnMap || hasApproachOrDescent || areaMapCenter) {
+    /* A merged overview already shows the map, so those sectors get no map tab. */
+    if (hasMapContent && !mergeMapIntoOverview) {
       items.push({
         id: 'map',
         label: t('place.map'),
@@ -497,7 +513,7 @@ const Sector = () => {
       items.push({ id: 'activity', label: t('place.activity'), icon: Clock });
     }
     return items;
-  }, [areaMapCenter, data, markers, meta.isClimbing, t]);
+  }, [data, hasMapContent, mergeMapIntoOverview, t]);
 
   /** Path segments: `/sector/:id`, `/sector/:id/overview`, `/sector/:id/map`, …; numeric segment = media deep link (tab highlights overview). */
   const effectiveTab = useMemo(() => {
@@ -571,8 +587,6 @@ const Sector = () => {
     if (data.triviaMedia.length > 1) orderableMedia.push(...data.triviaMedia);
   }
 
-  const addPolygon = meta.isClimbing || markers.length === 0;
-
   /** Group keys are the DB type labels: `type.subtype`, or `type.type` when a subtype is left blank. */
   const uniqueTypes = Array.from(
     new Set((data.problems ?? []).map((p) => routeTypeLabel(p.t?.type, p.t?.subType)).filter((p): p is string => !!p)),
@@ -616,6 +630,13 @@ const Sector = () => {
   }
   const hasTrails = (data.trails ?? []).length > 0;
 
+  /** Chip label listing the trail names ("Approach: … + Descent: …"), used by the overview chip. */
+  const trailsChipLabel = t('place.trails', { names: (data.trails ?? []).map((trail) => trail.title).join(' + ') });
+
+  /** Shared chip geometry; the linked variant adds the hover colours on top. */
+  const trailsChipClassName =
+    'inline-flex max-w-full items-center gap-1 rounded-md px-2 py-0.5 text-[12px] leading-snug font-medium sm:text-[13px] bg-brand/10 text-brand ring-brand/30 ring-1';
+
   const uniqueRocks = Array.from(
     new Set(
       data.problems
@@ -624,6 +645,28 @@ const Sector = () => {
         ?.filter((p): p is string => !!p) ?? [],
     ),
   ).sort();
+
+  /**
+   * The sector map, rendered either in the map tab or — for photo-less sectors — as the overview hero. Both
+   * hosts are mutually exclusive per sector, so the shared element keeps the props in one place.
+   */
+  const sectorMap = (
+    <Leaflet
+      key={'sector=' + data.id}
+      autoZoom={true}
+      height='100%'
+      markers={markers}
+      outlines={outlines}
+      trails={trails}
+      defaultCenter={defaultCenter}
+      defaultZoom={defaultZoom}
+      onMouseClick={undefined}
+      onMouseMove={undefined}
+      clusterMarkers={true}
+      rocks={uniqueRocks.length > 0 ? uniqueRocks : undefined}
+      flyToId={null}
+    />
+  );
 
   const sectorTypeSummaries = uniqueTypes
     .map((subType) => {
@@ -853,50 +896,74 @@ const Sector = () => {
       </div>
 
       <Card flush className='min-w-0 border-0 shadow-sm'>
-        {tabs.length > 1 && (
+        {/*
+         * The strip only exists with two or more tabs, but the panel below is rendered whenever there is a tab at
+         * all: a sector whose map is merged into the overview (or that has no map content) can end up with a
+         * single tab and would otherwise show an empty card.
+         */}
+        {tabs.length > 0 && (
           <>
-            <div
-              className={tabBarStripContainerClassName('equal')}
-              style={{ display: 'grid', gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
-              role='tablist'
-              aria-label={t('place.sectorSections')}
-            >
-              {tabs.map((tab) => {
-                const IconComp = tab.icon;
-                const isActive = effectiveTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    type='button'
-                    role='tab'
-                    aria-selected={isActive}
-                    onClick={() => setSectorTab(tab.id)}
-                    className={tabBarButtonClassName(isActive)}
-                  >
-                    <span className='relative inline-flex'>
-                      <IconComp
-                        size={TAB_BAR_ICON_SIZE}
-                        strokeWidth={isActive ? 2.3 : 2}
-                        className={tabBarIconClassName(isActive)}
-                      />
-                    </span>
-                    <span className={designContract.controls.tabBarLabel}>
-                      {tab.label}
-                      {tab.hasMedia && (
-                        <span title={t('place.hasTrailContent')}>
-                          <Info size={10} strokeWidth={2.5} className='text-brand ml-0.5 inline-block' />
-                        </span>
-                      )}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+            {tabs.length > 1 && (
+              <div
+                className={tabBarStripContainerClassName('equal')}
+                style={{ display: 'grid', gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
+                role='tablist'
+                aria-label={t('place.sectorSections')}
+              >
+                {tabs.map((tab) => {
+                  const IconComp = tab.icon;
+                  const isActive = effectiveTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type='button'
+                      role='tab'
+                      aria-selected={isActive}
+                      onClick={() => setSectorTab(tab.id)}
+                      className={tabBarButtonClassName(isActive)}
+                    >
+                      <span className='relative inline-flex'>
+                        <IconComp
+                          size={TAB_BAR_ICON_SIZE}
+                          strokeWidth={isActive ? 2.3 : 2}
+                          className={tabBarIconClassName(isActive)}
+                        />
+                      </span>
+                      <span className={designContract.controls.tabBarLabel}>
+                        {tab.label}
+                        {tab.hasMedia && (
+                          <span title={t('place.hasTrailContent')}>
+                            <Info size={10} strokeWidth={2.5} className='text-brand ml-0.5 inline-block' />
+                          </span>
+                        )}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
 
             <div>
               {effectiveTab === 'overview' && (
                 <div className='space-y-4 p-4 sm:p-5'>
                   {sectorAccessRestrictions}
+                  {/*
+                   * Merged overview: a sector with no photos at all gets the map where the photo strip would have
+                   * been — it is the only visual cue that explains where the sector is. It runs edge to edge (the
+                   * negative margins cancel the panel padding) so it reads as a full-width hero rather than an inset
+                   * tile, and fixed heights keep the chips and the description within reach.
+                   */}
+                  {mergeMapIntoOverview && (
+                    <div
+                      className={cn(
+                        'relative z-0 -mx-4 h-[40vh] max-h-[460px] min-h-[220px] overflow-hidden sm:-mx-5 sm:h-[50vh] sm:max-h-[560px]',
+                        /* Flush with the card top, unless an access restriction above keeps the first slot. */
+                        !sectorAccessRestrictions && '-mt-4 sm:-mt-5',
+                      )}
+                    >
+                      {sectorMap}
+                    </div>
+                  )}
                   {(data.media?.length ?? 0) > 0 && (
                     <Media
                       pitches={null}
@@ -977,19 +1044,20 @@ const Sector = () => {
                           : []),
                       ]}
                     />
-                    {hasTrails && (
+                    {/*
+                     * The chip exists to jump to the map tab; a merged overview already shows the map and the trail
+                     * profiles, so there is nothing behind it to link to.
+                     */}
+                    {hasTrails && !mergeMapIntoOverview && (
                       <Link
                         to={`/sector/${data.id}/map`}
                         className={cn(
-                          'inline-flex max-w-full items-center gap-1 rounded-md px-2 py-0.5 text-[12px] leading-snug font-medium sm:text-[13px]',
-                          'bg-brand/10 text-brand ring-brand/30 hover:bg-brand/15 hover:text-brand hover:ring-brand/50',
-                          'ring-1 transition-colors duration-150',
+                          trailsChipClassName,
+                          'hover:bg-brand/15 hover:text-brand hover:ring-brand/50 transition-colors duration-150',
                         )}
                       >
                         <Info size={12} strokeWidth={2} className='shrink-0' />
-                        <span className='min-w-0 normal-case'>
-                          {t('place.trails', { names: (data.trails ?? []).map((trail) => trail.title).join(' + ') })}
-                        </span>
+                        <span className='min-w-0 normal-case'>{trailsChipLabel}</span>
                       </Link>
                     )}
                     <ExternalLinkLabels externalLinks={data.externalLinks} />
@@ -1014,21 +1082,7 @@ const Sector = () => {
               )}
               {effectiveTab === 'map' && (
                 <div className='relative z-0 -mx-px h-[35vh] min-h-[220px] w-[calc(100%+2px)] overflow-hidden sm:mx-0 sm:h-[50vh] sm:w-full'>
-                  <Leaflet
-                    key={'sector=' + data.id}
-                    autoZoom={true}
-                    height='100%'
-                    markers={markers}
-                    outlines={outlines}
-                    trails={trails}
-                    defaultCenter={defaultCenter}
-                    defaultZoom={defaultZoom}
-                    onMouseClick={undefined}
-                    onMouseMove={undefined}
-                    clusterMarkers={true}
-                    rocks={uniqueRocks.length > 0 ? uniqueRocks : undefined}
-                    flyToId={null}
-                  />
+                  {sectorMap}
                 </div>
               )}
 
@@ -1067,7 +1121,8 @@ const Sector = () => {
           className={cn(
             'mt-4 min-w-0 sm:mt-5',
             'max-sm:-mx-4 max-sm:w-[calc(100%+2rem)] sm:mx-0 sm:w-full',
-            effectiveTab !== 'map' && 'hidden',
+            /* Photo-less sectors have no map tab: their profiles hang under the merged overview instead. */
+            !(effectiveTab === 'map' || (mergeMapIntoOverview && effectiveTab === 'overview')) && 'hidden',
           )}
         >
           <div className='columns-1 gap-3 sm:columns-2 sm:gap-4 [&>div]:break-inside-avoid'>

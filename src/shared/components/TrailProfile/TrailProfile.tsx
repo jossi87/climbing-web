@@ -169,12 +169,15 @@ export const TrailProfile = ({
         <div
           className={cn(
             'bg-surface-raised border-surface-border/50 relative border-b',
-            compact ? 'px-2.5 max-sm:p-3 sm:px-3.5' : 'px-3 max-sm:p-3 sm:px-3.5',
+            compact ? 'px-2.5 max-sm:px-3 max-sm:py-1.5 sm:px-3.5' : 'px-3 max-sm:py-1.5 sm:px-3.5',
           )}
         >
-          <div className='flex items-start justify-between gap-2'>
+          <div className='flex items-start justify-between gap-2 max-sm:gap-1.5'>
             <span
-              className={cn(designContract.typography.micro, 'font-semibold tracking-[0.12em] uppercase')}
+              className={cn(
+                designContract.typography.micro,
+                'font-semibold tracking-[0.12em] uppercase max-sm:text-[11px] max-sm:tracking-[0.1em]',
+              )}
               style={{ color: lineColor }}
             >
               {trail.title}
@@ -184,19 +187,19 @@ export const TrailProfile = ({
                 to={`/media/add?type=trail&trailId=${trail.id}`}
                 title={t('trailProfile.addMedia')}
                 aria-label={t('trailProfile.addMedia')}
-                className='hover:bg-surface-raised-hover -mt-0.5 -mr-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-slate-400 transition-colors hover:text-slate-200'
+                className='hover:bg-surface-raised-hover -mt-0.5 -mr-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-slate-400 transition-colors hover:text-slate-200 max-sm:-mr-0.5 max-sm:h-5 max-sm:w-5'
               >
                 <ImageIcon size={12} strokeWidth={2.5} />
               </Link>
             )}
           </div>
           {hasDescription && (
-            <div className='mt-1 text-[12px] text-slate-300'>
+            <div className='mt-1 text-[12px] text-slate-300 max-sm:mt-0.5 max-sm:text-[11px] max-sm:leading-snug'>
               <Markdown content={trail.description ?? ''} />
             </div>
           )}
           {hasMarkers && (
-            <div className='mt-2 flex flex-wrap gap-1.5'>
+            <div className='mt-2 flex flex-wrap gap-1.5 max-sm:mt-1.5 max-sm:gap-1'>
               {(trail.markers ?? []).map((m, i) => {
                 const lat = m.coordinates?.latitude;
                 const lng = m.coordinates?.longitude;
@@ -208,8 +211,12 @@ export const TrailProfile = ({
                 const inner = (
                   <>
                     <MapPin size={11} className='shrink-0' aria-hidden style={{ color: markerColor }} />
-                    <span className='text-[12px] font-medium'>{m.label}</span>
-                    {coordStr && <span className='font-mono text-[11px] text-slate-500 tabular-nums'>{coordStr}</span>}
+                    <span className='text-[12px] font-medium max-sm:text-[11px]'>{m.label}</span>
+                    {coordStr && (
+                      <span className='font-mono text-[11px] text-slate-500 tabular-nums max-sm:text-[10px]'>
+                        {coordStr}
+                      </span>
+                    )}
                   </>
                 );
                 return (
@@ -234,7 +241,7 @@ export const TrailProfile = ({
             </div>
           )}
           {hasMedia && (
-            <div className='mt-2'>
+            <div className='mt-2 max-sm:mt-1.5'>
               <Media
                 media={trail.media ?? []}
                 orderableMedia={trail.media ?? []}
@@ -324,7 +331,7 @@ export const TrailProfile = ({
           'px-2.5 py-1.5 text-[11px] leading-snug max-sm:px-2 max-sm:py-1 max-sm:text-[10px] max-sm:leading-tight',
         )}
       >
-        <div className='flex flex-wrap items-center gap-x-1.5 gap-y-1 max-sm:gap-x-2 max-sm:gap-y-0.5 max-sm:[&_svg]:h-3 max-sm:[&_svg]:w-3 max-sm:[&_svg]:self-center'>
+        <div className='flex flex-wrap items-center gap-x-1.5 gap-y-1 max-sm:gap-y-0.5 max-sm:[&_svg]:h-2.5 max-sm:[&_svg]:w-2.5 max-sm:[&_svg]:self-center'>
           {statsInner}
         </div>
       </div>
