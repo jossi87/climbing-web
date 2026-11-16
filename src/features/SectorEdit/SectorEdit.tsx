@@ -803,6 +803,9 @@ export const SectorEdit = ({ sector, area }: Props) => {
                     onClick={(e) => {
                       e.stopPropagation();
                       setData((prev) => ({ ...prev, parking: undefined }));
+                      // Clearing parking also selects the parking tool, so a new point can be placed right away.
+                      setLeafletMode('PARKING');
+                      setEditingTrailPathIndex(null);
                     }}
                     className='light:text-red-600 light:hover:text-red-800 inline-flex items-center justify-center px-1.5 py-1 text-red-400 transition-colors hover:bg-red-500/15 hover:text-red-300 sm:px-2 sm:py-1.5'
                     title={t('mapEditor.clearParking')}
@@ -847,6 +850,9 @@ export const SectorEdit = ({ sector, area }: Props) => {
                     onClick={(e) => {
                       e.stopPropagation();
                       setData((prev) => ({ ...prev, outline: undefined }));
+                      // Clearing the outline also selects the outline tool, so a new polygon can be drawn right away.
+                      setLeafletMode('POLYGON');
+                      setEditingTrailPathIndex(null);
                     }}
                     className='light:text-red-600 light:hover:text-red-800 inline-flex items-center justify-center px-1.5 py-1 text-red-400 transition-colors hover:bg-red-500/15 hover:text-red-300 sm:px-2 sm:py-1.5'
                     title={t('mapEditor.clearOutline')}
