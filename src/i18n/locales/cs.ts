@@ -497,6 +497,14 @@ export const cs: Catalog = {
       capturedCount_few: 'Nafoceno ({{count}})',
       capturedCount_other: 'Nafoceno ({{count}})',
     },
+    // Filtr typu nad galeriemi média/nafoceno; `pano` je popisek 360° shodný se štítkem na dlaždici.
+    mediaFilter: {
+      label: 'Filtrovat média podle typu',
+      all: 'Vše',
+      photo: 'Fotky',
+      video: 'Videa',
+      pano: '360°',
+    },
     settings: {
       loading: 'Načítání nastavení profilu',
       title: 'Nastavení',

@@ -667,6 +667,18 @@ export const en = {
       capturedCount_few: 'Captured ({{count}})',
       capturedCount_other: 'Captured ({{count}})',
     },
+    /**
+     * Type filter above the media / captured galleries. Only the types the gallery actually contains are shown,
+     * plus `all` (the default). `pano` is the 360° label the tile badge uses.
+     */
+    mediaFilter: {
+      /** `aria-label` of the chip group. */
+      label: 'Filter media by type',
+      all: 'All',
+      photo: 'Photos',
+      video: 'Videos',
+      pano: '360°',
+    },
     settings: {
       /** `aria-label` of the loading skeleton (which is already marked `aria-busy`). */
       loading: 'Loading profile settings',
