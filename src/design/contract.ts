@@ -51,8 +51,8 @@ export const designContract = {
     /**
      * Inline links in rendered body copy — markdown (trivia, descriptions, aid notes) and linkified plain-text fields
      * (comments, ticks, pitch descriptions). No standing underline: the ink is inherited and the affordance is the
-     * trailing {@link BodyLinkIcon} glyph (gold `--color-link`), so link-dense text stays calm. Hover warms the text to
-     * `--color-link` (brand gold on dark, gold-brown on pale cards) and adds a thin underline.
+     * trailing {@link BodyLinkIcon} glyph, which also inherits the ink (same color as the link text). Hover warms
+     * text + glyph to `--color-link` (brand gold on dark, gold-brown on pale cards) and adds a thin underline.
      */
     bodyLink: 'text-inherit transition-colors hover:text-link hover:underline hover:underline-offset-[3px]',
     /** Inline emphasis in tables/lists — prefer medium weight so rows don’t all feel “bold UI”. */
