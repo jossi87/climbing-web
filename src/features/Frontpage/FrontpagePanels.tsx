@@ -2,6 +2,7 @@ import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Camera, Check, MessageSquare, Plus } from 'lucide-react';
 import Linkify from 'linkify-react';
+import { inlineLinkifyOptions } from '../../shared/ui/linkify';
 import { useTranslation } from 'react-i18next';
 import {
   getMediaFileUrl,
@@ -901,7 +902,9 @@ function CommentsPanel({ items }: { items: LastComment[] }) {
                   </div>
                   {(a.comment || u) && (
                     <div className={rowLineClass}>
-                      <p className={commentBodyClass}>{a.comment ? <Linkify>{a.comment}</Linkify> : null}</p>
+                      <p className={commentBodyClass}>
+                        {a.comment ? <Linkify options={inlineLinkifyOptions}>{a.comment}</Linkify> : null}
+                      </p>
                       {u ? (
                         <span className={cn(bylineRightClass, 'max-w-[55%] shrink-0')}>
                           {/*

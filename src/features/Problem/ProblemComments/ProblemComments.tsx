@@ -6,6 +6,7 @@ import Media from '../../../shared/components/Media/Media';
 import { ClickableAvatar } from '../../../shared/ui/Avatar/Avatar';
 import { useMeta } from '../../../shared/components/Meta/context';
 import Linkify from 'linkify-react';
+import { inlineLinkifyOptions } from '../../../shared/ui/linkify';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { AlertTriangle, ShieldCheck, Edit2, Trash2, Flag } from 'lucide-react';
 import { cn } from '../../../lib/utils';
@@ -181,7 +182,7 @@ export const ProblemComments = ({
                     'leading-snug text-pretty break-words text-slate-50 not-italic sm:leading-relaxed',
                   )}
                 >
-                  <Linkify>{c.message}</Linkify>
+                  <Linkify options={inlineLinkifyOptions}>{c.message}</Linkify>
                 </div>
 
                 {(c.media ?? []).length > 0 && (

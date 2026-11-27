@@ -36,6 +36,12 @@
   --color-brand: #c9ac62;
   /** Ink on solid `bg-brand` — not white (fails contrast on gold in dark UI). Use with {@link .btn-brand-solid}. */
   --color-brand-foreground: #0f172a;
+  /**
+   * Inline link accent: trailing `BodyLinkIcon` glyph in body copy, plus the hover text + underline of
+   * `designContract.typography.bodyLink`. Gold on dark panels; light theme remaps it to `--color-brand-hover`
+   * (gold-brown) so the glyph keeps ≥3:1 against white cards.
+   */
+  --color-link: var(--color-brand);
   /** Problem / topo status: ticked (green), todo (blue), dangerous (red) — same semantics as SVG route labels. */
   --color-status-ticked: #34d399;
   --color-status-todo: #38bdf8;
@@ -145,6 +151,8 @@ html[data-theme='light'] {
    * (not near-black). Paired with opaque mixes for `/80` `/90` utilities — transparency on white looked washed out.
    */
   --color-brand-hover: #9a7d32;
+  /** Link glyph + hover accent on pale surfaces — gold-brown, readable as a link without turning body copy gold. */
+  --color-link: var(--color-brand-hover);
   /** Pull canvas + white cards toward charcoal under the sticky header (see `appShellLightBackdropStripClass` for canvas-only strip). */
   --header-glass-backdrop-brightness: 0.72;
 }

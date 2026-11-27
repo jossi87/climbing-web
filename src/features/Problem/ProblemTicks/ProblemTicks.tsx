@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { ClickableAvatar } from '../../../shared/ui/Avatar/Avatar';
 import { Stars } from '../../../shared/ui/Indicators';
 import Linkify from 'linkify-react';
+import { inlineLinkifyOptions } from '../../../shared/ui/linkify';
 import type { components } from '../../../@types/buldreinfo/swagger';
 import { cn } from '../../../lib/utils';
 import { designContract } from '../../../design/contract';
@@ -124,7 +125,7 @@ export const ProblemTicks = ({ ticks, faUsers, faAidUsers }: Props) => {
                   ) : null}
                   {a.comment ? (
                     <span className={cn(tickCommentSmall, 'min-w-0 flex-1 text-slate-50 not-italic')}>
-                      <Linkify>{a.comment}</Linkify>
+                      <Linkify options={inlineLinkifyOptions}>{a.comment}</Linkify>
                     </span>
                   ) : null}
                 </div>
@@ -134,7 +135,7 @@ export const ProblemTicks = ({ ticks, faUsers, faAidUsers }: Props) => {
         } else if (t.comment) {
           commentContent = (
             <div className={quoteBlock}>
-              <Linkify>{t.comment}</Linkify>
+              <Linkify options={inlineLinkifyOptions}>{t.comment}</Linkify>
             </div>
           );
         }

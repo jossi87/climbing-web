@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback, useMemo, type ElementType } f
 import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
 import Linkify from 'linkify-react';
+import { inlineLinkifyOptions } from '../../ui/linkify';
 import {
   History as ActivityIcon,
   Filter,
@@ -709,7 +710,7 @@ const ActivityItem = ({ a, isBouldering }: ActivityItemProps) => {
             <div className={cn('w-full min-w-0', hasStarsLine ? 'mt-1' : gapAfterHeadline)}>
               {hasComment ? (
                 <div className={commentCellClass}>
-                  <Linkify>{a.message}</Linkify>
+                  <Linkify options={inlineLinkifyOptions}>{a.message}</Linkify>
                 </div>
               ) : hasDescription ? (
                 <div className={commentCellClass}>{a.description}</div>

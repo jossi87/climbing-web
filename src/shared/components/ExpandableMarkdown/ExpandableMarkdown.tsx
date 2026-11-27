@@ -91,7 +91,7 @@ export const ExpandableMarkdown = ({ content, className, contentClassName }: Pro
     designContract.typography.body,
     'text-pretty [overflow-wrap:anywhere]',
     '[&_p+p]:mt-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0',
-    'hover:[&_a]:text-brand light:[&_a]:decoration-slate-400/40 [&_a]:text-inherit [&_a]:underline [&_a]:decoration-white/15 [&_a]:underline-offset-2 [&_a]:transition-colors',
+    // Anchors are styled once by `Markdown` (`designContract.typography.bodyLink`).
     contentClassName,
   );
 

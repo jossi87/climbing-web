@@ -1,20 +1,23 @@
 import { type FC } from 'react';
 import ReactMarkdown from 'react-markdown';
 import type { Components } from 'react-markdown';
+import { designContract } from '../../../design/contract';
+import { BodyLinkIcon } from '../../ui/BodyLinkIcon';
+import { isExternalHref } from '../../ui/externalHref';
+import { remarkLinkify } from './remarkLinkify';
 
 type MarkdownProps = {
   content?: string | null;
 };
 
+/** Module-level so `ReactMarkdown` keeps its parse cache (the plugin list is part of its memo deps). */
+const remarkPlugins = [remarkLinkify];
+
 const components: Components = {
   a: ({ href, children }) => (
-    <a
-      href={href}
-      target='_blank'
-      rel='noreferrer noopener'
-      className='hover:text-brand light:decoration-slate-400/40 text-inherit underline decoration-white/15 underline-offset-2 transition-colors'
-    >
+    <a href={href} target='_blank' rel='noreferrer noopener' className={designContract.typography.bodyLink}>
       {children}
+      {isExternalHref(href) ? <BodyLinkIcon /> : null}
     </a>
   ),
   p: ({ children }) => <p className='mt-0 mb-0 [&+&]:mt-2'>{children}</p>,
@@ -47,7 +50,9 @@ export const Markdown: FC<MarkdownProps> = ({ content }) => {
 
   return (
     <div className='text-pretty [overflow-wrap:anywhere]'>
-      <ReactMarkdown components={components}>{content}</ReactMarkdown>
+      <ReactMarkdown components={components} remarkPlugins={remarkPlugins}>
+        {content}
+      </ReactMarkdown>
     </div>
   );
 };

@@ -33,6 +33,7 @@ import { TrailProfile } from '../../shared/components/TrailProfile';
 
 import { getTrailColor } from '../../shared/slopePolylineColors';
 import Linkify from 'linkify-react';
+import { inlineLinkifyOptions } from '../../shared/ui/linkify';
 import { ProblemsOnRock } from './ProblemsOnRock';
 import { ProblemTicks } from './ProblemTicks';
 import { ProblemComments } from './ProblemComments';
@@ -443,7 +444,7 @@ function ProblemLoaded({
         {(data.areaNoDogsAllowed || data.areaAccessInfo || data.sectorAccessInfo) && (
           <div className='text-access-caution space-y-1.5'>
             {data.areaNoDogsAllowed && <NoDogsAllowed />}
-            <Linkify>
+            <Linkify options={inlineLinkifyOptions}>
               {data.areaAccessInfo && <p className='text-pretty'>{data.areaAccessInfo}</p>}
               {data.sectorAccessInfo && <p className='text-pretty'>{data.sectorAccessInfo}</p>}
             </Linkify>
@@ -830,12 +831,7 @@ function ProblemLoaded({
             <div className='flex flex-col gap-7'>
               {data.sections.map((s) => (
                 <article key={s.nr} className='min-w-0' aria-label={t('media.pitch', { pitch: s.nr ?? '' })}>
-                  <p
-                    className={cn(
-                      'text-[14px] leading-snug text-pretty text-slate-300 sm:text-sm sm:leading-relaxed',
-                      '[&_a]:text-slate-300 [&_a]:underline [&_a]:decoration-white/15 [&_a]:underline-offset-2 [&_a]:transition-colors hover:[&_a]:text-slate-200',
-                    )}
-                  >
+                  <p className='text-[14px] leading-snug text-pretty text-slate-300 sm:text-sm sm:leading-relaxed'>
                     <span
                       className={cn(
                         designContract.typography.meta,
@@ -857,7 +853,7 @@ function ProblemLoaded({
                           ·
                         </span>{' '}
                         <span className='font-normal text-slate-300'>
-                          <Linkify>{s.description}</Linkify>
+                          <Linkify options={inlineLinkifyOptions}>{s.description}</Linkify>
                         </span>
                       </>
                     ) : null}

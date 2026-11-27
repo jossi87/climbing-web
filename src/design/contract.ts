@@ -48,6 +48,13 @@ export const designContract = {
     /** Inline links in list/table content (Top, Todo, etc.) */
     listLink: 'text-slate-300 transition-colors hover:text-brand',
     listLinkMuted: 'text-slate-400 transition-colors hover:text-brand',
+    /**
+     * Inline links in rendered body copy — markdown (trivia, descriptions, aid notes) and linkified plain-text fields
+     * (comments, ticks, pitch descriptions). No standing underline: the ink is inherited and the affordance is the
+     * trailing {@link BodyLinkIcon} glyph (gold `--color-link`), so link-dense text stays calm. Hover warms the text to
+     * `--color-link` (brand gold on dark, gold-brown on pale cards) and adds a thin underline.
+     */
+    bodyLink: 'text-inherit transition-colors hover:text-link hover:underline hover:underline-offset-[3px]',
     /** Inline emphasis in tables/lists — prefer medium weight so rows don’t all feel “bold UI”. */
     listEmphasis: 'font-medium text-slate-300',
     /**
