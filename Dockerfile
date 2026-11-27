@@ -2,7 +2,7 @@ FROM node:26-alpine AS build
 WORKDIR /app
 
 COPY package*.json ./
-RUN HUSKY=0 npm install --force --legacy-peer-deps
+RUN npm install --force --legacy-peer-deps
 
 COPY . .
 RUN npm run build
